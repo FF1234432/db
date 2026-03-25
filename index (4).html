@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataBuilder — La plateforme data freelance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0A0F1E;
+  --ink2:#1C2340;
+  --blue:#1847F0;
+  --blue-mid:#2D5CF5;
+  --blue-light:#EEF2FF;
+  --blue-glow:rgba(24,71,240,0.08);
+  --teal:#0EA5A0;
+  --teal-light:#E6F7F7;
+  --silver:#F1F4F9;
+  --border:#E4E8F0;
+  --muted:#64748B;
+  --text:#1E293B;
+  --white:#FFFFFF;
+  --display:'Plus Jakarta Sans',sans-serif;
+  --body:'Outfit',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--white);color:var(--text);overflow-x:hidden;line-height:1.65;}
+
+/* ─── NAV ─── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 3rem;background:rgba(255,255,255,0.95);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+}
+.logo{font-family:var(--display);font-weight:800;font-size:1.15rem;color:var(--ink);letter-spacing:-.025em;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;background:var(--blue);border-radius:50%;}
+.logo em{font-style:normal;color:var(--blue);}
+.nav-links{display:flex;gap:2.5rem;}
+.nav-links a{font-size:.82rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-right{display:flex;gap:.625rem;align-items:center;}
+.btn-ghost{font-size:.8rem;font-weight:500;color:var(--ink);padding:.42rem 1rem;border:1px solid var(--border);border-radius:8px;background:transparent;text-decoration:none;transition:border-color .15s;}
+.btn-ghost:hover{border-color:var(--blue);}
+.btn-nav{font-size:.8rem;font-weight:700;color:var(--white);background:var(--blue);padding:.45rem 1.1rem;border-radius:8px;text-decoration:none;font-family:var(--display);transition:background .15s;}
+.btn-nav:hover{background:var(--blue-mid);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{width:22px;height:1.5px;background:var(--ink);border-radius:2px;}
+.mobile-menu{display:none;flex-direction:column;background:var(--white);border-bottom:1px solid var(--border);}
+.mobile-menu a{padding:.875rem 2rem;font-size:.9rem;color:var(--text);text-decoration:none;border-bottom:1px solid var(--border);}
+.mobile-menu.open{display:flex;}
+
+/* ─── HERO ─── */
+.hero-wrap{background:linear-gradient(160deg,var(--silver) 0%,var(--white) 60%);}
+.hero{max-width:1140px;margin:0 auto;padding:5.5rem 3rem 4rem;display:grid;grid-template-columns:1fr 500px;gap:4rem;align-items:start;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;font-size:.68rem;font-weight:600;color:var(--blue);background:var(--blue-light);border:1px solid rgba(24,71,240,.15);padding:.3rem 1rem;border-radius:100px;margin-bottom:1.5rem;letter-spacing:.04em;text-transform:uppercase;}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--blue);border-radius:50%;}
+h1{font-family:var(--display);font-size:clamp(2.1rem,4vw,3.4rem);font-weight:800;color:var(--ink);line-height:1.05;letter-spacing:-.03em;margin-bottom:1.25rem;}
+h1 .hl{color:var(--blue);}
+.hero-sub{font-size:.95rem;color:var(--muted);line-height:1.8;margin-bottom:2rem;max-width:440px;font-weight:300;}
+.hero-ctas{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem;}
+.btn-primary{background:var(--blue);color:var(--white);padding:.8rem 1.75rem;border-radius:10px;font-weight:700;font-size:.875rem;font-family:var(--display);text-decoration:none;display:inline-block;transition:background .15s;}
+.btn-primary:hover{background:var(--blue-mid);}
+.btn-sec{background:var(--white);color:var(--ink);padding:.8rem 1.75rem;border-radius:10px;font-weight:600;font-size:.875rem;text-decoration:none;display:inline-block;border:1.5px solid var(--border);transition:border-color .15s;}
+.btn-sec:hover{border-color:var(--blue);}
+.trust-row{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted);font-weight:400;}
+.trust-check{width:16px;height:16px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.trust-check svg{width:8px;height:8px;}
+
+/* ─── DASHBOARD HERO RIGHT ─── */
+.hero-dashboard{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(10,15,30,.08);}
+.dash-top{background:var(--ink);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;}
+.dash-top-left{display:flex;align-items:center;gap:8px;}
+.dash-dots{display:flex;gap:5px;}
+.dash-dots span{width:9px;height:9px;border-radius:50%;}
+.dash-title{font-family:var(--display);font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase;}
+.dash-live{display:flex;align-items:center;gap:5px;font-size:.65rem;color:#4ADE80;font-weight:600;}
+.dash-live-dot{width:5px;height:5px;background:#4ADE80;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.dash-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--silver);}
+.dash-tab{padding:.6rem 1rem;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;}
+.dash-tab.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--white);}
+.dash-body{padding:1rem;}
+
+/* Match card */
+.match-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:.875rem 1rem;margin-bottom:.625rem;display:flex;align-items:center;gap:10px;transition:all .15s;cursor:default;}
+.match-card:hover{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow);}
+.match-card.top{border-color:rgba(24,71,240,.3);background:var(--blue-light);}
+.m-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:.72rem;color:white;flex-shrink:0;}
+.m-info{flex:1;min-width:0;}
+.m-name{font-family:var(--display);font-weight:700;color:var(--ink);font-size:.82rem;display:flex;align-items:center;gap:6px;}
+.m-verified{width:14px;height:14px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-verified svg{width:7px;height:7px;}
+.m-role{font-size:.65rem;color:var(--muted);margin-top:1px;}
+.m-tags{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+.m-tag{background:var(--silver);font-size:.58rem;color:var(--text);padding:1px 6px;border-radius:4px;font-weight:500;}
+.m-right{text-align:right;flex-shrink:0;}
+.m-match{font-family:var(--display);font-size:1.1rem;font-weight:800;line-height:1;}
+.m-match-top{color:var(--blue);}
+.m-match-mid{color:var(--teal);}
+.m-match-low{color:var(--muted);}
+.m-match-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:1px;}
+.m-tjm{font-size:.65rem;color:var(--muted);margin-top:3px;font-weight:500;}
+
+/* Match legend */
+.match-legend{display:flex;align-items:center;gap:.875rem;padding:.5rem 0 .25rem;margin-bottom:.5rem;}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--muted);}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* Dash footer bar */
+.dash-footer{background:var(--silver);border-top:1px solid var(--border);padding:.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.dash-stat{text-align:center;}
+.dash-stat-n{font-family:var(--display);font-size:.95rem;font-weight:800;color:var(--ink);}
+.dash-stat-l{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+.dash-cta-btn{background:var(--blue);color:var(--white);font-size:.7rem;font-weight:700;padding:.4rem 1rem;border-radius:7px;font-family:var(--display);white-space:nowrap;}
+
+/* ─── STATS BAR ─── */
+.stats-bar{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--silver);}
+.stats-inner{max-width:1140px;margin:0 auto;padding:0 3rem;display:flex;}
+.stat-cell{flex:1;padding:1.5rem 1rem;text-align:center;border-right:1px solid var(--border);}
+.stat-cell:last-child{border-right:none;}
+.stat-n{font-family:var(--display);font-size:1.75rem;font-weight:800;color:var(--ink);}
+.stat-n em{font-style:normal;color:var(--blue);}
+.stat-l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+
+/* ─── SECTIONS ─── */
+.section{max-width:1140px;margin:0 auto;padding:5rem 3rem;}
+.sec-chip{display:inline-flex;align-items:center;gap:6px;font-size:.65rem;font-weight:700;color:var(--blue);background:var(--blue-light);padding:.25rem .75rem;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem;}
+.sec-title{font-family:var(--display);font-size:clamp(1.7rem,3vw,2.3rem);font-weight:800;color:var(--ink);letter-spacing:-.025em;margin-bottom:.625rem;line-height:1.1;}
+.sec-sub{font-size:.875rem;color:var(--muted);margin-bottom:3rem;max-width:480px;font-weight:300;line-height:1.8;}
+hr{border:none;border-top:1px solid var(--border);}
+
+/* ─── ROLES ─── */
+.roles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;}
+.role-card{border:1px solid var(--border);border-radius:14px;padding:1.25rem;background:var(--white);transition:all .2s;position:relative;overflow:hidden;}
+.role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);opacity:0;transition:opacity .2s;}
+.role-card:hover{border-color:rgba(24,71,240,.3);box-shadow:0 4px 20px var(--blue-glow);transform:translateY(-2px);}
+.role-card:hover::before{opacity:1;}
+.role-icon{width:36px;height:36px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:.875rem;}
+.role-name{font-family:var(--display);font-weight:700;color:var(--ink);font-size:.85rem;margin-bottom:.3rem;}
+.role-desc{font-size:.7rem;color:var(--muted);line-height:1.55;}
+.role-tjm{font-size:.68rem;color:var(--blue);font-weight:600;margin-top:.75rem;display:flex;align-items:center;gap:4px;}
+.role-tjm::before{content:'';width:12px;height:1px;background:var(--blue);}
+
+/* ─── HOW ─── */
+.how-bg{background:var(--silver);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 0;}
+.how-inner{max-width:1140px;margin:0 auto;padding:0 3rem;}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem;}
+.how-box{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;}
+.how-box-accent{position:absolute;top:0;left:1.5rem;right:1.5rem;height:2px;background:var(--blue);border-radius:0 0 2px 2px;}
+.how-title{font-family:var(--display);font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.pill{font-size:.62rem;padding:2px 10px;border-radius:100px;font-weight:600;}
+.pill-free{background:#ECFDF5;color:#059669;}
+.pill-comm{background:var(--blue-light);color:var(--blue);}
+.steps{display:flex;flex-direction:column;gap:.875rem;}
+.step{display:flex;gap:12px;}
+.step-num{min-width:24px;height:24px;background:var(--blue-light);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--blue);margin-top:1px;flex-shrink:0;font-family:var(--display);}
+.step-txt{font-size:.8rem;color:var(--muted);line-height:1.6;}
+.step-txt strong{color:var(--ink);font-weight:600;}
+
+/* ─── WHY ─── */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.why-card{padding:1.5rem;border:1px solid var(--border);border-radius:14px;background:var(--white);transition:border-color .2s;}
+.why-card:hover{border-color:rgba(24,71,240,.3);}
+.why-num{font-family:var(--display);font-size:.62rem;font-weight:800;color:var(--blue);letter-spacing:.1em;margin-bottom:.75rem;background:var(--blue-light);display:inline-block;padding:2px 8px;border-radius:5px;}
+.why-title{font-family:var(--display);font-weight:700;color:var(--ink);font-size:.9rem;margin-bottom:.4rem;}
+.why-desc{font-size:.76rem;color:var(--muted);line-height:1.65;font-weight:300;}
+
+/* ─── CTA ─── */
+.cta-section{background:var(--ink);padding:5.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(24,71,240,.25) 0%,transparent 70%);pointer-events:none;}
+.cta-section h2{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;color:var(--white);margin-bottom:.75rem;letter-spacing:-.025em;position:relative;}
+.cta-section p{color:rgba(255,255,255,.5);font-size:.9rem;margin-bottom:2.5rem;font-weight:300;position:relative;}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;}
+.btn-cta-main{background:var(--blue);color:var(--white);padding:.875rem 2rem;border-radius:10px;font-weight:700;font-size:.9rem;font-family:var(--display);text-decoration:none;display:inline-block;transition:background .15s;}
+.btn-cta-main:hover{background:var(--blue-mid);}
+.btn-cta-sec{background:transparent;color:rgba(255,255,255,.75);padding:.875rem 2rem;border-radius:10px;font-weight:500;font-size:.9rem;text-decoration:none;display:inline-block;border:1px solid rgba(255,255,255,.2);transition:border-color .15s;}
+.btn-cta-sec:hover{border-color:rgba(255,255,255,.5);}
+
+/* ─── FOOTER ─── */
+footer{padding:2rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+footer p{font-size:.72rem;color:var(--muted);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  .hero{grid-template-columns:1fr 420px;gap:3rem;}
+}
+@media(max-width:900px){
+  nav{padding:.875rem 1.5rem;}
+  .nav-links,.btn-ghost{display:none;}
+  .hamburger{display:flex;}
+  .hero{grid-template-columns:1fr;padding:3rem 1.5rem;text-align:center;}
+  .hero-sub,.trust-row{margin-left:auto;margin-right:auto;}
+  .hero-ctas,.trust-row{justify-content:center;}
+  .hero-dashboard{display:none;}
+  .stats-inner{padding:0 1.5rem;flex-wrap:wrap;}
+  .stat-cell{min-width:50%;border-right:none;border-bottom:1px solid var(--border);}
+  .stat-cell:last-child,.stat-cell:nth-last-child(2){border-bottom:none;}
+  .section{padding:3.5rem 1.5rem;}
+  .sec-title br{display:none;}
+  .roles-grid{grid-template-columns:repeat(2,1fr);}
+  .how-bg{padding:3.5rem 0;}
+  .how-inner{padding:0 1.5rem;}
+  .how-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:repeat(2,1fr);}
+  .cta-section{padding:4rem 1.5rem;}
+  footer{padding:1.5rem;flex-direction:column;align-items:flex-start;gap:.5rem;}
+}
+@media(max-width:480px){
+  h1{font-size:1.85rem;}
+  .hero-ctas{flex-direction:column;align-items:stretch;}
+  .btn-primary,.btn-sec{text-align:center;}
+  .roles-grid{grid-template-columns:1fr 1fr;gap:.625rem;}
+  .why-grid{grid-template-columns:1fr;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .btn-cta-main,.btn-cta-sec{width:100%;max-width:280px;text-align:center;}
+  .stat-cell{min-width:50%;}
+}
+@media(max-width:360px){
+  .roles-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <span class="logo-dot"></span>
+    Data<em>Builder</em>
+  </a>
+  <div class="nav-links">
+    <a href="#metiers">Métiers</a>
+    <a href="#process">Process</a>
+    <a href="#approche">Notre approche</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="btn-ghost">Se connecter</a>
+    <a href="#rejoindre" class="btn-nav">Rejoindre</a>
+    <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#metiers" onclick="closeMenu()">Métiers data</a>
+  <a href="#process" onclick="closeMenu()">Comment ça marche</a>
+  <a href="#approche" onclick="closeMenu()">Notre approche</a>
+  <a href="#rejoindre" onclick="closeMenu()">Rejoindre</a>
+</div>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero">
+    <div>
+      <div class="hero-badge">Plateforme 100% data · France & UK</div>
+      <h1>Les experts <span class="hl">data</span><br>matchés à vos<br>besoins exacts.</h1>
+      <p class="hero-sub">DataBuilder est la seule plateforme dédiée exclusivement aux freelances data. Chaque profil est testé techniquement et scoré par spécialité. Vous recevez uniquement des talents avec un taux de matching élevé à votre mission.</p>
+      <div class="hero-ctas">
+        <a href="#process" class="btn-primary">Trouver un talent data</a>
+        <a href="#freelances" class="btn-sec">Je suis freelance data</a>
+      </div>
+      <div class="trust-row">
+        <div class="trust-item">
+          <div class="trust-check"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1847F0" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          Gratuit pour les freelances
+        </div>
+        <div class="trust-item">
+          <div class="trust-check"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1847F0" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          100% profils testés
+        </div>
+        <div class="trust-item">
+          <div class="trust-check"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1847F0" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          Matching sous 48h
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="hero-dashboard">
+      <div class="dash-top">
+        <div class="dash-top-left">
+          <div class="dash-dots">
+            <span style="background:#FF5F57;"></span>
+            <span style="background:#FEBC2E;"></span>
+            <span style="background:#28C840;"></span>
+          </div>
+          <div class="dash-title" style="margin-left:8px;">DataBuilder · Matching engine</div>
+        </div>
+        <div class="dash-live"><div class="dash-live-dot"></div>3 matchs disponibles</div>
+      </div>
+      <div class="dash-tabs">
+        <div class="dash-tab active">Profils matchés</div>
+        <div class="dash-tab">Ma mission</div>
+        <div class="dash-tab">Historique</div>
+      </div>
+      <div class="dash-body">
+        <div class="match-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div>Match élevé ≥90%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--teal);"></div>Bon match 75–89%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--muted);"></div>Match partiel</div>
+        </div>
+
+        <div class="match-card top">
+          <div class="m-avatar" style="background:var(--blue);border-radius:10px;">SC</div>
+          <div class="m-info">
+            <div class="m-name">
+              Sarah C.
+              <div class="m-verified"><svg viewBox="0 0 7 7" fill="none"><path d="M1 3.5l2 2 3-3" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="m-role">Analytics Engineer · Paris · dispo. immédiate</div>
+            <div class="m-tags"><span class="m-tag">dbt</span><span class="m-tag">Snowflake</span><span class="m-tag">SQL</span><span class="m-tag">Looker</span></div>
+          </div>
+          <div class="m-right">
+            <div class="m-match m-match-top">96%</div>
+            <div class="m-match-label">matching</div>
+            <div class="m-tjm">650 €/j</div>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="m-avatar" style="background:var(--teal);border-radius:10px;">TM</div>
+          <div class="m-info">
+            <div class="m-name">
+              Thomas M.
+              <div class="m-verified"><svg viewBox="0 0 7 7" fill="none"><path d="M1 3.5l2 2 3-3" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            </div>
+            <div class="m-role">Data Engineer · Lyon · dispo. mars</div>
+            <div class="m-tags"><span class="m-tag">Spark</span><span class="m-tag">Airflow</span><span class="m-tag">Python</span></div>
+          </div>
+          <div class="m-right">
+            <div class="m-match m-match-mid">84%</div>
+            <div class="m-match-label">matching</div>
+            <div class="m-tjm">720 €/j</div>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="m-avatar" style="background:#6366F1;border-radius:10px;">AL</div>
+          <div class="m-info">
+            <div class="m-name">Amira L.</div>
+            <div class="m-role">Data Scientist · Remote · dispo. avril</div>
+            <div class="m-tags"><span class="m-tag">Python</span><span class="m-tag">ML</span><span class="m-tag">A/B testing</span></div>
+          </div>
+          <div class="m-right">
+            <div class="m-match m-match-low">71%</div>
+            <div class="m-match-label">matching</div>
+            <div class="m-tjm">700 €/j</div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-footer">
+        <div class="dash-stat"><div class="dash-stat-n">48h</div><div class="dash-stat-l">délai moyen</div></div>
+        <div class="dash-stat"><div class="dash-stat-n">100%</div><div class="dash-stat-l">testés</div></div>
+        <div class="dash-stat"><div class="dash-stat-n">3</div><div class="dash-stat-l">profils max</div></div>
+        <div class="dash-cta-btn">Voir les profils →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-cell"><div class="stat-n">7<em>+</em></div><div class="stat-l">Spécialités data</div></div>
+    <div class="stat-cell"><div class="stat-n">48<em>h</em></div><div class="stat-l">Délai de matching</div></div>
+    <div class="stat-cell"><div class="stat-n">100<em>%</em></div><div class="stat-l">Profils testés</div></div>
+    <div class="stat-cell"><div class="stat-n">0<em>€</em></div><div class="stat-l">Pour les freelances</div></div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<section class="section" id="metiers">
+  <div class="sec-chip">Spécialités</div>
+  <h2 class="sec-title">Tous les métiers data,<br>un seul endroit</h2>
+  <p class="sec-sub">Des profils vettés avec des tests techniques calibrés par métier et scorés précisément. Analytics, engineering, science, BI — l'écosystème data complet.</p>
+  <div class="roles-grid">
+    <div class="role-card"><div class="role-icon">📊</div><div class="role-name">Data Analyst</div><div class="role-desc">SQL, visualisation, KPIs, storytelling data</div><div class="role-tjm">350–600 €/j</div></div>
+    <div class="role-card"><div class="role-icon">⚙️</div><div class="role-name">Analytics Engineer</div><div class="role-desc">dbt, modélisation, data quality, Snowflake</div><div class="role-tjm">500–750 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🔧</div><div class="role-name">Data Engineer</div><div class="role-desc">Airflow, Spark, pipelines ELT, data lake</div><div class="role-tjm">550–850 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🧪</div><div class="role-name">Data Scientist</div><div class="role-desc">ML, stats avancées, expérimentation A/B</div><div class="role-tjm">500–800 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📐</div><div class="role-name">Data Architect</div><div class="role-desc">Gouvernance, data mesh, lakehouse design</div><div class="role-tjm">700–1000 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📈</div><div class="role-name">BI Developer</div><div class="role-desc">Tableau, Power BI, Looker, dashboards</div><div class="role-tjm">400–650 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🤖</div><div class="role-name">ML / AI Engineer</div><div class="role-desc">MLOps, LLMOps, déploiement modèles</div><div class="role-tjm">650–950 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📋</div><div class="role-name">Data Manager</div><div class="role-desc">Gouvernance, qualité données, MDM</div><div class="role-tjm">450–700 €/j</div></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- HOW -->
+<div class="how-bg" id="process">
+  <div class="how-inner">
+    <div class="sec-chip">Process</div>
+    <h2 class="sec-title">Simple des deux côtés</h2>
+    <p class="sec-sub">Un process pensé pour aller vite sans jamais sacrifier la qualité du matching.</p>
+    <div class="how-grid">
+      <div class="how-box" id="freelances">
+        <div class="how-box-accent"></div>
+        <div class="how-title">Pour les freelances <span class="pill pill-free">Gratuit</span></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-txt"><strong>Crée ton profil</strong> — spécialité, stack, TJM, disponibilité</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-txt"><strong>Passe le test technique</strong> adapté à ton métier — ton score de matching est calculé</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-txt"><strong>Reçois des missions</strong> matchées à ton profil auprès d'entreprises vérifiées</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-txt"><strong>Tu gardes 100% de ton TJM</strong> — DataBuilder facture uniquement l'entreprise</div></div>
+        </div>
+      </div>
+      <div class="how-box" id="entreprises">
+        <div class="how-box-accent"></div>
+        <div class="how-title">Pour les entreprises <span class="pill pill-comm">15% commission</span></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-txt"><strong>Décris ta mission</strong> — stack, durée, niveau, contexte projet</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-txt"><strong>Reçois 2-3 profils scorés</strong> avec leur taux de matching à ta mission, sous 48h</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-txt"><strong>Rencontre les candidats</strong> — entretien organisé, pas de spam de CVs</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-txt"><strong>Démarre la mission</strong> — contrat, facturation, suivi inclus</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHY -->
+<section class="section" id="approche">
+  <div class="sec-chip">Notre approche</div>
+  <h2 class="sec-title">La qualité avant le volume</h2>
+  <p class="sec-sub">DataBuilder est la seule plateforme dédiée exclusivement aux métiers data, avec un score de matching précis pour chaque mission.</p>
+  <div class="why-grid">
+    <div class="why-card"><div class="why-num">01</div><div class="why-title">100% data, sans compromis</div><div class="why-desc">Uniquement des profils data — validés par des experts du métier. Chaque spécialité a ses propres critères de sélection et de scoring.</div></div>
+    <div class="why-card"><div class="why-num">02</div><div class="why-title">Score de matching précis</div><div class="why-desc">Chaque profil reçoit un score sur 100 par spécialité — SQL, dbt, Python, ML. Vous voyez exactement pourquoi un profil matche votre mission.</div></div>
+    <div class="why-card"><div class="why-num">03</div><div class="why-title">Matching humain</div><div class="why-desc">Une experte data sélectionne 2-3 profils à la main. Vous choisissez parmi les meilleurs scores, pas parmi les profils qui ont payé pour apparaître en premier.</div></div>
+    <div class="why-card"><div class="why-num">04</div><div class="why-title">Missions longue durée</div><div class="why-desc">Nous visons des missions de 6 à 18 mois — une vraie intégration dans vos équipes data, pas du one-shot.</div></div>
+    <div class="why-card"><div class="why-num">05</div><div class="why-title">Tarifs transparents</div><div class="why-desc">15% de commission côté entreprise, par-dessus le TJM du freelance. Ce dernier touche 100% de son tarif, sans surprise.</div></div>
+    <div class="why-card"><div class="why-num">06</div><div class="why-title">France · UK · Remote</div><div class="why-desc">Des profils disponibles à Paris, Lyon, Londres et en full remote pour toute l'Europe.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="rejoindre">
+  <h2>Rejoins DataBuilder</h2>
+  <p>Freelances data — inscris-toi gratuitement, passe ton test, reçois des missions qualifiées.<br>Entreprises — trouvez votre prochain expert data scoré et disponible en 48h.</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-cta-main">Créer mon profil freelance</a>
+    <a href="#" class="btn-cta-sec">Poster une mission</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo"><span class="logo-dot"></span>Data<em>Builder</em></a>
+  <p>© 2025 DataBuilder · La plateforme data freelance</p>
+  <p>Paris · London · contact@databuilder.io</p>
+</footer>
+
+<script>
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+document.addEventListener('click',function(e){
+  const m=document.getElementById('mobileMenu'),h=document.getElementById('hamburger');
+  if(!m.contains(e.target)&&!h.contains(e.target))m.classList.remove('open');
+});
+</script>
+</body>
+</html>
