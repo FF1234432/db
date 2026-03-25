@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataBuilder — La plateforme data freelance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #071A3E;
+  --blue: #1D5CF5;
+  --accent-light: #EBF0FF;
+  --white: #FFFFFF;
+  --off: #F7F9FC;
+  --border: #E2E8F2;
+  --muted: #6B7A99;
+  --text: #1C2B4A;
+  --display: 'Syne', sans-serif;
+  --body: 'Instrument Sans', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--body); background: var(--white); color: var(--text); font-size: 15px; line-height: 1.7; overflow-x: hidden; }
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-family: var(--display); font-weight: 800; font-size: 1.1rem; color: var(--navy); letter-spacing: -.02em; text-decoration: none; }
+.logo em { font-style: normal; color: var(--blue); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-size: .8rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--navy); }
+.nav-right { display: flex; gap: .625rem; align-items: center; }
+.btn-ghost { font-size: .78rem; font-weight: 600; color: var(--navy); padding: .4rem .875rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: transparent; text-decoration: none; transition: border-color .2s; white-space: nowrap; }
+.btn-ghost:hover { border-color: var(--blue); }
+.btn-nav { font-size: .78rem; font-weight: 700; color: var(--white); background: var(--navy); padding: .45rem 1rem; border-radius: 6px; cursor: pointer; border: none; font-family: var(--display); text-decoration: none; transition: background .2s; white-space: nowrap; }
+.btn-nav:hover { background: #0E3A8C; }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.nav-hamburger span { width: 22px; height: 2px; background: var(--navy); border-radius: 2px; transition: all .2s; }
+.mobile-menu { display: none; flex-direction: column; gap: 0; background: var(--white); border-bottom: 1px solid var(--border); }
+.mobile-menu a { padding: .875rem 1.5rem; font-size: .9rem; color: var(--text); text-decoration: none; border-bottom: 1px solid var(--border); font-weight: 500; }
+.mobile-menu.open { display: flex; }
+
+/* HERO */
+.hero {
+  max-width: 1100px; margin: 0 auto;
+  padding: 4rem 2rem 3.5rem;
+  display: grid; grid-template-columns: 1fr 400px; gap: 3.5rem; align-items: center;
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: .68rem; font-weight: 700; color: var(--blue); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.25rem; }
+.eyebrow::before { content: ''; width: 16px; height: 1px; background: var(--blue); }
+h1 { font-family: var(--display); font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 800; color: var(--navy); letter-spacing: -.03em; line-height: 1.1; margin-bottom: 1.25rem; }
+h1 span { color: var(--blue); }
+.hero-desc { font-size: .9rem; color: var(--muted); line-height: 1.75; margin-bottom: 1.75rem; }
+.hero-ctas { display: flex; gap: .625rem; flex-wrap: wrap; }
+.btn-primary { background: var(--navy); color: var(--white); padding: .7rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: .85rem; font-family: var(--display); cursor: pointer; border: none; text-decoration: none; display: inline-block; transition: background .2s; }
+.btn-primary:hover { background: #0E3A8C; }
+.btn-outline { background: transparent; color: var(--navy); padding: .7rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: .85rem; cursor: pointer; border: 1.5px solid var(--navy); text-decoration: none; display: inline-block; transition: all .2s; }
+.btn-outline:hover { background: var(--navy); color: var(--white); }
+.hero-trust { display: flex; align-items: center; gap: .875rem; margin-top: 1.75rem; }
+.trust-text { font-size: .7rem; color: var(--muted); font-weight: 500; }
+.trust-dots { display: flex; }
+.tdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid white; font-size: .58rem; font-weight: 800; font-family: var(--display); display: flex; align-items: center; justify-content: center; color: white; margin-left: -6px; }
+
+/* HERO CARD */
+.hero-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 40px rgba(7,26,62,.08); }
+.card-header { background: var(--navy); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+.card-header-title { font-family: var(--display); font-size: .75rem; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .06em; text-transform: uppercase; }
+.card-status { display: flex; align-items: center; gap: 6px; font-size: .68rem; color: #4ADE80; font-weight: 600; }
+.status-dot { width: 6px; height: 6px; background: #4ADE80; border-radius: 50%; }
+.card-body { padding: 1.25rem; }
+.profile-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; font-size: .75rem; color: white; flex-shrink: 0; }
+.pname { font-family: var(--display); font-weight: 700; color: var(--navy); font-size: .875rem; }
+.prole { font-size: .68rem; color: var(--muted); }
+.verified-badge { margin-left: auto; background: var(--accent-light); color: var(--blue); font-size: .6rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; letter-spacing: .04em; white-space: nowrap; }
+.skill-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem; }
+.skill { background: var(--off); border: 1px solid var(--border); color: var(--text); font-size: .65rem; font-weight: 500; padding: 2px 8px; border-radius: 100px; }
+.meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 1rem; }
+.meta-box { background: var(--off); border-radius: 8px; padding: .5rem .625rem; text-align: center; }
+.meta-val { font-family: var(--display); font-size: .85rem; font-weight: 700; color: var(--navy); }
+.meta-lbl { font-size: .58rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.score-bar { background: var(--off); border: 1px solid var(--border); border-radius: 8px; padding: .75rem .875rem; }
+.score-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem; }
+.score-name { font-size: .68rem; font-weight: 600; color: var(--text); }
+.score-val { font-size: .68rem; font-weight: 700; color: var(--blue); }
+.bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--blue); border-radius: 2px; }
+
+/* STATS */
+.stats-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; justify-content: center; background: var(--off); flex-wrap: wrap; }
+.stat-item { padding: 1.25rem 2.5rem; text-align: center; border-right: 1px solid var(--border); flex: 1; min-width: 120px; }
+.stat-item:last-child { border-right: none; }
+.stat-n { font-family: var(--display); font-size: 1.6rem; font-weight: 800; color: var(--navy); }
+.stat-n span { color: var(--blue); }
+.stat-l { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-top: 2px; }
+
+/* SECTIONS */
+.section { max-width: 1100px; margin: 0 auto; padding: 4.5rem 2rem; }
+.sec-eyebrow { font-size: .68rem; font-weight: 700; color: var(--blue); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .625rem; display: flex; align-items: center; gap: 8px; }
+.sec-eyebrow::before { content: ''; width: 14px; height: 1px; background: var(--blue); }
+.sec-title { font-family: var(--display); font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 800; color: var(--navy); letter-spacing: -.025em; margin-bottom: .625rem; line-height: 1.15; }
+.sec-sub { color: var(--muted); font-size: .875rem; max-width: 440px; margin-bottom: 2.5rem; }
+hr { border: none; border-top: 1px solid var(--border); }
+
+/* ROLES */
+.roles-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .875rem; }
+.role-card { border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; transition: all .2s; background: var(--white); }
+.role-card:hover { border-color: var(--blue); box-shadow: 0 4px 20px rgba(29,92,245,.08); transform: translateY(-2px); }
+.role-icon { width: 32px; height: 32px; background: var(--accent-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: .75rem; }
+.role-name { font-family: var(--display); font-weight: 700; color: var(--navy); font-size: .82rem; margin-bottom: .25rem; }
+.role-desc { font-size: .7rem; color: var(--muted); line-height: 1.5; }
+.role-tjm { font-size: .68rem; color: var(--blue); font-weight: 700; margin-top: .625rem; }
+
+/* HOW */
+.how-wrap { background: var(--off); padding: 4.5rem 0; }
+.how-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem; }
+.how-box { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+.how-box-title { font-family: var(--display); font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.how-pill { font-size: .62rem; font-weight: 700; padding: 2px 9px; border-radius: 100px; letter-spacing: .04em; white-space: nowrap; }
+.pill-free { background: #ECFDF5; color: #059669; }
+.pill-comm { background: var(--accent-light); color: var(--blue); }
+.step-list { display: flex; flex-direction: column; gap: .75rem; }
+.step { display: flex; gap: 10px; align-items: flex-start; }
+.step-n { min-width: 20px; height: 20px; border: 1.5px solid var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 700; color: var(--blue); margin-top: 2px; flex-shrink: 0; }
+.step-t { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+.step-t strong { color: var(--navy); font-weight: 600; }
+
+/* WHY */
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.why-card { border-top: 2px solid var(--blue); padding-top: 1.1rem; }
+.why-n { font-family: var(--display); font-size: .62rem; font-weight: 700; color: var(--blue); letter-spacing: .08em; margin-bottom: .5rem; }
+.why-title { font-family: var(--display); font-weight: 700; color: var(--navy); font-size: .875rem; margin-bottom: .35rem; }
+.why-desc { font-size: .75rem; color: var(--muted); line-height: 1.6; }
+
+/* CTA */
+.cta-wrap { background: var(--navy); margin: 1.5rem; border-radius: 16px; padding: 4rem 2rem; text-align: center; }
+.cta-wrap h2 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: var(--white); letter-spacing: -.025em; margin-bottom: .625rem; }
+.cta-wrap p { color: rgba(255,255,255,.55); font-size: .875rem; margin-bottom: 1.75rem; }
+.cta-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+.btn-white { background: var(--white); color: var(--navy); padding: .7rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: .85rem; font-family: var(--display); cursor: pointer; border: none; text-decoration: none; display: inline-block; }
+.btn-ghost2 { background: transparent; color: rgba(255,255,255,.8); padding: .7rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: .85rem; cursor: pointer; border: 1px solid rgba(255,255,255,.2); text-decoration: none; display: inline-block; }
+
+/* FOOTER */
+footer { padding: 1.75rem 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .875rem; }
+footer p { font-size: .72rem; color: var(--muted); }
+
+/* ===================== RESPONSIVE ===================== */
+
+/* Tablet — 1024px */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr 360px; gap: 2.5rem; }
+  .roles-grid { grid-template-columns: repeat(3, 1fr); }
+  .nav-links { gap: 1.5rem; }
+}
+
+/* Small tablet — 768px */
+@media (max-width: 768px) {
+  nav { padding: .875rem 1.25rem; }
+  .nav-links { display: none; }
+  .btn-ghost { display: none; }
+  .nav-hamburger { display: flex; }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 1.25rem 2rem;
+    gap: 0;
+    text-align: center;
+  }
+  .hero-card { display: none; }
+  .eyebrow { justify-content: center; }
+  .hero-desc { margin: 0 auto 1.75rem; }
+  .hero-ctas { justify-content: center; }
+  .hero-trust { justify-content: center; }
+
+  .stats-bar { }
+  .stat-item { padding: 1rem 1.25rem; border-right: none; border-bottom: 1px solid var(--border); width: 50%; flex: none; }
+  .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+  .stat-item:last-child { border-bottom: none; }
+  .stat-item:nth-last-child(2) { border-bottom: none; }
+
+  .section { padding: 3rem 1.25rem; }
+  .sec-title br { display: none; }
+  .roles-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+
+  .how-wrap { padding: 3rem 0; }
+  .how-inner { padding: 0 1.25rem; }
+  .how-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+
+  .why-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+  .cta-wrap { margin: 1rem; padding: 2.5rem 1.25rem; border-radius: 12px; }
+  .cta-btns { flex-direction: column; align-items: center; }
+  .btn-white, .btn-ghost2 { width: 100%; max-width: 280px; text-align: center; }
+
+  footer { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1.5rem 1.25rem; }
+}
+
+/* Mobile — 480px */
+@media (max-width: 480px) {
+  h1 { font-size: 1.75rem; }
+  .btn-primary, .btn-outline { width: 100%; text-align: center; }
+  .hero-ctas { flex-direction: column; }
+
+  .roles-grid { grid-template-columns: 1fr 1fr; gap: .625rem; }
+  .role-card { padding: .875rem; }
+  .role-name { font-size: .78rem; }
+  .role-desc { font-size: .65rem; }
+
+  .why-grid { grid-template-columns: 1fr; }
+
+  .stat-item { width: 50%; }
+  .stat-n { font-size: 1.35rem; }
+
+  .how-box { padding: 1.25rem; }
+}
+
+/* Very small — 360px */
+@media (max-width: 360px) {
+  .roles-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">Data<em>Builder</em></a>
+  <div class="nav-links">
+    <a href="#metiers">Métiers</a>
+    <a href="#process">Process</a>
+    <a href="#pourquoi">Pourquoi nous</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="btn-ghost">Se connecter</a>
+    <a href="#rejoindre" class="btn-nav">Rejoindre</a>
+    <div class="nav-hamburger" onclick="toggleMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#metiers" onclick="closeMenu()">Métiers data</a>
+  <a href="#process" onclick="closeMenu()">Comment ça marche</a>
+  <a href="#pourquoi" onclick="closeMenu()">Pourquoi DataBuilder</a>
+  <a href="#freelances" onclick="closeMenu()" style="color:var(--blue);font-weight:600;">Je suis freelance</a>
+  <a href="#entreprises" onclick="closeMenu()" style="background:var(--navy);color:white;font-weight:700;">Poster une mission</a>
+</div>
+
+<div class="hero">
+  <div>
+    <div class="eyebrow">Plateforme data freelance · France & UK</div>
+    <h1>Les experts <span>data</span><br>dont vous avez<br>besoin, vettés.</h1>
+    <p class="hero-desc">DataBuilder connecte les entreprises aux meilleurs freelances data — analytics engineers, data scientists, data engineers — sélectionnés avec des tests techniques réels.</p>
+    <div class="hero-ctas">
+      <a href="#entreprises" class="btn-primary">Trouver un talent data</a>
+      <a href="#freelances" class="btn-outline">Je suis freelance</a>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-dots">
+        <div class="tdot" style="background:#0E3A8C;">AE</div>
+        <div class="tdot" style="background:#1D5CF5;">DS</div>
+        <div class="tdot" style="background:#0F5CA8;">DE</div>
+        <div class="tdot" style="background:#2563EB;">BI</div>
+      </div>
+      <div class="trust-text">+200 profils data vettés · 100% des tests validés</div>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="card-header">
+      <div class="card-header-title">Profil vérifié</div>
+      <div class="card-status"><div class="status-dot"></div>Disponible</div>
+    </div>
+    <div class="card-body">
+      <div class="profile-row">
+        <div class="avatar">MC</div>
+        <div>
+          <div class="pname">Marie C.</div>
+          <div class="prole">Analytics Engineer · Paris</div>
+        </div>
+        <div class="verified-badge">Vérifié</div>
+      </div>
+      <div class="skill-row">
+        <span class="skill">dbt</span><span class="skill">Snowflake</span>
+        <span class="skill">SQL</span><span class="skill">Looker</span>
+        <span class="skill">Python</span><span class="skill">Fivetran</span>
+      </div>
+      <div class="meta-row">
+        <div class="meta-box"><div class="meta-val">650€</div><div class="meta-lbl">TJM /j</div></div>
+        <div class="meta-box"><div class="meta-val">4 ans</div><div class="meta-lbl">Exp.</div></div>
+        <div class="meta-box"><div class="meta-val">Dispo</div><div class="meta-lbl">Statut</div></div>
+      </div>
+      <div class="score-bar">
+        <div style="margin-bottom:.5rem;">
+          <div class="score-label"><span class="score-name">SQL avancé</span><span class="score-val">96/100</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:96%"></div></div>
+        </div>
+        <div style="margin-bottom:.5rem;">
+          <div class="score-label"><span class="score-name">Modélisation dbt</span><span class="score-val">91/100</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:91%"></div></div>
+        </div>
+        <div>
+          <div class="score-label"><span class="score-name">Data modelling</span><span class="score-val">88/100</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:88%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-n">7<span>+</span></div><div class="stat-l">Spécialités data</div></div>
+  <div class="stat-item"><div class="stat-n">48<span>h</span></div><div class="stat-l">Délai matching</div></div>
+  <div class="stat-item"><div class="stat-n">100<span>%</span></div><div class="stat-l">Profils testés</div></div>
+  <div class="stat-item"><div class="stat-n">0<span>€</span></div><div class="stat-l">Pour les freelances</div></div>
+</div>
+
+<section class="section" id="metiers">
+  <div class="sec-eyebrow">Spécialités</div>
+  <h2 class="sec-title">Tous les métiers data,<br>un seul endroit</h2>
+  <p class="sec-sub">Des profils vettés avec tests techniques calibrés par métier.</p>
+  <div class="roles-grid">
+    <div class="role-card"><div class="role-icon">📊</div><div class="role-name">Data Analyst</div><div class="role-desc">SQL, visualisation, KPIs, storytelling data</div><div class="role-tjm">350–600 €/j</div></div>
+    <div class="role-card"><div class="role-icon">⚙️</div><div class="role-name">Analytics Engineer</div><div class="role-desc">dbt, modélisation, data quality</div><div class="role-tjm">500–750 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🔧</div><div class="role-name">Data Engineer</div><div class="role-desc">Airflow, Spark, pipelines ELT</div><div class="role-tjm">550–850 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🧪</div><div class="role-name">Data Scientist</div><div class="role-desc">ML, stats avancées, A/B testing</div><div class="role-tjm">500–800 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📐</div><div class="role-name">Data Architect</div><div class="role-desc">Gouvernance, data mesh, lakehouse</div><div class="role-tjm">700–1000 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📈</div><div class="role-name">BI Developer</div><div class="role-desc">Tableau, Power BI, Looker</div><div class="role-tjm">400–650 €/j</div></div>
+    <div class="role-card"><div class="role-icon">🤖</div><div class="role-name">ML / AI Engineer</div><div class="role-desc">MLOps, LLMOps, déploiement modèles</div><div class="role-tjm">650–950 €/j</div></div>
+    <div class="role-card"><div class="role-icon">📋</div><div class="role-name">Data Manager</div><div class="role-desc">Gouvernance, qualité données, MDM</div><div class="role-tjm">450–700 €/j</div></div>
+  </div>
+</section>
+
+<hr>
+
+<div class="how-wrap" id="process">
+  <div class="how-inner">
+    <div class="sec-eyebrow">Process</div>
+    <h2 class="sec-title">Simple des deux côtés</h2>
+    <p class="sec-sub">Un process pensé pour aller vite sans sacrifier la qualité.</p>
+    <div class="how-grid">
+      <div class="how-box" id="freelances">
+        <div class="how-box-title">Pour les freelances <span class="how-pill pill-free">Gratuit</span></div>
+        <div class="step-list">
+          <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Crée ton profil</strong> — spécialité, stack, TJM, disponibilité</div></div>
+          <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Passe le test technique</strong> adapté à ton métier (45 min)</div></div>
+          <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Reçois des missions</strong> matchées à ton profil auprès d'entreprises vérifiées</div></div>
+          <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Tu gardes 100% de ton TJM</strong> — DataBuilder facture uniquement l'entreprise</div></div>
+        </div>
+      </div>
+      <div class="how-box" id="entreprises">
+        <div class="how-box-title">Pour les entreprises <span class="how-pill pill-comm">15% commission</span></div>
+        <div class="step-list">
+          <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Décris ta mission</strong> — stack, durée, niveau, contexte projet</div></div>
+          <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Reçois 2-3 profils</strong> matchés manuellement sous 48h</div></div>
+          <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Rencontre les candidats</strong> — entretien organisé, pas de spam de CVs</div></div>
+          <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Démarre la mission</strong> — contrat, facturation, suivi inclus</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="pourquoi">
+  <div class="sec-eyebrow">Différenciation</div>
+  <h2 class="sec-title">Pourquoi DataBuilder<br>et pas Malt ?</h2>
+  <p class="sec-sub">Parce que la data mérite mieux qu'un catalogue généraliste de 700 000 profils.</p>
+  <div class="why-grid">
+    <div class="why-card"><div class="why-n">01</div><div class="why-title">100% data, sans compromis</div><div class="why-desc">Zéro développeur web, zéro graphiste. Uniquement des profils data validés par des experts.</div></div>
+    <div class="why-card"><div class="why-n">02</div><div class="why-title">Tests techniques réels</div><div class="why-desc">SQL avancé, dbt, Python data. De vraies mises en situation, pas des QCM.</div></div>
+    <div class="why-card"><div class="why-n">03</div><div class="why-title">Matching humain</div><div class="why-desc">Une experte data sélectionne 2-3 profils à la main parmi les meilleurs.</div></div>
+    <div class="why-card"><div class="why-n">04</div><div class="why-title">Missions longue durée</div><div class="why-desc">On vise 6 à 18 mois. Une vraie intégration dans vos équipes data.</div></div>
+    <div class="why-card"><div class="why-n">05</div><div class="why-title">Tarifs transparents</div><div class="why-desc">15% côté entreprise. Le freelance touche 100% de son TJM, sans surprise.</div></div>
+    <div class="why-card"><div class="why-n">06</div><div class="why-title">France · UK · Remote</div><div class="why-desc">Paris, Lyon, Londres et remote pour toute l'Europe.</div></div>
+  </div>
+</section>
+
+<div class="cta-wrap" id="rejoindre">
+  <h2>Rejoins DataBuilder</h2>
+  <p>Freelances data — inscris-toi gratuitement.<br>Entreprises — postez votre première mission.</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-white">Créer mon profil freelance</a>
+    <a href="#" class="btn-ghost2">Poster une mission</a>
+  </div>
+</div>
+
+<footer>
+  <a href="#" class="logo">Data<em style="font-style:normal;color:#1D5CF5;">Builder</em></a>
+  <p>© 2025 DataBuilder · La plateforme data freelance</p>
+  <p>Paris · London · contact@databuilder.io</p>
+</footer>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const hamburger = document.getElementById('hamburger');
+  if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
