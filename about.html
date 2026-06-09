@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>À propos — Data Builders</title>
+  <meta name="description" content="Data Builders est un service d'entretiens techniques data externalisés, fondé par des experts data."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
+    <div class="nav-links">
+      <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+      <a href="about.html" class="active" data-fr="À propos" data-en="About">À propos</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="lang-toggle active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-toggle" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-nav" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow eyebrow-green" data-fr="Notre histoire" data-en="Our story">Notre histoire</div>
+  <h1 data-fr="À propos de Data Builders" data-en="About Data Builders">À propos de Data Builders</h1>
+  <p data-fr="Un service fondé par des experts data, pour résoudre un problème que nous avons vécu de l'intérieur." data-en="A service built by data experts, to solve a problem we experienced firsthand.">Un service fondé par des experts data, pour résoudre un problème que nous avons vécu de l'intérieur.</p>
+</div>
+
+<div class="page-body">
+  <h2 data-fr="Pourquoi Data Builders existe" data-en="Why Data Builders exists">Pourquoi Data Builders existe</h2>
+  <p data-fr="Le recrutement data est cassé. Les recruteurs RH généralistes ne savent pas évaluer un pipeline Spark ou un modèle dbt. Résultat : les entreprises mobilisent leurs meilleurs ingénieurs sur des entretiens — des heures précieuses perdues — ou elles recrutent mal et le découvrent trois mois plus tard." data-en="Data hiring is broken. Generic HR recruiters don't know how to evaluate a Spark pipeline or a dbt model. The result: companies pull their best engineers into interviews — precious hours lost — or they hire the wrong person and find out three months later.">Le recrutement data est cassé. Les recruteurs RH généralistes ne savent pas évaluer un pipeline Spark ou un modèle dbt. Résultat : les entreprises mobilisent leurs meilleurs ingénieurs sur des entretiens — des heures précieuses perdues — ou elles recrutent mal et le découvrent trois mois plus tard.</p>
+  <p data-fr="Data Builders est né de ce constat simple : l'évaluation technique doit être faite par des experts du métier, avec une grille standardisée, et livrée sous une forme exploitable pour les équipes RH et les managers." data-en="Data Builders was born from a simple observation: technical assessment should be done by domain experts, with a standardised framework, delivered in a form that's useful for both HR teams and hiring managers.">Data Builders est né de ce constat simple : l'évaluation technique doit être faite par des experts du métier, avec une grille standardisée, et livrée sous une forme exploitable pour les équipes RH et les managers.</p>
+
+  <h2 data-fr="Notre approche" data-en="Our approach">Notre approche</h2>
+  <p data-fr="Nous ne faisons pas de QCM automatisés. Nous ne testons pas la mémorisation. Nous conduisons des entretiens en direct — 1h avec le candidat — parce que c'est le seul moyen d'évaluer réellement comment quelqu'un travaille, raisonne et communique sous contrainte." data-en="We don't run automated MCQ tests. We don't test memorisation. We conduct live interviews — 1 hour with the candidate — because it's the only way to truly assess how someone works, reasons and communicates under pressure.">Nous ne faisons pas de QCM automatisés. Nous ne testons pas la mémorisation. Nous conduisons des entretiens en direct — 1h avec le candidat — parce que c'est le seul moyen d'évaluer réellement comment quelqu'un travaille, raisonne et communique sous contrainte.</p>
+  <p data-fr="Nos interviewers sont des praticiens data actifs. Ils ont fait le travail. Ils savent ce qui distingue un bon Data Engineer d'un excellent, et ils savent formuler cette différence dans un rapport utile." data-en="Our interviewers are active data practitioners. They've done the job. They know what separates a good Data Engineer from a great one, and they know how to articulate that difference in a useful report.">Nos interviewers sont des praticiens data actifs. Ils ont fait le travail. Ils savent ce qui distingue un bon Data Engineer d'un excellent, et ils savent formuler cette différence dans un rapport utile.</p>
+
+  <h2 data-fr="Ce que nous couvrons" data-en="What we cover">Ce que nous couvrons</h2>
+  <ul>
+    <li data-fr="<strong>4 métiers</strong> : Data Engineer, Data Scientist, Data Analyst, Analytics Engineer" data-en="<strong>4 roles</strong>: Data Engineer, Data Scientist, Data Analyst, Analytics Engineer"><strong>4 métiers</strong> : Data Engineer, Data Scientist, Data Analyst, Analytics Engineer</li>
+    <li data-fr="<strong>15+ technos</strong> : SQL, Python, Spark, dbt, Airflow, Snowflake, BigQuery, Tableau, Power BI, scikit-learn, TensorFlow, et plus" data-en="<strong>15+ technologies</strong>: SQL, Python, Spark, dbt, Airflow, Snowflake, BigQuery, Tableau, Power BI, scikit-learn, TensorFlow, and more"><strong>15+ technos</strong> : SQL, Python, Spark, dbt, Airflow, Snowflake, BigQuery, Tableau, Power BI, scikit-learn, TensorFlow, et plus</li>
+    <li data-fr="<strong>Tous les niveaux</strong> : Junior, Confirmé, Senior, Lead / Staff" data-en="<strong>All levels</strong>: Junior, Mid-level, Senior, Lead / Staff"><strong>Tous les niveaux</strong> : Junior, Confirmé, Senior, Lead / Staff</li>
+    <li data-fr="<strong>Livraison sous 48h</strong> ouvrés après l'entretien" data-en="<strong>Delivery within 48 business hours</strong> after the interview"><strong>Livraison sous 48h</strong> ouvrés après l'entretien</li>
+  </ul>
+
+  <h2 data-fr="Pour qui ?" data-en="Who is this for?">Pour qui ?</h2>
+  <p data-fr="Data Builders s'adresse aux entreprises qui recrutent des profils data et qui veulent externaliser la partie technique de l'évaluation — scale-ups en croissance rapide, équipes data en construction, directions RH sans expertise technique interne." data-en="Data Builders is for companies hiring data profiles who want to outsource the technical assessment — fast-growing scale-ups, teams building their data practice, HR departments without internal technical expertise.">Data Builders s'adresse aux entreprises qui recrutent des profils data et qui veulent externaliser la partie technique de l'évaluation — scale-ups en croissance rapide, équipes data en construction, directions RH sans expertise technique interne.</p>
+
+  <div style="margin-top:48px;background:var(--off-white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;">
+    <div style="font-size:15px;font-weight:600;margin-bottom:10px;" data-fr="Une question ? Parlons-en." data-en="A question? Let's talk.">Une question ? Parlons-en.</div>
+    <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;" data-fr="Réservez un appel de 30 min — sans engagement, sans pitch commercial." data-en="Book a 30-minute call — no commitment, no sales pitch.">Réservez un appel de 30 min — sans engagement, sans pitch commercial.</p>
+    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-calendly" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+      <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
+      <a href="cgu.html">CGU</a>
+      <a href="mailto:contact@databuilders.fr">contact@databuilders.fr</a>
+    </div>
+    <div class="footer-copy">© 2025 Data Builders</div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.documentElement.dataset.lang = lang;
+  document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    const txt = el.dataset[lang]; if (!txt) return;
+    el.innerHTML = txt;
+  });
+}
+</script>
+</body>
+</html>
