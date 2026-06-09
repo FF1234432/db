@@ -9,11 +9,11 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --purple: #6d28d9;
-  --purple-light: #7c3aed;
-  --purple-soft: #f5f3ff;
-  --purple-border: #ede9fe;
-  --purple-mid: #ddd6fe;
+  --purple: #3b1778;
+  --purple-light: #4c1d95;
+  --purple-soft: #f5f0ff;
+  --purple-border: #e8dff7;
+  --purple-mid: #d4c5f0;
   --black: #0f0e0e;
   --white: #ffffff;
   --off: #faf9ff;
@@ -22,7 +22,7 @@
   --gray-400: #9ca3af;
   --gray-500: #6b7280;
   --gray-600: #4b5563;
-  --blue-cal: #006bff;
+  --blue-cal: #92400e;
   --radius-pill: 99px;
   --radius-card: 16px;
   --radius-sm: 10px;
@@ -131,7 +131,7 @@ nav {
 .pill-de  { background:#dbeafe; border-color:#93c5fd; color:#1d4ed8; }
 .pill-ds  { background:#d4f5e9; border-color:#6ee7c2; color:#0e7c5a; }
 .pill-da  { background:#fef3cd; border-color:#f6cc6b; color:#92520a; }
-.pill-ae  { background:#ede9fe; border-color:#c4b5fd; color:#5b21b6; }
+.pill-ae  { background:#e8dff7; border-color:#c4b5fd; color:#3b1778; }
 .pill-junior   { background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
 .pill-confirme { background:#dbeafe; border-color:#93c5fd; color:#1e40af; }
 .pill-senior   { background:#e0e7ff; border-color:#a5b4fc; color:#3730a3; }
@@ -143,7 +143,7 @@ nav {
 .pill.active-de  { background:#1d4ed8; border-color:#1d4ed8; color:#fff; opacity:1; }
 .pill.active-ds  { background:#0e7c5a; border-color:#0e7c5a; color:#fff; opacity:1; }
 .pill.active-da  { background:#92520a; border-color:#92520a; color:#fff; opacity:1; }
-.pill.active-ae  { background:#5b21b6; border-color:#5b21b6; color:#fff; opacity:1; }
+.pill.active-ae  { background:#3b1778; border-color:#3b1778; color:#fff; opacity:1; }
 .pill.active-niveau { background:#1e293b; border-color:#1e293b; color:#fff; opacity:1; }
 .pill.active-techno { background:#0f172a; border-color:#0f172a; color:#fff; opacity:1; }
 
@@ -264,8 +264,28 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
   .footer-inner { flex-direction: column; text-align: center; }
 }
 </style>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<!-- End Google Tag Manager -->
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0S9RGM2HD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y0S9RGM2HD');
+</script>
+<!-- End Google Analytics -->
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <nav>
   <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
@@ -326,9 +346,9 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 <hr/>
 
 <!-- 2% BANNER -->
-<div style="background:#f5f3ff;border-bottom:1px solid #ede9fe;padding:28px 32px;text-align:center;">
+<div style="background:#f5f0ff;border-bottom:1px solid #e8dff7;padding:28px 32px;text-align:center;">
   <div style="max-width:680px;margin:0 auto;">
-    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#7c3aed;margin-bottom:10px;" data-fr="Le coût d'un mauvais recrutement" data-en="The cost of a bad hire">Le coût d'un mauvais recrutement</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4c1d95;margin-bottom:10px;" data-fr="Le coût d'un mauvais recrutement" data-en="The cost of a bad hire">Le coût d'un mauvais recrutement</div>
     <div style="font-size:clamp(18px,3.5vw,26px);font-weight:700;letter-spacing:-0.025em;color:#0f0e0e;margin-bottom:10px;" data-fr="Moins de 2% du prix d'un mauvais recrutement data." data-en="Less than 2% of the cost of a bad data hire.">Moins de 2% du prix d'un mauvais recrutement data.</div>
     <div style="font-size:14px;color:#6b7280;max-width:520px;margin:0 auto;" data-fr="Un mauvais recrutement data coûte entre 30 000 et 100 000€ en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builders est conçu et conduit par un expert du métier — pour que vous recrutiez juste du premier coup." data-en="A bad data hire costs between €30,000 and €100,000 in lost time, failed onboarding and early departure. Every Data Builders interview is designed and run by a domain expert — so you hire right the first time.">Un mauvais recrutement data coûte entre 30 000 et 100 000€ en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builders est conçu et conduit par un expert du métier — pour que vous recrutiez juste du premier coup.</div>
   </div>
@@ -427,7 +447,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 
     <div class="rcard" id="rcard-ae" onclick="selectRole('ae')">
       <div class="rcard-header">
-        <div class="rcard-dot" style="background:#7c3aed"></div>
+        <div class="rcard-dot" style="background:#4c1d95"></div>
         <div>
           <div class="rcard-name">Analytics Engineer</div>
           <div class="rcard-mission" data-fr="Modèles · Métriques · Semantic layer" data-en="Models · Metrics · Semantic layer">Modèles · Métriques · Semantic layer</div>

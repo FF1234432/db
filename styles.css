@@ -1,10 +1,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --purple: #6d28d9;
-  --purple-light: #7c3aed;
-  --purple-soft: #f5f3ff;
-  --purple-border: #ede9fe;
-  --purple-mid: #ddd6fe;
+  --purple: #3b1778;
+  --purple-light: #4c1d95;
+  --purple-soft: #f5f0ff;
+  --purple-border: #e8dff7;
+  --purple-mid: #d4c5f0;
   --black: #0f0e0e;
   --white: #ffffff;
   --off: #faf9ff;
@@ -12,7 +12,7 @@
   --gray-400: #9ca3af;
   --gray-500: #6b7280;
   --gray-600: #4b5563;
-  --blue-cal: #006bff;
+  --blue-cal: #92400e;
   --radius-pill: 99px;
   --radius-card: 16px;
   --radius-sm: 10px;
