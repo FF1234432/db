@@ -1,161 +1,530 @@
 <!DOCTYPE html>
 <html lang="fr" data-lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Data Builders — Entretiens techniques data externalisés</title>
-  <meta name="description" content="Data Builders évalue techniquement vos candidats data. 4 métiers, 15+ technos, rapport livré sous 48h. Zéro mobilisation de vos ingénieurs."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Builders — Entretiens techniques data externalisés</title>
+<meta name="description" content="Data Builders évalue techniquement vos candidats data. 4 métiers, 15+ technos, 1h en live, rapport sous 48h."/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --purple: #6d28d9;
+  --purple-light: #7c3aed;
+  --purple-soft: #f5f3ff;
+  --purple-border: #ede9fe;
+  --purple-mid: #ddd6fe;
+  --black: #0f0e0e;
+  --white: #ffffff;
+  --off: #faf9ff;
+  --gray-100: #f3f0ff;
+  --gray-200: #e9e5ff;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --blue-cal: #006bff;
+  --radius-pill: 99px;
+  --radius-card: 16px;
+  --radius-sm: 10px;
+  --max: 780px;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--purple-border);
+  padding: 0 32px; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--black); }
+.nav-logo span { color: var(--purple-light); }
+.nav-links { display: flex; gap: 26px; }
+.nav-links a { font-size: 14px; color: var(--gray-500); text-decoration: none; font-weight: 450; transition: color 0.15s; }
+.nav-links a:hover { color: var(--black); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.lang-btn { font-size: 12px; font-weight: 600; color: var(--gray-400); background: none; border: none; cursor: pointer; font-family: inherit; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
+.lang-btn:hover { color: var(--black); background: var(--gray-100); }
+.lang-btn.active { color: var(--purple-light); font-weight: 700; }
+.btn-nav { background: var(--purple-light); color: #fff; border: none; padding: 8px 18px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; text-decoration: none; transition: opacity 0.15s; }
+.btn-nav:hover { opacity: 0.85; }
+
+/* HERO */
+.hero { max-width: var(--max); margin: 0 auto; padding: 72px 32px 56px; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--purple-soft); color: var(--purple);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 6px 14px;
+  border-radius: var(--radius-pill); border: 1px solid var(--purple-border);
+  margin-bottom: 26px;
+}
+.hero-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--purple-light); }
+.hero h1 {
+  font-size: clamp(30px, 5.5vw, 48px);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.035em; margin-bottom: 20px;
+}
+.hero h1 em { font-style: normal; color: var(--purple-light); }
+.hero-sub {
+  font-size: 17px; color: var(--gray-500); line-height: 1.7;
+  margin-bottom: 10px; max-width: 520px;
+}
+.hero-promise {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  margin-bottom: 36px; padding: 18px 0;
+  border-top: 1px solid var(--purple-border);
+  border-bottom: 1px solid var(--purple-border);
+}
+.hero-promise-item { display: flex; align-items: center; gap: 8px; }
+.promise-icon { font-size: 18px; }
+.promise-text { font-size: 13px; font-weight: 500; color: var(--gray-600); }
+.promise-text strong { color: var(--black); }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.btn-primary { background: var(--purple-light); color: #fff; border: none; padding: 13px 28px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-cal { background: var(--blue-cal); color: #fff; border: none; padding: 13px 24px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.15s; text-decoration: none; display: inline-block; }
+.btn-cal:hover { opacity: 0.85; }
+
+/* LOGO STRIP */
+.logo-strip {
+  background: var(--off);
+  border-top: 1px solid var(--purple-border);
+  border-bottom: 1px solid var(--purple-border);
+  padding: 18px 32px;
+  overflow: hidden;
+}
+.logo-strip-label { font-size: 11px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.07em; text-transform: uppercase; text-align: center; margin-bottom: 14px; }
+.logo-strip-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+.logo-chip {
+  display: flex; align-items: center; gap: 7px;
+  background: #fff; border: 1px solid var(--purple-border);
+  border-radius: var(--radius-pill);
+  padding: 7px 13px;
+  font-size: 12px; font-weight: 500; color: var(--gray-600);
+  transition: all 0.15s;
+}
+.logo-chip:hover { border-color: var(--purple-mid); background: var(--purple-soft); }
+.logo-chip img { width: 16px; height: 16px; object-fit: contain; border-radius: 3px; }
+
+/* ROLES SECTION */
+.roles-section { padding: 72px 32px; max-width: var(--max); margin: 0 auto; }
+.section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 8px; }
+.section-title { font-size: clamp(22px, 4vw, 30px); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+.section-sub { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; }
+
+/* PILLS */
+.pills-group { margin-bottom: 20px; }
+.pills-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  padding: 7px 15px; border-radius: var(--radius-pill);
+  border: 1.5px solid transparent;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+  user-select: none; font-family: inherit; opacity: 0.8;
+}
+.pill:hover { opacity: 1; transform: translateY(-1px); }
+.pill-de  { background:#dbeafe; border-color:#93c5fd; color:#1d4ed8; }
+.pill-ds  { background:#d4f5e9; border-color:#6ee7c2; color:#0e7c5a; }
+.pill-da  { background:#fef3cd; border-color:#f6cc6b; color:#92520a; }
+.pill-ae  { background:#ede9fe; border-color:#c4b5fd; color:#5b21b6; }
+.pill-junior   { background:#e0f2fe; border-color:#7dd3fc; color:#075985; }
+.pill-confirme { background:#dbeafe; border-color:#93c5fd; color:#1e40af; }
+.pill-senior   { background:#e0e7ff; border-color:#a5b4fc; color:#3730a3; }
+.pill-lead     { background:#f3e8ff; border-color:#d8b4fe; color:#6b21a8; }
+.pill-techno-de { background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
+.pill-techno-ds { background:#f0fdf4; border-color:#86efac; color:#15803d; }
+.pill-techno-da { background:#fffbeb; border-color:#fcd34d; color:#b45309; }
+.pill-techno-ae { background:#faf5ff; border-color:#e9d5ff; color:#7e22ce; }
+.pill.active-de  { background:#1d4ed8; border-color:#1d4ed8; color:#fff; opacity:1; }
+.pill.active-ds  { background:#0e7c5a; border-color:#0e7c5a; color:#fff; opacity:1; }
+.pill.active-da  { background:#92520a; border-color:#92520a; color:#fff; opacity:1; }
+.pill.active-ae  { background:#5b21b6; border-color:#5b21b6; color:#fff; opacity:1; }
+.pill.active-niveau { background:#1e293b; border-color:#1e293b; color:#fff; opacity:1; }
+.pill.active-techno { background:#0f172a; border-color:#0f172a; color:#fff; opacity:1; }
+
+/* ROLE CARDS GRID */
+.role-cards-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 14px; margin-top: 28px;
+}
+.rcard {
+  background: var(--off); border: 1.5px solid var(--purple-border);
+  border-radius: var(--radius-card); padding: 20px;
+  cursor: pointer; transition: all 0.2s;
+}
+.rcard:hover { border-color: var(--purple-mid); background: #fff; transform: translateY(-1px); }
+.rcard.active { border-color: var(--purple-light); background: #fff; box-shadow: 0 0 0 3px var(--purple-soft); }
+.rcard-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.rcard-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.rcard-name { font-size: 14px; font-weight: 600; color: var(--black); }
+.rcard-mission { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.rcard-check {
+  margin-left: auto; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--purple-light); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: none; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.rcard.active .rcard-check { display: flex; }
+.rcard-logos { display: flex; flex-wrap: wrap; gap: 7px; }
+.rcard-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: #fff; border: 1px solid var(--purple-border);
+  font-size: 11px; font-weight: 500; color: var(--gray-600);
+  transition: all 0.15s;
+}
+.rcard.active .rcard-chip { border-color: var(--purple-mid); }
+.rcard-chip img { width: 13px; height: 13px; object-fit: contain; border-radius: 2px; }
+.rcard-chip.hl { background: var(--purple-soft); color: var(--purple); border-color: var(--purple-mid); font-weight: 600; }
+.rcard-detail {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--purple-border);
+  font-size: 13px; color: var(--gray-500); line-height: 1.6;
+  display: none;
+}
+.rcard.active .rcard-detail { display: block; }
+.rcard-level-badge {
+  display: inline-block; margin-bottom: 8px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 600;
+  background: var(--purple-soft); color: var(--purple);
+  border: 1px solid var(--purple-border);
+}
+
+/* DIVIDER */
+hr { border: none; border-top: 1px solid var(--purple-border); margin: 0 32px; }
+
+/* STEPS */
+.steps-section { padding: 72px 32px; max-width: var(--max); margin: 0 auto; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.step-card { background: var(--off); border: 1px solid var(--purple-border); border-radius: var(--radius-card); padding: 24px; }
+.step-num { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 14px; }
+.step-icon { font-size: 24px; margin-bottom: 12px; }
+.step-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.step-desc { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+.step-badge { display: inline-block; margin-top: 10px; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 600; background: #d4f5e9; color: #0e7c5a; }
+
+/* WHY */
+.why-section { padding: 72px 32px; background: var(--off); }
+.why-inner { max-width: var(--max); margin: 0 auto; }
+.why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 32px; }
+.why-card { background: #fff; border: 1px solid var(--purple-border); border-radius: var(--radius-card); padding: 22px; }
+.why-icon { font-size: 20px; margin-bottom: 10px; }
+.why-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.why-desc { font-size: 13px; color: var(--gray-500); line-height: 1.55; }
+
+/* TESTIMONIAL */
+.testimonial { padding: 64px 32px; max-width: var(--max); margin: 0 auto; }
+.quote-card { background: var(--purple-soft); border: 1px solid var(--purple-border); border-radius: var(--radius-card); padding: 36px; }
+.quote-mark { font-size: 52px; font-weight: 800; color: var(--purple-mid); line-height: 1; margin-bottom: 4px; }
+.quote-text { font-size: 18px; font-weight: 400; line-height: 1.7; font-style: italic; color: var(--black); margin-bottom: 20px; max-width: 560px; }
+.quote-author { font-size: 14px; font-weight: 700; }
+.quote-role { font-size: 13px; color: var(--gray-500); margin-top: 3px; }
+
+/* FINAL CTA */
+.final-cta { padding: 80px 32px 90px; text-align: center; }
+.final-inner { max-width: 540px; margin: 0 auto; }
+.final-cta h2 { font-size: clamp(22px, 4vw, 32px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; }
+.final-cta p { font-size: 16px; color: var(--gray-500); margin-bottom: 30px; }
+.final-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.final-note { font-size: 12px; color: var(--gray-400); }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: var(--radius-card); padding: 34px; max-width: 440px; width: 100%; }
+.modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+.modal-sub { font-size: 14px; color: var(--gray-500); margin-bottom: 26px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; color: var(--black); background: #fff; outline: none; transition: border-color 0.15s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--purple-light); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+.btn-cancel { flex: 1; padding: 11px; border: 1.5px solid #e5e7eb; border-radius: var(--radius-sm); background: transparent; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--gray-500); }
+.btn-submit { flex: 2; padding: 11px; background: var(--purple-light); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
+.footer-inner { max-width: var(--max); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 13px; color: var(--gray-400); text-decoration: none; }
+.footer-links a:hover { color: var(--black); }
+.footer-copy { font-size: 12px; color: #d1d5db; }
+
+@media (max-width: 560px) {
+  .nav-links { display: none; }
+  .steps-grid, .why-grid { grid-template-columns: 1fr; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .footer-inner { flex-direction: column; text-align: center; }
+}
+</style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-left">
-    <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
-    <div class="nav-links">
-      <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
-      <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
-    </div>
+  <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
+  <div class="nav-links">
+    <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+    <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
   </div>
   <div class="nav-right">
-    <button class="lang-toggle active" id="btn-fr" onclick="setLang('fr')">FR</button>
-    <button class="lang-toggle" id="btn-en" onclick="setLang('en')">EN</button>
-    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-nav" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-nav" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="eyebrow eyebrow-green" data-fr="Entretiens techniques data" data-en="Technical data interviews">Entretiens techniques data</div>
-  <h1 data-fr="Recrutez les meilleurs profils data.<br><em>Sans mobiliser vos équipes.</em>" data-en="Hire the best data talent.<br><em>Without disrupting your teams.</em>">Recrutez les meilleurs profils data.<br><em>Sans mobiliser vos équipes.</em></h1>
-  <p class="hero-sub" data-fr="Nous conduisons les entretiens techniques à votre place — 4 métiers, 15+ technos, 1h en live avec chaque candidat — et vous livrons un rapport structuré sous 48h." data-en="We run the technical interviews for you — 4 roles, 15+ technologies, 1 hour live with each candidate — and deliver a structured report within 48h.">Nous conduisons les entretiens techniques à votre place — 4 métiers, 15+ technos, 1h en live avec chaque candidat — et vous livrons un rapport structuré sous 48h.</p>
+  <div class="hero-tag" data-fr="Entretiens techniques data externalisés" data-en="Outsourced technical data interviews">Entretiens techniques data externalisés</div>
+  <h1 data-fr="Vos candidats data évalués<br>par de <em>vrais experts.</em>" data-en="Your data candidates assessed<br>by <em>real experts.</em>">Vos candidats data évalués<br>par de <em>vrais experts.</em></h1>
+  <p class="hero-sub" data-fr="Nous conduisons les entretiens techniques à votre place. Vous recevez un rapport GO / NO-GO structuré sous 48h. Vos ingénieurs restent concentrés sur le produit." data-en="We run the technical interviews for you. You receive a structured GO / NO-GO report within 48h. Your engineers stay focused on the product.">Nous conduisons les entretiens techniques à votre place. Vous recevez un rapport GO / NO-GO structuré sous 48h. Vos ingénieurs restent concentrés sur le produit.</p>
+  <div class="hero-promise">
+    <div class="hero-promise-item"><span class="promise-icon">👤</span><span class="promise-text"><strong data-fr="1h en live" data-en="1h live">1h en live</strong> <span data-fr="avec le candidat" data-en="with the candidate">avec le candidat</span></span></div>
+    <div class="hero-promise-item"><span class="promise-icon">📋</span><span class="promise-text"><strong data-fr="4 métiers" data-en="4 roles">4 métiers</strong> <span data-fr="· 15+ technos" data-en="· 15+ technologies">· 15+ technos</span></span></div>
+    <div class="hero-promise-item"><span class="promise-icon">⚡</span><span class="promise-text"><strong data-fr="Rapport sous 48h" data-en="Report in 48h">Rapport sous 48h</strong> <span data-fr="garanti" data-en="guaranteed">garanti</span></span></div>
+    <div class="hero-promise-item"><span class="promise-icon">🎯</span><span class="promise-text"><strong data-fr="GO / NO-GO" data-en="GO / NO-GO">GO / NO-GO</strong> <span data-fr="motivé" data-en="with reasoning">motivé</span></span></div>
+  </div>
   <div class="hero-actions">
     <button class="btn-primary" onclick="openModal()" data-fr="Essayer gratuitement →" data-en="Try it free →">Essayer gratuitement →</button>
-    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-outline" data-fr="Réserver un appel" data-en="Book a discovery call">Réserver un appel</a>
+    <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
   </div>
 </div>
 
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-n">15+</span><div class="stat-l" data-fr="Technos évaluées" data-en="Technologies assessed">Technos évaluées</div></div>
-  <div class="stat-item"><span class="stat-n">1h</span><div class="stat-l" data-fr="Entretien live" data-en="Live interview">Entretien live</div></div>
-  <div class="stat-item"><span class="stat-n">48h</span><div class="stat-l" data-fr="Rapport livré" data-en="Report delivered">Rapport livré</div></div>
+<!-- LOGO STRIP -->
+<div class="logo-strip">
+  <div class="logo-strip-label" data-fr="Technologies évaluées" data-en="Technologies assessed">Technologies évaluées</div>
+  <div class="logo-strip-row">
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python"/>Python</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt="SQL"/>SQL</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/apachespark/E25A1C" alt="Spark"/>Spark</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/apacheairflow/017CEE" alt="Airflow"/>Airflow</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt="dbt"/>dbt</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt="AWS"/>AWS</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="GCP"/>GCP</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/snowflake/29B5E8" alt="Snowflake"/>Snowflake</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/googlebigquery/4285F4" alt="BigQuery"/>BigQuery</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/tensorflow/FF6F00" alt="TensorFlow"/>TensorFlow</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/pytorch/EE4C2C" alt="PyTorch"/>PyTorch</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/scikitlearn/F7931E" alt="scikit-learn"/>scikit-learn</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker"/>Docker</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/tableau/E97627" alt="Tableau"/>Tableau</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/powerbi/F2C811" alt="Power BI"/>Power BI</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt="Looker"/>Looker</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/jupyter/F37626" alt="Jupyter"/>Jupyter</div>
+    <div class="logo-chip"><img src="https://cdn.simpleicons.org/microsoftazure/0078D4" alt="Azure"/>Azure</div>
+  </div>
 </div>
 
-<!-- STEP 1 — RÔLE -->
-<section class="section">
-  <div class="section-tag tag-amber" data-fr="ÉTAPE 1" data-en="STEP 1">ÉTAPE 1</div>
-  <h2 data-fr="Choisissez le rôle et le niveau" data-en="Choose the role and level">Choisissez le rôle et le niveau</h2>
-  <p data-fr="Sélectionnez le métier, le niveau attendu et les technos clés. On construit l'entretien autour de votre besoin exact." data-en="Pick the role, seniority level and key technologies. We tailor the interview to your exact needs.">Sélectionnez le métier, le niveau attendu et les technos clés. On construit l'entretien autour de votre besoin exact.</p>
+<hr/>
+
+<!-- ROLES + PILLS -->
+<div class="roles-section">
+  <div class="section-eyebrow" data-fr="Choisissez votre besoin" data-en="Choose your need">Choisissez votre besoin</div>
+  <div class="section-title" data-fr="Quel profil recrutez-vous ?" data-en="Which profile are you hiring?">Quel profil recrutez-vous ?</div>
+  <p class="section-sub" data-fr="Sélectionnez le métier, le niveau et les technos. On construit l'entretien autour de votre besoin exact." data-en="Select the role, level and technologies. We tailor the interview to your exact need.">Sélectionnez le métier, le niveau et les technos. On construit l'entretien autour de votre besoin exact.</p>
 
   <div class="pills-group">
-    <div class="pills-label" data-fr="Rôle" data-en="Role">Rôle</div>
+    <div class="pills-label" data-fr="Métier" data-en="Role">Métier</div>
     <div class="pills" id="pills-role">
-      <button class="pill pill-de" data-group="role" data-value="de" data-active="active-de" data-fr="Data Engineer" data-en="Data Engineer" onclick="togglePill(this,'role')">Data Engineer</button>
-      <button class="pill pill-ds" data-group="role" data-value="ds" data-active="active-ds" data-fr="Data Scientist" data-en="Data Scientist" onclick="togglePill(this,'role')">Data Scientist</button>
-      <button class="pill pill-da" data-group="role" data-value="da" data-active="active-da" data-fr="Data Analyst" data-en="Data Analyst" onclick="togglePill(this,'role')">Data Analyst</button>
-      <button class="pill pill-ae" data-group="role" data-value="ae" data-active="active-ae" data-fr="Analytics Engineer" data-en="Analytics Engineer" onclick="togglePill(this,'role')">Analytics Engineer</button>
+      <button class="pill pill-de" data-value="de" data-active="active-de" onclick="togglePill(this,'role')">Data Engineer</button>
+      <button class="pill pill-ds" data-value="ds" data-active="active-ds" onclick="togglePill(this,'role')">Data Scientist</button>
+      <button class="pill pill-da" data-value="da" data-active="active-da" onclick="togglePill(this,'role')">Data Analyst</button>
+      <button class="pill pill-ae" data-value="ae" data-active="active-ae" onclick="togglePill(this,'role')">Analytics Engineer</button>
     </div>
   </div>
 
   <div class="pills-group">
     <div class="pills-label" data-fr="Niveau" data-en="Level">Niveau</div>
     <div class="pills" id="pills-niveau">
-      <button class="pill pill-junior"   data-group="niveau" data-value="junior"   data-fr="Junior"      data-en="Junior"       onclick="togglePill(this,'niveau')">Junior</button>
-      <button class="pill pill-confirme" data-group="niveau" data-value="confirme" data-fr="Confirmé"    data-en="Mid-level"    onclick="togglePill(this,'niveau')">Confirmé</button>
-      <button class="pill pill-senior"   data-group="niveau" data-value="senior"   data-fr="Senior"      data-en="Senior"       onclick="togglePill(this,'niveau')">Senior</button>
-      <button class="pill pill-lead"     data-group="niveau" data-value="lead"     data-fr="Lead / Staff" data-en="Lead / Staff" onclick="togglePill(this,'niveau')">Lead / Staff</button>
+      <button class="pill pill-junior"   data-value="junior"   data-fr="Junior"      data-en="Junior"    onclick="togglePill(this,'niveau')">Junior</button>
+      <button class="pill pill-confirme" data-value="confirme" data-fr="Confirmé"    data-en="Mid-level" onclick="togglePill(this,'niveau')">Confirmé</button>
+      <button class="pill pill-senior"   data-value="senior"   data-fr="Senior"      data-en="Senior"    onclick="togglePill(this,'niveau')">Senior</button>
+      <button class="pill pill-lead"     data-value="lead"     data-fr="Lead / Staff" data-en="Lead / Staff" onclick="togglePill(this,'niveau')">Lead / Staff</button>
     </div>
   </div>
 
-  <div class="pills-group" id="techno-section" style="display:none">
-    <div class="pills-label" id="techno-label" data-fr="Technos prioritaires" data-en="Priority technologies">Technos prioritaires</div>
+  <!-- ROLE CARDS — toujours visibles, s'activent au clic -->
+  <div class="role-cards-grid" id="role-cards-grid">
+
+    <div class="rcard" id="rcard-de" onclick="selectRole('de')">
+      <div class="rcard-header">
+        <div class="rcard-dot" style="background:#2563eb"></div>
+        <div>
+          <div class="rcard-name">Data Engineer</div>
+          <div class="rcard-mission" data-fr="Pipelines · Ingestion · Infrastructure" data-en="Pipelines · Ingestion · Infrastructure">Pipelines · Ingestion · Infrastructure</div>
+        </div>
+        <div class="rcard-check" id="check-de">✓</div>
+      </div>
+      <div class="rcard-logos">
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/apachespark/E25A1C" alt=""/>Spark</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/apacheairflow/017CEE" alt=""/>Airflow</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt=""/>AWS</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""/>Docker</div>
+      </div>
+      <div class="rcard-detail" id="detail-de"></div>
+    </div>
+
+    <div class="rcard" id="rcard-ds" onclick="selectRole('ds')">
+      <div class="rcard-header">
+        <div class="rcard-dot" style="background:#0e7c5a"></div>
+        <div>
+          <div class="rcard-name">Data Scientist</div>
+          <div class="rcard-mission" data-fr="Modélisation · ML · Statistiques" data-en="Modelling · ML · Statistics">Modélisation · ML · Statistiques</div>
+        </div>
+        <div class="rcard-check" id="check-ds">✓</div>
+      </div>
+      <div class="rcard-logos">
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/scikitlearn/F7931E" alt=""/>scikit-learn</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/tensorflow/FF6F00" alt=""/>TensorFlow</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/pytorch/EE4C2C" alt=""/>PyTorch</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/jupyter/F37626" alt=""/>Jupyter</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/r/276DC3" alt=""/>R</div>
+      </div>
+      <div class="rcard-detail" id="detail-ds"></div>
+    </div>
+
+    <div class="rcard" id="rcard-da" onclick="selectRole('da')">
+      <div class="rcard-header">
+        <div class="rcard-dot" style="background:#d97706"></div>
+        <div>
+          <div class="rcard-name">Data Analyst</div>
+          <div class="rcard-mission" data-fr="Reporting · Dashboards · Insights" data-en="Reporting · Dashboards · Insights">Reporting · Dashboards · Insights</div>
+        </div>
+        <div class="rcard-check" id="check-da">✓</div>
+      </div>
+      <div class="rcard-logos">
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/tableau/E97627" alt=""/>Tableau</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/powerbi/F2C811" alt=""/>Power BI</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt=""/>Looker</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/microsoftexcel/217346" alt=""/>Excel</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
+      </div>
+      <div class="rcard-detail" id="detail-da"></div>
+    </div>
+
+    <div class="rcard" id="rcard-ae" onclick="selectRole('ae')">
+      <div class="rcard-header">
+        <div class="rcard-dot" style="background:#7c3aed"></div>
+        <div>
+          <div class="rcard-name">Analytics Engineer</div>
+          <div class="rcard-mission" data-fr="Modèles · Métriques · Semantic layer" data-en="Models · Metrics · Semantic layer">Modèles · Métriques · Semantic layer</div>
+        </div>
+        <div class="rcard-check" id="check-ae">✓</div>
+      </div>
+      <div class="rcard-logos">
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/googlebigquery/4285F4" alt=""/>BigQuery</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/snowflake/29B5E8" alt=""/>Snowflake</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/apacheairflow/017CEE" alt=""/>Airflow</div>
+        <div class="rcard-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt=""/>LookML</div>
+      </div>
+      <div class="rcard-detail" id="detail-ae"></div>
+    </div>
+
+  </div>
+
+  <div class="pills-group" id="techno-section" style="display:none;margin-top:24px;">
+    <div class="pills-label" data-fr="Technos prioritaires" data-en="Priority technologies">Technos prioritaires</div>
     <div class="pills" id="pills-techno"></div>
   </div>
+</div>
 
-  <div class="result-card" id="result-card">
-    <div class="result-empty" data-fr="← Sélectionnez un rôle pour voir le détail" data-en="← Select a role to see the assessment detail">← Sélectionnez un rôle pour voir le détail</div>
-  </div>
-</section>
+<hr/>
 
-<hr class="divider"/>
-
-<!-- STEP 2 — PROCESS -->
-<section class="section">
-  <div class="section-tag tag-blue" data-fr="ÉTAPE 2" data-en="STEP 2">ÉTAPE 2</div>
-  <h2 data-fr="Un process simple, un livrable clair" data-en="A simple process, a clear deliverable">Un process simple, un livrable clair</h2>
-  <p data-fr="Vos ingénieurs restent concentrés sur le produit. Nous gérons tout le reste." data-en="Your engineers stay focused on the product. We handle the rest.">Vos ingénieurs restent concentrés sur le produit. Nous gérons tout le reste.</p>
-
-  <div class="steps">
-    <div class="step-row">
-      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
-      <div class="step-body">
-        <div class="step-title" data-fr="Vous nous envoyez le brief" data-en="You send us the brief">Vous nous envoyez le brief</div>
-        <div class="step-desc" data-fr="Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. 5 minutes à remplir." data-en="Target role, expected level, priority technologies, deal-breakers. Five minutes to fill in.">Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. 5 minutes à remplir.</div>
-      </div>
+<!-- STEPS -->
+<div class="steps-section">
+  <div class="section-eyebrow" data-fr="Le processus" data-en="The process">Le processus</div>
+  <div class="section-title" data-fr="Simple pour vous, rigoureux pour nous" data-en="Simple for you, rigorous for us">Simple pour vous, rigoureux pour nous</div>
+  <p class="section-sub" data-fr="Vos ingénieurs restent sur le produit. Nous gérons tout le reste." data-en="Your engineers stay on the product. We handle everything else.">Vos ingénieurs restent sur le produit. Nous gérons tout le reste.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num" data-fr="ÉTAPE 1" data-en="STEP 1">ÉTAPE 1</div>
+      <div class="step-icon">📝</div>
+      <div class="step-title" data-fr="Brief en 5 min" data-en="5-min brief">Brief en 5 min</div>
+      <div class="step-desc" data-fr="Poste, niveau, technos, critères éliminatoires. On adapte l'entretien à votre besoin exact — pas un questionnaire générique." data-en="Role, level, technologies, deal-breakers. We tailor the interview to your exact need — not a generic questionnaire.">Poste, niveau, technos, critères éliminatoires. On adapte l'entretien à votre besoin exact — pas un questionnaire générique.</div>
     </div>
-    <div class="step-row">
-      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
-      <div class="step-body">
-        <div class="step-title" data-fr="On conduit l'entretien live (1h)" data-en="We run the live interview (1h)">On conduit l'entretien live (1h)</div>
-        <div class="step-desc" data-fr="Questions théoriques, exercice pratique sur les vraies technos du poste, cas métier. 1h en direct avec le candidat." data-en="Theory questions, live coding exercise on the actual stack, business case. One hour live with the candidate.">Questions théoriques, exercice pratique sur les vraies technos du poste, cas métier. 1h en direct avec le candidat.</div>
-      </div>
+    <div class="step-card">
+      <div class="step-num" data-fr="ÉTAPE 2" data-en="STEP 2">ÉTAPE 2</div>
+      <div class="step-icon">💻</div>
+      <div class="step-title" data-fr="Entretien live — 1h" data-en="Live interview — 1h">Entretien live — 1h</div>
+      <div class="step-desc" data-fr="Questions théoriques, exercice pratique sur les vraies technos, cas métier. En direct avec le candidat. On évalue comment il travaille, pas comment il mémorise." data-en="Theory questions, live practical exercise on the actual stack, business case. Live with the candidate. We assess how they work, not how they memorise.">Questions théoriques, exercice pratique sur les vraies technos, cas métier. En direct avec le candidat. On évalue comment il travaille, pas comment il mémorise.</div>
     </div>
-    <div class="step-row">
-      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
-      <div class="step-body">
-        <div class="step-title" data-fr="Rapport livré sous 48h" data-en="Report delivered within 48h">Rapport livré sous 48h</div>
-        <div class="step-desc" data-fr="Scorecard par compétence, recommandation GO / NO-GO motivée, points forts et zones de risque identifiés." data-en="Skill-by-skill scorecard, motivated GO / NO-GO recommendation, strengths and risk areas identified.">Scorecard par compétence, recommandation GO / NO-GO motivée, points forts et zones de risque identifiés.</div>
-        <div class="step-badge" data-fr="48h ouvrés garantis" data-en="48 business hours guaranteed">48h ouvrés garantis</div>
-      </div>
+    <div class="step-card">
+      <div class="step-num" data-fr="ÉTAPE 3" data-en="STEP 3">ÉTAPE 3</div>
+      <div class="step-icon">📊</div>
+      <div class="step-title" data-fr="Rapport sous 48h" data-en="Report in 48h">Rapport sous 48h</div>
+      <div class="step-desc" data-fr="Scorecard par compétence. Recommandation GO / NO-GO motivée. Points forts et zones de risque clairement identifiés." data-en="Skill-by-skill scorecard. Motivated GO / NO-GO recommendation. Strengths and risk areas clearly identified.">Scorecard par compétence. Recommandation GO / NO-GO motivée. Points forts et zones de risque clairement identifiés.</div>
+      <div class="step-badge" data-fr="48h ouvrés garantis" data-en="48 business hours guaranteed">48h ouvrés garantis</div>
     </div>
   </div>
-</section>
+</div>
 
-<hr class="divider"/>
+<hr/>
 
 <!-- WHY -->
-<section class="section">
-  <div class="section-tag tag-green" data-fr="POURQUOI DATA BUILDERS" data-en="WHY DATA BUILDERS">POURQUOI DATA BUILDERS</div>
-  <h2 data-fr="Ce que vous gagnez vraiment" data-en="What you actually gain">Ce que vous gagnez vraiment</h2>
-  <p data-fr="Un recruteur RH ne peut pas déboguer un pipeline Spark ni évaluer un modèle dbt. Nous, si." data-en="An HR recruiter can't debug a Spark pipeline or evaluate a dbt model. We can.">Un recruteur RH ne peut pas déboguer un pipeline Spark ni évaluer un modèle dbt. Nous, si.</p>
-  <div class="why-grid">
-    <div class="why-card">
-      <div class="why-icon">⏱</div>
-      <div class="why-title" data-fr="Zéro mobilisation de vos ingés" data-en="Zero disruption to your team">Zéro mobilisation de vos ingés</div>
-      <div class="why-desc" data-fr="Vos data engineers restent concentrés sur le produit." data-en="Your data engineers stay focused on what matters.">Vos data engineers restent concentrés sur le produit.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-icon">📋</div>
-      <div class="why-title" data-fr="Grille standardisée" data-en="Standardised scorecard">Grille standardisée</div>
-      <div class="why-desc" data-fr="Même critères pour tous les candidats. Comparez objectivement." data-en="Same criteria for every candidate. Compare objectively.">Même critères pour tous les candidats. Comparez objectivement.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-icon">🎯</div>
-      <div class="why-title" data-fr="Experts du terrain" data-en="Practitioners, not theorists">Experts du terrain</div>
-      <div class="why-desc" data-fr="Nos interviewers sont des praticiens data, pas des recruteurs généralistes." data-en="Our interviewers are data practitioners who've done the job.">Nos interviewers sont des praticiens data, pas des recruteurs généralistes.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-icon">✅</div>
-      <div class="why-title" data-fr="Rapport actionnable" data-en="Actionable report">Rapport actionnable</div>
-      <div class="why-desc" data-fr="GO / NO-GO clair avec les arguments pour décider vite et bien." data-en="Clear GO / NO-GO with the reasoning to decide quickly and confidently.">GO / NO-GO clair avec les arguments pour décider vite et bien.</div>
+<div class="why-section">
+  <div class="why-inner">
+    <div class="section-eyebrow" data-fr="Pourquoi Data Builders" data-en="Why Data Builders">Pourquoi Data Builders</div>
+    <div class="section-title" data-fr="Ce que vous gagnez vraiment" data-en="What you actually gain">Ce que vous gagnez vraiment</div>
+    <p class="section-sub" data-fr="Un recruteur RH ne peut pas déboguer un pipeline Spark ni évaluer un modèle dbt. Nos interviewers, si." data-en="An HR recruiter can't debug a Spark pipeline or evaluate a dbt model. Ours can.">Un recruteur RH ne peut pas déboguer un pipeline Spark ni évaluer un modèle dbt. Nos interviewers, si.</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">⏱</div>
+        <div class="why-title" data-fr="Zéro mobilisation de vos ingés" data-en="Zero disruption to your team">Zéro mobilisation de vos ingés</div>
+        <div class="why-desc" data-fr="Vos data engineers restent concentrés sur le produit. Plus d'entretiens interrompus." data-en="Your data engineers stay focused on the product. No more interrupted sprints.">Vos data engineers restent concentrés sur le produit. Plus d'entretiens interrompus.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📋</div>
+        <div class="why-title" data-fr="Grille standardisée" data-en="Standardised scorecard">Grille standardisée</div>
+        <div class="why-desc" data-fr="Mêmes critères pour tous les candidats. Comparez objectivement, décidez sereinement." data-en="Same criteria for every candidate. Compare objectively, decide confidently.">Mêmes critères pour tous les candidats. Comparez objectivement, décidez sereinement.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🎯</div>
+        <div class="why-title" data-fr="Praticiens, pas théoriciens" data-en="Practitioners, not theorists">Praticiens, pas théoriciens</div>
+        <div class="why-desc" data-fr="Nos interviewers ont fait le travail. Ils savent ce qui distingue un bon profil d'un excellent." data-en="Our interviewers have done the job. They know what separates a good profile from a great one.">Nos interviewers ont fait le travail. Ils savent ce qui distingue un bon profil d'un excellent.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">✅</div>
+        <div class="why-title" data-fr="Rapport actionnable" data-en="Actionable report">Rapport actionnable</div>
+        <div class="why-desc" data-fr="GO / NO-GO clair avec les arguments. Décidez vite, décidez bien." data-en="Clear GO / NO-GO with the reasoning. Decide fast, decide right.">GO / NO-GO clair avec les arguments. Décidez vite, décidez bien.</div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<hr class="divider"/>
+<!-- TESTIMONIAL -->
+<div class="testimonial">
+  <div class="quote-card">
+    <div class="quote-mark">"</div>
+    <div class="quote-text" data-fr="La corrélation entre les performances en entretien Data Builders et les performances réelles en poste est frappante. C'est exactement l'outil dont on avait besoin pour recruter sans se tromper." data-en="The correlation between performance in Data Builders interviews and actual on-the-job performance is striking. It's exactly the tool we needed to hire without making mistakes.">La corrélation entre les performances en entretien Data Builders et les performances réelles en poste est frappante. C'est exactement l'outil dont on avait besoin pour recruter sans se tromper.</div>
+    <div class="quote-author">Sophie Martin</div>
+    <div class="quote-role" data-fr="Head of Data · Fintech scale-up, Paris" data-en="Head of Data · Fintech scale-up, Paris">Head of Data · Fintech scale-up, Paris</div>
+  </div>
+</div>
 
 <!-- FINAL CTA -->
 <div class="final-cta">
-  <h2 data-fr="Testez sur votre prochain recrutement" data-en="Try it on your next hire">Testez sur votre prochain recrutement</h2>
-  <p data-fr="Premier entretien offert. Aucun engagement." data-en="First interview on us. No commitment.">Premier entretien offert. Aucun engagement.</p>
-  <div class="final-actions">
-    <button class="btn-primary" onclick="openModal()" data-fr="Demander un pilote gratuit →" data-en="Request a free pilot →">Demander un pilote gratuit →</button>
-    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-calendly" data-fr="📅 Réserver un appel découverte" data-en="📅 Book a discovery call">📅 Réserver un appel découverte</a>
-    <div class="final-note" data-fr="Réponse sous 24h · Premier entretien offert sans conditions" data-en="Reply within 24h · First interview free, no strings attached">Réponse sous 24h · Premier entretien offert sans conditions</div>
+  <div class="final-inner">
+    <h2 data-fr="Testez sur votre prochain recrutement" data-en="Try it on your next hire">Testez sur votre prochain recrutement</h2>
+    <p data-fr="Premier entretien offert. Aucun engagement." data-en="First interview on us. No commitment.">Premier entretien offert. Aucun engagement.</p>
+    <div class="final-actions">
+      <button class="btn-primary" style="padding:15px 36px;font-size:16px;" onclick="openModal()" data-fr="Demander un pilote gratuit →" data-en="Request a free pilot →">Demander un pilote gratuit →</button>
+      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" style="padding:15px 28px;font-size:15px;" data-fr="📅 Réserver un appel découverte" data-en="📅 Book a discovery call">📅 Réserver un appel découverte</a>
+      <div class="final-note" data-fr="Réponse sous 24h · Premier entretien offert sans conditions" data-en="Reply within 24h · First interview free, no strings attached">Réponse sous 24h · Premier entretien offert sans conditions</div>
+    </div>
   </div>
 </div>
 
@@ -164,8 +533,8 @@
     <div class="footer-links">
       <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
       <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
-      <a href="cgu.html" data-fr="CGU" data-en="Terms">CGU</a>
-      <a href="mailto:contact@databuilders.fr">contact@databuilders.fr</a>
+      <a href="cgu.html">CGU</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
     </div>
     <div class="footer-copy">© 2025 Data Builders</div>
   </div>
@@ -176,7 +545,7 @@
   <div class="modal" id="modal-inner">
     <h3 data-fr="Demander un pilote gratuit" data-en="Request a free pilot">Demander un pilote gratuit</h3>
     <div class="modal-sub" data-fr="Premier entretien offert, sans engagement. Réponse sous 24h." data-en="First interview free, no commitment. We reply within 24h.">Premier entretien offert, sans engagement. Réponse sous 24h.</div>
-    <form id="contact-form" action="https://formspree.io/f/VOTRE-ID-FORMSPREE" method="POST">
+    <form id="contact-form" action="https://formspree.io/f/mnjyvybr" method="POST">
       <div class="form-group">
         <label data-fr="Votre nom" data-en="Your name">Votre nom</label>
         <input type="text" name="name" placeholder="Marie Dupont" required/>
@@ -192,19 +561,18 @@
       <div class="form-group">
         <label data-fr="Rôle à évaluer" data-en="Role to assess">Rôle à évaluer</label>
         <select name="role">
-          <option value="" data-fr="Sélectionner…" data-en="Select…">Sélectionner…</option>
-          <option value="de">Data Engineer</option>
-          <option value="ds">Data Scientist</option>
-          <option value="da">Data Analyst</option>
-          <option value="ae">Analytics Engineer</option>
+          <option value="">Sélectionner…</option>
+          <option>Data Engineer</option>
+          <option>Data Scientist</option>
+          <option>Data Analyst</option>
+          <option>Analytics Engineer</option>
         </select>
       </div>
       <div class="form-group">
         <label data-fr="Message (optionnel)" data-en="Message (optional)">Message (optionnel)</label>
-        <textarea name="message" placeholder="Contexte du recrutement, technos prioritaires…"></textarea>
+        <textarea name="message" placeholder="Contexte, technos prioritaires…"></textarea>
       </div>
       <input type="hidden" name="_subject" value="Nouveau pilote Data Builders"/>
-      <input type="hidden" name="_next" value="merci.html"/>
       <div class="modal-actions">
         <button type="button" class="btn-cancel" onclick="closeModal()" data-fr="Annuler" data-en="Cancel">Annuler</button>
         <button type="submit" class="btn-submit" data-fr="Envoyer →" data-en="Send →">Envoyer →</button>
@@ -214,31 +582,98 @@
 </div>
 
 <script>
+const technoLogos = {
+  Python: 'https://cdn.simpleicons.org/python/3776AB',
+  SQL: 'https://cdn.simpleicons.org/postgresql/4169E1',
+  Spark: 'https://cdn.simpleicons.org/apachespark/E25A1C',
+  Airflow: 'https://cdn.simpleicons.org/apacheairflow/017CEE',
+  dbt: 'https://cdn.simpleicons.org/dbt/FF694B',
+  AWS: 'https://cdn.simpleicons.org/amazonaws/FF9900',
+  GCP: 'https://cdn.simpleicons.org/googlecloud/4285F4',
+  Azure: 'https://cdn.simpleicons.org/microsoftazure/0078D4',
+  Kafka: 'https://cdn.simpleicons.org/apachekafka/231F20',
+  Docker: 'https://cdn.simpleicons.org/docker/2496ED',
+  'scikit-learn': 'https://cdn.simpleicons.org/scikitlearn/F7931E',
+  TensorFlow: 'https://cdn.simpleicons.org/tensorflow/FF6F00',
+  PyTorch: 'https://cdn.simpleicons.org/pytorch/EE4C2C',
+  Jupyter: 'https://cdn.simpleicons.org/jupyter/F37626',
+  R: 'https://cdn.simpleicons.org/r/276DC3',
+  Pandas: 'https://cdn.simpleicons.org/pandas/150458',
+  MLflow: 'https://cdn.simpleicons.org/mlflow/0194E2',
+  Tableau: 'https://cdn.simpleicons.org/tableau/E97627',
+  'Power BI': 'https://cdn.simpleicons.org/powerbi/F2C811',
+  Looker: 'https://cdn.simpleicons.org/looker/4285F4',
+  Excel: 'https://cdn.simpleicons.org/microsoftexcel/217346',
+  'Google Sheets': 'https://cdn.simpleicons.org/googlesheets/34A853',
+  BigQuery: 'https://cdn.simpleicons.org/googlebigquery/4285F4',
+  Snowflake: 'https://cdn.simpleicons.org/snowflake/29B5E8',
+  Redshift: 'https://cdn.simpleicons.org/amazonaws/FF9900',
+  Metabase: 'https://cdn.simpleicons.org/metabase/509EE3',
+  LookML: 'https://cdn.simpleicons.org/looker/4285F4',
+};
+
 const roleData = {
-  de: { label: 'Data Engineer', color: 'active-de', technos: ['Python','SQL','Spark','Airflow','dbt','AWS','GCP','Azure','Kafka','Docker'] },
-  ds: { label: 'Data Scientist', color: 'active-ds', technos: ['Python','scikit-learn','TensorFlow','PyTorch','Jupyter','R','SQL','Pandas','MLflow'] },
-  da: { label: 'Data Analyst',   color: 'active-da', technos: ['SQL','Tableau','Power BI','Looker','Excel','Google Sheets','Python','dbt'] },
-  ae: { label: 'Analytics Engineer', color: 'active-ae', technos: ['dbt','SQL','BigQuery','Snowflake','Airflow','LookML','Redshift','Metabase'] },
+  de: {
+    label: 'Data Engineer',
+    desc_fr: 'Évaluation pipelines, traitement à grande échelle, orchestration et infrastructure cloud.',
+    desc_en: 'Assessment of pipelines, large-scale processing, orchestration and cloud infrastructure.',
+    technos: ['Python','SQL','Spark','Airflow','dbt','AWS','GCP','Azure','Docker'],
+  },
+  ds: {
+    label: 'Data Scientist',
+    desc_fr: 'Modélisation prédictive, statistiques, ML et communication des résultats.',
+    desc_en: 'Predictive modelling, statistics, ML and communicating results.',
+    technos: ['Python','scikit-learn','TensorFlow','PyTorch','Jupyter','R','Pandas','MLflow'],
+  },
+  da: {
+    label: 'Data Analyst',
+    desc_fr: 'Analyse de données, dashboards, requêtes complexes et communication business.',
+    desc_en: 'Data analysis, dashboard building, complex queries and business communication.',
+    technos: ['SQL','Tableau','Power BI','Looker','Excel','Google Sheets','dbt'],
+  },
+  ae: {
+    label: 'Analytics Engineer',
+    desc_fr: 'Modélisation de données, métriques et lien entre données brutes et besoins analytiques.',
+    desc_en: 'Data modelling, metrics definition and bridging raw data with analytical needs.',
+    technos: ['dbt','SQL','BigQuery','Snowflake','Airflow','LookML','Metabase'],
+  },
 };
 const niveauLabels = { junior:'Junior', confirme:'Confirmé / Mid-level', senior:'Senior', lead:'Lead / Staff' };
 let selRole = null, selNiveau = null, selTechnos = [];
 
+function selectRole(role) {
+  if (selRole === role) {
+    selRole = null; selTechnos = [];
+    document.querySelectorAll('.rcard').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('#pills-role .pill').forEach(p => p.classList.remove('active-de','active-ds','active-da','active-ae'));
+    document.getElementById('techno-section').style.display = 'none';
+    updateAllCards(); return;
+  }
+  selRole = role; selTechnos = [];
+  document.querySelectorAll('.rcard').forEach(c => c.classList.remove('active'));
+  document.getElementById('rcard-' + role).classList.add('active');
+  document.querySelectorAll('#pills-role .pill').forEach(p => p.classList.remove('active-de','active-ds','active-da','active-ae'));
+  const pill = document.querySelector(`#pills-role .pill[data-value="${role}"]`);
+  if (pill) pill.classList.add(pill.dataset.active);
+  renderTechnos(role);
+  document.getElementById('techno-section').style.display = 'block';
+  updateAllCards();
+}
+
 function togglePill(el, group) {
   if (group === 'role') {
-    document.querySelectorAll('#pills-role .pill').forEach(p => p.classList.remove('active-de','active-ds','active-da','active-ae'));
-    const v = el.dataset.value;
-    if (selRole === v) { selRole = null; selTechnos = []; document.getElementById('techno-section').style.display = 'none'; }
-    else { selRole = v; el.classList.add(el.dataset.active); selTechnos = []; renderTechnos(v); document.getElementById('techno-section').style.display = 'block'; }
+    selectRole(el.dataset.value);
   } else if (group === 'niveau') {
     document.querySelectorAll('#pills-niveau .pill').forEach(p => p.classList.remove('active-niveau'));
     const v = el.dataset.value;
     if (selNiveau === v) { selNiveau = null; } else { selNiveau = v; el.classList.add('active-niveau'); }
+    updateAllCards();
   } else {
     const v = el.dataset.value;
     if (selTechnos.includes(v)) { selTechnos = selTechnos.filter(t => t !== v); el.classList.remove('active-techno'); }
     else { selTechnos.push(v); el.classList.add('active-techno'); }
+    updateAllCards();
   }
-  updateCard();
 }
 
 function renderTechnos(role) {
@@ -252,41 +687,41 @@ function renderTechnos(role) {
   });
 }
 
-function updateCard() {
-  const card = document.getElementById('result-card');
+function updateAllCards() {
   const lang = document.documentElement.dataset.lang || 'fr';
-  if (!selRole) {
-    card.classList.remove('active');
-    card.innerHTML = '<div class="result-empty">' + (lang === 'fr' ? '← Sélectionnez un rôle pour voir le détail' : '← Select a role to see the assessment detail') + '</div>';
-    return;
-  }
-  const r = roleData[selRole];
-  card.classList.add('active');
-  const nLabel = selNiveau ? niveauLabels[selNiveau] : '';
-  const pills = r.technos.map(t => `<span class="result-pill${selTechnos.includes(t)?' hl':''}">${t}</span>`).join('');
-  const descs = {
-    fr: { de:'Évaluation pipelines, traitement à grande échelle, orchestration et infrastructure cloud.', ds:'Modélisation prédictive, statistiques, ML et communication des résultats.', da:'Analyse de données, dashboards, requêtes complexes et communication business.', ae:'Modélisation de données, métriques et lien entre données brutes et besoins analytiques.' },
-    en: { de:'Assessment of pipelines, large-scale processing, orchestration and cloud infrastructure.', ds:'Predictive modelling, statistics, ML and communicating results to stakeholders.', da:'Data analysis, dashboard building, complex queries and business communication.', ae:'Data modelling, metrics definition and bridging raw data with analytical needs.' }
-  };
-  card.innerHTML = `<div class="result-title">${r.label}${nLabel ? ' · ' + nLabel : ''}</div><div class="result-desc">${descs[lang][selRole]}</div><div class="result-pills">${pills}</div>`;
+  const nLabel = selNiveau ? niveauLabels[selNiveau] : null;
+  ['de','ds','da','ae'].forEach(r => {
+    const detail = document.getElementById('detail-' + r);
+    const card = document.getElementById('rcard-' + r);
+    card.querySelectorAll('.rcard-chip').forEach(chip => {
+      const t = chip.textContent.trim();
+      chip.classList.toggle('hl', selTechnos.includes(t));
+    });
+    if (selRole === r) {
+      const rd = roleData[r];
+      let html = '';
+      if (nLabel) html += `<div class="rcard-level-badge">${nLabel}</div> `;
+      html += lang === 'fr' ? rd.desc_fr : rd.desc_en;
+      detail.innerHTML = html;
+    } else {
+      detail.innerHTML = '';
+    }
+  });
 }
 
-// Lang switch
 function setLang(lang) {
   document.documentElement.dataset.lang = lang;
   document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   document.querySelectorAll('[data-fr]').forEach(el => {
-    const txt = el.dataset[lang];
-    if (!txt) return;
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = txt; }
-    else if (el.tagName === 'OPTION') { el.textContent = txt; }
-    else { el.innerHTML = txt; }
+    const txt = el.dataset[lang]; if (!txt) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = txt;
+    else if (el.tagName === 'OPTION') el.textContent = txt;
+    else el.innerHTML = txt;
   });
-  if (selRole) updateCard();
+  if (selRole) updateAllCards();
 }
 
-// Modal
 function openModal() { document.getElementById('modal').classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
 function closeOnOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
@@ -294,13 +729,11 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 document.getElementById('contact-form').addEventListener('submit', function(e) {
   e.preventDefault();
-  const data = new FormData(this);
-  fetch(this.action, { method:'POST', body:data, headers:{'Accept':'application/json'} })
+  const lang = document.documentElement.dataset.lang || 'fr';
+  fetch(this.action, { method:'POST', body: new FormData(this), headers:{'Accept':'application/json'} })
     .then(r => {
-      if (r.ok) {
-        document.getElementById('modal-inner').innerHTML = '<div class="form-success"><div class="success-icon">✅</div><h3 style="margin-bottom:10px">' + (document.documentElement.dataset.lang === 'en' ? 'Request sent!' : 'Demande envoyée !') + '</h3><p style="font-size:14px;color:#5c5650;margin-bottom:24px">' + (document.documentElement.dataset.lang === 'en' ? 'We\'ll get back to you within 24h.' : 'On vous recontacte sous 24h.') + '</p><button class="btn-primary" style="width:100%;padding:13px" onclick="closeModal()">' + (document.documentElement.dataset.lang === 'en' ? 'Close' : 'Fermer') + '</button></div>';
-      }
-    }).catch(() => {});
+      if (r.ok) document.getElementById('modal-inner').innerHTML = `<div style="text-align:center;padding:16px 0"><div style="font-size:40px;margin-bottom:16px">✅</div><h3 style="margin-bottom:10px">${lang==='en'?'Request sent!':'Demande envoyée !'}</h3><p style="font-size:14px;color:#6b7280;margin-bottom:24px">${lang==='en'?"We'll reply within 24h.":'On vous recontacte sous 24h.'}</p><button class="btn-primary" style="width:100%;padding:13px" onclick="closeModal()">${lang==='en'?'Close':'Fermer'}</button></div>`;
+    }).catch(()=>{});
 });
 </script>
 </body>

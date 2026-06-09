@@ -4,80 +4,85 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Comment ça marche — Data Builders</title>
-  <meta name="description" content="Découvrez comment Data Builders évalue techniquement vos candidats data en 1h live et vous livre un rapport sous 48h."/>
+  <meta name="description" content="1h en live avec votre candidat, rapport sous 48h. Découvrez comment Data Builders évalue techniquement vos profils data."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
 <nav>
-  <div class="nav-left">
-    <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
-    <div class="nav-links">
-      <a href="how.html" class="active" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
-      <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
-    </div>
+  <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
+  <div class="nav-links">
+    <a href="how.html" class="active" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+    <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
   </div>
   <div class="nav-right">
-    <button class="lang-toggle active" id="btn-fr" onclick="setLang('fr')">FR</button>
-    <button class="lang-toggle" id="btn-en" onclick="setLang('en')">EN</button>
-    <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-nav" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-nav" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
   </div>
 </nav>
 
 <div class="page-hero">
-  <div class="eyebrow eyebrow-blue" data-fr="Notre méthode" data-en="Our method">Notre méthode</div>
-  <h1 data-fr="Comment ça marche" data-en="How it works">Comment ça marche</h1>
-  <p data-fr="1h en live avec votre candidat, un rapport livré sous 48h. Voici ce qui se passe entre les deux." data-en="1 hour live with your candidate, a report delivered within 48h. Here's what happens in between.">1h en live avec votre candidat, un rapport livré sous 48h. Voici ce qui se passe entre les deux.</p>
+  <div class="page-eyebrow" data-fr="Notre méthode" data-en="Our method">Notre méthode</div>
+  <h1 data-fr="Comment ça <em>marche</em>" data-en="How it <em>works</em>">Comment ça <em>marche</em></h1>
+  <p data-fr="1h en live avec votre candidat, un rapport structuré sous 48h. Voici exactement ce qui se passe entre les deux." data-en="1 hour live with your candidate, a structured report within 48h. Here's exactly what happens in between.">1h en live avec votre candidat, un rapport structuré sous 48h. Voici exactement ce qui se passe entre les deux.</p>
+  <div class="page-hero-actions">
+    <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
+    <a href="index.html" class="btn-outline" onclick="event.preventDefault();window.location='index.html'" data-fr="Essayer gratuitement →" data-en="Try it free →">Essayer gratuitement →</a>
+  </div>
 </div>
 
 <div class="page-body">
 
   <h2 data-fr="Le processus de bout en bout" data-en="The end-to-end process">Le processus de bout en bout</h2>
 
-  <div class="steps">
+  <div class="steps-list">
     <div class="step-row">
-      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-left"><div class="step-num-circle">1</div><div class="step-line"></div></div>
       <div class="step-body">
-        <div class="step-title" data-fr="Vous remplissez le brief (5 min)" data-en="You fill in the brief (5 min)">Vous remplissez le brief (5 min)</div>
-        <div class="step-desc" data-fr="Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. Nous adaptons l'entretien à votre besoin exact — pas un questionnaire générique." data-en="Target role, expected level, priority technologies, deal-breakers. We tailor the interview to your exact need — not a generic questionnaire.">Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. Nous adaptons l'entretien à votre besoin exact — pas un questionnaire générique.</div>
+        <div class="step-title" data-fr="Vous remplissez le brief — 5 min" data-en="You fill in the brief — 5 min">Vous remplissez le brief — 5 min</div>
+        <div class="step-desc" data-fr="Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. Nous adaptons l'entretien à votre besoin exact — pas un questionnaire générique copié-collé." data-en="Target role, expected level, priority technologies, deal-breakers. We tailor the interview to your exact need — not a generic copy-paste questionnaire.">Poste visé, niveau attendu, technos prioritaires, critères éliminatoires. Nous adaptons l'entretien à votre besoin exact — pas un questionnaire générique copié-collé.</div>
       </div>
     </div>
     <div class="step-row">
-      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-left"><div class="step-num-circle">2</div><div class="step-line"></div></div>
       <div class="step-body">
         <div class="step-title" data-fr="On planifie avec le candidat" data-en="We schedule with the candidate">On planifie avec le candidat</div>
-        <div class="step-desc" data-fr="Le candidat reçoit un lien de prise de rendez-vous. Il choisit son créneau directement. Vous n'avez rien à coordonner." data-en="The candidate receives a scheduling link. They pick their slot directly. You have nothing to coordinate.">Le candidat reçoit un lien de prise de rendez-vous. Il choisit son créneau directement. Vous n'avez rien à coordonner.</div>
+        <div class="step-desc" data-fr="Le candidat reçoit un lien de prise de rendez-vous. Il choisit son créneau directement. Vous n'avez rien à coordonner." data-en="The candidate receives a scheduling link. They pick their own slot. You have nothing to coordinate.">Le candidat reçoit un lien de prise de rendez-vous. Il choisit son créneau directement. Vous n'avez rien à coordonner.</div>
       </div>
     </div>
     <div class="step-row">
-      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-left"><div class="step-num-circle">3</div><div class="step-line"></div></div>
       <div class="step-body">
         <div class="step-title" data-fr="L'entretien live — 1h" data-en="The live interview — 1h">L'entretien live — 1h</div>
-        <div class="step-desc" data-fr="Un interviewer expert conduit une session en direct avec le candidat. L'entretien se déroule en trois temps :" data-en="An expert interviewer runs a live session with the candidate. The interview follows three phases:">Un interviewer expert conduit une session en direct avec le candidat. L'entretien se déroule en trois temps :</div>
-        <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;">
-          <div style="background:var(--off-white);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;">
-            <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:4px;" data-fr="20 min — Questions théoriques" data-en="20 min — Theory questions">20 min — Questions théoriques</div>
-            <div style="font-size:13px;color:var(--gray-600);" data-fr="Concepts fondamentaux, architecture, bonnes pratiques liées aux technos du poste." data-en="Core concepts, architecture, best practices related to the role's technologies.">Concepts fondamentaux, architecture, bonnes pratiques liées aux technos du poste.</div>
+        <div class="step-desc" data-fr="Un interviewer expert conduit la session en direct. L'entretien se déroule en trois temps :" data-en="An expert interviewer runs the session live. The interview follows three phases:">Un interviewer expert conduit la session en direct. L'entretien se déroule en trois temps :</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+          <div class="phase-block">
+            <div class="phase-label" style="color:#7c3aed;">20 min</div>
+            <div class="phase-title" data-fr="Questions théoriques" data-en="Theory questions">Questions théoriques</div>
+            <div class="phase-desc" data-fr="Concepts fondamentaux, architecture, bonnes pratiques liées aux technos du poste. On évalue la profondeur, pas la mémorisation." data-en="Core concepts, architecture, best practices related to the role's stack. We assess depth, not memorisation.">Concepts fondamentaux, architecture, bonnes pratiques liées aux technos du poste. On évalue la profondeur, pas la mémorisation.</div>
           </div>
-          <div style="background:var(--off-white);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;">
-            <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:4px;" data-fr="30 min — Exercice pratique live" data-en="30 min — Live practical exercise">30 min — Exercice pratique live</div>
-            <div style="font-size:13px;color:var(--gray-600);" data-fr="SQL, Python, dbt, debugging — sur les technos réelles du poste. On évalue comment le candidat travaille, pas comment il mémorise." data-en="SQL, Python, dbt, debugging — on the actual technologies of the role. We assess how the candidate works, not how they memorize.">SQL, Python, dbt, debugging — sur les technos réelles du poste. On évalue comment le candidat travaille, pas comment il mémorise.</div>
+          <div class="phase-block">
+            <div class="phase-label" style="color:#0e7c5a;">30 min</div>
+            <div class="phase-title" data-fr="Exercice pratique live" data-en="Live practical exercise">Exercice pratique live</div>
+            <div class="phase-desc" data-fr="SQL, Python, dbt, debugging — sur les technos réelles du poste. On évalue comment le candidat travaille, raisonne et communique sous contrainte." data-en="SQL, Python, dbt, debugging — on the actual technologies of the role. We assess how the candidate works, reasons and communicates under pressure.">SQL, Python, dbt, debugging — sur les technos réelles du poste. On évalue comment le candidat travaille, raisonne et communique sous contrainte.</div>
           </div>
-          <div style="background:var(--off-white);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;">
-            <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;" data-fr="10 min — Cas métier" data-en="10 min — Business case">10 min — Cas métier</div>
-            <div style="font-size:13px;color:var(--gray-600);" data-fr="Problème réaliste à résoudre. On évalue le raisonnement, la communication et la capacité à interagir avec des parties prenantes non-techniques." data-en="A realistic problem to solve. We assess reasoning, communication and the ability to work with non-technical stakeholders.">Problème réaliste à résoudre. On évalue le raisonnement, la communication et la capacité à interagir avec des parties prenantes non-techniques.</div>
+          <div class="phase-block">
+            <div class="phase-label" style="color:#d97706;">10 min</div>
+            <div class="phase-title" data-fr="Cas métier" data-en="Business case">Cas métier</div>
+            <div class="phase-desc" data-fr="Problème réaliste à résoudre. On évalue le raisonnement, la communication et la capacité à interagir avec des parties prenantes non-techniques." data-en="A realistic business problem to solve. We assess reasoning, communication and the ability to work with non-technical stakeholders.">Problème réaliste à résoudre. On évalue le raisonnement, la communication et la capacité à interagir avec des parties prenantes non-techniques.</div>
           </div>
         </div>
       </div>
     </div>
     <div class="step-row">
-      <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+      <div class="step-left"><div class="step-num-circle">4</div><div class="step-line"></div></div>
       <div class="step-body">
-        <div class="step-title" data-fr="Rapport livré sous 48h" data-en="Report within 48h">Rapport livré sous 48h</div>
-        <div class="step-desc" data-fr="Vous recevez un rapport structuré avec : scorecard par compétence, recommandation GO / NO-GO motivée, points forts, zones de risque et verbatims clés." data-en="You receive a structured report: skill-by-skill scorecard, motivated GO / NO-GO recommendation, strengths, risk areas and key verbatim notes.">Vous recevez un rapport structuré avec : scorecard par compétence, recommandation GO / NO-GO motivée, points forts, zones de risque et verbatims clés.</div>
+        <div class="step-title" data-fr="Rapport livré sous 48h" data-en="Report delivered within 48h">Rapport livré sous 48h</div>
+        <div class="step-desc" data-fr="Scorecard par compétence, recommandation GO / NO-GO motivée, points forts, zones de risque et verbatims clés anonymisés." data-en="Skill-by-skill scorecard, motivated GO / NO-GO recommendation, strengths, risk areas and key anonymised verbatims.">Scorecard par compétence, recommandation GO / NO-GO motivée, points forts, zones de risque et verbatims clés anonymisés.</div>
         <div class="step-badge" data-fr="48h ouvrés garantis" data-en="48 business hours guaranteed">48h ouvrés garantis</div>
       </div>
     </div>
@@ -88,75 +93,63 @@
 
   <div class="role-cards">
     <div class="role-card">
-      <div class="role-card-header">
-        <div class="role-dot" style="background:#1d4ed8"></div>
-        <div><div class="role-card-name">Data Engineer</div><div style="font-size:12px;color:var(--gray-400)" data-fr="Pipelines · Ingestion · Infrastructure" data-en="Pipelines · Ingestion · Infrastructure">Pipelines · Ingestion · Infrastructure</div></div>
-      </div>
-      <div class="role-card-pills">
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">Python</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">SQL</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">Spark</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">Airflow</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">dbt</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">AWS / GCP / Azure</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">Kafka</span>
-        <span class="role-card-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">Docker</span>
+      <div class="role-card-header"><div class="role-dot" style="background:#2563eb"></div><div><div class="role-card-name">Data Engineer</div><div class="role-card-sub" data-fr="Pipelines · Ingestion · Infrastructure" data-en="Pipelines · Ingestion · Infrastructure">Pipelines · Ingestion · Infrastructure</div></div></div>
+      <div class="role-chips">
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/apachespark/E25A1C" alt=""/>Spark</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/apacheairflow/017CEE" alt=""/>Airflow</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt=""/>AWS</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt=""/>GCP</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""/>Docker</div>
       </div>
     </div>
     <div class="role-card">
-      <div class="role-card-header">
-        <div class="role-dot" style="background:#0e7c5a"></div>
-        <div><div class="role-card-name">Data Scientist</div><div style="font-size:12px;color:var(--gray-400)" data-fr="Modélisation · ML · Statistiques" data-en="Modelling · ML · Statistics">Modélisation · ML · Statistiques</div></div>
-      </div>
-      <div class="role-card-pills">
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">Python</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">scikit-learn</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">TensorFlow</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">PyTorch</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">Jupyter</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">R</span>
-        <span class="role-card-pill" style="background:#f0fdf4;border-color:#86efac;color:#15803d">MLflow</span>
+      <div class="role-card-header"><div class="role-dot" style="background:#0e7c5a"></div><div><div class="role-card-name">Data Scientist</div><div class="role-card-sub" data-fr="Modélisation · ML · Statistiques" data-en="Modelling · ML · Statistics">Modélisation · ML · Statistiques</div></div></div>
+      <div class="role-chips">
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/scikitlearn/F7931E" alt=""/>scikit-learn</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/tensorflow/FF6F00" alt=""/>TensorFlow</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/pytorch/EE4C2C" alt=""/>PyTorch</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/jupyter/F37626" alt=""/>Jupyter</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/r/276DC3" alt=""/>R</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/mlflow/0194E2" alt=""/>MLflow</div>
       </div>
     </div>
     <div class="role-card">
-      <div class="role-card-header">
-        <div class="role-dot" style="background:#92520a"></div>
-        <div><div class="role-card-name">Data Analyst</div><div style="font-size:12px;color:var(--gray-400)" data-fr="Reporting · Dashboards · Insights" data-en="Reporting · Dashboards · Insights">Reporting · Dashboards · Insights</div></div>
-      </div>
-      <div class="role-card-pills">
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">SQL</span>
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">Tableau</span>
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">Power BI</span>
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">Looker</span>
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">Excel</span>
-        <span class="role-card-pill" style="background:#fffbeb;border-color:#fcd34d;color:#b45309">dbt</span>
+      <div class="role-card-header"><div class="role-dot" style="background:#d97706"></div><div><div class="role-card-name">Data Analyst</div><div class="role-card-sub" data-fr="Reporting · Dashboards · Insights" data-en="Reporting · Dashboards · Insights">Reporting · Dashboards · Insights</div></div></div>
+      <div class="role-chips">
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/tableau/E97627" alt=""/>Tableau</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/powerbi/F2C811" alt=""/>Power BI</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt=""/>Looker</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/microsoftexcel/217346" alt=""/>Excel</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
       </div>
     </div>
     <div class="role-card">
-      <div class="role-card-header">
-        <div class="role-dot" style="background:#5b21b6"></div>
-        <div><div class="role-card-name">Analytics Engineer</div><div style="font-size:12px;color:var(--gray-400)" data-fr="Modèles de données · Métriques · Semantic layer" data-en="Data models · Metrics · Semantic layer">Modèles de données · Métriques · Semantic layer</div></div>
-      </div>
-      <div class="role-card-pills">
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">dbt</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">SQL</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">BigQuery</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">Snowflake</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">Airflow</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">LookML</span>
-        <span class="role-card-pill" style="background:#faf5ff;border-color:#e9d5ff;color:#7e22ce">Redshift</span>
+      <div class="role-card-header"><div class="role-dot" style="background:#7c3aed"></div><div><div class="role-card-name">Analytics Engineer</div><div class="role-card-sub" data-fr="Modèles · Métriques · Semantic layer" data-en="Models · Metrics · Semantic layer">Modèles · Métriques · Semantic layer</div></div></div>
+      <div class="role-chips">
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/dbt/FF694B" alt=""/>dbt</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/googlebigquery/4285F4" alt=""/>BigQuery</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/snowflake/29B5E8" alt=""/>Snowflake</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/apacheairflow/017CEE" alt=""/>Airflow</div>
+        <div class="role-chip"><img src="https://cdn.simpleicons.org/looker/4285F4" alt=""/>LookML</div>
       </div>
     </div>
   </div>
 
-  <div style="margin-top:52px;background:var(--off-white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;">
-    <div style="font-size:15px;font-weight:600;margin-bottom:10px;" data-fr="Prêt à tester ?" data-en="Ready to try it?">Prêt à tester ?</div>
-    <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;" data-fr="Premier entretien offert. On vous recontacte sous 24h." data-en="First interview on us. We reply within 24h.">Premier entretien offert. On vous recontacte sous 24h.</p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <a href="index.html#" onclick="window.opener && window.opener.openModal ? window.opener.openModal() : window.location='index.html'" class="btn-primary" data-fr="Demander un pilote →" data-en="Request a pilot →">Demander un pilote →</a>
-      <a href="https://calendly.com/VOTRE-LIEN" target="_blank" class="btn-calendly" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
+  <div class="cta-box">
+    <h3 data-fr="Prêt à tester ?" data-en="Ready to try it?">Prêt à tester ?</h3>
+    <p data-fr="Premier entretien offert, sans engagement. On vous recontacte sous 24h." data-en="First interview on us, no commitment. We reply within 24h.">Premier entretien offert, sans engagement. On vous recontacte sous 24h.</p>
+    <div class="cta-box-actions">
+      <a href="index.html#" class="btn-primary" data-fr="Demander un pilote →" data-en="Request a pilot →">Demander un pilote →</a>
+      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
     </div>
   </div>
+
 </div>
 
 <footer>
@@ -165,7 +158,7 @@
       <a href="how.html" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
       <a href="about.html" data-fr="À propos" data-en="About">À propos</a>
       <a href="cgu.html">CGU</a>
-      <a href="mailto:contact@databuilders.fr">contact@databuilders.fr</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
     </div>
     <div class="footer-copy">© 2025 Data Builders</div>
   </div>
