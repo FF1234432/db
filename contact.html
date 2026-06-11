@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tester gratuitement — Data Builder</title>
+<meta name="description" content="Premier entretien technique data gratuit, sans engagement. Réponse sous 24h."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- GTM -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{'analytics_storage':'denied'});
+  function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-Y0S9RGM2HD';document.head.appendChild(s);gtag('js',new Date());gtag('config','G-Y0S9RGM2HD');gtag('consent','update',{'analytics_storage':'granted'});}
+  if(localStorage.getItem('db_cookies')==='accepted'){loadGA();}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#4c1d95;--p-light:#6d28d9;--p-soft:#f5f0ff;--p-border:#e8dff7;--black:#0f0e0e;--white:#fff;--off:#faf9ff;--g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--brown:#3a3a5e;--radius-pill:99px;--radius-card:16px;--radius-sm:10px;--max:780px}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--off);color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+nav{background:rgba(255,255,255,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--p-border);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:16px;font-weight:700;letter-spacing:-0.02em;text-decoration:none;color:var(--black)}
+.nav-logo span{color:var(--p-light)}
+.nav-links{display:flex;gap:26px}
+.nav-links a{font-size:14px;color:var(--g500);text-decoration:none;font-weight:450}
+.nav-links a:hover{color:var(--black)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.lang-btn{font-size:12px;font-weight:600;color:var(--g400);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lang-btn.active{color:var(--p-light);font-weight:700}
+
+.page-wrap{max-width:600px;margin:0 auto;padding:64px 32px 80px}
+.page-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--p-light);margin-bottom:10px}
+.page-title{font-size:clamp(26px,4vw,36px);font-weight:700;letter-spacing:-.03em;margin-bottom:12px}
+.page-sub{font-size:16px;color:var(--g500);line-height:1.7;margin-bottom:40px}
+
+.form-card{background:#fff;border:1px solid var(--p-border);border-radius:var(--radius-card);padding:36px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--black)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--black);background:#fff;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--p-light)}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-submit{width:100%;padding:14px;background:var(--p-light);color:#fff;border:none;border-radius:var(--radius-pill);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity .15s;margin-top:8px}
+.btn-submit:hover{opacity:.85}
+.form-note{font-size:12px;color:var(--g400);text-align:center;margin-top:12px}
+
+.trust-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:32px;justify-content:center}
+.trust-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--g500)}
+.trust-icon{font-size:16px}
+
+.or-divider{display:flex;align-items:center;gap:14px;margin:28px 0;color:var(--g400);font-size:13px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--p-border)}
+
+.btn-cal{display:block;text-align:center;padding:13px;background:var(--brown);color:#fff;border-radius:var(--radius-pill);font-size:15px;font-weight:500;text-decoration:none;transition:opacity .15s}
+.btn-cal:hover{opacity:.85}
+
+.success-card{text-align:center;padding:48px 36px}
+.success-icon{font-size:52px;margin-bottom:20px}
+
+footer{border-top:1px solid var(--p-border);padding:24px 32px;text-align:center}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-bottom:8px}
+.footer-links a{font-size:13px;color:var(--g400);text-decoration:none}
+.footer-copy{font-size:12px;color:#d1d5db}
+
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:#1a1a1a;color:#e5e7eb;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;border-top:1px solid #333}
+.cookie-banner.hidden{display:none}
+.cookie-text{flex:1;min-width:200px}
+.cookie-text a{color:#c4b5fd;text-decoration:underline}
+.cookie-actions{display:flex;gap:8px}
+.cookie-accept{background:#4c1d95;color:#fff;border:none;padding:8px 18px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.cookie-refuse{background:transparent;color:#9ca3af;border:1px solid #4b5563;padding:8px 16px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+
+@media(max-width:560px){
+  .nav-links{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .form-card{padding:24px}
+}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<nav>
+  <a href="index.html" class="nav-logo">Data <span>Builder</span></a>
+  <div class="nav-links">
+    <a href="how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+    <a href="about.html" data-fr="A propos" data-en="About">A propos</a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-eyebrow" data-fr="Premier entretien gratuit" data-en="First interview free">Premier entretien gratuit</div>
+  <h1 class="page-title" data-fr="Testez Data Builder sur votre prochain recrutement" data-en="Try Data Builder on your next hire">Testez Data Builder sur votre prochain recrutement</h1>
+  <p class="page-sub" data-fr="Remplissez ce formulaire en 2 minutes. On vous recontacte sous 24h pour organiser le premier entretien — sans engagement, sans conditions." data-en="Fill in this form in 2 minutes. We'll reply within 24h to organise the first interview — no commitment, no strings attached.">Remplissez ce formulaire en 2 minutes. On vous recontacte sous 24h pour organiser le premier entretien, sans engagement, sans conditions.</p>
+
+  <div class="form-card" id="form-card">
+    <form id="contact-form" action="https://formspree.io/f/mnjyvybr" method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label data-fr="Votre nom" data-en="Your name">Votre nom</label>
+          <input type="text" name="name" placeholder="Marie Dupont" required/>
+        </div>
+        <div class="form-group">
+          <label data-fr="Email professionnel" data-en="Work email">Email professionnel</label>
+          <input type="email" name="email" placeholder="marie@entreprise.fr" required/>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label data-fr="Entreprise" data-en="Company">Entreprise</label>
+          <input type="text" name="company" placeholder="Acme SAS"/>
+        </div>
+        <div class="form-group">
+          <label data-fr="Role a evaluer" data-en="Role to assess">Role a evaluer</label>
+          <select name="role">
+            <option value="">Selectionner...</option>
+            <option>Data Engineer</option>
+            <option>Data Scientist</option>
+            <option>Data Analyst</option>
+            <option>Analytics Engineer</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-fr="Message (optionnel)" data-en="Message (optional)">Message (optionnel)</label>
+        <textarea name="message" placeholder="Contexte, technos prioritaires, niveau recherche..."></textarea>
+      </div>
+      <input type="hidden" name="_subject" value="Nouveau test gratuit Data Builder"/>
+      <button type="submit" class="btn-submit" data-fr="Envoyer ma demande →" data-en="Send my request →">Envoyer ma demande →</button>
+      <div class="form-note" data-fr="Reponse sous 24h · Aucun engagement · Premier entretien offert" data-en="Reply within 24h · No commitment · First interview free">Reponse sous 24h · Aucun engagement · Premier entretien offert</div>
+    </form>
+  </div>
+
+  <div class="or-divider" data-fr="ou" data-en="or">ou</div>
+
+  <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Reserver directement un appel de 30 min" data-en="📅 Book a 30-min call directly">📅 Reserver directement un appel de 30 min</a>
+
+  <div class="trust-row">
+    <div class="trust-item"><span class="trust-icon">✅</span><span data-fr="Premier entretien gratuit" data-en="First interview free">Premier entretien gratuit</span></div>
+    <div class="trust-item"><span class="trust-icon">⚡</span><span data-fr="Reponse sous 24h" data-en="Reply within 24h">Reponse sous 24h</span></div>
+    <div class="trust-item"><span class="trust-icon">🔒</span><span data-fr="Sans engagement" data-en="No commitment">Sans engagement</span></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="how.html">Comment ca marche</a>
+    <a href="about.html">A propos</a>
+    <a href="cgu.html">CGU</a>
+    <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+  </div>
+  <div class="footer-copy">© 2025 Data Builder</div>
+</footer>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience. <a href="cgu.html">En savoir plus</a></div>
+  <div class="cookie-actions">
+    <button class="cookie-refuse" onclick="refuseCookies()">Refuser</button>
+    <button class="cookie-accept" onclick="acceptCookies()">Accepter</button>
+  </div>
+</div>
+
+<script>
+(function(){if(localStorage.getItem('db_cookies')) document.getElementById('cookie-banner').classList.add('hidden');})();
+function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');if(typeof loadGA==='function') loadGA();}
+function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
+
+function setLang(lang){
+  document.documentElement.dataset.lang=lang;
+  document.getElementById('btn-fr').classList.toggle('active',lang==='fr');
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  document.querySelectorAll('[data-fr]').forEach(el=>{
+    const txt=el.dataset[lang];if(!txt)return;
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.placeholder=txt;
+    else if(el.tagName==='OPTION') el.textContent=txt;
+    else el.innerHTML=txt;
+  });
+}
+
+document.getElementById('contact-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  const lang=document.documentElement.dataset.lang||'fr';
+  fetch(this.action,{method:'POST',body:new FormData(this),headers:{'Accept':'application/json'}})
+    .then(r=>{
+      if(r.ok) document.getElementById('form-card').innerHTML=`
+        <div class="success-card">
+          <div class="success-icon">✅</div>
+          <h2 style="font-size:22px;font-weight:700;margin-bottom:12px">${lang==='en'?'Request sent!':'Demande envoyee !'}</h2>
+          <p style="color:#6b7280;margin-bottom:24px">${lang==='en'?"We'll reply within 24h.":'On vous recontacte sous 24h.'}</p>
+          <a href="index.html" style="color:#4c1d95;font-weight:500;text-decoration:none">${lang==='en'?'Back to home':'Retour a l accueil'}</a>
+        </div>`;
+    }).catch(()=>{});
+});
+</script>
+</body>
+</html>
