@@ -50,7 +50,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="page-hero">
   <div class="page-eyebrow" data-fr="Notre méthode" data-en="Our method">Notre méthode</div>
   <h1 data-fr="Comment ça <em>marche</em>" data-en="How it <em>works</em>">Comment ça <em>marche</em></h1>
-  <p data-fr="1h en live avec votre candidat, un rapport structuré sous 48h. Voici exactement ce qui se passe entre les deux." data-en="1 hour live with your candidate, a structured report within 48h. Here's exactly what happens in between.">1h en live avec votre candidat, un rapport structuré sous 48h. Voici exactement ce qui se passe entre les deux.</p>
+  <p data-fr="Spécialisés Data Analyst et Analytics Engineer. 1h en live avec votre candidat, rapport sous 48h." data-en="1 hour live with your candidate, a structured report within 48h. Here's exactly what happens in between.">Spécialisés Data Analyst et Analytics Engineer. 1h en live avec votre candidat, rapport sous 48h.</p>
   <div class="page-hero-actions">
     <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
     <a href="index.html" class="btn-outline" onclick="event.preventDefault();window.location='index.html'" data-fr="Essayer gratuitement →" data-en="Try it free →">Essayer gratuitement →</a>
@@ -110,12 +110,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <h2 style="margin-top:52px;" data-fr="Les 4 métiers couverts" data-en="The 4 roles we cover">Les 4 métiers couverts</h2>
-  <p data-fr="Chaque entretien est construit autour des compétences réelles du métier, pas d'un questionnaire générique." data-en="Each interview is built around the real skills of the role, not a generic questionnaire.">Chaque entretien est construit autour des compétences réelles du métier, pas d'un questionnaire générique.</p>
+  <h2 style="margin-top:52px;" data-fr="Les 2 métiers couverts" data-en="The 2 roles we cover">Les 2 métiers couverts</h2>
+  <p data-fr="Data Analyst et Analytics Engineer — chaque entretien est construit autour des compétences réelles du métier." data-en="Each interview is built around the real skills of the role, not a generic questionnaire.">Data Analyst et Analytics Engineer — chaque entretien est construit autour des compétences réelles du métier.</p>
 
   <div class="role-cards">
-    <div class="role-card">
-      <div class="role-card-header"><div class="role-dot" style="background:#2563eb"></div><div><div class="role-card-name">Data Engineer</div><div class="role-card-sub" data-fr="Pipelines · Ingestion · Infrastructure" data-en="Pipelines · Ingestion · Infrastructure">Pipelines · Ingestion · Infrastructure</div></div></div>
+    </div>
       <div class="role-chips">
         <div class="role-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
         <div class="role-chip"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt=""/>SQL</div>
@@ -127,8 +126,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="role-chip"><img src="https://cdn.simpleicons.org/docker/2496ED" alt=""/>Docker</div>
       </div>
     </div>
-    <div class="role-card">
-      <div class="role-card-header"><div class="role-dot" style="background:#0e7c5a"></div><div><div class="role-card-name">Data Scientist</div><div class="role-card-sub" data-fr="Modélisation · ML · Statistiques" data-en="Modelling · ML · Statistics">Modélisation · ML · Statistiques</div></div></div>
+    </div>
       <div class="role-chips">
         <div class="role-chip"><img src="https://cdn.simpleicons.org/python/3776AB" alt=""/>Python</div>
         <div class="role-chip"><img src="https://cdn.simpleicons.org/scikitlearn/F7931E" alt=""/>scikit-learn</div>
@@ -196,6 +194,20 @@ function setLang(lang) {
     el.innerHTML = txt;
   });
 }
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text" id="cookie-text-fr">🍪 Ce site utilise Google Analytics pour mesurer l'audience. <a href="cgu.html">En savoir plus</a></div>
+  <div class="cookie-text" id="cookie-text-en" style="display:none">🍪 This site uses Google Analytics to measure audience. <a href="cgu.html">Learn more</a></div>
+  <div class="cookie-actions">
+    <button class="cookie-refuse" onclick="refuseCookies()">Refuser</button>
+    <button class="cookie-accept" onclick="acceptCookies()">Accepter</button>
+  </div>
+</div>
+<script>
+(function(){if(localStorage.getItem('db_cookies'))document.getElementById('cookie-banner').classList.add('hidden');})();
+function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');}
+function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
 </script>
 </body>
 </html>
