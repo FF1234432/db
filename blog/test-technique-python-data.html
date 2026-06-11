@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Python data : ce qu'on evalue en entretien — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien Python data : bases, Pandas/DuckDB, POO, tests, APIs."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-python-data.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Python data" data-en="Python for data">Test technique Python data</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique Python data : ce qu'on evalue en entretien" data-en="Python for data: what we really assess in technical interviews">Test technique Python data : ce qu'on evalue en entretien</h1>
+<p class="ai" data-fr="Python est la lingua franca de la data. Entre un script Jupyter et un module de production, l'ecart est considerable." data-en="Python is the lingua franca of data. Between a Jupyter script and a production module, the gap is considerable.">Python est la lingua franca de la data. Entre un script Jupyter et un module de production, l'ecart est considerable.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span><span>·</span><span>Data Engineer · Data Scientist</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#bs">Bases du langage</a></li><li><a href="#pd">Pandas et DuckDB</a></li><li><a href="#oo">POO</a></li><li><a href="#qt">Qualite et tests</a></li><li><a href="#pr">Production</a></li><li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab" id="ab"><p>Python est la lingua franca de la data. Entre un script Jupyter et un module de production robuste, l'ecart est considerable.</p><h2 id="bs"><span class="sn">1</span>Bases du langage</h2><div class="sq"><div class="sl">Question discriminante</div><p>Difference entre liste et tuple ? Entre dictionnaire et set ?</p></div><div class="cb"><code># List comprehension : signal de maturite
+# Junior
+result = []
+for x in data:
+    if x > 0: result.append(x * 2)
+# Confirme
+result = [x * 2 for x in data if x > 0]</code></div><ul><li><strong>List comprehensions</strong> — syntaxe concise, signal de maturite</li><li><strong>Type hints</strong> — annotations pour lisibilite et mypy</li><li><strong>try/except</strong> — gestion des erreurs, exceptions personnalisees</li></ul><h2 id="pd"><span class="sn">2</span>Pandas et DuckDB</h2><div class="sq"><div class="sl">Question discriminante</div><p>Votre script Pandas traite 10M lignes et prend 8 minutes. Vos options ?</p></div><ul><li><strong>Vectorisation</strong> — operations numpy/pandas plutot que des boucles</li><li><strong>DuckDB</strong> — SQL analytique sur DataFrames, CSV, Parquet</li><li><strong>Polars</strong> — alternative Pandas plus rapide, lazy evaluation</li></ul><h2 id="oo"><span class="sn">3</span>Programmation orientee objet</h2><div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi utiliseriez-vous une classe plutot qu'une fonction dans un pipeline data ?</p></div><ul><li><strong>Encapsulation</strong> — classe pour une connexion BDD avec ses methodes</li><li><strong>Dataclasses</strong> — syntaxe moderne pour les classes de donnees simples</li></ul><h2 id="qt"><span class="sn">4</span>Qualite et tests</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Comment testez-vous vos pipelines Python ?</p></div><ul><li><strong>pytest</strong> — tests unitaires, fixtures, parametrize</li><li><strong>unittest.mock</strong> — mocker les dependances externes</li><li><strong>Black / Ruff</strong> — formatage automatique</li></ul><h2 id="pr"><span class="sn">5</span>Python en production</h2><div class="sq"><div class="sl">Question discriminante</div><p>Vous exposez un pipeline data via une API REST. Quel framework ?</p></div><ul><li><strong>FastAPI</strong> — validation Pydantic, doc OpenAPI automatique</li><li><strong>Variables d'environnement</strong> — jamais de credentials dans le code</li><li><strong>Logging</strong> — module logging plutot que print() en production</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Types, listes, dicts, fonctions, Pandas de base</td><td>List comprehensions, type hints, try/except</td><td>Boucles for sur les DataFrames</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>POO, modules, DuckDB/Polars, qualite de code</td><td>Classes reutilisables, Black, evite les boucles Pandas</td><td>Tout dans un script Jupyter, pas de tests</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Tests unitaires, CI/CD, FastAPI, logging</td><td>A mis en prod une API Python avec CI</td><td>N'a jamais ecrit de test unitaire</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture modulaire, standards equipe</td><td>A defini la structure de projet Python equipe</td><td>Ne peut pas expliquer sync vs async</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+const BF=`<p>Python est la lingua franca de la data. Entre un script Jupyter et un module de production robuste, l'ecart est considerable.</p><h2 id="bs"><span class="sn">1</span>Bases du langage</h2><div class="sq"><div class="sl">Question discriminante</div><p>Difference entre liste et tuple ? Entre dictionnaire et set ?</p></div><div class="cb"><code># List comprehension : signal de maturite
+# Junior
+result = []
+for x in data:
+    if x > 0: result.append(x * 2)
+# Confirme
+result = [x * 2 for x in data if x > 0]</code></div><ul><li><strong>List comprehensions</strong> — syntaxe concise, signal de maturite</li><li><strong>Type hints</strong> — annotations pour lisibilite et mypy</li><li><strong>try/except</strong> — gestion des erreurs, exceptions personnalisees</li></ul><h2 id="pd"><span class="sn">2</span>Pandas et DuckDB</h2><div class="sq"><div class="sl">Question discriminante</div><p>Votre script Pandas traite 10M lignes et prend 8 minutes. Vos options ?</p></div><ul><li><strong>Vectorisation</strong> — operations numpy/pandas plutot que des boucles</li><li><strong>DuckDB</strong> — SQL analytique sur DataFrames, CSV, Parquet</li><li><strong>Polars</strong> — alternative Pandas plus rapide, lazy evaluation</li></ul><h2 id="oo"><span class="sn">3</span>Programmation orientee objet</h2><div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi utiliseriez-vous une classe plutot qu'une fonction dans un pipeline data ?</p></div><ul><li><strong>Encapsulation</strong> — classe pour une connexion BDD avec ses methodes</li><li><strong>Dataclasses</strong> — syntaxe moderne pour les classes de donnees simples</li></ul><h2 id="qt"><span class="sn">4</span>Qualite et tests</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Comment testez-vous vos pipelines Python ?</p></div><ul><li><strong>pytest</strong> — tests unitaires, fixtures, parametrize</li><li><strong>unittest.mock</strong> — mocker les dependances externes</li><li><strong>Black / Ruff</strong> — formatage automatique</li></ul><h2 id="pr"><span class="sn">5</span>Python en production</h2><div class="sq"><div class="sl">Question discriminante</div><p>Vous exposez un pipeline data via une API REST. Quel framework ?</p></div><ul><li><strong>FastAPI</strong> — validation Pydantic, doc OpenAPI automatique</li><li><strong>Variables d'environnement</strong> — jamais de credentials dans le code</li><li><strong>Logging</strong> — module logging plutot que print() en production</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Types, listes, dicts, fonctions, Pandas de base</td><td>List comprehensions, type hints, try/except</td><td>Boucles for sur les DataFrames</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>POO, modules, DuckDB/Polars, qualite de code</td><td>Classes reutilisables, Black, evite les boucles Pandas</td><td>Tout dans un script Jupyter, pas de tests</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Tests unitaires, CI/CD, FastAPI, logging</td><td>A mis en prod une API Python avec CI</td><td>N'a jamais ecrit de test unitaire</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture modulaire, standards equipe</td><td>A defini la structure de projet Python equipe</td><td>Ne peut pas expliquer sync vs async</td></tr></tbody></table>`;const BE=`<p>Python is the lingua franca of data. Between a Jupyter script and a robust production module, the gap is considerable.</p><h2 id="bs"><span class="sn">1</span>Language basics</h2><div class="sq"><div class="sl">Key question</div><p>Difference between list and tuple? Between dictionary and set?</p></div><div class="cb"><code># List comprehension: signal of maturity
+result = [x * 2 for x in data if x > 0]</code></div><ul><li><strong>List comprehensions</strong> — concise syntax, signal of maturity</li><li><strong>Type hints</strong> — annotations for readability and mypy</li></ul><h2 id="pd"><span class="sn">2</span>Pandas and DuckDB</h2><div class="sq"><div class="sl">Key question</div><p>Your Pandas script processes 10M rows and takes 8 minutes. Options?</p></div><ul><li><strong>Vectorization</strong> — numpy/pandas operations instead of loops</li><li><strong>DuckDB</strong> — analytical SQL on DataFrames, CSV, Parquet</li><li><strong>Polars</strong> — faster Pandas alternative with lazy evaluation</li></ul><h2 id="oo"><span class="sn">3</span>Object-oriented programming</h2><div class="sq"><div class="sl">Key question</div><p>Why would you use a class instead of a function in a data pipeline?</p></div><ul><li><strong>Encapsulation</strong> — class for a DB connection with its methods</li><li><strong>Dataclasses</strong> — modern syntax for simple data classes</li></ul><h2 id="qt"><span class="sn">4</span>Code quality and testing</h2><div class="sq"><div class="sl">Senior question</div><p>How do you test your Python pipelines?</p></div><ul><li><strong>pytest</strong> — unit tests, fixtures, parametrize</li><li><strong>unittest.mock</strong> — mock external dependencies</li></ul><h2 id="pr"><span class="sn">5</span>Python in production</h2><div class="sq"><div class="sl">Key question</div><p>You need to expose a data pipeline via a REST API. Which framework?</p></div><ul><li><strong>FastAPI</strong> — Pydantic validation, automatic OpenAPI docs</li><li><strong>Logging</strong> — logging module instead of print() in production</li></ul><h2 id="nv"><span class="sn">6</span>Level grid</h2><table class="lt"><thead><tr><th>Level</th><th>Expected skills</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Types, lists, dicts, functions, basic Pandas</td><td>List comprehensions, type hints, try/except</td><td>Loops over DataFrames</td></tr><tr><td><span class="bd bm">Confirmed</span></td><td>OOP, modules, DuckDB/Polars, code quality</td><td>Reusable classes, avoids Pandas loops</td><td>Everything in a Jupyter script, no tests</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Unit tests, CI/CD, FastAPI, logging</td><td>Deployed a Python API with CI</td><td>Never written a unit test</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Modular architecture, team standards</td><td>Defined team Python project structure</td><td>Cannot explain sync vs async</td></tr></tbody></table>`;
+const TF=[["bs","Bases du langage"],["pd","Pandas et DuckDB"],["oo","POO"],["qt","Qualite et tests"],["pr","Production"],["nv","Grille"]];const TE=[["bs","Language basics"],["pd","Pandas and DuckDB"],["oo","OOP"],["qt","Quality and testing"],["pr","Production"],["nv","Level grid"]];
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  document.getElementById('tl').innerHTML=(l==='fr'?TF:TE).map(([a,t])=>`<li><a href="#${a}">${t}</a></li>`).join('');
+  document.getElementById('ab').innerHTML=l==='fr'?BF:BE;
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>
