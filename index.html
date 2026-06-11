@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Data Builders — Entretiens techniques data externalisés</title>
-<meta name="description" content="Data Builders évalue techniquement vos candidats data. 4 métiers, 15+ technos, entretien 30 min à 1h en live, rapport sous 48h."/>
+<title>Data Builder : Entretiens techniques data externalisés</title>
+<meta name="description" content="Data Builder évalue techniquement vos candidats data. 4 métiers, 15+ technos, entretien 30 min à 1h en live, rapport sous 48h."/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
-<!-- Google Analytics GA4 — chargé après consentement -->
+<!-- Google Analytics GA4 : chargé après consentement -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -71,7 +71,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.94)
 .promise-text { font-size: 13px; font-weight: 500; color: var(--gray-600); }
 .promise-text strong { color: var(--black); }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-.btn-primary { background: var(--purple-light); color: #fff; border: none; padding: 13px 28px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+.btn-primary { background: var(--purple-light); color: #fff; border: none; padding: 13px 28px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.15s; text-decoration: none; display: inline-block; }
 .btn-primary:hover { opacity: 0.85; }
 .btn-cal { background: var(--blue-cal); color: #fff; border: none; padding: 13px 24px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.15s; text-decoration: none; display: inline-block; }
 .btn-cal:hover { opacity: 0.85; }
@@ -199,7 +199,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <nav>
-  <a href="index.html" class="nav-logo">Data <span>Builders</span></a>
+  <a href="index.html" class="nav-logo">Data <span>Builder</span></a>
   <div class="nav-links">
     <a href="how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
     <a href="about.html" data-fr="A propos" data-en="About">A propos</a>
@@ -222,7 +222,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
     <div class="hero-promise-item"><span class="promise-icon">🎯</span><span class="promise-text"><strong>GO / NO-GO</strong> <span data-fr="motivé" data-en="with reasoning">motivé</span></span></div>
   </div>
   <div class="hero-actions">
-    <button class="btn-primary" onclick="openModal()" data-fr="Tester gratuitement →" data-en="Try it free →">Tester gratuitement →</button>
+    <a href="contact.html" class="btn-primary" data-fr="Tester gratuitement →" data-en="Try it free →">Tester gratuitement →</a>
     <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" data-fr="📅 Réserver un appel" data-en="📅 Book a call">📅 Réserver un appel</a>
   </div>
 </div>
@@ -258,7 +258,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
   <div class="banner-2pct-inner">
     <div class="banner-eyebrow" data-fr="Le coût d'un mauvais recrutement" data-en="The cost of a bad hire">Le coût d'un mauvais recrutement</div>
     <div class="banner-title" data-fr="Moins de 2% du prix d'un mauvais recrutement data." data-en="Less than 2% of the cost of a bad data hire.">Moins de 2% du prix d'un mauvais recrutement data.</div>
-    <div class="banner-desc" data-fr="Un mauvais recrutement data coûte entre 30 000 et 100 000 euros en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builders est conçu et conduit par un expert du métier — pour que vous recrutiez juste du premier coup." data-en="A bad data hire costs between 30,000 and 100,000 euros. Every Data Builders interview is designed and run by a domain expert — so you hire right the first time.">Un mauvais recrutement data coûte entre 30 000 et 100 000 euros en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builders est conçu et conduit par un expert du métier — pour que vous recrutiez juste du premier coup.</div>
+    <div class="banner-desc" data-fr="Un mauvais recrutement data coûte entre 30 000 et 100 000 euros en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builder est conçu et conduit par un expert du métier : pour que vous recrutiez juste du premier coup." data-en="A bad data hire costs between 30,000 and 100,000 euros. Every Data Builder interview is designed and run by a domain expert : so you hire right the first time.">Un mauvais recrutement data coûte entre 30 000 et 100 000 euros en temps perdu, onboarding raté et départ anticipé. Chaque entretien Data Builder est conçu et conduit par un expert du métier : pour que vous recrutiez juste du premier coup.</div>
   </div>
 </div>
 
@@ -369,10 +369,10 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 
 <hr/>
 
-<div class="steps-section">
+<div class="steps-section" style="background:var(--off)">
   <div class="section-eyebrow" data-fr="Le processus" data-en="The process">Le processus</div>
   <div class="section-title" data-fr="Simple pour vous, rigoureux pour nous" data-en="Simple for you, rigorous for us">Simple pour vous, rigoureux pour nous</div>
-  <p class="section-sub" data-fr="Vos équipes restent concentrées sur leur travail. Nous gérons tout le reste." data-en="Your teams stay focused on their work. We handle everything else.">Vos équipes restent concentrées sur leur travail. Nous gérons tout le reste.</p>
+  <p class="section-sub" data-fr="Vos équipes restent concentrées sur ce qui compte. Nous gérons les entretiens." data-en="Your teams stay focused on what matters. We handle the interviews.">Vos équipes restent concentrées sur ce qui compte. Nous gérons les entretiens.</p>
   <div class="steps-grid">
     <div class="step-card">
       <div class="step-num" data-fr="ETAPE 1" data-en="STEP 1">ETAPE 1</div>
@@ -383,7 +383,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
     <div class="step-card">
       <div class="step-num" data-fr="ETAPE 2" data-en="STEP 2">ETAPE 2</div>
       <div class="step-icon">💻</div>
-      <div class="step-title" data-fr="Entretien live — 30 min à 1h" data-en="Live interview — 30 min to 1h">Entretien live — 30 min à 1h</div>
+      <div class="step-title" data-fr="Entretien live : 30 min à 1h" data-en="Live interview : 30 min to 1h">Entretien live : 30 min à 1h</div>
       <div class="step-desc" data-fr="Questions théoriques, exercice pratique sur les vraies technos, cas métier. En direct avec le candidat." data-en="Theory questions, live practical exercise on the actual stack, business case. Live with the candidate.">Questions théoriques, exercice pratique sur les vraies technos, cas métier. En direct avec le candidat.</div>
     </div>
     <div class="step-card">
@@ -398,14 +398,15 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 
 <div class="why-section">
   <div class="why-inner">
-    <div class="section-eyebrow" data-fr="Pourquoi Data Builders" data-en="Why Data Builders">Pourquoi Data Builders</div>
+    <div class="section-eyebrow" data-fr="Pourquoi Data Builder" data-en="Why Data Builder">Pourquoi Data Builder</div>
     <div class="section-title" data-fr="Ce que vous gagnez vraiment" data-en="What you actually gain">Ce que vous gagnez vraiment</div>
     <p class="section-sub" data-fr="Un recruteur RH ne sait pas évaluer un modèle dbt, une mesure DAX ou un pipeline Spark. Nos experts, si." data-en="An HR recruiter can't evaluate a dbt model, a DAX measure or a Spark pipeline. Ours can.">Un recruteur RH ne sait pas évaluer un modèle dbt, une mesure DAX ou un pipeline Spark. Nos experts, si.</p>
     <div class="why-grid">
-      <div class="why-card"><div class="why-icon">⏱</div><div class="why-title" data-fr="Zéro mobilisation de vos équipes" data-en="Zero disruption to your team">Zéro mobilisation de vos équipes</div><div class="why-desc" data-fr="Ingénieurs, scientists, analystes restent concentrés sur leur travail." data-en="Engineers, scientists, analysts stay focused on their work.">Ingénieurs, scientists, analystes restent concentrés sur leur travail.</div></div>
+      <div class="why-card"><div class="why-icon">⏱</div><div class="why-title" data-fr="Zéro mobilisation de vos équipes" data-en="Zero disruption to your team">Zéro mobilisation de vos équipes</div><div class="why-desc" data-fr="Vos équipes restent concentrées sur ce qui compte." data-en="Your teams stay focused on what matters.">Vos équipes restent concentrées sur ce qui compte.</div></div>
       <div class="why-card"><div class="why-icon">📋</div><div class="why-title" data-fr="Grille standardisée" data-en="Standardised scorecard">Grille standardisée</div><div class="why-desc" data-fr="Mêmes critères pour tous les candidats. Comparez objectivement, décidez sereinement." data-en="Same criteria for every candidate. Compare objectively, decide confidently.">Mêmes critères pour tous les candidats. Comparez objectivement, décidez sereinement.</div></div>
       <div class="why-card"><div class="why-icon">🎯</div><div class="why-title" data-fr="Praticiens, pas théoriciens" data-en="Practitioners, not theorists">Praticiens, pas théoriciens</div><div class="why-desc" data-fr="Nos interviewers ont fait le travail. Ils savent ce qui distingue un bon profil d'un excellent." data-en="Our interviewers have done the job. They know what separates good from great.">Nos interviewers ont fait le travail. Ils savent ce qui distingue un bon profil d'un excellent.</div></div>
-      <div class="why-card"><div class="why-icon">🌐</div><div class="why-title" data-fr="Réseau d'experts data" data-en="Network of data experts">Réseau d'experts data</div><div class="why-desc" data-fr="Chaque entretien est conçu et conduit par un praticien data actif — pas un recruteur généraliste." data-en="Every interview is designed and run by an active data practitioner — not a generalist recruiter.">Chaque entretien est conçu et conduit par un praticien data actif — pas un recruteur généraliste.</div></div>
+      <div class="why-card"><div class="why-icon">🌐</div><div class="why-title" data-fr="Réseau d'experts data" data-en="Network of data experts">Réseau d'experts data</div><div class="why-desc" data-fr="Chaque entretien est conçu et conduit par un praticien data actif, pas un recruteur généraliste." data-en="Every interview is designed and run by an active data practitioner, not a generalist recruiter.">Chaque entretien est conçu et conduit par un praticien data actif, pas un recruteur généraliste.</div></div>
+      <div class="why-card"><div class="why-icon">🧠</div><div class="why-title" data-fr="Pourquoi externaliser ?" data-en="Why outsource?">Pourquoi externaliser ?</div><div class="why-desc" data-fr="Vos ingénieurs évaluent naturellement avec bienveillance. Un expert externe applique une grille objective, sans biais ni pression interne." data-en="Your engineers assess naturally with empathy. An external expert applies an objective scorecard, free from bias or internal pressure.">Vos ingénieurs évaluent naturellement avec bienveillance. Un expert externe applique une grille objective, sans biais ni pression interne.</div></div>
     </div>
   </div>
 </div>
@@ -413,7 +414,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 <div class="testimonial">
   <div class="quote-card">
     <div class="quote-mark">"</div>
-    <div class="quote-text">La corrélation entre les performances en entretien Data Builders et les performances réelles en poste est frappante. C'est exactement l'outil dont on avait besoin pour recruter sans se tromper.</div>
+    <div class="quote-text">La corrélation entre les performances en entretien Data Builder et les performances réelles en poste est frappante. C'est exactement l'outil dont on avait besoin pour recruter sans se tromper.</div>
     <div class="quote-author">Sophie Martin</div>
     <div class="quote-role" data-fr="Head of Data · Fintech scale-up, Paris" data-en="Head of Data · Fintech scale-up, Paris">Head of Data · Fintech scale-up, Paris</div>
   </div>
@@ -424,8 +425,8 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
     <h2 data-fr="Testez sur votre prochain recrutement" data-en="Try it on your next hire">Testez sur votre prochain recrutement</h2>
     <p data-fr="Premier entretien gratuit. Aucun engagement." data-en="First interview free. No commitment.">Premier entretien gratuit. Aucun engagement.</p>
     <div class="final-actions">
-      <button class="btn-primary" style="padding:15px 36px;font-size:16px;" onclick="openModal()" data-fr="Tester gratuitement →" data-en="Try it free →">Tester gratuitement →</button>
-      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" style="padding:15px 28px;" data-fr="📅 Réserver un appel découverte" data-en="📅 Book a discovery call">📅 Réserver un appel découverte</a>
+      <a href="contact.html" class="btn-primary" style="padding:15px 36px;font-size:16px;text-decoration:none;display:inline-block;" data-fr="Tester gratuitement →" data-en="Try it free →">Tester gratuitement →</a>
+      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-cal" style="padding:15px 28px;font-size:15px;" data-fr="📅 Réserver un appel découverte" data-en="📅 Book a discovery call">📅 Réserver un appel découverte</a>
       <div class="final-note" data-fr="Réponse sous 24h · Premier entretien gratuit sans conditions" data-en="Reply within 24h · First interview free, no strings attached">Réponse sous 24h · Premier entretien gratuit sans conditions</div>
     </div>
   </div>
@@ -439,7 +440,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
       <a href="cgu.html">CGU</a>
       <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
     </div>
-    <div class="footer-copy">© 2025 Data Builders</div>
+    <div class="footer-copy">© 2025 Data Builder</div>
   </div>
 </footer>
 
@@ -462,7 +463,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
         </select>
       </div>
       <div class="form-group"><label data-fr="Message (optionnel)" data-en="Message (optional)">Message (optionnel)</label><textarea name="message" placeholder="Contexte, technos prioritaires…"></textarea></div>
-      <input type="hidden" name="_subject" value="Nouveau test gratuit Data Builders"/>
+      <input type="hidden" name="_subject" value="Nouveau test gratuit Data Builder"/>
       <div class="modal-actions">
         <button type="button" class="btn-cancel" onclick="closeModal()" data-fr="Annuler" data-en="Cancel">Annuler</button>
         <button type="submit" class="btn-submit" data-fr="Envoyer →" data-en="Send →">Envoyer →</button>
@@ -483,7 +484,7 @@ footer { border-top: 1px solid var(--purple-border); padding: 28px 32px; }
 
 <script>
 (function(){ if(localStorage.getItem('db_cookies')) document.getElementById('cookie-banner').classList.add('hidden'); })();
-function acceptCookies(){ localStorage.setItem('db_cookies','accepted'); document.getElementById('cookie-banner').classList.add('hidden'); loadGA(); }
+function acceptCookies(){ localStorage.setItem('db_cookies','accepted'); document.getElementById('cookie-banner').classList.add('hidden'); if(typeof loadGA==='function') loadGA(); }
 function refuseCookies(){ localStorage.setItem('db_cookies','refused'); document.getElementById('cookie-banner').classList.add('hidden'); }
 
 const technoLogos = {
