@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique dbt modèles incrémentaux : stratégies et optimisation — Data Builder</title>
+<meta name="description" content="Stratégies incrémentales dbt (append, merge, delete+insert), unique_key, is_incremental, full refresh — ce qu on évalue pour un Analytics Engineer avancé."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-dbt-incremental.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt modèles incrémentaux : stratégies et optimisation</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique dbt modèles incrémentaux : stratégies et optimisation</h1>
+<p class="ai">Les modèles incrémentaux dbt sont le levier le plus puissant pour réduire les coûts et le temps de traitement. Mal configurés, ils produisent des données incorrectes. En entretien, on évalue la maîtrise des stratégies.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min de lecture</span><span>·</span><span>Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#concept">Pourquoi les modèles incrémentaux</a></li>
+<li><a href="#strategies">Les 4 stratégies</a></li>
+<li><a href="#merge">Strategy merge en détail</a></li>
+<li><a href="#late">Late-arriving data</a></li>
+<li><a href="#full">Full refresh et pièges</a></li>
+<li><a href="#snowflake">Incrémental sur Snowflake</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='concept'><span class='sn'>1</span>Pourquoi les modèles incrémentaux</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel problème les modèles incrémentaux dbt résolvent-ils ?</p></div><ul><li><strong>Problème</strong> — reconstruire entièrement une table de 1 milliard de lignes à chaque run dbt coûte cher en temps et en compute</li><li><strong>Solution</strong> — ne traiter que les nouvelles lignes ou les lignes modifiées depuis le dernier run</li><li><strong>Exemple</strong> — table fct_events : 500M lignes historiques. Chaque jour, 1M nouvelles lignes arrivent. Traiter 1M au lieu de 501M = 500x moins de compute</li><li><strong>Risque</strong> — mal configuré, un modèle incrémental peut rater des lignes ou créer des doublons</li></ul><h2 id='strategies'><span class='sn'>2</span>Les 4 stratégies incrémentales</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les différentes stratégies dbt pour les modèles incrémentaux ?</p></div><div class='cb'><code>-- Strategy 1 : append (par défaut)
+-- Ajoute les nouvelles lignes, ne modifie pas les existantes
+{{ config(materialized='incremental') }}
+SELECT *
+FROM {{ ref('stg_events') }}
+{% if is_incremental() %}
+WHERE event_date > (SELECT MAX(event_date) FROM {{ this }})
+{% endif %}
+
+-- Strategy 2 : merge (upsert)
+-- INSERT de nouvelles lignes + UPDATE des existantes
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge'
+) }}
+SELECT * FROM {{ ref('stg_orders') }}
+{% if is_incremental() %}
+WHERE updated_at > (SELECT MAX(updated_at) FROM {{ this }})
+{% endif %}
+
+-- Strategy 3 : delete+insert
+-- Supprime les lignes de la fenetre et reinsere
+{{ config(
+    materialized='incremental',
+    unique_key=['order_id', 'date'],
+    incremental_strategy='delete+insert'
+) }}</code></div><h2 id='merge'><span class='sn'>3</span>Strategy merge : quand et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous merge plutôt qu append ? Quel est le risque si unique_key est mal défini ?</p></div><ul><li><strong>Append</strong> — pour les données immuables (events, logs). Une ligne créée ne change jamais</li><li><strong>Merge</strong> — pour les données qui changent (statut commande, profil client). Nécessite un unique_key</li><li><strong>Risque unique_key incorrect</strong> — si plusieurs lignes ont la même clé, le merge garde une seule de manière arbitraire. Perte de données silencieuse</li><li><strong>Composite key</strong> — souvent nécessaire : unique_key=['order_id', 'date'] si les données sont partitionnées par date</li></ul><h2 id='late'><span class='sn'>4</span>Gérer les late-arriving data</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le late-arriving data ? Comment le gérez-vous dans un modèle incrémental ?</p></div><div class='cb'><code>-- Problème : des événements du passé arrivent en retard
+-- Ex : un mobile en mode offline synchronise des events datant de 3 jours
+
+-- Solution : reprocesser une fenetre glissante de N jours
+{{ config(
+    materialized='incremental',
+    unique_key='event_id'
+) }}
+
+SELECT *
+FROM {{ ref('stg_events') }}
+{% if is_incremental() %}
+-- Reprocesser les 3 derniers jours pour capturer les retardataires
+WHERE event_date >= (
+    SELECT DATEADD('day', -3, MAX(event_date))
+    FROM {{ this }}
+)
+{% endif %}</code></div><ul><li><strong>Late-arriving data</strong> — données qui arrivent dans le pipeline après la date attendue</li><li><strong>Fenetre glissante</strong> — reprocesser les N derniers jours plutôt que seulement depuis le MAX. Plus coûteux mais correct</li></ul><h2 id='full'><span class='sn'>5</span>Full refresh : quand l utiliser</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels cas forcez-vous un full refresh sur un modèle incrémental ?</p></div><div class='cb'><code># Forcer un full refresh manuellement
+dbt run --full-refresh --select fct_orders
+
+# Cas où le full refresh est nécessaire :
+# 1. Changement de logique qui affecte l historique
+# 2. Ajout d une nouvelle colonne calculée
+# 3. Bug découvert sur les données passées
+# 4. Migration de stratégie (append -> merge)
+
+# Configuration : interdire le full refresh en production
+{{ config(
+    materialized='incremental',
+    full_refresh=false  # bloque dbt run --full-refresh sur cette table
+) }}</code></div><ul><li><strong>Bloquer le full refresh</strong> — sur les très grandes tables (TB+), un full refresh accidentel peut coûter très cher</li><li><strong>Process de migration</strong> — pour les changements historiques, utiliser un backfill contrôlé par tranches de dates</li></ul><h2 id='snowflake'><span class='sn'>6</span>Optimisation incrémentale sur Snowflake</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment optimisez-vous les performances d un modèle dbt incrémental sur Snowflake ?</p></div><div class='cb'><code>{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge',
+    cluster_by=['order_date', 'region'],  # clustering sur Snowflake
+    on_schema_change='append_new_columns',
+    snowflake_warehouse='TRANSFORM_WH_S',
+    merge_exclude_columns=['created_at']  # ne pas updater created_at
+) }}</code></div><ul><li><strong>cluster_by</strong> — pré-trier les données pour que le merge soit plus rapide sur les grandes tables</li><li><strong>merge_exclude_columns</strong> — éviter d écraser des colonnes qui ne doivent pas changer (created_at, inserted_at)</li><li><strong>on_schema_change</strong> — append_new_columns ajoute les nouvelles colonnes sans full refresh</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Stratégie append et merge, is_incremental(), unique_key</td><td>A configuré un modèle merge avec unique_key, comprend is_incremental()</td><td>Ne sait pas ce qu est un modèle incrémental dbt</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Late-arriving data, full refresh strategy, optimisation warehouse</td><td>Gère les late-arriving data avec fenêtre glissante, bloque le full refresh sur les grandes tables</td><td>Ne sait pas ce qu est le late-arriving data</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

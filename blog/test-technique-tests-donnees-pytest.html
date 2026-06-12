@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique : tester ses pipelines data avec pytest — Data Builder</title>
+<meta name="description" content="Tester les pipelines data avec pytest : fixtures, mocks, tests de transformation SQL, tests d intégration dbt — ce qu on évalue pour un Data Engineer rigoureux."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-tests-donnees-pytest.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique : tester ses pipelines data avec pytest</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique : tester ses pipelines data avec pytest</h1>
+<p class="ai">Un pipeline data sans tests est une bombe à retardement. En entretien Senior, on évalue la capacité à écrire des tests automatisés rigoureux pour les pipelines de données.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#pytest">pytest pour la data</a></li>
+<li><a href="#fixtures">Fixtures et données de test</a></li>
+<li><a href="#mocks">Mocking des connexions</a></li>
+<li><a href="#sql">Tester les transformations SQL</a></li>
+<li><a href="#dbt">Tests dbt avancés</a></li>
+<li><a href="#integration">Tests d intégration</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='pytest'><span class='sn'>1</span>pytest : le standard pour tester les pipelines data</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi pytest est-il préféré à unittest pour les pipelines data ?</p></div><div class='cb'><code>import pytest
+import pandas as pd
+from my_pipeline.transforms import calculate_revenue
+
+# Test unitaire simple
+def test_calculate_revenue_basic():
+    df = pd.DataFrame({
+        'quantity': [1, 2, 3],
+        'unit_price': [10.0, 5.0, 8.0]
+    })
+    result = calculate_revenue(df)
+    assert list(result['revenue']) == [10.0, 10.0, 24.0]
+
+# Test des cas limites
+def test_calculate_revenue_zero_quantity():
+    df = pd.DataFrame({'quantity': [0], 'unit_price': [10.0]})
+    result = calculate_revenue(df)
+    assert result['revenue'].iloc[0] == 0.0
+
+# Test des valeurs nulles
+def test_calculate_revenue_null_handling():
+    df = pd.DataFrame({'quantity': [None, 1], 'unit_price': [10.0, 5.0]})
+    result = calculate_revenue(df)
+    assert result['revenue'].isna().sum() == 1</code></div><ul><li><strong>pytest vs unittest</strong> — pytest : moins de boilerplate, fixtures puissantes, plugins riches (pytest-mock, pytest-cov)</li><li><strong>Paramétrisation</strong> — @pytest.mark.parametrize pour tester plusieurs cas en une seule fonction</li></ul><h2 id='fixtures'><span class='sn'>2</span>Fixtures : données de test réutilisables</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous les fixtures pytest pour vos tests data ?</p></div><div class='cb'><code>import pytest
+import pandas as pd
+from sqlalchemy import create_engine
+
+@pytest.fixture
+def sample_orders():
+    return pd.DataFrame({
+        'order_id': ['O001', 'O002', 'O003'],
+        'customer_id': ['C1', 'C1', 'C2'],
+        'amount': [100.0, 50.0, 200.0],
+        'status': ['completed', 'cancelled', 'completed'],
+        'order_date': pd.to_datetime(['2024-01-01', '2024-01-02', '2024-01-03'])
+    })
+
+@pytest.fixture(scope='session')
+def test_db():
+    # Base de données SQLite en mémoire pour les tests
+    engine = create_engine('sqlite:///:memory:')
+    yield engine
+    engine.dispose()
+
+def test_revenue_by_customer(sample_orders):
+    result = compute_revenue(sample_orders)
+    assert result.loc[result['customer_id'] == 'C1', 'revenue'].iloc[0] == 100.0</code></div><ul><li><strong>scope</strong> — function (par défaut), class, module, session. Les fixtures de session ne sont créées qu une fois</li><li><strong>conftest.py</strong> — fichier spécial pytest où déclarer les fixtures partagées entre plusieurs fichiers de tests</li></ul><h2 id='mocks'><span class='sn'>3</span>Mocking : isoler les dépendances externes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous du code qui appelle une base de données ou une API externe ?</p></div><div class='cb'><code>from unittest.mock import patch, MagicMock
+import pytest
+
+def test_extract_from_api():
+    with patch('my_pipeline.extract.requests.get') as mock_get:
+        mock_get.return_value.json.return_value = [
+            {'id': 1, 'amount': 100},
+            {'id': 2, 'amount': 200}
+        ]
+        mock_get.return_value.status_code = 200
+        
+        result = extract_from_api('https://api.exemple.com/orders')
+        
+        assert len(result) == 2
+        assert result[0]['amount'] == 100
+        mock_get.assert_called_once_with('https://api.exemple.com/orders',
+                                         timeout=10)
+
+# pytest-mock : syntaxe plus propre
+def test_with_mocker(mocker):
+    mock_conn = mocker.patch('my_pipeline.db.get_connection')
+    mock_conn.return_value.execute.return_value.fetchdf.return_value = pd.DataFrame({'id': [1]})
+    result = load_from_db('SELECT * FROM orders')
+    assert len(result) == 1</code></div><h2 id='sql'><span class='sn'>4</span>Tester les transformations SQL</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous une transformation SQL dbt ou une vue Snowflake ?</p></div><div class='cb'><code># Tester une transformation SQL avec DuckDB (rapide, en mémoire)
+import duckdb
+import pytest
+
+def test_revenue_aggregation():
+    conn = duckdb.connect()
+    
+    # Créer les données de test en mémoire
+    conn.execute("""
+        CREATE TABLE orders AS
+        SELECT * FROM (VALUES
+            ('O1', 'C1', 100.0, 'completed'),
+            ('O2', 'C1',  50.0, 'cancelled'),
+            ('O3', 'C2', 200.0, 'completed')
+        ) t(order_id, customer_id, amount, status)
+    """)
+    
+    # Tester la transformation
+    result = conn.execute("""
+        SELECT customer_id, SUM(amount) as revenue
+        FROM orders
+        WHERE status = 'completed'
+        GROUP BY customer_id
+    """).fetchdf()
+    
+    assert result.loc[result['customer_id'] == 'C1', 'revenue'].iloc[0] == 100.0
+    assert result.loc[result['customer_id'] == 'C2', 'revenue'].iloc[0] == 200.0</code></div><h2 id='dbt'><span class='sn'>5</span>Tests dbt avancés avec pytest-dbt</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment allez-vous au-delà des tests YAML dbt avec pytest ?</p></div><ul><li><strong>Tests YAML dbt</strong> — not_null, unique, accepted_values : tests simples sur les colonnes</li><li><strong>Singular tests</strong> — fichiers SQL dans tests/ qui retournent les lignes qui échouent</li><li><strong>pytest-dbt</strong> — plugin pytest pour lancer les tests dbt dans des suites pytest plus larges</li><li><strong>Tests de régression</strong> — comparer les outputs d un modèle refactorisé avec l ancien via dbt-audit-helper</li></ul><div class='cb'><code># Singular test dbt : test qui ne doit pas retourner de lignes
+-- tests/orders_no_negative_amount.sql
+SELECT order_id, amount
+FROM {{ ref('fct_orders') }}
+WHERE amount < 0</code></div><h2 id='integration'><span class='sn'>6</span>Tests d intégration end-to-end</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous un pipeline entier de l ingestion à la transformation ?</p></div><ul><li><strong>Test d intégration</strong> — tester le pipeline complet sur un échantillon réel de données</li><li><strong>Environnement de test</strong> — base de données dédiée aux tests (SQLite in-memory, Snowflake sandbox, BigQuery dataset de test)</li><li><strong>Données de test</strong> — jeu minimal mais représentatif : cas normaux + cas limites + données corrompues</li><li><strong>Assertion sur les outputs</strong> — vérifier que le schéma est correct, les agrégations cohérentes, les clés uniques</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tests unitaires pytest, fixtures, mocks basiques</td><td>A écrit des tests pour ses fonctions de transformation, utilise des fixtures</td><td>N a aucun test dans ses projets</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests SQL avec DuckDB, tests d intégration, CI automatisée</td><td>Teste ses transformations SQL avec DuckDB, a une CI qui lance les tests</td><td>Pense que les tests dbt YAML suffisent pour tout</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique ML en production : packaging, serving, monitoring — Data Builder</title>
+<meta name="description" content="Packaging de modèles sklearn, serving avec BentoML ou Seldon, monitoring des prédictions, canary deployment — ce qu on évalue pour un ML Engineer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-machine-learning-production.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique ML en production : packaging, serving, monitoring</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique ML en production : packaging, serving, monitoring</h1>
+<p class="ai">Entraîner un modèle est facile. Le maintenir en production pendant 2 ans sans régression est difficile. En entretien ML Engineer, on évalue la capacité à industrialiser tout le cycle.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min de lecture</span><span>·</span><span>Data Scientist · ML Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#packaging">Packaging de modèles</a></li>
+<li><a href="#serving">Model serving</a></li>
+<li><a href="#monitoring">Monitoring des prédictions</a></li>
+<li><a href="#canary">Déploiement canary</a></li>
+<li><a href="#retraining">Retraining automatique</a></li>
+<li><a href="#registry">Model registry</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='packaging'><span class='sn'>1</span>Packager un modèle pour la production</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment packagéz-vous un modèle sklearn pour qu il soit reproductible en production ?</p></div><div class='cb'><code>import joblib
+import json
+from datetime import datetime
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingClassifier
+
+# Pipeline complet : preprocessing inclus
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', GradientBoostingClassifier(n_estimators=100))
+])
+pipeline.fit(X_train, y_train)
+
+# Sauvegarder avec métadonnées
+model_package = {
+    'model': pipeline,
+    'metadata': {
+        'version': '2.1.0',
+        'trained_at': datetime.now().isoformat(),
+        'features': list(X_train.columns),
+        'target': 'churn',
+        'auc_test': 0.87,
+        'python_version': '3.11',
+        'sklearn_version': '1.3.0'
+    }
+}
+joblib.dump(model_package, 'model_v2.1.0.pkl')
+
+# Signature : valider les inputs en production
+from mlflow.models import infer_signature
+signature = infer_signature(X_train, pipeline.predict_proba(X_train))</code></div><h2 id='serving'><span class='sn'>2</span>Model serving : options en 2025</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous FastAPI, BentoML, ou Vertex AI Endpoints pour servir un modèle ?</p></div><table class='lt'><thead><tr><th>Option</th><th>Forces</th><th>Idéal pour</th></tr></thead><tbody><tr><td>FastAPI custom</td><td>Contrôle total, simple</td><td>Équipes Python, modèle unique, logique custom</td></tr><tr><td>BentoML</td><td>Abstraction ML, batching, adaptive batching</td><td>Plusieurs modèles, besoin d optimisation throughput</td></tr><tr><td>MLflow Serving</td><td>Intégré MLflow Registry</td><td>Équipes Databricks, déploiement depuis Registry</td></tr><tr><td>Vertex AI Endpoints</td><td>Managé GCP, autoscaling</td><td>Stack GCP, zéro infra à gérer</td></tr><tr><td>Seldon Core</td><td>K8s natif, A/B testing intégré</td><td>Équipes K8s avancées, multi-modèles</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>3</span>Monitoring des prédictions en production</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles métriques monitorez-vous sur un modèle de classification en production ?</p></div><div class='cb'><code>import pandas as pd
+from evidently.report import Report
+from evidently.metric_preset import ClassificationPreset, DataDriftPreset
+
+# Rapport Evidently : data drift + performance
+report = Report(metrics=[
+    DataDriftPreset(),        # distributions des features
+    ClassificationPreset()    # métriques de classification
+])
+
+report.run(
+    reference_data=training_data,  # données d entrainement
+    current_data=production_data   # dernières prédictions avec labels
+)
+
+report.save_html('monitoring_report.html')
+
+# Métriques clés à monitorer :
+# - Distribution des scores de prédiction (drift de score)
+# - Distribution des features d input (data drift)
+# - AUC/F1 sur les labels reçus (performance drift)
+# - Taux de prédictions positives (prediction drift)</code></div><h2 id='canary'><span class='sn'>4</span>Déploiement canary et shadow mode</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre shadow mode et canary deployment pour un modèle ML ?</p></div><ul><li><strong>Shadow mode</strong> — le nouveau modèle reçoit les mêmes requêtes que le modèle de prod mais ses réponses ne sont pas retournées aux utilisateurs. Permet de comparer sans risque</li><li><strong>Canary deployment</strong> — 5-10% du trafic est envoyé au nouveau modèle. Les utilisateurs reçoivent réellement ses prédictions. Permet de mesurer l impact réel</li><li><strong>A/B testing de modèles</strong> — variante du canary avec assignation déterministe (même user → même modèle) pour des résultats cohérents</li><li><strong>Rollback</strong> — si les métriques se dégradent, basculer immédiatement 100% du trafic vers l ancien modèle</li></ul><h2 id='retraining'><span class='sn'>5</span>Retraining automatique : quand et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment décidez-vous qu un modèle doit être réentrainé ? Comment automatisez-vous cela ?</p></div><div class='cb'><code># Stratégies de déclenchement du retraining
+
+# 1. Schedule fixe (simple)
+# Réentrainer chaque semaine, que le modèle soit dégradé ou non
+@weekly_task
+def scheduled_retraining():
+    train_and_evaluate()
+    if new_model_better_than_current():
+        deploy_new_model()
+
+# 2. Basé sur le drift (intelligent)
+def check_and_retrain():
+    drift_score = compute_psi(training_data, recent_predictions)
+    if drift_score > 0.2:  # PSI > 0.2 = drift significatif
+        trigger_retraining()
+    
+    auc_current = evaluate_on_labeled_data(recent_labeled)
+    if auc_current < baseline_auc * 0.95:  # dégradation > 5%
+        trigger_retraining()
+
+# PSI = Population Stability Index
+# Mesure le drift de distribution d une feature</code></div><h2 id='registry'><span class='sn'>6</span>Model Registry : gouvernance des modèles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous les versions de modèles et les promotions Staging → Production ?</p></div><ul><li><strong>MLflow Model Registry</strong> — versionner, tagger (Staging/Production/Archived), stocker les métadonnées</li><li><strong>Process de promotion</strong> — modèle validé sur données de test → Staging → tests d intégration → Production</li><li><strong>Model card</strong> — documentation du modèle : données d entrainement, performances, limitations, biais connus</li><li><strong>Lineage</strong> — tracer les données d entrainement, le code, les hyperparamètres qui ont produit ce modèle</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Pipeline sklearn, FastAPI serving, MLflow Registry</td><td>A déployé un modèle en API FastAPI, utilise MLflow Registry</td><td>Déploie un notebook en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Monitoring drift, canary deployment, retraining auto</td><td>A mis en place le monitoring de drift, a fait du canary deployment</td><td>N a pas de monitoring sur ses modèles en production</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un ML Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

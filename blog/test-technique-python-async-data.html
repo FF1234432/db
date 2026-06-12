@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Python async pour la data : asyncio, httpx, ingestion parallèle — Data Builder</title>
+<meta name="description" content="asyncio, httpx async, aiofiles, ingestion parallèle d APIs, gestion de la concurrence — ce qu on évalue pour un Data Engineer Python Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-python-async-data.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Python async pour la data : asyncio, httpx, ingestion parallèle</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Python async pour la data : asyncio, httpx, ingestion parallèle</h1>
+<p class="ai">L async Python permet de multiplier par 10 à 100 la vitesse d ingestion d APIs. En entretien Senior, on évalue la maîtrise d asyncio pour écrire des pipelines d ingestion efficaces.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#concept">Sync vs Async</a></li>
+<li><a href="#asyncio">asyncio et coroutines</a></li>
+<li><a href="#httpx">httpx async : ingestion d APIs</a></li>
+<li><a href="#semaphore">Contrôler la concurrence</a></li>
+<li><a href="#gather">asyncio.gather et TaskGroup</a></li>
+<li><a href="#pipeline">Pipeline d ingestion async</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='concept'><span class='sn'>1</span>Synchrone vs Asynchrone</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi l async est-il utile pour l ingestion de données depuis des APIs ?</p></div><ul><li><strong>Problème synchrone</strong> — appeler 100 APIs en séquence : 100 * 200ms = 20 secondes d attente pure</li><li><strong>Solution async</strong> — lancer toutes les requêtes en parallèle : 200ms + overhead = 20x plus rapide</li><li><strong>IO-bound vs CPU-bound</strong> — async est efficace pour les opérations IO (réseau, fichiers). Pas pour les calculs CPU (ML, transformations lourdes)</li><li><strong>GIL Python</strong> — async contourne le GIL pour les opérations IO. Pour le CPU, utiliser multiprocessing</li></ul><h2 id='asyncio'><span class='sn'>2</span>asyncio : le moteur de l async Python</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une coroutine ? Quelle est la différence entre await et asyncio.create_task ?</p></div><div class='cb'><code>import asyncio
+
+# Coroutine : fonction async qui peut être suspendue
+async def fetch_data(url: str) -> dict:
+    await asyncio.sleep(0.2)  # simule une requête réseau
+    return {'url': url, 'data': 'result'}
+
+# await : suspend et attend le résultat
+result = await fetch_data('https://api.com/orders')
+
+# create_task : lancer sans attendre (fire and forget)
+async def main():
+    # Séquentiel : 3 * 200ms = 600ms
+    r1 = await fetch_data('https://api.com/orders/1')
+    r2 = await fetch_data('https://api.com/orders/2')
+    r3 = await fetch_data('https://api.com/orders/3')
+    
+    # Parallèle : 200ms
+    results = await asyncio.gather(
+        fetch_data('https://api.com/orders/1'),
+        fetch_data('https://api.com/orders/2'),
+        fetch_data('https://api.com/orders/3')
+    )
+
+asyncio.run(main())</code></div><h2 id='httpx'><span class='sn'>3</span>httpx async : ingestion d APIs</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment ingérez-vous 1000 endpoints d une API en parallèle avec httpx ?</p></div><div class='cb'><code>import httpx
+import asyncio
+from typing import List, Dict
+
+async def fetch_endpoint(
+    client: httpx.AsyncClient,
+    url: str,
+    semaphore: asyncio.Semaphore
+) -> Dict:
+    async with semaphore:  # limite la concurrence
+        try:
+            response = await client.get(url, timeout=30.0)
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                await asyncio.sleep(60)  # rate limit
+                return await fetch_endpoint(client, url, semaphore)
+            raise
+
+async def ingest_all(urls: List[str]) -> List[Dict]:
+    semaphore = asyncio.Semaphore(50)  # max 50 requêtes simultanées
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_endpoint(client, url, semaphore) for url in urls]
+        return await asyncio.gather(*tasks, return_exceptions=True)
+
+results = asyncio.run(ingest_all(urls))</code></div><h2 id='semaphore'><span class='sn'>4</span>Contrôler la concurrence avec Semaphore</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi utilisez-vous un Semaphore ? Que se passe-t-il sans ?</p></div><ul><li><strong>Sans Semaphore</strong> — asyncio.gather sur 10 000 URLs ouvre 10 000 connexions simultanément. Crash mémoire, ban de l API, saturation réseau</li><li><strong>Avec Semaphore</strong> — limite le nombre de coroutines actives simultanément (50-100 est un bon défaut)</li><li><strong>asyncio.Semaphore(n)</strong> — au plus n coroutines passent en même temps. Les autres attendent</li><li><strong>Connection pooling</strong> — httpx.AsyncClient gère automatiquement un pool de connexions. Réutilise les connexions TCP</li></ul><h2 id='gather'><span class='sn'>5</span>asyncio.gather vs TaskGroup</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre asyncio.gather et asyncio.TaskGroup (Python 3.11+) ?</p></div><div class='cb'><code>import asyncio
+
+# asyncio.gather : Python 3.8+
+# Annule toutes les tâches si l une échoue (return_exceptions=False)
+results = await asyncio.gather(*tasks, return_exceptions=True)
+
+# TaskGroup : Python 3.11+ - syntaxe plus propre
+async def process_all(urls):
+    results = []
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch(url)) for url in urls]
+    # Toutes les tâches sont terminées ici
+    return [t.result() for t in tasks]
+
+# Timeout global sur un groupe de tâches
+try:
+    async with asyncio.timeout(30.0):  # Python 3.11+
+        results = await asyncio.gather(*tasks)
+except TimeoutError:
+    print('Timeout global dépassé')</code></div><h2 id='pipeline'><span class='sn'>6</span>Pipeline d ingestion async complet</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Montrez l architecture d un pipeline d ingestion async production-ready.</p></div><div class='cb'><code>import asyncio, httpx, json
+from datetime import datetime
+
+class AsyncIngestionPipeline:
+    def __init__(self, max_concurrent: int = 50, batch_size: int = 100):
+        self.semaphore = asyncio.Semaphore(max_concurrent)
+        self.batch_size = batch_size
+
+    async def fetch(self, client: httpx.AsyncClient, url: str) -> dict | None:
+        async with self.semaphore:
+            for attempt in range(3):
+                try:
+                    r = await client.get(url, timeout=30.0)
+                    r.raise_for_status()
+                    return r.json()
+                except Exception as e:
+                    if attempt == 2: return None
+                    await asyncio.sleep(2 ** attempt)
+
+    async def run(self, urls: list[str]) -> list[dict]:
+        async with httpx.AsyncClient() as client:
+            batches = [urls[i:i+self.batch_size]
+                       for i in range(0, len(urls), self.batch_size)]
+            all_results = []
+            for batch in batches:
+                results = await asyncio.gather(
+                    *[self.fetch(client, url) for url in batch]
+                )
+                all_results.extend([r for r in results if r is not None])
+            return all_results</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>asyncio basique, asyncio.gather, httpx async</td><td>A écrit un ingestion d API avec asyncio.gather, comprend await vs create_task</td><td>Utilise requests en sync pour ingérer 1000 endpoints</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Semaphore, retry async, gestion rate limiting, TaskGroup</td><td>Utilise Semaphore pour contrôler la concurrence, gère le rate limiting de manière async</td><td>Lance asyncio.gather sur 10000 URLs sans Semaphore</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

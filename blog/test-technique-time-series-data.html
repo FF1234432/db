@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique séries temporelles : analyse, prédiction, anomaly detection — Data Builder</title>
+<meta name="description" content="Décomposition de séries temporelles, ARIMA, Prophet, détection d anomalies, features temporelles — ce qu on évalue pour un Data Scientist sur les données temporelles."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-time-series-data.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique séries temporelles : analyse, prédiction, anomaly detection</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique séries temporelles : analyse, prédiction, anomaly detection</h1>
+<p class="ai">Les données temporelles ont des propriétés spécifiques (autocorrélation, saisonnalité, trend) qui nécessitent des méthodes dédiées. En entretien, on évalue la compréhension de ces spécificités.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min de lecture</span><span>·</span><span>Data Scientist · Data Analyst</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#decomp">Décomposition de séries temporelles</a></li>
+<li><a href="#stationnarite">Stationnarité</a></li>
+<li><a href="#arima">ARIMA et SARIMA</a></li>
+<li><a href="#prophet">Prophet : prédiction pratique</a></li>
+<li><a href="#anomaly">Détection d anomalies</a></li>
+<li><a href="#features">Features temporelles pour ML</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='decomp'><span class='sn'>1</span>Décomposition : trend, saisonnalité, résidu</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les 3 composantes d une série temporelle ? Comment les extraire ?</p></div><div class='cb'><code>from statsmodels.tsa.seasonal import seasonal_decompose
+import pandas as pd
+
+df = pd.read_csv('sales.csv', parse_dates=['date'], index_col='date')
+
+# Décomposition additive : Y = Trend + Saisonnalité + Résidu
+# (quand la saisonnalité ne dépend pas du niveau)
+result = seasonal_decompose(df['revenue'], model='additive', period=52)
+
+# Décomposition multiplicative : Y = Trend * Saisonnalité * Résidu
+# (quand la saisonnalité est proportionnelle au niveau)
+result_mult = seasonal_decompose(df['revenue'], model='multiplicative', period=52)
+
+print('Trend:', result.trend[:5])
+print('Seasonal:', result.seasonal[:5])
+print('Residual:', result.resid[:5])</code></div><ul><li><strong>Additif</strong> — la saisonnalité est constante (même amplitude quelle que soit la valeur)</li><li><strong>Multiplicatif</strong> — la saisonnalité est proportionnelle au niveau (amplitude grandit avec le niveau)</li></ul><h2 id='stationnarite'><span class='sn'>2</span>Stationnarité : pourquoi c est important</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que la stationnarité ? Comment testez-vous si une série est stationnaire ?</p></div><div class='cb'><code>from statsmodels.tsa.stattools import adfuller
+
+# Test de Dickey-Fuller augmenté
+# H0 : la série a une racine unitaire (non stationnaire)
+result = adfuller(df['revenue'])
+adf_stat, p_value = result[0], result[1]
+
+print(f'ADF Statistic: {adf_stat:.4f}')
+print(f'p-value: {p_value:.4f}')
+
+if p_value < 0.05:
+    print('Stationnaire (rejette H0)')
+else:
+    print('NON stationnaire - différenciation nécessaire')
+    df_diff = df['revenue'].diff().dropna()  # différenciation d ordre 1
+    result_diff = adfuller(df_diff)
+    print(f'Après différenciation: p={result_diff[1]:.4f}')</code></div><ul><li><strong>Stationnarité</strong> — mean, variance et autocorrélation constantes dans le temps</li><li><strong>ARIMA nécessite</strong> — une série stationnaire. La différenciation (d dans ARIMA) rend la série stationnaire</li></ul><h2 id='arima'><span class='sn'>3</span>ARIMA : comprendre les paramètres</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Que signifient les paramètres p, d, q dans ARIMA(p,d,q) ?</p></div><div class='cb'><code>from statsmodels.tsa.arima.model import ARIMA
+from pmdarima import auto_arima
+
+# p = ordre AR (autorégressif) : dépendance sur les valeurs passées
+# d = ordre d intégration : nombre de différenciations
+# q = ordre MA (moyenne mobile) : dépendance sur les erreurs passées
+
+# Auto-sélection des paramètres
+model_auto = auto_arima(
+    df['revenue'],
+    seasonal=True,
+    m=52,          # périodicité (52 semaines)
+    stepwise=True,
+    information_criterion='aic'
+)
+print(model_auto.summary())
+
+# ARIMA manuel
+model = ARIMA(df['revenue'], order=(2, 1, 1))
+fitted = model.fit()
+predictions = fitted.forecast(steps=12)  # 12 prochains pas</code></div><h2 id='prophet'><span class='sn'>4</span>Prophet : prédiction pratique</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi Prophet est-il souvent préféré à ARIMA pour les séries temporelles business ?</p></div><div class='cb'><code>from prophet import Prophet
+import pandas as pd
+
+# Format Prophet : colonnes 'ds' (date) et 'y' (valeur)
+df_prophet = df.reset_index().rename(columns={'date': 'ds', 'revenue': 'y'})
+
+model = Prophet(
+    seasonality_mode='multiplicative',  # si saisonnalité proportionnelle
+    yearly_seasonality=True,
+    weekly_seasonality=True,
+    daily_seasonality=False,
+    changepoint_prior_scale=0.05  # flexibilité du trend
+)
+
+# Ajouter des jours fériés
+model.add_country_holidays(country_name='FR')
+
+# Ajouter une saisonnalité custom
+model.add_seasonality(name='quarterly', period=91.25, fourier_order=5)
+
+model.fit(df_prophet)
+future = model.make_future_dataframe(periods=52, freq='W')
+forecast = model.predict(future)</code></div><ul><li><strong>Prophet vs ARIMA</strong> — Prophet gère automatiquement les jours fériés, les changements de trend, les saisonnalités multiples. Plus robuste sur les données business</li><li><strong>Limitation</strong> — moins performant sur les séries avec forte autocorrélation ou structures complexes</li></ul><h2 id='anomaly'><span class='sn'>5</span>Détection d anomalies temporelles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment détectez-vous des anomalies dans une série temporelle ?</p></div><div class='cb'><code>import numpy as np
+from sklearn.ensemble import IsolationForest
+
+# Méthode 1 : Z-score sur la série différenciée
+df['diff'] = df['revenue'].diff()
+df['z_score'] = (df['diff'] - df['diff'].mean()) / df['diff'].std()
+anomalies_z = df[df['z_score'].abs() > 3]
+
+# Méthode 2 : Prophet residuals
+forecast = model.predict(df_prophet)
+df_prophet['yhat'] = forecast['yhat']
+df_prophet['residual'] = df_prophet['y'] - df_prophet['yhat']
+threshold = df_prophet['residual'].std() * 3
+anomalies_prophet = df_prophet[df_prophet['residual'].abs() > threshold]
+
+# Méthode 3 : Isolation Forest multivarié
+features = df[['revenue', 'volume', 'avg_basket']].values
+iso = IsolationForest(contamination=0.02, random_state=42)
+df['anomaly'] = iso.fit_predict(features)  # -1 = anomalie</code></div><h2 id='features'><span class='sn'>6</span>Features temporelles pour les modèles ML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment encodez-vous le temps pour des modèles ML non-séries-temporelles ?</p></div><ul><li><strong>Lag features</strong> — valeur à t-1, t-7, t-30 (hier, semaine passée, mois passé)</li><li><strong>Rolling statistics</strong> — moyenne glissante, écart-type glissant, min/max sur N jours</li><li><strong>Encodage cyclique</strong> — sin/cos pour le mois, le jour de la semaine (évite la discontinuité 12→1)</li><li><strong>Features calendaires</strong> — is_weekend, is_holiday, day_of_week, quarter, is_month_end</li><li><strong>Différences</strong> — croissance vs période précédente (revenue_t / revenue_t-1 - 1)</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Décomposition, stationnarité, Prophet basique</td><td>Teste la stationnarité avant ARIMA, a utilisé Prophet</td><td>Applique KFold aléatoire à une série temporelle</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>ARIMA tuning, détection d anomalies, features temporelles pour ML</td><td>Choisit entre ARIMA et Prophet selon le contexte, détecte les anomalies</td><td>Ne sait pas ce qu est la stationnarité</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

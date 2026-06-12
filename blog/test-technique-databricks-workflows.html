@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Databricks Workflows : orchestration et MLOps — Data Builder</title>
+<meta name="description" content="Databricks Workflows, DAGs de jobs, job clusters, Git integration, Asset Bundles, déploiement CI/CD — ce qu on évalue pour un Data Engineer Databricks."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-databricks-workflows.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Databricks Workflows : orchestration et MLOps</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Databricks Workflows : orchestration et MLOps</h1>
+<p class="ai">Databricks Workflows est l orchestrateur natif de Databricks. En entretien, on évalue la capacité à l utiliser efficacement pour orchestrer des pipelines complexes avec des dépendances et du CI/CD.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#concepts">Concepts Workflows</a></li>
+<li><a href="#tasks">Tasks et dépendances</a></li>
+<li><a href="#git">Git integration</a></li>
+<li><a href="#bundles">Asset Bundles</a></li>
+<li><a href="#cicd">CI/CD Databricks</a></li>
+<li><a href="#couts">Optimiser les coûts</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='concepts'><span class='sn'>1</span>Databricks Workflows vs Airflow</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Databricks Workflows plutôt qu Airflow ?</p></div><ul><li><strong>Databricks Workflows</strong> — orchestrateur natif, intégré au workspace, zéro infrastructure à gérer</li><li><strong>Avantages vs Airflow</strong> — accès direct aux jobs Spark, notebooks, DLT pipelines. Pas de dépendances à installer. Job clusters optimisés</li><li><strong>Quand Airflow</strong> — orchestration multi-cloud (Salesforce + Snowflake + S3), équipe avec expertise Airflow existante, providers non disponibles dans Databricks</li><li><strong>Quand Databricks Workflows</strong> — stack 100% Databricks, pipelines ML complexes, simplicité opérationnelle</li></ul><h2 id='tasks'><span class='sn'>2</span>Tasks et dépendances complexes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment modélisez-vous un pipeline à 10 étapes avec dépendances conditionnelles ?</p></div><div class='cb'><code>## Configuration Job via SDK Python
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.jobs import *
+
+w = WorkspaceClient()
+
+job = w.jobs.create(
+    name='pipeline_analytics',
+    tasks=[
+        Task(
+            task_key='ingest',
+            notebook_task=NotebookTask(notebook_path='/pipelines/01_ingest'),
+            job_cluster_key='shared_cluster'
+        ),
+        Task(
+            task_key='transform_dbt',
+            depends_on=[TaskDependency(task_key='ingest')],
+            python_wheel_task=PythonWheelTask(package_name='dbt-databricks', entry_point='dbt', parameters=['run', '--select', 'tag:daily'])
+        ),
+        Task(
+            task_key='validate',
+            depends_on=[TaskDependency(task_key='transform_dbt')],
+            condition_task=ConditionTask(
+                op=ConditionTaskOp.EQUAL_TO,
+                left='{{tasks.transform_dbt.values.status}}',
+                right='SUCCESS'
+            )
+        ),
+        Task(
+            task_key='alert_on_failure',
+            depends_on=[TaskDependency(
+                task_key='validate',
+                outcome='false'  # déclencher si validate échoue
+            )],
+            notebook_task=NotebookTask(notebook_path='/pipelines/alert')
+        )
+    ]
+)</code></div><h2 id='git'><span class='sn'>3</span>Git integration dans Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment versionnnez-vous vos notebooks et jobs Databricks avec Git ?</p></div><ul><li><strong>Git Folders</strong> — synchroniser des dossiers avec un repo GitHub/GitLab. Les notebooks sont dans Git, pas seulement dans Databricks</li><li><strong>Remote Git reference</strong> — les jobs pointent vers une branche ou un tag Git. Le CI/CD met à jour le tag</li><li><strong>DBSQL + Git</strong> — les queries SQL dans Databricks SQL peuvent être versionnées dans Git</li><li><strong>Asset Bundles</strong> — définir toute l infrastructure (jobs, clusters, pipelines) en YAML versionné dans Git</li></ul><h2 id='bundles'><span class='sn'>4</span>Asset Bundles : IaC pour Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que les Databricks Asset Bundles ? Comment les utilisez-vous ?</p></div><div class='cb'><code>## databricks.yml - Asset Bundle configuration
+bundle:
+  name: mon-pipeline-analytics
+
+variables:
+  environment:
+    default: dev
+
+targets:
+  dev:
+    mode: development
+    workspace:
+      host: https://adb-xxxx.azuredatabricks.net
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-yyyy.azuredatabricks.net
+
+resources:
+  jobs:
+    pipeline_daily:
+      name: pipeline-daily-${bundle.target}
+      tasks:
+        - task_key: ingest
+          notebook_task:
+            notebook_path: ./notebooks/01_ingest
+        - task_key: transform
+          depends_on: [{task_key: ingest}]
+          notebook_task:
+            notebook_path: ./notebooks/02_transform
+
+## Déploiement
+databricks bundle deploy --target dev
+databricks bundle deploy --target prod</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD avec Databricks Asset Bundles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous les Databricks Asset Bundles dans GitHub Actions ?</p></div><div class='cb'><code>## .github/workflows/databricks-deploy.yml
+name: Deploy to Databricks
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: databricks/setup-cli@main
+      
+      - name: Validate bundle
+        run: databricks bundle validate
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Deploy to production
+        run: databricks bundle deploy --target prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}</code></div><h2 id='couts'><span class='sn'>6</span>Optimiser les coûts des Workflows</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment minimisez-vous les coûts des jobs Databricks Workflows ?</p></div><ul><li><strong>Job clusters</strong> — créer un cluster dédié par job, détruit après. Pas de cluster all-purpose qui tourne en permanence</li><li><strong>Instance pools</strong> — pré-allouer des instances en standby pour réduire le startup time sans coût permanent</li><li><strong>Spot instances</strong> — utiliser des workers spot/preemptible pour les jobs batch. 60-80% d économie</li><li><strong>Sizing automatique</strong> — autoscaling entre min et max workers selon la charge réelle</li><li><strong>Photon</strong> — activer Photon pour les jobs SQL intensifs. 2-5x plus rapide = moins de DBU</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Jobs basiques, tâches avec dépendances, job clusters</td><td>A créé un job multi-tâches avec dépendances, utilise des job clusters</td><td>Utilise des clusters all-purpose pour tous les jobs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Asset Bundles, CI/CD, Git integration, optimisation coûts</td><td>A déployé via Asset Bundles dans GitHub Actions, utilise des spot instances</td><td>Ne sait pas ce que sont les Asset Bundles</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

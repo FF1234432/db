@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique conception de data warehouse : modélisation avancée — Data Builder</title>
+<meta name="description" content="Schéma en étoile avancé, tables de faits sans faits, bridge tables, junk dimensions, slowly changing dimensions mixtes — modélisation expert."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-data-warehouse-design.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique conception de data warehouse : modélisation avancée</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique conception de data warehouse : modélisation avancée</h1>
+<p class="ai">Concevoir un data warehouse robuste va au-delà du schéma en étoile basique. En entretien Data Architect ou Analytics Engineer Senior, on évalue la maîtrise des patterns avancés.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min de lecture</span><span>·</span><span>Analytics Engineer · Data Architect</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#etoile">Rappel schéma en étoile</a></li>
+<li><a href="#factless">Tables de faits sans faits</a></li>
+<li><a href="#bridge">Bridge tables</a></li>
+<li><a href="#junk">Junk dimensions</a></li>
+<li><a href="#role">Role-playing dimensions</a></li>
+<li><a href="#mini">Mini-dimensions</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='etoile'><span class='sn'>1</span>Révision : grain, additivité, conformité</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le grain d une table de faits ? Quelle est la différence entre un fait additif et semi-additif ?</p></div><ul><li><strong>Grain</strong> — le niveau de détail d une ligne dans la table de faits. Ex : 'une ligne par commande' ou 'une ligne par ligne de commande'</li><li><strong>Fait additif</strong> — peut être additionné dans toutes les dimensions. Ex : montant de vente (OK par date, par région, par produit)</li><li><strong>Fait semi-additif</strong> — peut être additionné sur certaines dimensions seulement. Ex : solde bancaire (OK par date mais pas cumulable dans le temps)</li><li><strong>Fait non-additif</strong> — ne peut pas être additionné. Ex : taux de conversion, prix unitaire. Toujours calculé depuis des faits additifs</li><li><strong>Dimensions conformes</strong> — même dimension partagée entre plusieurs tables de faits pour permettre des analyses croisées</li></ul><h2 id='factless'><span class='sn'>2</span>Tables de faits sans faits</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une factless fact table ? Donnez deux exemples concrets.</p></div><div class='cb'><code>-- Factless fact table type 1 : événements
+-- 'L étudiant a assisté à ce cours ce jour'
+CREATE TABLE fct_attendance (
+    student_id INT,       -- FK vers dim_students
+    course_id INT,        -- FK vers dim_courses
+    date_id INT,          -- FK vers dim_date
+    -- Pas de mesure ! La présence est le fait
+    PRIMARY KEY (student_id, course_id, date_id)
+);
+
+-- Factless fact table type 2 : couverture
+-- 'Ce produit était en promotion ce jour dans cette région'
+-- Permet de calculer les ventes SANS promo (anti-join)
+CREATE TABLE fct_promotions (
+    product_id INT,
+    region_id INT,
+    date_id INT
+    -- La présence dans la table = produit en promo
+);
+
+-- Utilisation : taux de conversion des promos
+SELECT
+    p.product_id,
+    COUNT(DISTINCT v.order_id) AS ventes,
+    COUNT(DISTINCT p.date_id) AS jours_en_promo
+FROM fct_promotions p
+LEFT JOIN fct_orders v ON p.product_id = v.product_id AND p.date_id = v.date_id
+GROUP BY p.product_id;</code></div><h2 id='bridge'><span class='sn'>3</span>Bridge tables : relations many-to-many</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment modélisez-vous une relation many-to-many entre faits et dimensions ?</p></div><div class='cb'><code>-- Problème : un compte peut avoir plusieurs propriétaires
+-- et un propriétaire peut avoir plusieurs comptes
+-- -> on ne peut pas mettre customer_id directement dans fct_transactions
+
+-- Solution : bridge table avec weight factor
+CREATE TABLE bridge_account_customer (
+    account_id INT,
+    customer_id INT,
+    allocation_factor DECIMAL(5,4)  -- 1.0 si seul propriétaire, 0.5 si deux propriétaires
+);
+
+-- Requête : CA par client (avec pondération)
+SELECT
+    c.customer_name,
+    SUM(t.amount * b.allocation_factor) AS allocated_revenue
+FROM fct_transactions t
+JOIN bridge_account_customer b ON t.account_id = b.account_id
+JOIN dim_customers c ON b.customer_id = c.customer_id
+GROUP BY c.customer_name;</code></div><ul><li><strong>Fanout problem</strong> — sans allocation_factor, les montants sont comptés plusieurs fois (une fois par client)</li><li><strong>Weight factor</strong> — 1/N si attribution égale entre N parties, ou pondération métier spécifique</li></ul><h2 id='junk'><span class='sn'>4</span>Junk dimensions : regrouper les flags</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une junk dimension ? Quand et comment la créer ?</p></div><div class='cb'><code>-- Problème : la table de faits a de nombreux indicateurs booléens
+-- is_promotional, is_online, is_returned, is_gift_wrap -> 4 colonnes dans les faits
+
+-- Solution : junk dimension
+-- Regroupe les combinaisons possibles de ces flags
+CREATE TABLE dim_order_flags (
+    flag_key INT PRIMARY KEY,
+    is_promotional BOOLEAN,
+    is_online BOOLEAN,
+    is_returned BOOLEAN,
+    is_gift_wrap BOOLEAN
+);
+-- Pré-peupler toutes les combinaisons (2^4 = 16 lignes)
+
+-- La table de faits n a plus qu une seule FK
+CREATE TABLE fct_orders (
+    order_id INT,
+    flag_key INT,  -- FK vers dim_order_flags
+    amount DECIMAL
+);</code></div><ul><li><strong>Avantages</strong> — réduit le nombre de colonnes dans la table de faits, groupe les flags logiquement liés</li><li><strong>Quand</strong> — 3+ flags boolean faiblement cardinals, souvent filtrés ensemble</li></ul><h2 id='role'><span class='sn'>5</span>Role-playing dimensions</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une role-playing dimension ? Montrez avec un exemple date.</p></div><div class='cb'><code>-- La même dimension peut jouer plusieurs rôles dans une table de faits
+-- Ex : une commande a une date de création ET une date de livraison
+
+-- Une seule table de dimension date
+CREATE TABLE dim_date (
+    date_id INT PRIMARY KEY,
+    full_date DATE,
+    year INT, quarter INT, month INT, day_of_week INT
+);
+
+-- La table de faits référence dim_date deux fois avec des noms différents
+CREATE TABLE fct_orders (
+    order_id INT,
+    order_date_id INT,     -- FK vers dim_date (rôle : date commande)
+    delivery_date_id INT,  -- FK vers dim_date (rôle : date livraison)
+    amount DECIMAL
+);
+
+-- Requête avec alias pour chaque rôle
+SELECT
+    od.year AS order_year,
+    dd.year AS delivery_year,
+    AVG(DATEDIFF('day', od.full_date, dd.full_date)) AS avg_delivery_days
+FROM fct_orders o
+JOIN dim_date od ON o.order_date_id = od.date_id
+JOIN dim_date dd ON o.delivery_date_id = dd.date_id
+GROUP BY 1, 2;</code></div><h2 id='mini'><span class='sn'>6</span>Mini-dimensions : gérer les grandes dimensions qui changent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une mini-dimension ? Quand l utilisez-vous à la place d un SCD2 ?</p></div><ul><li><strong>Problème</strong> — une dimension client a 50M de lignes et des attributs qui changent souvent (segment, score de crédit). SCD2 ferait exploser la table</li><li><strong>Mini-dimension</strong> — extraire les attributs qui changent fréquemment dans une petite dimension séparée</li><li><strong>Structure</strong> — dim_customers (attributs stables) + dim_customer_profile (segment, score, statut) + bridge si nécessaire</li><li><strong>Avantages</strong> — les requêtes sur les attributs stables restent rapides, seule la mini-dimension utilise le SCD2</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Grain, additivité, schéma en étoile complet</td><td>Définit le grain avant de modéliser, distingue additif et semi-additif</td><td>Ne sait pas ce qu est le grain</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Factless facts, bridge tables, junk dimensions, role-playing</td><td>A utilisé une bridge table pour un M:N, explique les junk dimensions</td><td>Ne connaît pas les patterns avancés de Kimball</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Architect ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

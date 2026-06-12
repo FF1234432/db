@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Python testing avancé : property-based testing, mutation testing — Data Builder</title>
+<meta name="description" content="Property-based testing avec Hypothesis, mutation testing avec Mutmut, fuzzing, paramétrage avancé pytest — pour un Data Engineer rigoureux."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-python-testing-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Python testing avancé : property-based testing, mutation testing</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Python testing avancé : property-based testing, mutation testing</h1>
+<p class="ai">Les tests classiques vérifient des exemples. Le property-based testing vérifie des propriétés sur des milliers d exemples générés. En entretien Expert, on évalue ces techniques avancées.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#hypothesis">Property-based testing avec Hypothesis</a></li>
+<li><a href="#properties">Définir les bonnes propriétés</a></li>
+<li><a href="#mutmut">Mutation testing</a></li>
+<li><a href="#parametrize">Paramétrisation avancée pytest</a></li>
+<li><a href="#benchmarks">Tests de performance</a></li>
+<li><a href="#coverage">Coverage avancé</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='hypothesis'><span class='sn'>1</span>Hypothesis : trouver les cas limites automatiquement</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le property-based testing ? En quoi est-il supérieur aux tests d exemples ?</p></div><div class='cb'><code>from hypothesis import given, strategies as st
+import pandas as pd
+
+# Test classique : vérifie 1 exemple
+def test_revenue_calculation_example():
+    df = pd.DataFrame({'qty': [2], 'price': [10.0]})
+    assert calculate_revenue(df)['revenue'].iloc[0] == 20.0
+
+# Property-based : Hypothesis génère des milliers d exemples
+@given(
+    qty=st.integers(min_value=0, max_value=10000),
+    price=st.floats(min_value=0.01, max_value=100000, allow_nan=False)
+)
+def test_revenue_is_always_non_negative(qty, price):
+    df = pd.DataFrame({'qty': [qty], 'price': [price]})
+    result = calculate_revenue(df)
+    assert result['revenue'].iloc[0] >= 0
+
+# Hypothesis trouve automatiquement les cas qui échouent
+# et les minimise (shrinking) pour donner le plus petit contre-exemple
+
+@given(st.data())
+def test_partition_total_is_preserved(data):
+    df = data.draw(st.data_frames(
+        columns=[st.column('amount', elements=st.floats(0, 1000, allow_nan=False))]
+    ))
+    result = transform_by_region(df)
+    assert abs(result['amount'].sum() - df['amount'].sum()) < 0.01</code></div><h2 id='properties'><span class='sn'>2</span>Définir les bonnes propriétés</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment identifiez-vous les propriétés à tester sur un pipeline de données ?</p></div><ul><li><strong>Conservation</strong> — une transformation ne doit pas perdre de lignes (ou perdre exactement N lignes si filtrage)</li><li><strong>Additivité</strong> — la somme des parties égale le tout après une agrégation</li><li><strong>Idempotence</strong> — appliquer la transformation deux fois doit donner le même résultat que l appliquer une fois</li><li><strong>Monotonie</strong> — si l input augmente, l output doit aussi augmenter (pour certaines métriques)</li><li><strong>Symétrie</strong> — l ordre des lignes ne devrait pas changer le résultat d une agrégation</li></ul><h2 id='mutmut'><span class='sn'>3</span>Mutation testing avec Mutmut</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le mutation testing ? Comment l utilisez-vous pour évaluer la qualité des tests ?</p></div><div class='cb'><code>## Mutation testing : vérifier que vos tests détectent les bugs
+
+## Installation
+pip install mutmut
+
+## Lancer le mutation testing
+mutmut run --paths-to-mutate=src/transforms.py
+
+## Résultats
+mutmut results
+# 45 mutations tested
+# 38 killed (tests ont détecté la mutation)
+# 7 survived (tests n ont PAS détecté la mutation = lacune)
+
+mutmut show 42  # voir la mutation qui a survécu
+# Original : if amount > 0:
+# Mutant :   if amount >= 0:
+# -> Ce test manque ! Ajouter test avec amount=0
+
+## Interpréter le score
+# Mutation score = killed / total
+# > 80% : bonne couverture
+# > 90% : excellente couverture</code></div><h2 id='parametrize'><span class='sn'>4</span>Paramétrisation avancée pytest</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous pytest.mark.parametrize pour tester des pipelines data ?</p></div><div class='cb'><code>import pytest
+from datetime import date
+
+# Paramétrisation simple
+@pytest.mark.parametrize('status,expected_count', [
+    ('completed', 10),
+    ('cancelled', 3),
+    ('pending', 7)
+])
+def test_filter_by_status(status, expected_count, sample_orders):
+    result = filter_orders(sample_orders, status=status)
+    assert len(result) == expected_count
+
+# Paramétrisation avec IDs
+@pytest.mark.parametrize('date_range,expected', [
+    pytest.param((date(2025,1,1), date(2025,1,31)), 100, id='january'),
+    pytest.param((date(2025,2,1), date(2025,2,28)), 85, id='february'),
+], ids=lambda x: x if isinstance(x, str) else None)
+def test_revenue_by_month(date_range, expected):
+    result = get_revenue(*date_range)
+    assert abs(result - expected) < 5
+
+# Fixtures paramétrées
+@pytest.fixture(params=['bigquery', 'snowflake', 'duckdb'])
+def warehouse(request):
+    return create_warehouse_connection(request.param)</code></div><h2 id='benchmarks'><span class='sn'>5</span>Tests de performance avec pytest-benchmark</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment mesurez-vous et suivez-vous les performances de vos transformations ?</p></div><div class='cb'><code>## pytest-benchmark : mesurer les performances de manière reproductible
+import pytest
+
+def test_transform_performance(benchmark, sample_df_100k):
+    # benchmark.pedantic : contrôle précis des itérations
+    result = benchmark.pedantic(
+        transform_orders,
+        args=(sample_df_100k,),
+        rounds=10,
+        iterations=3
+    )
+    assert len(result) > 0
+
+## Historique des benchmarks
+# pytest --benchmark-save=baseline
+# pytest --benchmark-compare=baseline --benchmark-compare-fail=mean:10%
+# -> Échoue si la performance se dégrade de plus de 10%
+
+## Intégré dans CI pour détecter les régressions de performance
+## avant de merger en production</code></div><h2 id='coverage'><span class='sn'>6</span>Coverage avancé : branches et conditions</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment allez-vous au-delà du simple coverage de lignes ?</p></div><div class='cb'><code>## pytest.ini
+[pytest]
+addopts = --cov=src --cov-report=term-missing --cov-branch
+
+## Branch coverage : vérifie que les deux branches d un if sont testées
+## if amount > 0:  -> tester amount > 0 ET amount <= 0
+
+## coverage.ini
+[coverage:run]
+branch = True
+omit = tests/*
+
+[coverage:report]
+exclude_lines =
+    pragma: no cover  # annoter les lignes à exclure
+    if __name__ == .__main__.
+    raise NotImplementedError
+    
+fail_under = 85  # échoue si coverage < 85%
+
+## Voir les branches non couvertes
+coverage html
+# Ouvrir htmlcov/index.html : lignes et branches en rouge</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Hypothesis, paramétrisation avancée, branch coverage</td><td>A utilisé Hypothesis pour découvrir des bugs, configure le branch coverage</td><td>Ne sait pas ce qu est le property-based testing</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Mutation testing, benchmarks, stratégies Hypothesis custom</td><td>A utilisé mutmut pour trouver des lacunes dans ses tests, a des benchmarks en CI</td><td>N a jamais entendu parler du mutation testing</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

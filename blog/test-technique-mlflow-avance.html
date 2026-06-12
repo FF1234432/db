@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique MLflow avancé : projets, recipes, Model Registry, serving — Data Builder</title>
+<meta name="description" content="MLflow Projects, Recipes, Model Registry avancé, serving production, intégration CI/CD — ce qu on évalue pour un ML Engineer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-mlflow-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique MLflow avancé : projets, recipes, Model Registry, serving</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique MLflow avancé : projets, recipes, Model Registry, serving</h1>
+<p class="ai">MLflow est bien plus qu un simple outil de tracking. En entretien ML Engineer Senior, on évalue la maîtrise de MLflow Projects pour la reproductibilité, du Model Registry pour la gouvernance et du serving.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Scientist · ML Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#tracking">Tracking avancé</a></li>
+<li><a href="#projects">MLflow Projects</a></li>
+<li><a href="#registry">Model Registry avancé</a></li>
+<li><a href="#serving">MLflow Serving</a></li>
+<li><a href="#cicd">CI/CD avec MLflow</a></li>
+<li><a href="#databricks">MLflow sur Databricks</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='tracking'><span class='sn'>1</span>Tracking avancé : tout loguer</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que vous loguez systématiquement dans MLflow au-delà des métriques de base ?</p></div><div class='cb'><code>import mlflow
+import mlflow.sklearn
+from mlflow.models import infer_signature
+
+with mlflow.start_run(run_name='xgb_v3_features_engineered') as run:
+    # Paramètres
+    mlflow.log_params({
+        'n_estimators': 500,
+        'max_depth': 6,
+        'learning_rate': 0.05,
+        'feature_set': 'v3_with_lags'  # quelle version des features
+    })
+    
+    # Métriques
+    mlflow.log_metrics({
+        'auc_test': 0.87,
+        'auc_train': 0.93,
+        'precision': 0.82,
+        'recall': 0.79,
+        'f1': 0.80
+    })
+    
+    # Artefacts : tout ce qui permet de reproduire
+    mlflow.log_artifact('feature_importance.png')
+    mlflow.log_artifact('confusion_matrix.png')
+    mlflow.log_artifact('data_stats.json')   # stats des données d entrainement
+    
+    # Signature : inputs/outputs attendus
+    signature = infer_signature(X_train, model.predict_proba(X_train))
+    mlflow.sklearn.log_model(model, 'model', signature=signature)</code></div><h2 id='projects'><span class='sn'>2</span>MLflow Projects : reproductibilité</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment garantissez-vous que votre code d entrainement est reproductible avec MLflow Projects ?</p></div><div class='cb'><code># MLproject file - définit comment exécuter le projet
+name: churn_prediction
+
+conda_env: conda.yaml  # ou pip_requirements: requirements.txt
+
+entry_points:
+  train:
+    parameters:
+      n_estimators: {type: int, default: 100}
+      max_depth: {type: int, default: 5}
+      data_path: {type: str}
+    command: 'python train.py --n-estimators {n_estimators} --max-depth {max_depth} --data {data_path}'
+
+  evaluate:
+    parameters:
+      model_uri: {type: str}
+    command: 'python evaluate.py --model {model_uri}'
+
+# Lancer depuis n importe où
+mlflow run . -P n_estimators=500 -P max_depth=6
+
+# Ou depuis Git directement
+mlflow run https://github.com/org/churn-model -P n_estimators=500</code></div><h2 id='registry'><span class='sn'>3</span>Model Registry : workflow complet</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Décrivez le workflow complet de promotion d un modèle du développement à la production.</p></div><div class='cb'><code>from mlflow.tracking import MlflowClient
+
+client = MlflowClient()
+
+# 1. Enregistrer le modèle depuis un run
+model_uri = f'runs:/{run_id}/model'
+model_details = mlflow.register_model(model_uri, 'churn_predictor')
+
+# 2. Ajouter des métadonnées
+client.update_model_version(
+    name='churn_predictor',
+    version=model_details.version,
+    description='XGBoost v3, AUC=0.87, trained on 2025-01 data'
+)
+
+# 3. Promouvoir vers Staging après validation
+client.transition_model_version_stage(
+    name='churn_predictor',
+    version=model_details.version,
+    stage='Staging',
+    archive_existing_versions=False
+)
+
+# 4. Tests d intégration sur Staging...
+
+# 5. Promouvoir en Production
+client.transition_model_version_stage(
+    name='churn_predictor',
+    version=model_details.version,
+    stage='Production',
+    archive_existing_versions=True  # archive l ancien modèle
+)</code></div><h2 id='serving'><span class='sn'>4</span>MLflow Serving : exposer un modèle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment servez-vous un modèle MLflow via une API REST ?</p></div><div class='cb'><code>## Serving via CLI
+# Charger depuis le registry
+mlflow models serve \
+  --model-uri models:/churn_predictor/Production \
+  --port 5000 \
+  --no-conda
+
+## Serving dans Python (pour les custom handlers)
+from mlflow.pyfunc import PythonModel
+
+class ChurnPredictor(PythonModel):
+    def load_context(self, context):
+        import joblib
+        self.model = joblib.load(context.artifacts['model_path'])
+        self.threshold = 0.6  # seuil business
+    
+    def predict(self, context, model_input):
+        probas = self.model.predict_proba(model_input)[:, 1]
+        return pd.DataFrame({
+            'probability': probas,
+            'prediction': (probas > self.threshold).astype(int)
+        })
+
+## Requête vers l API servie
+import requests
+response = requests.post(
+    'http://localhost:5000/invocations',
+    json={'dataframe_records': X_test.to_dict('records')}
+)</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD avec MLflow : automatiser les promotions</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous MLflow dans un pipeline CI/CD pour le ML ?</p></div><ul><li><strong>CI sur PR</strong> — lancer l entrainement sur un sample, vérifier que les métriques sont au-dessus du baseline</li><li><strong>Comparaison automatique</strong> — comparer le nouveau modèle avec le modèle en Production. Promouvoir seulement si meilleur</li><li><strong>GitHub Actions</strong> — workflow qui déclenche l entrainement, enregistre dans MLflow, promeut si métriques OK</li><li><strong>Model approval gate</strong> — certains modèles critiques nécessitent une validation humaine avant la promotion Production</li></ul><h2 id='databricks'><span class='sn'>6</span>MLflow sur Databricks : différences</h2><div class='sq'><div class='sl'>Question discriminante</div><p>En quoi MLflow Managed sur Databricks diffère-t-il du MLflow open source ?</p></div><ul><li><strong>Tracking server centralisé</strong> — pas de configuration, intégré au workspace Databricks</li><li><strong>Unity Catalog integration</strong> — dans Databricks 13+, le Model Registry est dans Unity Catalog. Lineage, accès RBAC</li><li><strong>Auto logging</strong> — mlflow.autolog() capture automatiquement sklearn, XGBoost, PyTorch, LightGBM</li><li><strong>Feature Store</strong> — intégration native entre les features Databricks Feature Store et les modèles MLflow</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tracking complet, Model Registry, serving basique</td><td>Loggue paramètres + métriques + artefacts, a promu un modèle via Registry</td><td>Ne loggue que les métriques sans les paramètres ni les artefacts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>MLflow Projects, serving production, CI/CD ML, custom PythonModel</td><td>A écrit un MLproject, serve un modèle custom en production, a un CI/CD ML</td><td>Ne sait pas ce qu est MLflow Projects</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

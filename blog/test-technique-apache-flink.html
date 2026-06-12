@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Apache Flink : stream processing avancé — Data Builder</title>
+<meta name="description" content="DataStream API, event time vs processing time, stateful processing, checkpointing, Flink SQL — ce qu on évalue pour un Data Engineer streaming avancé."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-apache-flink.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Apache Flink : stream processing avancé</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Apache Flink : stream processing avancé</h1>
+<p class="ai">Flink est la référence pour le stream processing à faible latence. En entretien Senior, on évalue la compréhension de l event time, du stateful processing et des garanties de livraison.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#vs_spark">Flink vs Spark Streaming</a></li>
+<li><a href="#time">Event time vs processing time</a></li>
+<li><a href="#stateful">Stateful processing</a></li>
+<li><a href="#checkpoint">Checkpointing et fault tolerance</a></li>
+<li><a href="#sql">Flink SQL</a></li>
+<li><a href="#usecases">Cas d usage</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='vs_spark'><span class='sn'>1</span>Flink vs Spark Structured Streaming</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas choisissez-vous Flink plutôt que Spark Streaming ?</p></div><table class='lt'><thead><tr><th></th><th>Spark Streaming</th><th>Apache Flink</th></tr></thead><tbody><tr><td>Modèle</td><td>Micro-batch (100ms minimum)</td><td>True streaming (event by event)</td></tr><tr><td>Latence</td><td>100ms - 1s</td><td>1-10ms</td></tr><tr><td>State management</td><td>Limité</td><td>Très riche (RocksDB)</td></tr><tr><td>Exactement-une-fois</td><td>Possible mais complexe</td><td>Natif</td></tr><tr><td>Idéal pour</td><td>Équipes Spark, batch + streaming unified</td><td>Latence sub-seconde, état complexe, fraude temps réel</td></tr></tbody></table><h2 id='time'><span class='sn'>2</span>Event time vs processing time</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre event time et processing time dans Flink ?</p></div><div class='cb'><code>from pyflink.datastream import StreamExecutionEnvironment
+from pyflink.common.time import Time
+from pyflink.datastream.window import TumblingEventTimeWindows
+
+env = StreamExecutionEnvironment.get_execution_environment()
+
+# Processing time : l heure système quand l event est traité
+# Simple mais incohérent si les events arrivent en retard
+stream.window(TumblingProcessingTimeWindows.of(Time.minutes(5)))
+
+# Event time : l heure DANS l event (quand il s est passé)
+# Cohérent, mais nécessite des watermarks pour les retardataires
+stream \
+    .assign_timestamps_and_watermarks(
+        WatermarkStrategy
+            .for_bounded_out_of_orderness(Duration.of_seconds(10))
+            .with_timestamp_assigner(MyTimestampAssigner())
+    ) \
+    .window(TumblingEventTimeWindows.of(Time.minutes(5)))</code></div><ul><li><strong>Event time recommandé</strong> — pour les analytics. Les résultats sont déterministes même si les events arrivent en retard</li><li><strong>Processing time</strong> — pour les cas où la latence est critique et la cohérence moins importante</li></ul><h2 id='stateful'><span class='sn'>3</span>Stateful processing : l avantage de Flink</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le stateful processing dans Flink ? Donnez un exemple concret.</p></div><div class='cb'><code>from pyflink.datastream import KeyedProcessFunction
+from pyflink.datastream.state import ValueStateDescriptor
+
+# Détecter les sessions utilisateur avec état
+class SessionDetector(KeyedProcessFunction):
+    def open(self, runtime_context):
+        # État persistant par clé (user_id)
+        self.last_event_time = runtime_context.get_state(
+            ValueStateDescriptor('last_event', Types.LONG())
+        )
+        self.session_start = runtime_context.get_state(
+            ValueStateDescriptor('session_start', Types.LONG())
+        )
+
+    def process_element(self, event, ctx):
+        current_time = event.timestamp
+        last_time = self.last_event_time.value()
+        
+        if last_time is None or (current_time - last_time) > 30 * 60 * 1000:
+            # Nouvelle session (> 30 minutes d inactivité)
+            self.session_start.update(current_time)
+        
+        self.last_event_time.update(current_time)
+        yield event</code></div><h2 id='checkpoint'><span class='sn'>4</span>Checkpointing et fault tolerance</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment Flink garantit-il exactly-once en cas de panne ?</p></div><ul><li><strong>Checkpointing</strong> — Flink sauvegarde périodiquement l état de tous les opérateurs. En cas de panne, reprend depuis le dernier checkpoint</li><li><strong>Distributed snapshots</strong> — algorithme de Chandy-Lamport : snapshot cohérent sans arrêter le traitement</li><li><strong>Exactly-once</strong> — combinaison du checkpointing Flink + transactions sur les sinks (Kafka transactions, JDBC transactions)</li><li><strong>Configuration</strong> — env.enable_checkpointing(60000) : checkpoint toutes les 60 secondes</li><li><strong>Backend</strong> — RocksDB pour les gros états (spillover sur disque), HashMapStateBackend pour les petits états (tout en RAM)</li></ul><h2 id='sql'><span class='sn'>5</span>Flink SQL : streaming avec SQL</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment écrivez-vous un job Flink avec SQL plutôt que l API Java/Python ?</p></div><div class='cb'><code>from pyflink.table import EnvironmentSettings, TableEnvironment
+
+env_settings = EnvironmentSettings.in_streaming_mode()
+tbl_env = TableEnvironment.create(env_settings)
+
+# Définir la source Kafka
+tbl_env.execute_sql("""
+    CREATE TABLE orders (
+        order_id STRING,
+        user_id STRING,
+        amount DOUBLE,
+        event_time TIMESTAMP(3),
+        WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+    ) WITH (
+        'connector' = 'kafka',
+        'topic' = 'orders',
+        'properties.bootstrap.servers' = 'kafka:9092',
+        'format' = 'json'
+    )
+""")
+
+# Agrégation sur une fenêtre temporelle
+tbl_env.execute_sql("""
+    SELECT
+        TUMBLE_START(event_time, INTERVAL '5' MINUTE) AS window_start,
+        user_id,
+        SUM(amount) AS total_amount
+    FROM orders
+    GROUP BY TUMBLE(event_time, INTERVAL '5' MINUTE), user_id
+""")</code></div><h2 id='usecases'><span class='sn'>6</span>Cas d usage Flink en production</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels contextes d entreprise voit-on Flink déployé ?</p></div><ul><li><strong>Détection de fraude temps réel</strong> — analyser chaque transaction en quelques millisecondes, croiser avec l historique du compte</li><li><strong>Alertes métier immédiates</strong> — alerter quand le stock d un produit tombe sous un seuil, en temps réel</li><li><strong>ETL streaming</strong> — transformer les events Kafka et charger dans BigQuery/Snowflake en quasi-temps-réel</li><li><strong>Feature engineering temps réel</strong> — calculer des features (moyenne mobile, count récent) pour le serving ML</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Event time vs processing time, watermarks, Flink SQL</td><td>Explique la différence event/processing time, a écrit du Flink SQL</td><td>Ne sait pas la différence entre Flink et Spark Streaming</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Stateful processing, checkpointing, exactly-once</td><td>A implémenté du stateful processing, comprend le checkpointing</td><td>Ne sait pas ce qu est le stateful processing</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer streaming avancé ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

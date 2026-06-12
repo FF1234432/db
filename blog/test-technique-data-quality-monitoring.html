@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique monitoring de la qualité des données en production — Data Builder</title>
+<meta name="description" content="Alertes de qualité, anomaly detection automatique, SLA de fraîcheur, Monte Carlo vs Elementary — ce qu on évalue pour un Data Engineer ou Analytics Engineer Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-data-quality-monitoring.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique monitoring de la qualité des données en production</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique monitoring de la qualité des données en production</h1>
+<p class="ai">La qualité des données en production se dégrade silencieusement. En entretien Senior, on évalue la capacité à mettre en place un monitoring proactif qui détecte les problèmes avant les utilisateurs.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#pourquoi">Pourquoi monitorer la qualité</a></li>
+<li><a href="#freshness">Fraîcheur des données</a></li>
+<li><a href="#volume">Monitoring des volumes</a></li>
+<li><a href="#schema">Changements de schéma</a></li>
+<li><a href="#outils">Outils : Elementary vs Monte Carlo</a></li>
+<li><a href="#alertes">Stratégie d alerting</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='pourquoi'><span class='sn'>1</span>Pourquoi le monitoring de qualité est critique</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les symptômes d un problème de qualité de données non détecté ?</p></div><ul><li><strong>Dashboard KPI erroné</strong> — le COMEX prend une décision sur un chiffre faux. Détecté 2 semaines plus tard</li><li><strong>Modèle ML qui se dégrade</strong> — les données d entrainement ont changé de distribution, le modèle prédit n importe quoi</li><li><strong>Pipeline silencieusement vide</strong> — une table source ne reçoit plus de données depuis 3 jours. Personne ne l a vu</li><li><strong>Règle du 1-10-100</strong> — corriger un problème à la source coûte 1. En production : 10. Après une décision business : 100</li></ul><h2 id='freshness'><span class='sn'>2</span>Monitoring de la fraîcheur</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment alertez-vous quand une table n a pas été mise à jour dans les délais attendus ?</p></div><div class='cb'><code># dbt source freshness
+sources:
+  - name: transactions
+    tables:
+      - name: orders
+        loaded_at_field: updated_at
+        freshness:
+          warn_after:  {count: 6,  period: hour}
+          error_after: {count: 24, period: hour}
+
+# Lancer la vérification
+dbt source freshness
+
+# Elementary (package dbt) : monitoring automatique
+# elementary_freshness_anomalies detecte les pics de latence
+models:
+  - name: fct_orders
+    tests:
+      - elementary.table_anomalies:
+          table_anomalies_type:
+            - freshness  # alerte si la table n est plus alimentee</code></div><ul><li><strong>Source freshness dbt</strong> — vérification intégrée, alerte si loaded_at est trop ancien</li><li><strong>Airflow SLA Miss</strong> — configurer des SLA sur les tâches critiques, alerte si dépassé</li></ul><h2 id='volume'><span class='sn'>3</span>Monitoring des volumes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment détectez-vous qu une table a perdu 50% de ses lignes du jour au lendemain ?</p></div><div class='cb'><code># Elementary : détection d anomalies de volume
+models:
+  - name: fct_orders
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: order_date
+          # alerte si le volume sort de la plage historique
+
+# Custom : comparer avec la moyenne glissante
+SELECT
+    DATE(order_date) AS jour,
+    COUNT(*) AS nb_commandes,
+    AVG(COUNT(*)) OVER (
+        ORDER BY DATE(order_date)
+        ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
+    ) AS moyenne_7j,
+    COUNT(*) / AVG(COUNT(*)) OVER (
+        ORDER BY DATE(order_date)
+        ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
+    ) AS ratio_vs_moyenne
+FROM fct_orders
+GROUP BY 1
+HAVING ratio_vs_moyenne < 0.5 OR ratio_vs_moyenne > 2.0</code></div><h2 id='schema'><span class='sn'>4</span>Détecter les changements de schéma</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment êtes-vous alerté quand une colonne est supprimée ou renommée dans une table source ?</p></div><ul><li><strong>dbt schema tests</strong> — si une colonne source est renommée, le modèle dbt staging échoue au prochain run</li><li><strong>schema_changes_from_baseline</strong> — test dbt qui compare le schéma actuel avec le schéma attendu</li><li><strong>DataHub notifications</strong> — alertes automatiques quand le schéma d un dataset change</li><li><strong>Fivetran/Airbyte</strong> — les connecteurs managés détectent les breaking changes et envoient des alertes</li></ul><h2 id='outils'><span class='sn'>5</span>Elementary vs Monte Carlo vs Soda</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel outil de data observabilité choisissez-vous selon le contexte ?</p></div><table class='lt'><thead><tr><th>Outil</th><th>Type</th><th>Forces</th><th>Idéal pour</th></tr></thead><tbody><tr><td><strong>Elementary</strong></td><td>Package dbt open source</td><td>Intégration native dbt, gratuit, anomaly detection</td><td>Équipes dbt-first, budget serré</td></tr><tr><td><strong>Monte Carlo</strong></td><td>SaaS enterprise</td><td>Détection automatique sans règles, lineage, MTTR tracking</td><td>Grandes équipes, données critiques</td></tr><tr><td><strong>Soda</strong></td><td>Open source + Cloud</td><td>Data contracts, checks SQL flexibles</td><td>Checks sur mesure, conformité</td></tr><tr><td><strong>Metaplane</strong></td><td>SaaS</td><td>Simple, bonne UX</td><td>Équipes débutantes en observabilité</td></tr></tbody></table><h2 id='alertes'><span class='sn'>6</span>Stratégie d alerting : éviter la fatigue</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évitez-vous que les alertes de qualité soient ignorées ?</p></div><ul><li><strong>Priorisation</strong> — distinguer les alertes critiques (bloquant la production) des warnings (à surveiller)</li><li><strong>Canal adapté</strong> — critique → PagerDuty + Slack #data-incidents. Warning → Slack #data-quality seulement</li><li><strong>Runbook</strong> — chaque alerte critique a un runbook : qui prévenir, quelle action, comment vérifier</li><li><strong>SLA de résolution</strong> — s engager sur un délai de résolution par niveau de gravité</li><li><strong>Réduire le bruit</strong> — un taux de faux positifs > 20% tue la culture d alerte. Tuner les seuils régulièrement</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>dbt source freshness, tests de volume basiques</td><td>A configuré des alertes de fraîcheur, monitore les volumes</td><td>Découvre les problèmes de qualité par les utilisateurs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Anomaly detection, Elementary ou Monte Carlo, stratégie d alerting</td><td>A déployé Elementary ou Monte Carlo, a une stratégie d alerting claire</td><td>Ne sait pas ce qu est l anomaly detection pour la data</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

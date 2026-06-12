@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique complet Analytics Engineer : SQL, dbt, modélisation — Data Builder</title>
+<meta name="description" content="Test technique complet pour un poste Analytics Engineer : SQL avancé, dbt, modélisation dimensionnelle, Python, gouvernance — grille complète."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-entretien-analytics-engineer.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique complet Analytics Engineer : SQL, dbt, modélisation</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique complet Analytics Engineer : SQL, dbt, modélisation</h1>
+<p class="ai">L Analytics Engineer est le profil le plus demandé en data en 2025. Voici le test technique complet qu on mène chez Data Builder pour évaluer rigoureusement ce profil.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#profil">Ce qu on évalue</a></li>
+<li><a href="#sql">Épreuve SQL</a></li>
+<li><a href="#dbt">Épreuve dbt</a></li>
+<li><a href="#model">Modélisation dimensionnelle</a></li>
+<li><a href="#python">Python analytique</a></li>
+<li><a href="#soft">Questions de contexte</a></li>
+<li><a href="#grille">Grille de décision</a></li></ol></div>
+<div class="ab"><h2 id='profil'><span class='sn'>1</span>Le profil Analytics Engineer : entre data et business</h2><p>L Analytics Engineer fait le pont entre les Data Engineers (pipelines bruts) et les Data Analysts (consommation). Il produit des modèles dbt robustes, versionnes, testés et documentés que toute l équipe peut consommer en confiance.</p><ul><li><strong>Compétences techniques attendues</strong> — SQL Senior, dbt avancé, Python pour l automatisation, Git, notions de data warehouse (Snowflake, BigQuery ou Redshift)</li><li><strong>Compétences analytiques</strong> — modélisation dimensionnelle, définition des métriques métier, compréhension des besoins utilisateurs</li><li><strong>Différence avec Data Analyst</strong> — l AE produit les fondations, le DA les consomme. L AE code en SQL/dbt, le DA analyse dans Power BI/Tableau</li></ul><h2 id='sql'><span class='sn'>2</span>Épreuve SQL : les questions discriminantes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les 3 requêtes SQL que vous posez systématiquement pour évaluer un AE ?</p></div><div class='cb'><code>-- Question 1 : cohortes de rétention
+-- Calculer le taux de rétention par cohorte hebdomadaire
+WITH premiere_commande AS (
+    SELECT user_id,
+           DATE_TRUNC('week', MIN(order_date)) AS cohorte
+    FROM commandes
+    GROUP BY user_id
+),
+activite AS (
+    SELECT pc.cohorte,
+           DATE_TRUNC('week', c.order_date) AS semaine,
+           COUNT(DISTINCT c.user_id) AS actifs
+    FROM premiere_commande pc
+    JOIN commandes c USING (user_id)
+    GROUP BY 1, 2
+)
+SELECT
+    cohorte,
+    semaine,
+    DATEDIFF('week', cohorte, semaine) AS semaine_num,
+    actifs,
+    FIRST_VALUE(actifs) OVER (PARTITION BY cohorte ORDER BY semaine) AS taille_cohorte,
+    ROUND(actifs * 100.0 /
+          FIRST_VALUE(actifs) OVER (PARTITION BY cohorte ORDER BY semaine), 1) AS retention_pct
+FROM activite
+ORDER BY cohorte, semaine_num;
+
+-- Question 2 : déduplication avec préférence
+-- Garder la commande la plus récente par client
+SELECT *
+FROM commandes
+QUALIFY ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_date DESC) = 1;
+
+-- Question 3 : running total avec reset
+-- Solde cumulatif par compte, réinitialisé à zéro si négatif
+SELECT
+    compte_id,
+    date_op,
+    montant,
+    GREATEST(SUM(montant) OVER (PARTITION BY compte_id ORDER BY date_op), 0) AS solde_cumul
+FROM mouvements;</code></div><h2 id='dbt'><span class='sn'>3</span>Épreuve dbt : modélisation et bonnes pratiques</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évaluez-vous la maturité dbt d un candidat AE ?</p></div><div class='cb'><code>-- Structure attendue d un projet dbt bien organisé
+models/
+├── staging/          -- 1 modèle par table source, renommage, cast
+│   ├── stg_commandes.sql
+│   └── _stg_commandes.yml  -- tests + documentation
+├── intermediate/     -- jointures et logique métier complexe
+│   └── int_commandes_enrichies.sql
+└── marts/
+    ├── finance/
+    │   └── fct_revenus.sql
+    └── marketing/
+        └── dim_clients.sql
+
+-- Ce qu on teste dans le YAML :
+models:
+  - name: fct_revenus
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: montant
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0</code></div><ul><li><strong>Niveau Junior</strong> — staging + marts, tests basiques, ref() utilisé correctement</li><li><strong>Niveau Confirmé</strong> — intermediate layer, macros, incremental models, snapshots</li><li><strong>Niveau Senior</strong> — packages custom, hooks, CI/CD slim, documentation des exposures</li></ul><h2 id='model'><span class='sn'>4</span>Modélisation dimensionnelle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre un schéma en étoile et un schéma en flocon ? Quand choisissez-vous l un ou l autre ?</p></div><div class='cb'><code>-- Schéma en étoile : recommandé pour la BI
+-- Table de faits centrale + dimensions dénormalisées
+fct_commandes (
+    order_id PK,
+    date_id FK,       -- dim_date
+    client_id FK,     -- dim_clients (inclut ville, pays, segment)
+    produit_id FK,    -- dim_produits (inclut catégorie, marque)
+    montant,
+    quantite
+)
+-- Les dimensions sont plates : pas de table dim_ville séparée
+
+-- Schéma en flocon : dimensions normalisées
+-- dim_produits -> dim_categories -> dim_sous_categories
+-- Plus économique en stockage mais jointures plus complexes
+-- Déconseillé pour la BI self-service</code></div><ul><li><strong>Étoile</strong> — recommandé pour la BI. Jointures simples, performances optimales sur les data warehouses modernes</li><li><strong>Flocon</strong> — utile si les dimensions sont très larges et que le stockage est contrainte. Rare en pratique sur les cloud warehouses</li><li><strong>SCD Type 2</strong> — suivre l historique des changements dans une dimension (ex : un client qui change de segment)</li></ul><h2 id='python'><span class='sn'>5</span>Python pour l Analytics Engineer</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel niveau de Python attendez-vous d un AE ? Quels sont les cas d usage typiques ?</p></div><ul><li><strong>Niveau attendu</strong> — Python intermédiaire. Pas de ML, mais capable d écrire des scripts d automatisation et des macros dbt</li><li><strong>Cas d usage</strong> : automatiser le déploiement dbt via API, écrire des tests de données avec pytest, parser des fichiers pour alimenter des seeds dbt, scripts d administration (ex : Tableau Server Client)</li><li><strong>Ce qu on n attend pas</strong> — PyTorch, Spark, algorithmes ML. Ce n est pas le rôle</li><li><strong>Ce qui différencie</strong> — un AE Senior sait écrire des macros dbt avec run_query() et automatiser la génération de modèles</li></ul><h2 id='soft'><span class='sn'>6</span>Questions de contexte business</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi les questions de contexte métier sont-elles importantes pour évaluer un AE ?</p></div><ul><li><strong>'Comment définissez-vous le chiffre d affaires dans votre modèle ?'</strong> — un bon AE sait que la définition d une métrique est un sujet politique autant que technique</li><li><strong>'Comment gérez-vous les breaking changes dans vos modèles dbt ?'</strong> — révèle la maturité sur le cycle de vie des données</li><li><strong>'Qui valide vos définitions de métriques ?'</strong> — révèle la capacité à travailler avec les métiers</li><li><strong>'Comment sauriez-vous que votre modèle est cassé en production ?'</strong> — révèle la culture de monitoring et d alerting</li></ul><h2 id='grille'><span class='sn'>7</span>Grille de décision GO / NO-GO</h2><table class='lt'><thead><tr><th>Compétence</th><th>Junior AE</th><th>Confirmé AE</th><th>Senior AE</th></tr></thead><tbody><tr><td>SQL window functions</td><td>Bases (ROW_NUMBER)</td><td>LAG/LEAD, frames, cohortes</td><td>CTEs récursives, QUALIFY, JSON</td></tr><tr><td>dbt modèles</td><td>Staging + marts, ref()</td><td>Intermediate, macros, tests custom</td><td>Packages, CI slim, snapshots SCD2</td></tr><tr><td>Modélisation</td><td>Comprend étoile vs flocon</td><td>Conçoit un schéma en étoile complet</td><td>SCD2, late-arriving facts, bridge tables</td></tr><tr><td>Python</td><td>pandas basique, scripts</td><td>Automatisation dbt API, pytest</td><td>Macros dbt avancées, outils admin</td></tr><tr><td>Communication métier</td><td>Explique son travail</td><td>Anime des ateliers de définition métriques</td><td>Définit les standards de l équipe</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

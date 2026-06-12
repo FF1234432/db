@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Data Contracts : implémenter avec dbt et OpenAPI — Data Builder</title>
+<meta name="description" content="Data contracts, schema versioning, SLA, implementation avec dbt-contracts et YAML — ce qu on évalue pour un Analytics Engineer Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-data-contract.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Data Contracts : implémenter avec dbt et OpenAPI</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Data Contracts : implémenter avec dbt et OpenAPI</h1>
+<p class="ai">Les data contracts formalisent les engagements entre producteurs et consommateurs de données. En 2025, c est un sujet d entretien Senior qui différencie les profils avec une vraie culture de gouvernance.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Analytics Engineer · Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#concept">Qu est-ce qu un data contract</a></li>
+<li><a href="#composants">Composants d un contract</a></li>
+<li><a href="#dbt">Implémenter avec dbt</a></li>
+<li><a href="#versioning">Schema versioning</a></li>
+<li><a href="#process">Processus organisationnel</a></li>
+<li><a href="#outils">Outils et frameworks</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='concept'><span class='sn'>1</span>Définition et valeur ajoutée</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un data contract ? Quel problème concret résout-il ?</p></div><ul><li><strong>Data contract</strong> — accord formel entre le producteur d un dataset et ses consommateurs, spécifiant le schéma, la qualité, la fraîcheur et les SLA</li><li><strong>Problème résolu</strong> — sans contract, un Data Engineer peut renommer une colonne sans savoir que 5 dashboards en dépendent. Avec un contract, le changement doit être negocié et communiqué</li><li><strong>Analogie</strong> — comme un contrat d API REST (OpenAPI), mais pour les données</li><li><strong>Popularisé par</strong> — Chad Sanderson (Data Products), Andrew Jones (Data Contracts book)</li></ul><h2 id='composants'><span class='sn'>2</span>Les 4 composants d un data contract</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels éléments doit contenir un data contract complet ?</p></div><div class='cb'><code># data-contract.yaml (format standard emergent)
+apiVersion: v2.0.0
+kind: DataContract
+id: orders-v2
+info:
+  title: Orders Dataset
+  version: 2.1.0
+  owner: equipe-commerce
+  contact: data-commerce@entreprise.com
+
+schema:
+  type: dbt
+  path: models/marts/commerce/fct_orders.sql
+  fields:
+    - name: order_id
+      type: string
+      required: true
+      unique: true
+    - name: amount
+      type: float
+      minimum: 0
+    - name: status
+      type: string
+      enum: [completed, pending, cancelled]
+
+quality:
+  freshness: 1h          # données fraîches dans l heure
+  completeness: 99.9%    # moins de 0.1% de nulls sur order_id
+
+terms:
+  usage: Données internes uniquement
+  noticePeriod: 30 jours avant breaking change</code></div><h2 id='dbt'><span class='sn'>3</span>Implémenter avec dbt</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous dbt pour enforcer un data contract ?</p></div><ul><li><strong>sources.yml</strong> — définir le contrat sur les données sources : fraîcheur, schéma attendu</li><li><strong>Tests YAML</strong> — not_null, unique, accepted_values, relationships : les tests dbt sont la forme la plus simple de contract enforcement</li><li><strong>dbt-contracts (package)</strong> — package qui formate les tests dbt comme des contrats explicites avec des SLA</li><li><strong>schema.yml</strong> — la documentation dbt + les tests = un contract vivant et exécutable</li></ul><div class='cb'><code>sources:
+  - name: commerce
+    freshness:
+      warn_after: {count: 12, period: hour}
+      error_after: {count: 24, period: hour}
+    tables:
+      - name: orders
+        loaded_at_field: updated_at
+        columns:
+          - name: order_id
+            tests: [not_null, unique]
+          - name: status
+            tests:
+              - accepted_values:
+                  values: [completed, pending, cancelled]</code></div><h2 id='versioning'><span class='sn'>4</span>Schema versioning : gérer les breaking changes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous une breaking change sur un dataset qui a des consommateurs ?</p></div><ul><li><strong>Semantic versioning</strong> — MAJOR.MINOR.PATCH : breaking change = incrémentation MAJOR</li><li><strong>Backward compatible changes</strong> — ajouter une colonne nullable : MINOR. Supprimer ou renommer une colonne : MAJOR</li><li><strong>Dépréciation progressive</strong> — maintenir l ancienne colonne avec un flag deprecated pendant 30 jours, documenter la migration</li><li><strong>Communication</strong> — notifier tous les consommateurs enregistrés avant toute breaking change</li><li><strong>Consumers registry</strong> — tenir un registre des consommateurs de chaque dataset (exposures dbt)</li></ul><h2 id='process'><span class='sn'>5</span>Processus organisationnel</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment convainquez-vous une équipe de mettre en place des data contracts ?</p></div><ul><li><strong>Commencer par les datasets critiques</strong> — les 5-10 tables les plus consommées, pas toute la stack d un coup</li><li><strong>Outiller le producteur</strong> — le contract doit être facile à créer et à maintenir. Si c est une corvée, personne ne le fera</li><li><strong>Automatiser la validation</strong> — les tests de contract doivent tourner automatiquement en CI à chaque PR</li><li><strong>Data stewards</strong> — désigner des responsables par domaine pour valider et maintenir les contracts</li></ul><h2 id='outils'><span class='sn'>6</span>Outils et frameworks en 2025</h2><ul><li><strong>Data Contract CLI</strong> — outil open source pour créer, valider et publier des data contracts (format YAML standard)</li><li><strong>dbt + tests YAML</strong> — la forme la plus répandue et la plus pratique de data contract pour les équipes dbt</li><li><strong>Soda</strong> — framework de qualité qui supporte les data contracts avec des SLA explicites</li><li><strong>DataHub / OpenMetadata</strong> — catalogues qui peuvent stocker et publier les contracts</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Comprend le concept, sait qu un test dbt est une forme de contract</td><td>Peut expliquer pourquoi les data contracts existent, a mis des tests dbt en place</td><td>N a jamais entendu parler de data contracts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>A formalisé des contracts YAML, gère le versioning, communique les breaking changes</td><td>A mis en place des contracts sur des datasets critiques, gère la dépréciation</td><td>Ne sait pas comment gérer une breaking change sans casser les consommateurs</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>
