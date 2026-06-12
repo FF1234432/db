@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Data Mesh : domaines, data products, gouvernance fédérée — Data Builder</title>
+<meta name="description" content="Domaines data, data products, self-service infrastructure, gouvernance fédérée — ce qu'on évalue pour un Data Engineer ou Data Architect sur Data Mesh."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-data-mesh.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Data Mesh : domaines, data products, gouvernance fédérée</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique Data Mesh : domaines, data products, gouvernance fédérée" data-en="Data Mesh technical interview: domains, data products, federated governance">Test technique Data Mesh : domaines, data products, gouvernance fédérée</h1>
+<p class="ai" data-fr="Le Data Mesh remet en question l'architecture data centralisée. En entretien Senior ou Lead, on évalue la capacité à architecturer par domaine, définir des data products et concevoir une gouvernance décentralisée." data-en="Data Mesh challenges centralized data architecture. In Senior or Lead interviews, we assess the ability to architect by domain, define data products and design decentralized governance.">Le Data Mesh remet en question l'architecture data centralisée. En entretien Senior ou Lead, on évalue la capacité à architecturer par domaine, définir des data products et concevoir une gouvernance décentralisée.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span><span>·</span><span>Data Engineer · Data Architect</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#principes">Les 4 principes</a></li>
+<li><a href="#domaines">Décomposition en domaines</a></li>
+<li><a href="#products">Data products</a></li>
+<li><a href="#infra">Self-serve infrastructure</a></li>
+<li><a href="#gouv">Gouvernance fédérée</a></li>
+<li><a href="#vs">Data Mesh vs Data Lakehouse</a></li>
+<li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Le Data Mesh est un paradigme architectural qui décentralise la propriété et la gouvernance de la donnée vers les équipes métier (domaines). En entretien Lead ou Architect, on cherche des profils capables de comprendre les trade-offs — pas ceux qui appliquent Data Mesh à tout sans réfléchir.</p>
+
+<h2 id="principes"><span class="sn">1</span>Les 4 principes fondamentaux</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quels sont les 4 principes du Data Mesh ? Lequel est selon vous le plus difficile à mettre en œuvre en pratique ?</p></div>
+<ul>
+<li><strong>1. Domain ownership</strong> — chaque domaine métier (Finance, Marketing, Logistique...) est propriétaire de ses données et responsable de leur qualité et disponibilité</li>
+<li><strong>2. Data as a product</strong> — les données sont traitées comme des produits : elles ont un owner, une SLA, une documentation, une qualité mesurée</li>
+<li><strong>3. Self-serve data infrastructure</strong> — une plateforme data centralisée fournit les outils pour que les domaines publient et consomment des data products sans dépendre d'une équipe centrale</li>
+<li><strong>4. Federated computational governance</strong> — des règles globales (sécurité, conformité RGPD, interopérabilité) appliquées de manière décentralisée par chaque domaine</li>
+</ul>
+<div class="cl"><p><strong>Le plus difficile en pratique :</strong> le principe 1 — Domain ownership. Il nécessite de changer la culture organisationnelle et d'accepter que les équipes métier deviennent responsables de la qualité de leurs données, ce qui implique des compétences data dans chaque équipe.</p></div>
+
+<h2 id="domaines"><span class="sn">2</span>Décomposition en domaines</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment délimitez-vous les frontières d'un domaine data ? Sur quels critères ?</p></div>
+<ul>
+<li><strong>Bounded contexts</strong> (DDD) — s'aligner sur les frontières des contextes métier existants (commandes, clients, produits, livraisons)</li>
+<li><strong>Critères de découpage</strong> : responsabilité organisationnelle, fréquence de changement, couplage des données, équipe responsable existante</li>
+<li><strong>Types de domaines</strong> : source domains (producteurs de données brutes), consumer domains (consommateurs), aggregate domains (combinateurs)</li>
+<li><strong>Anti-pattern</strong> — découper par technologie (un domaine "Kafka", un domaine "S3") au lieu de découper par métier</li>
+</ul>
+
+<h2 id="products"><span class="sn">3</span>Data products : définition et caractéristiques</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce qu'un bon data product ? Quelles sont les caractéristiques qu'il doit respecter selon Zhamak Dehghani ?</p></div>
+<p>Zhamak Dehghani (créatrice du concept) définit 8 caractéristiques d'un bon data product :</p>
+<ul>
+<li><strong>Discoverable</strong> — référencé dans un catalogue data, trouvable par les consommateurs</li>
+<li><strong>Addressable</strong> — accessible via une adresse stable (URL, URI) quel que soit le stockage sous-jacent</li>
+<li><strong>Trustworthy</strong> — SLA de qualité défini et mesuré (fraîcheur, complétude, exactitude)</li>
+<li><strong>Self-describing</strong> — schéma, sémantique, propriétaire, documentation inclus</li>
+<li><strong>Interoperable</strong> — standards ouverts pour l'interopérabilité entre domaines</li>
+<li><strong>Natively accessible</strong> — accessible dans le format natif du consommateur (SQL, fichiers, API)</li>
+<li><strong>Secure</strong> — contrôle d'accès appliqué par le domaine propriétaire</li>
+<li><strong>Valuable</strong> — répond à un besoin réel, a des consommateurs identifiés</li>
+</ul>
+
+<h2 id="infra"><span class="sn">4</span>Self-serve infrastructure</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce qu'une self-serve data platform dans un contexte Data Mesh ? Quels outils composent typiquement cette plateforme ?</p></div>
+<ul>
+<li><strong>Rôle</strong> — permettre aux domaines de publier des data products sans expertise infrastructure spécialisée</li>
+<li><strong>Composants typiques</strong> :
+  <ul>
+    <li>Data catalogue — DataHub, Apache Atlas, Collibra (découverte et documentation)</li>
+    <li>Stockage — S3/GCS avec partitionnement standardisé, Delta Lake, Iceberg</li>
+    <li>Transformation — dbt (chaque domaine gère ses modèles), Spark</li>
+    <li>Ingestion — Fivetran, Airbyte (self-service pour les domaines)</li>
+    <li>Observabilité — Great Expectations, Monte Carlo (qualité des données)</li>
+    <li>Orchestration — Airflow ou Prefect avec des patterns standards</li>
+  </ul>
+</li>
+<li><strong>Principe clé</strong> — la plateforme est un produit aussi. L'équipe plateforme est au service des domaines, pas l'inverse</li>
+</ul>
+
+<h2 id="gouv"><span class="sn">5</span>Gouvernance fédérée</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment appliquez-vous des règles de conformité RGPD de manière décentralisée dans un Data Mesh ?</p></div>
+<ul>
+<li><strong>Politiques globales vs locales</strong> — la gouvernance centrale définit les standards (chiffrement, anonymisation, rétention), les domaines les implémentent</li>
+<li><strong>Data contracts</strong> — contrats formels entre producteurs et consommateurs (schéma, SLA, mode de breaking change)</li>
+<li><strong>Automated policy enforcement</strong> — Open Policy Agent (OPA), contrôles automatisés dans le pipeline CI/CD du data product</li>
+<li><strong>Data lineage</strong> — traçabilité de la donnée de la source jusqu'aux consommateurs finaux</li>
+<li><strong>Catalogue centralisé</strong> — DataHub ou Collibra comme source de vérité pour la gouvernance globale</li>
+</ul>
+
+<h2 id="vs"><span class="sn">6</span>Data Mesh vs Data Lakehouse : quand choisir quoi</h2>
+<table class="lt"><thead><tr><th></th><th>Data Mesh</th><th>Data Lakehouse</th></tr></thead><tbody>
+<tr><td><strong>Organisation</strong></td><td>Décentralisée, par domaine</td><td>Centralisée, équipe data dédiée</td></tr>
+<tr><td><strong>Propriété</strong></td><td>Chaque domaine possède ses données</td><td>Équipe data centrale</td></tr>
+<tr><td><strong>Adapté pour</strong></td><td>Grande organisation, multiples domaines autonomes</td><td>PME, équipe data homogène, stack unifiée</td></tr>
+<tr><td><strong>Complexité</strong></td><td>Élevée (organisationnelle surtout)</td><td>Modérée (technique surtout)</td></tr>
+<tr><td><strong>Technologies</strong></td><td>dbt par domaine, DataHub, Delta/Iceberg</td><td>Databricks, Snowflake, BigQuery</td></tr>
+</tbody></table>
+<div class="cl"><p><strong>Erreur fréquente :</strong> adopter Data Mesh dans une équipe de 5 personnes. Data Mesh a du sens à partir d'une certaine taille organisationnelle (plusieurs équipes autonomes). Pour les petites structures, un Data Lakehouse bien gouverné est plus adapté.</p></div>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bm">Confirmé</span></td><td>Connaît les 4 principes, comprend le concept de data product</td><td>Explique les 4 principes, peut citer des exemples de domaines et de data products</td><td>Confond Data Mesh avec une architecture technique (pas organisationnelle)</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>A participé à la mise en place d'un domaine data, connaît les outils (DataHub, dbt, data contracts)</td><td>A défini un data product avec SLA, a travaillé avec des data contracts, utilise DataHub</td><td>Ne sait pas ce qu'est un data contract, n'a jamais travaillé en mode domaine</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>A architecturé une migration vers Data Mesh, a défini la self-serve platform</td><td>A mené une décomposition en domaines, a choisi les outils de la plateforme, a géré les trade-offs</td><td>Ne peut pas expliquer quand Data Mesh n'est pas adapté</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Architect ou Data Engineer Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

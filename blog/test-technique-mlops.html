@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles — Data Builder</title>
+<meta name="description" content="Feature store, MLflow, CI/CD ML, déploiement de modèles en production, monitoring de drift — ce qu'on évalue dans un entretien MLOps pour Data Scientist ou ML Engineer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-mlops.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles" data-en="MLOps technical interview: CI/CD for ML, MLflow, model deployment">Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles</h1>
+<p class="ai" data-fr="MLOps est le point de friction entre Data Science et Data Engineering. En entretien, on évalue la capacité à industrialiser un modèle ML : versioning, déploiement, monitoring et retraining automatisé." data-en="MLOps is the friction point between Data Science and Data Engineering. In interviews, we assess the ability to industrialize an ML model: versioning, deployment, monitoring and automated retraining.">MLOps est le point de friction entre Data Science et Data Engineering. En entretien, on évalue la capacité à industrialiser un modèle ML : versioning, déploiement, monitoring et retraining automatisé.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span><span>·</span><span>Data Scientist · ML Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#principes">Principes MLOps</a></li>
+<li><a href="#mlflow">MLflow : tracking et registry</a></li>
+<li><a href="#cicd">CI/CD pour le ML</a></li>
+<li><a href="#deploy">Déploiement de modèles</a></li>
+<li><a href="#monitor">Monitoring et data drift</a></li>
+<li><a href="#features">Feature store</a></li>
+<li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Un Data Scientist qui ne peut pas déployer ses modèles en production est un coût, pas une valeur. MLOps est le pont entre le notebook de recherche et le système de production fiable. En entretien, on distingue les profils qui ont réellement industrialisé des modèles de ceux qui ont seulement entraîné des modèles.</p>
+
+<h2 id="principes"><span class="sn">1</span>Principes MLOps : les niveaux de maturité</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Décrivez les 3 niveaux de maturité MLOps (MLOps 0, 1, 2). À quel niveau se situe votre organisation actuelle ?</p></div>
+<ul>
+<li><strong>MLOps 0 — Manual</strong> : déploiement manuel, un notebook exporté en script, pas de versioning du modèle, pas de monitoring. La plupart des équipes data sont ici</li>
+<li><strong>MLOps 1 — ML pipeline automation</strong> : pipeline d'entraînement automatisé, versioning avec MLflow, déploiement semi-automatisé, monitoring basique de la performance</li>
+<li><strong>MLOps 2 — CI/CD pipeline automation</strong> : pipeline complet automatisé de la donnée jusqu'au déploiement, tests automatisés, retraining déclenché automatiquement, monitoring avancé avec alertes</li>
+</ul>
+<div class="cl"><p><strong>Signal GO Senior :</strong> le candidat sait identifier le niveau de maturité de son organisation et peut expliquer les étapes pour progresser vers le niveau supérieur.</p></div>
+
+<h2 id="mlflow"><span class="sn">2</span>MLflow : tracking, registry et serving</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre MLflow Tracking, MLflow Model Registry et MLflow Serving ?</p></div>
+<div class="cb"><code>import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+
+# MLflow Tracking : loguer les expériences
+with mlflow.start_run(run_name="RF_v2_features_v3"):
+    mlflow.log_param("n_estimators", 100)
+    mlflow.log_param("max_depth", 5)
+    
+    model = RandomForestClassifier(n_estimators=100, max_depth=5)
+    model.fit(X_train, y_train)
+    
+    accuracy = model.score(X_test, y_test)
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_metric("f1_score", f1)
+    
+    # Loguer le modèle avec sa signature
+    mlflow.sklearn.log_model(
+        model,
+        "random_forest",
+        signature=infer_signature(X_train, model.predict(X_train))
+    )
+
+# MLflow Model Registry : promouvoir vers production
+client = mlflow.tracking.MlflowClient()
+client.transition_model_version_stage(
+    name="churn_predictor",
+    version=3,
+    stage="Production"  # Staging → Production
+)</code></div>
+<ul>
+<li><strong>MLflow Tracking</strong> — loguer les paramètres, métriques, artefacts et modèles de chaque expérience</li>
+<li><strong>MLflow Model Registry</strong> — centraliser et versionner les modèles, gérer les transitions Staging/Production/Archived</li>
+<li><strong>MLflow Serving</strong> — exposer un modèle comme API REST (mlflow models serve)</li>
+<li><strong>Model signature</strong> — décrire les inputs/outputs attendus, essentiel pour la validation en production</li>
+</ul>
+
+<h2 id="cicd"><span class="sn">3</span>CI/CD pour le Machine Learning</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce qu'un test de modèle ML dans un pipeline CI/CD ? Quels types de tests implémentez-vous ?</p></div>
+<ul>
+<li><strong>Tests de données</strong> — valider le schema, les distributions, l'absence de data leakage dans le dataset d'entraînement (Great Expectations, pytest)</li>
+<li><strong>Tests de performance</strong> — vérifier que le nouveau modèle performe mieux que le modèle en production sur un dataset de validation fixe</li>
+<li><strong>Tests de régression</strong> — vérifier que les prédictions sur des cas connus n'ont pas changé de manière inattendue</li>
+<li><strong>Tests d'inférence</strong> — vérifier que le modèle déployé répond correctement (latence, format de réponse)</li>
+<li><strong>Shadow mode</strong> — déployer le nouveau modèle en parallèle sans l'exposer aux utilisateurs pour comparer les prédictions</li>
+</ul>
+<div class="cb"><code># Exemple de test de performance dans un pipeline CI
+def test_model_performance():
+    model = load_model("models/churn_v3")
+    X_test, y_test = load_validation_set()
+    
+    score = f1_score(y_test, model.predict(X_test))
+    baseline = 0.82  # performance du modèle en production actuel
+    
+    assert score >= baseline * 0.98, (
+        f"Nouveau modèle trop faible: {score:.3f} vs baseline {baseline:.3f}"
+    )</code></div>
+
+<h2 id="deploy"><span class="sn">4</span>Déploiement de modèles en production</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelles sont les différentes stratégies de déploiement d'un modèle ML ? Dans quel cas choisissez-vous chacune ?</p></div>
+<table class="lt"><thead><tr><th>Stratégie</th><th>Description</th><th>Cas d'usage</th></tr></thead><tbody>
+<tr><td><strong>Batch scoring</strong></td><td>Pipeline planifié, prédictions en lot stockées en base</td><td>Recommandations email nocturnes, scoring client mensuel</td></tr>
+<tr><td><strong>Real-time API</strong></td><td>FastAPI/Flask, prédiction à la demande, faible latence</td><td>Score crédit en temps réel, détection de fraude</td></tr>
+<tr><td><strong>Streaming</strong></td><td>Kafka + modèle embarqué, prédiction sur chaque event</td><td>Anomaly detection temps réel, IoT</td></tr>
+<tr><td><strong>Embedded model</strong></td><td>Modèle dans l'application (mobile, edge)</td><td>NLP offline, vision par ordinateur sur device</td></tr>
+</tbody></table>
+<ul>
+<li><strong>Containerisation</strong> — Docker + Kubernetes pour le déploiement de l'API, scaling automatique</li>
+<li><strong>Canary deployment</strong> — exposer 5-10% du trafic au nouveau modèle avant le déploiement complet</li>
+<li><strong>A/B testing</strong> — comparer deux modèles sur des sous-populations aléatoires pour mesurer l'impact business réel</li>
+</ul>
+
+<h2 id="monitor"><span class="sn">5</span>Monitoring et data drift</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce que le concept drift et le data drift ? Comment les détectez-vous en production ?</p></div>
+<ul>
+<li><strong>Data drift</strong> — la distribution des features d'entrée change par rapport aux données d'entraînement (ex : le comportement des clients change après une crise économique)</li>
+<li><strong>Concept drift</strong> — la relation entre les features et la target change (ex : un modèle de churn entraîné avant une pandémie devient obsolète)</li>
+<li><strong>Détection</strong> : tests statistiques (PSI - Population Stability Index, KS test, chi-squared) sur les distributions des features et prédictions</li>
+<li><strong>Outils</strong> : Evidently AI, WhyLogs, Arize, Fiddler, ou custom avec Prometheus/Grafana</li>
+<li><strong>Alertes</strong> — déclencher un retraining automatique quand le drift dépasse un seuil, ou alerter l'équipe</li>
+</ul>
+
+<h2 id="features"><span class="sn">6</span>Feature store</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>À quoi sert un feature store ? Dans quel cas en avez-vous besoin ?</p></div>
+<ul>
+<li><strong>Feature store</strong> — registre centralisé des features ML, garantit la cohérence entre entraînement et inférence (training-serving skew)</li>
+<li><strong>Problème résolu</strong> — éviter que les features calculées à l'entraînement soient différentes de celles calculées en production (source majeure de bugs ML)</li>
+<li><strong>Outils</strong> : Feast (open source), Tecton, Hopsworks, Vertex AI Feature Store (GCP), SageMaker Feature Store (AWS)</li>
+<li><strong>Quand en avez-vous besoin ?</strong> — plusieurs modèles qui partagent les mêmes features, ou features coûteuses à calculer qui doivent être pré-calculées</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</span></th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>MLflow Tracking, déploiement manuel d'une API FastAPI, containerisation Docker</td><td>A loggué des expériences avec MLflow, a dockerisé un modèle, comprend le concept de train/test split</td><td>Ne sait pas ce qu'est MLflow, n'a jamais déployé un modèle hors du notebook</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>MLflow Registry, CI/CD ML basique, tests de performance, batch vs real-time</td><td>A promu un modèle via MLflow Registry, a écrit des tests de performance, a déployé en batch et en API</td><td>Ne sait pas différencier batch scoring et real-time, n'a pas de tests sur ses modèles</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Pipeline CI/CD complet, monitoring drift, canary deployment, feature store</td><td>A implémenté la détection de data drift, a fait du canary deployment, connaît les feature stores</td><td>Ne sait pas ce qu'est le data drift, n'a jamais mis en place de monitoring de modèle</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Architecture MLOps 2, standards équipe, A/B testing rigoureux, gouvernance des modèles</td><td>A défini l'architecture MLOps de son équipe, a mis en place des A/B tests rigoureux avec analyse d'impact business</td><td>Ne peut pas expliquer comment passer de MLOps 0 à MLOps 2 dans son contexte</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ou ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

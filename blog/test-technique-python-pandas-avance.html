@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Python data avancé : pandas, DuckDB, Polars, optimisation — Data Builder</title>
+<meta name="description" content="pandas avancé, DuckDB, Polars, vectorisation, optimisation mémoire — ce qu'on évalue dans un entretien Python Data Engineer Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-python-pandas-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Python data avancé</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Python data avancé : pandas, DuckDB, Polars, optimisation</h1>
+<p class="ai">Au-delà des bases de pandas, un Data Engineer Senior maîtrise la vectorisation, la gestion mémoire, et sait quand remplacer pandas par DuckDB ou Polars pour des performances 10x à 100x supérieures.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Data Engineer · Data Scientist</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol>
+<li><a href="#pandas">pandas : pièges et anti-patterns</a></li>
+<li><a href="#dtypes">Optimisation mémoire</a></li>
+<li><a href="#vecto">Vectorisation vs boucles</a></li>
+<li><a href="#duckdb">DuckDB : SQL sur DataFrames</a></li>
+<li><a href="#polars">Polars : le successeur de pandas ?</a></li>
+<li><a href="#profil">Profiling et diagnostic</a></li>
+<li><a href="#nv">Grille par niveau</a></li>
+</ol></div>
+<div class="ab">
+
+<p>Un Data Engineer qui utilise des boucles <code>iterrows()</code> sur des DataFrames pandas en production livre de la dette technique. Les pièges de performance, la vectorisation et la maîtrise de DuckDB ou Polars sont les vrais discriminants en entretien.</p>
+
+<h2 id="pandas"><span class="sn">1</span>pandas : les pièges classiques</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre .loc, .iloc et .at ? Pourquoi faut-il absolument éviter iterrows() sur un grand DataFrame ?</p></div>
+<div class="cb"><code># MAUVAIS : boucle Python sur un DataFrame (tres lent)
+for index, row in df.iterrows():
+    df.at[index, 'profit'] = row['revenue'] - row['cost']
+
+# BON : vectorisation directe
+df['profit'] = df['revenue'] - df['cost']
+
+# BON : np.where pour les conditions simples
+import numpy as np
+df['tier'] = np.where(df['amount'] > 1000, 'gold',
+             np.where(df['amount'] > 100, 'silver', 'bronze'))
+
+# Selection par label vs position
+df.loc[df['status'] == 'active', 'revenue']  # par label/condition
+df.iloc[0:10, 2:5]                           # par position entiere
+df.at[42, 'revenue']                         # acces scalaire rapide par label</code></div>
+<ul>
+<li><strong>iterrows()</strong> — itere en Python pur : 100x a 1000x plus lent que la vectorisation. Jamais en production</li>
+<li><strong>Vectorisation</strong> — operations sur toute la colonne en une instruction (C compile via NumPy)</li>
+<li><strong>apply()</strong> — plus flexible qu'une operation vectorisee, mais plus lent. Dernier recours</li>
+<li><strong>SettingWithCopyWarning</strong> — toujours travailler sur une copie explicite (.copy()) pour eviter les modifications silencieuses</li>
+<li><strong>Perf rule</strong> — vectorisation &gt; np.where &gt; pd.apply() &gt; itertuples() &gt; iterrows()</li>
+</ul>
+<div class="cl"><p><strong>Signal GO Senior :</strong> le candidat cite spontanement iterrows() comme anti-pattern, explique la vectorisation et connait np.where.</p></div>
+
+<h2 id="dtypes"><span class="sn">2</span>Optimisation memoire : reduire la taille des DataFrames</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment reduisez-vous la consommation memoire d'un DataFrame pandas de 3 Go ?</p></div>
+<div class="cb"><code>import pandas as pd
+
+# Diagnostic memoire
+print(df.memory_usage(deep=True).sum() / 1024**2, "MB")
+
+# Reduction des types numeriques
+df['age']    = df['age'].astype('int8')      # int64 -> int8  : 8x moins
+df['score']  = df['score'].astype('float32') # float64 -> float32 : 2x moins
+df['status'] = df['status'].astype('category') # string -> category : -80%
+df['pays']   = df['pays'].astype('category')
+
+# Types specifies a l'import (optimal)
+df = pd.read_csv("data.csv", dtype={
+    'age': 'int8',
+    'status': 'category',
+    'amount': 'float32'
+})
+
+# Lecture par chunks pour les tres gros fichiers
+for chunk in pd.read_csv("big_file.csv", chunksize=100_000):
+    process(chunk)</code></div>
+<ul>
+<li><strong>int64 → int8/int16/int32</strong> — selon les valeurs min/max reelles de la colonne</li>
+<li><strong>float64 → float32</strong> — precision reduite mais acceptable pour la majorite des analyses</li>
+<li><strong>string → category</strong> — essentiel pour les colonnes a faible cardinalite (status, pays, type). Peut reduire de 80% la memoire</li>
+<li><strong>Lecture par chunks</strong> — traiter les fichiers plus grands que la RAM en morceaux successifs</li>
+</ul>
+
+<h2 id="vecto"><span class="sn">3</span>Vectorisation et NumPy : pourquoi c'est plus rapide</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Expliquez pourquoi une operation vectorisee NumPy est 500x plus rapide qu'une boucle Python equivalente.</p></div>
+<div class="cb"><code>import numpy as np
+
+# Boucle Python : ~5 secondes sur 1M de lignes
+distances = []
+for i in range(len(df)):
+    d = np.sqrt(df['x'].iloc[i]**2 + df['y'].iloc[i]**2)
+    distances.append(d)
+
+# Vectorisation NumPy : ~10 millisecondes (500x plus rapide)
+distances = np.sqrt(df['x']**2 + df['y']**2)
+
+# pd.cut pour les decoupages en tranches
+df['age_group'] = pd.cut(df['age'],
+    bins=[0, 18, 35, 50, 100],
+    labels=['junior', 'adulte', 'senior', 'aine']
+)</code></div>
+<ul>
+<li><strong>Pourquoi vectorise est plus rapide</strong> — les operations vectorisees s'executent en C compile, sans l'overhead de l'interpreteur Python ni du dispatch de boucle</li>
+<li><strong>Parallelisme SIMD</strong> — NumPy exploite les instructions SIMD du processeur pour traiter plusieurs elements simultanement</li>
+<li><strong>pd.cut / pd.qcut</strong> — decoupage en tranches ou quantiles, vectorise nativement</li>
+</ul>
+
+<h2 id="duckdb"><span class="sn">4</span>DuckDB : SQL sur des DataFrames et des fichiers Parquet</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas utilisez-vous DuckDB plutot que pandas ? Quelle est sa principale force sur les fichiers Parquet ?</p></div>
+<div class="cb"><code>import duckdb
+
+# DuckDB lit directement les fichiers Parquet sans tout charger en RAM
+result = duckdb.sql("""
+    SELECT
+        country,
+        SUM(revenue)  AS total_revenue,
+        COUNT(*)      AS nb_orders
+    FROM 'data/orders_*.parquet'
+    WHERE order_date >= '2024-01-01'
+    GROUP BY country
+    ORDER BY total_revenue DESC
+    LIMIT 20
+""").df()  # convertit en DataFrame pandas si necessaire
+
+# DuckDB peut aussi requeter directement un DataFrame pandas existant
+conn = duckdb.connect()
+result = conn.execute("""
+    SELECT customer_id, SUM(amount) AS total
+    FROM df_orders
+    GROUP BY customer_id
+    HAVING total > 1000
+""").df()</code></div>
+<ul>
+<li><strong>DuckDB vs pandas</strong> — 10x a 100x plus rapide sur les agregations et jointures grace a son moteur columnar vectorise</li>
+<li><strong>Out-of-core</strong> — traite des fichiers plus grands que la RAM grace au streaming</li>
+<li><strong>Parquet natif</strong> — lit les fichiers Parquet/CSV directement, avec predicate et projection pushdown</li>
+<li><strong>Quand l'utiliser</strong> — agregations, jointures, filtres sur gros volumes. Garder pandas pour la manipulation fine (reshape, pivot, string operations)</li>
+</ul>
+<div class="cl"><p><strong>Alternative zero-installation :</strong> DuckDB fonctionne en process sans serveur. <code>pip install duckdb</code> et c'est pret. Idéal pour les scripts ETL locaux sur des fichiers volumineux.</p></div>
+
+<h2 id="polars"><span class="sn">5</span>Polars : performances maximales, API lazy</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la difference entre l'API eager et lazy de Polars ? Quand migrer de pandas vers Polars ?</p></div>
+<div class="cb"><code>import polars as pl
+
+# API Eager : execution immediate (comme pandas)
+df = pl.read_csv("data.csv")
+result = (
+    df
+    .filter(pl.col("amount") > 100)
+    .group_by("category")
+    .agg(pl.col("amount").sum().alias("total"))
+)
+
+# API Lazy : execution differee et optimisee (comme Spark)
+result = (
+    pl.scan_csv("data.csv")      # scan = lecture lazy
+    .filter(pl.col("amount") > 100)
+    .group_by("category")
+    .agg(pl.col("amount").sum().alias("total"))
+    .collect()                   # declenche l'execution optimisee
+)
+# Polars optimise automatiquement : predicate pushdown,
+# projection pushdown, parallelisme multi-thread natif</code></div>
+<ul>
+<li><strong>Polars vs pandas</strong> — 5x a 50x plus rapide grace a Rust, execution multi-thread parallelisee nativement</li>
+<li><strong>API Lazy</strong> — le query planner optimise les operations avant de les executer (comme Spark). A privilegier pour les gros volumes</li>
+<li><strong>Quand migrer</strong> — volumes &gt; 500 MB en RAM, besoin de performance critique, equipe prete a apprendre l'API</li>
+<li><strong>Compatibilite</strong> — conversion facile depuis/vers pandas via .to_pandas() et pl.from_pandas()</li>
+</ul>
+
+<h2 id="profil"><span class="sn">6</span>Profiling et diagnostic de performance</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment identifiez-vous le goulot d'etranglement dans un script Python data lent ?</p></div>
+<div class="cb"><code>import cProfile
+import timeit
+
+# cProfile : profiling par fonction
+cProfile.run('process_dataframe(df)', sort='cumulative')
+
+# timeit : comparer deux approches
+t1 = timeit.timeit(
+    'df.groupby("category").agg({"amount": "sum"})',
+    globals=globals(), number=100
+)
+
+# memory_profiler : profiling memoire ligne par ligne
+from memory_profiler import profile
+
+@profile
+def process_data(df):
+    result = df.groupby('category').agg({'amount': 'sum'})
+    return result
+
+# YData Profiling : rapport qualite automatique
+from ydata_profiling import ProfileReport
+report = ProfileReport(df, title="Data Quality Report")
+report.to_file("report.html")</code></div>
+<ul>
+<li><strong>cProfile</strong> — identifier les fonctions qui consomment le plus de temps CPU</li>
+<li><strong>memory_profiler</strong> — identifier les pics de consommation memoire ligne par ligne</li>
+<li><strong>%timeit dans Jupyter</strong> — comparer rapidement deux approches en quelques lignes</li>
+<li><strong>line_profiler</strong> — profiling ligne par ligne du temps CPU (plus precis que cProfile pour les fonctions)</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>pandas basique, vectorisation, groupby/merge/pivot</td><td>Evite iterrows(), utilise .loc correctement, sait faire un merge multi-cles</td><td>Utilise des boucles for sur les DataFrames, ne sait pas ce qu'est la vectorisation</td></tr>
+<tr><td><span class="bd bm">Confirme</span></td><td>Optimisation memoire, DuckDB, profiling, types Category</td><td>Reduit la memoire via les dtypes, a utilise DuckDB sur un projet, sait utiliser cProfile</td><td>Ne connait pas DuckDB, ne sait pas reduire la consommation memoire</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Polars, streaming gros volumes, benchmarks, tests de perf</td><td>A utilise Polars sur un projet reel, traite des fichiers plus grands que la RAM avec DuckDB ou chunks</td><td>N'a jamais entendu parler de Polars, ne sait pas traiter un fichier plus grand que la RAM</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Architecture data locale vs distribuee, choix Spark vs DuckDB vs Polars selon le contexte</td><td>Justifie le choix DuckDB vs Spark selon le volume et le contexte, a defini les standards Python de son equipe</td><td>Ne peut pas expliquer quand utiliser Spark plutot que DuckDB</td></tr>
+</tbody></table>
+
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

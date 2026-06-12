@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Tableau avancé : LOD, calculs de table, Tableau Prep — Data Builder</title>
+<meta name="description" content="LOD expressions, calculs de table, Tableau Prep, dashboards dynamiques et gouvernance — ce qu'on évalue vraiment dans un entretien Tableau Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-tableau-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Tableau avancé" data-en="Advanced Tableau technical interview">Test technique Tableau avancé</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique Tableau avancé : LOD, calculs de table, Tableau Prep" data-en="Advanced Tableau technical interview: LOD, table calculations, Tableau Prep">Test technique Tableau avancé : LOD, calculs de table, Tableau Prep</h1>
+<p class="ai" data-fr="Les LOD expressions et les calculs de table sont les vrais discriminants en entretien Tableau. Un Data Analyst qui les maîtrise a construit des dashboards en production. Voici ce qu'on teste vraiment." data-en="LOD expressions and table calculations are the real differentiators in Tableau interviews. A Data Analyst who masters them has built production dashboards. Here's what we actually test.">Les LOD expressions et les calculs de table sont les vrais discriminants en entretien Tableau. Un Data Analyst qui les maîtrise a construit des dashboards en production. Voici ce qu'on teste vraiment.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span><span>·</span><span>Data Analyst</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#lod">LOD expressions</a></li><li><a href="#tc">Calculs de table</a></li><li><a href="#prep">Tableau Prep</a></li><li><a href="#dyn">Dashboards dynamiques</a></li><li><a href="#perf">Performance Recorder</a></li><li><a href="#gouv">Gouvernance Tableau Server</a></li><li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>La plupart des candidats Tableau savent faire des graphiques. Ce qu'on évalue en entretien, c'est la capacité à répondre à des questions analytiques complexes — celles qui nécessitent LOD, calculs de table, et une vraie compréhension du modèle de données.</p>
+
+<h2 id="lod"><span class="sn">1</span>LOD expressions : le niveau de détail maîtrisé</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre FIXED, INCLUDE et EXCLUDE ? Donnez un exemple concret pour chacun.</p></div>
+<p>Les Level of Detail (LOD) expressions permettent de calculer des agrégations à un niveau de granularité différent de celui du visuel. C'est la fonctionnalité Tableau la plus testée en entretien Senior.</p>
+<div class="cb"><code>// FIXED : calcul à un niveau fixe, indépendant du visuel
+// Ventes totales par client, quel que soit le filtre de date
+{ FIXED [Client] : SUM([Ventes]) }
+
+// INCLUDE : ajoute une dimension au niveau de détail du visuel
+// Ventes moyennes par produit dans chaque région
+{ INCLUDE [Produit] : AVG([Ventes]) }
+
+// EXCLUDE : retire une dimension du niveau de détail du visuel
+// Total des ventes sans la granularité mensuelle (niveau annuel)
+{ EXCLUDE [Mois] : SUM([Ventes]) }</code></div>
+<ul>
+<li><strong>FIXED</strong> — le plus utilisé, ignore les filtres de dimension (mais pas les filtres de contexte)</li>
+<li><strong>INCLUDE</strong> — descend à un niveau plus fin que le visuel, puis agrège</li>
+<li><strong>EXCLUDE</strong> — monte à un niveau plus grossier que le visuel</li>
+<li><strong>Ordre des opérations</strong> — FIXED s'exécute avant les filtres de dimension, INCLUDE et EXCLUDE après</li>
+</ul>
+<div class="cl"><p><strong>Cas d'usage classique :</strong> "Comparer les ventes d'un client à la moyenne de sa région" → LOD FIXED sur la région pour la moyenne, comparé aux ventes du client dans le visuel.</p></div>
+
+<h2 id="tc"><span class="sn">2</span>Calculs de table : partitionnement et adressage</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce que le partitionnement et l'adressage dans un calcul de table ? Comment les configurez-vous ?</p></div>
+<p>Les calculs de table (RUNNING_SUM, WINDOW_AVG, RANK, etc.) opèrent sur les données déjà agrégées dans le visuel. Leur résultat dépend de la configuration du partitionnement et de l'adressage.</p>
+<div class="cb"><code>// Cumul progressif des ventes
+RUNNING_SUM(SUM([Ventes]))
+
+// Rang dynamique par région
+RANK(SUM([Ventes]))
+
+// Pourcentage du total
+SUM([Ventes]) / TOTAL(SUM([Ventes]))
+
+// Différence avec la valeur précédente (période over période)
+SUM([Ventes]) - LOOKUP(SUM([Ventes]), -1)</code></div>
+<ul>
+<li><strong>Partitionnement</strong> — dimensions qui définissent les "groupes" dans lesquels le calcul se réinitialise</li>
+<li><strong>Adressage</strong> — dimensions qui définissent la direction du calcul (horizontal, vertical, spécifique)</li>
+<li><strong>WINDOW_SUM / WINDOW_AVG</strong> — calculs sur une fenêtre glissante</li>
+<li><strong>INDEX() / SIZE()</strong> — position dans la partition, taille de la partition</li>
+</ul>
+<div class="cl"><p><strong>Piège classique :</strong> un calcul de table "correct" sur un graphique devient faux dès qu'on ajoute ou retire une dimension. Toujours vérifier la configuration du partitionnement après modification du visuel.</p></div>
+
+<h2 id="prep"><span class="sn">3</span>Tableau Prep : préparation de données</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas utilisez-vous Tableau Prep plutôt que SQL ou dbt pour préparer vos données ?</p></div>
+<p>Tableau Prep est l'outil de préparation de données visuel de Tableau. Il est surtout adapté aux cas sans infrastructure ETL dédiée.</p>
+<ul>
+<li><strong>Interface flow-based</strong> — transformations visuelles et interactives, sans code</li>
+<li><strong>Connexions multiples</strong> — Excel, CSV, SQL Server, Snowflake, BigQuery, Salesforce, etc.</li>
+<li><strong>Opérations disponibles</strong> : jointures, unions, pivots, agrégations, nettoyage de champs</li>
+<li><strong>Prep Conductor</strong> — automatisation et scheduling des flows sur Tableau Server/Cloud</li>
+<li><strong>Quand l'utiliser</strong> — POC rapide, équipes sans data engineers, sources multiples sans ETL</li>
+<li><strong>Quand ne pas l'utiliser</strong> — logique complexe, volumes importants, nécessité de versioning (préférer SQL/dbt)</li>
+</ul>
+
+<h2 id="dyn"><span class="sn">4</span>Dashboards dynamiques : paramètres et visibilité</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment créer plusieurs vues sur une seule page sans multiplier les feuilles de calcul ?</p></div>
+<p>Un dashboard bien conçu permet à l'utilisateur de naviguer entre des vues différentes sans quitter la page. La technique repose sur les paramètres et la visibilité conditionnelle des conteneurs.</p>
+<ul>
+<li><strong>Paramètres + champs booléens</strong> — créer un paramètre texte (nom des vues), un champ calculé booléen par vue, contrôler la visibilité du conteneur</li>
+<li><strong>Conteneurs flottants</strong> — préférer les tuiles flottantes aux sections fixes pour plus de flexibilité</li>
+<li><strong>Signets (Bookmarks)</strong> — sauvegarder des états de filtres et naviguer entre eux via des boutons</li>
+<li><strong>Actions de feuille</strong> — filtres, highlights et URL actions pour l'interactivité croisée</li>
+<li><strong>Dimensions et KPI variables</strong> — paramètres qui changent dynamiquement la mesure ou la dimension affichée</li>
+</ul>
+<div class="cl"><p><strong>Bonne pratique :</strong> toujours utiliser des tuiles/conteneurs en mode flottant plutôt que des sections fixes. Cela facilite le réagencement et permet de grouper plusieurs feuilles dans un seul conteneur.</p></div>
+
+<h2 id="perf"><span class="sn">5</span>Performance Recorder : diagnostiquer un dashboard lent</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment identifiez-vous qu'un visuel spécifique ralentit votre dashboard ? Quel outil utilisez-vous ?</p></div>
+<p>Le Performance Recorder est l'équivalent Tableau de DAX Studio pour Power BI. Tout profil Senior doit savoir l'utiliser.</p>
+<ul>
+<li><strong>Accès</strong> : Aide → Enregistrer les performances</li>
+<li><strong>Ce qu'il mesure</strong> : temps de rendu de chaque visuel, temps de requête, temps de calcul</li>
+<li><strong>Optimisations classiques</strong> : réduire le nombre de visuels par page, limiter les calculs de table imbriqués, utiliser des extraits plutôt que des connexions live sur des sources lentes</li>
+<li><strong>Extract vs Live</strong> — extract (.hyper) pour les performances, live pour les données temps réel</li>
+<li><strong>Filtrage en amont</strong> — filtrer dans Tableau Prep ou à la source plutôt qu'avec des filtres visuels</li>
+</ul>
+
+<h2 id="gouv"><span class="sn">6</span>Gouvernance Tableau Server / Cloud</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous les permissions et la certification des datasources dans votre organisation ?</p></div>
+<ul>
+<li><strong>Sources de données certifiées</strong> — datasources validées par l'équipe data, distinguées des sources non officielles</li>
+<li><strong>Row-Level Security (RLS)</strong> — filtres utilisateur via le champ USERNAME() ou les entitlements</li>
+<li><strong>Alertes automatiques</strong> — envoi programmé d'alertes via Tableau Server quand un seuil est dépassé</li>
+<li><strong>Tableau Server Client (Python)</strong> — API pour automatiser la gestion des workbooks, datasources, utilisateurs</li>
+<li><strong>Lineage</strong> — traçabilité des datasources jusqu'aux dashboards consommateurs</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Visuels standards, filtres, calculs simples, joins basiques</td><td>Comprend la différence mesure vs dimension, sait utiliser les filtres de contexte</td><td>Ne sait pas créer un champ calculé, confond filtre et filter de contexte LOD</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>LOD FIXED, calculs de table configurés, Tableau Prep, paramètres</td><td>Explique FIXED vs INCLUDE vs EXCLUDE, configure le partitionnement des calculs de table</td><td>Ne sait pas ce que fait FIXED, n'a jamais utilisé Tableau Prep</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Dashboards dynamiques avancés, Performance Recorder, gouvernance Server</td><td>A optimisé des dashboards avec le Performance Recorder, a configuré du RLS</td><td>N'a jamais utilisé le Performance Recorder, ne connaît pas la certification des datasources</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Architecture Tableau Server, standards équipe, Tableau Server Client API</td><td>A mis en place une gouvernance datasources, utilise l'API Python pour automatiser</td><td>Ne peut pas expliquer la stratégie extract vs live de son organisation</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst Tableau ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+const BF=`<p>La plupart des candidats Tableau savent faire des graphiques. Ce qu'on évalue en entretien, c'est la capacité à répondre à des questions analytiques complexes — celles qui nécessitent LOD, calculs de table, et une vraie compréhension du modèle de données.</p><h2 id="lod"><span class="sn">1</span>LOD expressions : le niveau de détail maîtrisé</h2><div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre FIXED, INCLUDE et EXCLUDE ? Donnez un exemple concret pour chacun.</p></div><div class="cb"><code>// FIXED : calcul à un niveau fixe\n{ FIXED [Client] : SUM([Ventes]) }\n// INCLUDE : ajoute une dimension\n{ INCLUDE [Produit] : AVG([Ventes]) }\n// EXCLUDE : retire une dimension\n{ EXCLUDE [Mois] : SUM([Ventes]) }</code></div><ul><li><strong>FIXED</strong> — ignore les filtres de dimension, s'exécute avant eux</li><li><strong>INCLUDE</strong> — descend à un niveau plus fin que le visuel</li><li><strong>EXCLUDE</strong> — monte à un niveau plus grossier</li></ul><div class="cl"><p><strong>Cas d'usage classique :</strong> comparer les ventes d'un client à la moyenne de sa région.</p></div><h2 id="tc"><span class="sn">2</span>Calculs de table</h2><div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce que le partitionnement et l'adressage dans un calcul de table ?</p></div><div class="cb"><code>RUNNING_SUM(SUM([Ventes]))\nRANK(SUM([Ventes]))\nSUM([Ventes]) / TOTAL(SUM([Ventes]))\nSUM([Ventes]) - LOOKUP(SUM([Ventes]), -1)</code></div><ul><li><strong>Partitionnement</strong> — groupes dans lesquels le calcul se réinitialise</li><li><strong>Adressage</strong> — direction du calcul</li><li><strong>WINDOW_SUM / WINDOW_AVG</strong> — fenêtre glissante</li></ul><div class="cl"><p><strong>Piège :</strong> un calcul de table devient faux dès qu'on modifie les dimensions du visuel sans reconfigurer le partitionnement.</p></div><h2 id="prep"><span class="sn">3</span>Tableau Prep</h2><div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas utilisez-vous Tableau Prep plutôt que SQL ou dbt ?</p></div><ul><li>Interface flow-based, sans code, pour utilisateurs métier</li><li>Connexions multiples : Snowflake, BigQuery, Excel, Salesforce…</li><li>Prep Conductor : scheduling des flows sur Tableau Server/Cloud</li><li>À éviter pour la logique complexe ou le versioning — préférer SQL/dbt</li></ul><h2 id="dyn"><span class="sn">4</span>Dashboards dynamiques</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment créer plusieurs vues sur une seule page sans multiplier les feuilles ?</p></div><ul><li>Paramètres + champs booléens pour contrôler la visibilité des conteneurs</li><li>Conteneurs flottants plutôt que sections fixes</li><li>Signets pour sauvegarder des états de filtres</li><li>Dimensions et KPI variables via paramètres</li></ul><h2 id="perf"><span class="sn">5</span>Performance Recorder</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment identifiez-vous un visuel qui ralentit votre dashboard ?</p></div><ul><li>Aide → Enregistrer les performances</li><li>Mesure le temps de rendu, de requête, et de calcul par visuel</li><li>Extract vs Live : extract pour les perfs, live pour le temps réel</li></ul><h2 id="gouv"><span class="sn">6</span>Gouvernance Tableau Server</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous la certification des datasources dans votre organisation ?</p></div><ul><li>Sources certifiées vs non officielles, lignée des datasources</li><li>Row-Level Security via USERNAME()</li><li>API Python Tableau Server Client pour automatiser</li></ul><h2 id="nv"><span class="sn">7</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Visuels, filtres, calculs simples</td><td>Comprend mesure vs dimension</td><td>Ne sait pas créer un champ calculé</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>LOD FIXED, calculs de table, Tableau Prep</td><td>Explique FIXED vs INCLUDE, configure le partitionnement</td><td>Ne sait pas ce que fait FIXED</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Dashboards dynamiques, Performance Recorder, gouvernance Server</td><td>A optimisé avec le Performance Recorder, a configuré du RLS</td><td>N'a jamais utilisé le Performance Recorder</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture Server, standards équipe, API Python</td><td>A mis en place une gouvernance datasources</td><td>Ne peut pas expliquer la stratégie extract vs live</td></tr></tbody></table>`;
+const BE=`<p>Most Tableau candidates know how to build charts. What we assess in interviews is the ability to answer complex analytical questions — those requiring LOD, table calculations, and a real understanding of the data model.</p><h2 id="lod"><span class="sn">1</span>LOD expressions</h2><div class="sq"><div class="sl">Key question</div><p>What is the difference between FIXED, INCLUDE and EXCLUDE? Give a concrete example for each.</p></div><ul><li><strong>FIXED</strong> — ignores dimension filters, executes before them</li><li><strong>INCLUDE</strong> — adds a dimension to the view's level of detail</li><li><strong>EXCLUDE</strong> — removes a dimension from the view's level of detail</li></ul><h2 id="tc"><span class="sn">2</span>Table calculations</h2><div class="sq"><div class="sl">Key question</div><p>What are partitioning and addressing in a table calculation?</p></div><ul><li><strong>Partitioning</strong> — groups where the calculation resets</li><li><strong>Addressing</strong> — direction of the calculation</li><li>RUNNING_SUM, RANK, WINDOW_AVG, LOOKUP</li></ul><h2 id="prep"><span class="sn">3</span>Tableau Prep</h2><div class="sq"><div class="sl">Key question</div><p>When do you use Tableau Prep instead of SQL or dbt?</p></div><ul><li>Flow-based, no-code interface for business users</li><li>Multiple connections: Snowflake, BigQuery, Excel, Salesforce</li><li>Prep Conductor for scheduling flows on Tableau Server/Cloud</li></ul><h2 id="dyn"><span class="sn">4</span>Dynamic dashboards</h2><div class="sq"><div class="sl">Key question</div><p>How do you create multiple views on a single page without multiplying sheets?</p></div><ul><li>Parameters + boolean calculated fields to control container visibility</li><li>Floating containers rather than fixed sections</li><li>Bookmarks to save filter states</li></ul><h2 id="perf"><span class="sn">5</span>Performance Recorder</h2><div class="sq"><div class="sl">Key question</div><p>How do you identify a visual that is slowing down your dashboard?</p></div><ul><li>Help → Record Performance</li><li>Measures render, query and computation time per visual</li><li>Extract vs Live: extract for performance, live for real-time</li></ul><h2 id="gouv"><span class="sn">6</span>Tableau Server governance</h2><div class="sq"><div class="sl">Key question</div><p>How do you manage datasource certification in your organization?</p></div><ul><li>Certified vs unofficial sources, datasource lineage</li><li>Row-Level Security via USERNAME()</li><li>Python Tableau Server Client API for automation</li></ul><h2 id="nv"><span class="sn">7</span>Level grid</h2><table class="lt"><thead><tr><th>Level</th><th>Expected skills</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Visuals, filters, basic calculations</td><td>Understands measure vs dimension</td><td>Cannot create a calculated field</td></tr><tr><td><span class="bd bm">Confirmed</span></td><td>LOD FIXED, table calculations, Tableau Prep</td><td>Explains FIXED vs INCLUDE, configures partitioning</td><td>Does not know what FIXED does</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Dynamic dashboards, Performance Recorder, Server governance</td><td>Optimized with Performance Recorder, configured RLS</td><td>Never used Performance Recorder</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Server architecture, team standards, Python API</td><td>Implemented datasource governance</td><td>Cannot explain extract vs live strategy</td></tr></tbody></table>`;
+const TF=[["lod","LOD expressions"],["tc","Calculs de table"],["prep","Tableau Prep"],["dyn","Dashboards dynamiques"],["perf","Performance Recorder"],["gouv","Gouvernance Server"],["nv","Grille"]];
+const TE=[["lod","LOD expressions"],["tc","Table calculations"],["prep","Tableau Prep"],["dyn","Dynamic dashboards"],["perf","Performance Recorder"],["gouv","Server governance"],["nv","Level grid"]];
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  document.getElementById('tl').innerHTML=(l==='fr'?TF:TE).map(([a,t])=>`<li><a href="#${a}">${t}</a></li>`).join('');
+  document.getElementById('ab').innerHTML=l==='fr'?BF:BE;
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique outils BI self-service : Metabase, Streamlit, Redash — Data Builder</title>
+<meta name="description" content="Metabase, Streamlit, Redash — quand utiliser ces outils vs Power BI ou Tableau ? Ce qu on evalue en entretien Analytics Engineer ou Data Analyst."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-metabase-self-service-bi.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>BI self-service : Metabase, Streamlit, Redash</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique BI self-service : Metabase, Streamlit, Redash</h1>
+<p class="ai">Metabase, Streamlit et Redash repondent a un besoin croissant : des dashboards rapides a deployer, sans passer par un Data Analyst pour chaque requete. Savoir positionner ces outils — et en assurer la gouvernance — est un vrai differenciateur en entretien.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min de lecture</span><span>·</span><span>Data Analyst · Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol>
+<li><a href="#metabase">Metabase : self-service SQL</a></li>
+<li><a href="#streamlit">Streamlit : dashboards Python</a></li>
+<li><a href="#redash">Redash : SQL collaboratif</a></li>
+<li><a href="#compar">Comparaison des outils</a></li>
+<li><a href="#cas">Quel outil selon le contexte ?</a></li>
+<li><a href="#gouv">Gouvernance et pieges</a></li>
+<li><a href="#nv">Grille par niveau</a></li>
+</ol></div>
+<div class="ab">
+
+<p>Les outils BI self-service permettent aux equipes metier d'explorer les donnees sans solliciter un Data Analyst a chaque requete. En entretien, on evalue la capacite a choisir le bon outil selon le contexte — et a mettre en place la gouvernance qui evite le chaos.</p>
+
+<h2 id="metabase"><span class="sn">1</span>Metabase : le self-service SQL le plus accessible</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la difference entre les questions visuelles et les questions SQL natives dans Metabase ? Pourquoi ne pas donner l acces SQL natif a tous les utilisateurs ?</p></div>
+<ul>
+<li><strong>Question Builder (visuel)</strong> — interface sans SQL : l'utilisateur choisit une table, des filtres, des groupements. Adapte aux profils non techniques</li>
+<li><strong>Questions SQL natives</strong> — SQL direct dans Metabase. Puissant mais a restreindre : les requetes non optimisees peuvent saturer la base</li>
+<li><strong>Modeles</strong> — requetes SQL preecrites par l'equipe data, exposees comme des tables virtuelles pour les utilisateurs metier</li>
+<li><strong>Connexions supportees</strong> — PostgreSQL, MySQL, BigQuery, Snowflake, Redshift, MongoDB, DuckDB, SQLite et plus</li>
+<li><strong>Exploration automatique</strong> — Metabase genere des explorations automatiques pour chaque table (distributions, tendances, valeurs nulles)</li>
+</ul>
+<div class="cl"><p><strong>Bonne pratique :</strong> ne pas donner l'acces SQL natif a tout le monde. Creer des Modeles pour exposer des vues preoptimisees. Pointer vers un replica de lecture, jamais la base de production transactionnelle.</p></div>
+
+<h2 id="streamlit"><span class="sn">2</span>Streamlit : dashboards Python interactifs</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas choisissez-vous Streamlit plutot que Metabase ? Quelle est la fonction st.cache_data et pourquoi est-elle critique ?</p></div>
+<div class="cb"><code>import streamlit as st
+import pandas as pd
+import plotly.express as px
+from sqlalchemy import create_engine
+
+# Cache critique : evite de recharger les donnees a chaque interaction
+@st.cache_data(ttl=3600)
+def load_data(start_date, end_date):
+    engine = create_engine("postgresql://...")
+    query = f"""
+        SELECT region, month, SUM(revenue) as revenue
+        FROM sales
+        WHERE date BETWEEN '{start_date}' AND '{end_date}'
+        GROUP BY region, month
+    """
+    return pd.read_sql(query, engine)
+
+st.title("Dashboard Ventes")
+
+# Filtres interactifs dans la sidebar
+with st.sidebar:
+    regions = st.multiselect("Regions", ['FR','DE','UK','ES'])
+    date_range = st.date_input("Periode", value=(start, end))
+
+df = load_data(*date_range)
+if regions:
+    df = df[df['region'].isin(regions)]
+
+# KPIs en colonnes
+c1, c2, c3 = st.columns(3)
+c1.metric("CA Total", f"{df.revenue.sum():,.0f} EUR", delta="+8.3%")
+c2.metric("Regions actives", df.region.nunique())
+c3.metric("Meilleur mois", df.groupby('month').revenue.sum().idxmax())
+
+# Graphique interactif
+fig = px.bar(df.groupby('region').revenue.sum().reset_index(),
+             x='region', y='revenue')
+st.plotly_chart(fig, use_container_width=True)</code></div>
+<ul>
+<li><strong>st.cache_data</strong> — met en cache le resultat de la fonction. Sans ca, la requete SQL se re-execute a chaque interaction utilisateur</li>
+<li><strong>Avantages</strong> — full Python, logique custom (ML, calculs complexes), controle total sur l'UX</li>
+<li><strong>Ideal pour</strong> — dashboards ML (predictions temps reel), outils internes avec logique metier specifique, prototypes rapides</li>
+<li><strong>Deploiement</strong> — Streamlit Cloud, Docker sur GKE/ECS, ou sur VM avec nginx</li>
+</ul>
+
+<h2 id="redash"><span class="sn">3</span>Redash : SQL collaboratif vers dashboard</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la valeur de Redash par rapport a des exports SQL manuels sur Excel ?</p></div>
+<ul>
+<li><strong>Requetes partagees</strong> — les requetes ecrites par l'equipe data sont reutilisables et decouvertes par toute l'organisation</li>
+<li><strong>Scheduling</strong> — actualisation automatique des dashboards a une frequence definie (toutes les heures, chaque nuit)</li>
+<li><strong>Alertes</strong> — notification automatique quand une metrique depasse un seuil defini</li>
+<li><strong>Parametres</strong> — les utilisateurs peuvent filtrer les dashboards via des parametres sans toucher au SQL</li>
+<li><strong>Ideal pour</strong> — equipes techniques qui veulent explorer avec SQL sans deployer un outil lourd</li>
+</ul>
+
+<h2 id="compar"><span class="sn">4</span>Comparaison des outils</h2>
+<table class="lt"><thead><tr><th></th><th>Metabase</th><th>Streamlit</th><th>Redash</th><th>Power BI / Tableau</th></tr></thead><tbody>
+<tr><td><strong>Cible</strong></td><td>Utilisateurs metier</td><td>Data Engineers/Scientists</td><td>Equipes tech SQL</td><td>Data Analysts / BI</td></tr>
+<tr><td><strong>Courbe</strong></td><td>Tres faible</td><td>Moyenne (Python)</td><td>Faible (SQL)</td><td>Moyenne a elevee</td></tr>
+<tr><td><strong>Custom</strong></td><td>Limitee</td><td>Maximale</td><td>Moderee</td><td>Elevee</td></tr>
+<tr><td><strong>Cout</strong></td><td>Gratuit (OSS)</td><td>Gratuit (OSS)</td><td>Gratuit (OSS)</td><td>Licences par user</td></tr>
+<tr><td><strong>Self-service</strong></td><td>Excellent</td><td>Non (code requis)</td><td>Bon (SQL requis)</td><td>Bon</td></tr>
+<tr><td><strong>ML integre</strong></td><td>Non</td><td>Oui (Python natif)</td><td>Non</td><td>Partiel</td></tr>
+</tbody></table>
+
+<h2 id="cas"><span class="sn">5</span>Quel outil choisir selon le contexte ?</h2>
+<ul>
+<li><strong>Equipes metier non techniques qui veulent explorer les donnees</strong> → Metabase. Interface visuelle, pas de SQL requis</li>
+<li><strong>Dashboard ML avec predictions temps reel ou logique custom</strong> → Streamlit. Python natif, logique metier complexe possible</li>
+<li><strong>Equipe technique qui veut partager des requetes SQL</strong> → Redash. SQL collaboratif, scheduling simple</li>
+<li><strong>Reporting corporate avec gouvernance, RLS, deployment pipeline</strong> → Power BI ou Tableau</li>
+<li><strong>Prototype ou POC rapide</strong> → Metabase ou Streamlit selon si l'equipe est SQL ou Python</li>
+</ul>
+
+<h2 id="gouv"><span class="sn">6</span>Gouvernance et pieges a eviter</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quels sont les risques d'un deploiement Metabase sans gouvernance ? Comment les evitez-vous ?</p></div>
+<ul>
+<li><strong>Requetes non optimisees sur la prod</strong> — des utilisateurs peuvent lancer des SQL qui saturent la base de production. Toujours pointer vers un read replica ou un data warehouse</li>
+<li><strong>Proliferation de dashboards obsoletes</strong> — sans naming convention et archivage, Metabase devient rapidement un cimetiere. Definir un process de deprecation</li>
+<li><strong>Metrique non alignee</strong> — si deux dashboards calculent le chiffre d'affaires differemment, la confiance dans les donnees s'effondre. Centraliser les definitions dans des Modeles</li>
+<li><strong>Ruptures silencieuses</strong> — si les tables sources changent, les dashboards Metabase peuvent casser sans alerte. Mettre en place des tests de qualite (dbt tests)</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Utilisation de Metabase ou Streamlit, connexion a une base</td><td>A cree un dashboard Metabase, sait connecter une source de donnees</td><td>Ne connait aucun outil self-service, ne sait pas quand utiliser Metabase vs Power BI</td></tr>
+<tr><td><span class="bd bm">Confirme</span></td><td>Gouvernance Metabase, Streamlit avec cache, positionnement des outils</td><td>A deploye Metabase en prod avec read replica et modeles, utilise st.cache_data</td><td>A deploye Metabase sans read replica, donne l'acces SQL natif a tous</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Architecture self-service complete, choix d'outil justifie, monitoring</td><td>A architecture un stack self-service (Metabase + dbt + warehouse), justifie ses choix</td><td>Ne peut pas expliquer quand utiliser Metabase plutot que Power BI</td></tr>
+</tbody></table>
+
+</div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Analyst ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

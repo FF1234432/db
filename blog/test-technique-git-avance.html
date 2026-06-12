@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Git avancé : rebase, hooks, pre-commit, gitflow — Data Builder</title>
+<meta name="description" content="Rebase interactif, cherry-pick, pre-commit hooks, gitflow, gestion des conflits — ce qu'on évalue dans un entretien Git pour Data Engineer ou Analytics Engineer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-git-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Git avancé" data-en="Advanced Git technical interview">Test technique Git avancé</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique Git avancé : rebase, hooks, pre-commit, gitflow" data-en="Advanced Git technical interview: rebase, hooks, pre-commit, gitflow">Test technique Git avancé : rebase, hooks, pre-commit, gitflow</h1>
+<p class="ai" data-fr="Tout le monde sait faire un git commit et git push. Ce qui distingue un Data Engineer ou Analytics Engineer Senior, c'est sa maîtrise du rebase interactif, des hooks pre-commit et d'un workflow d'équipe structuré." data-en="Everyone knows how to do a git commit and git push. What distinguishes a Senior Data or Analytics Engineer is their mastery of interactive rebase, pre-commit hooks and a structured team workflow.">Tout le monde sait faire un git commit et git push. Ce qui distingue un Data Engineer ou Analytics Engineer Senior, c'est sa maîtrise du rebase interactif, des hooks pre-commit et d'un workflow d'équipe structuré.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#branches">Branches et workflow</a></li><li><a href="#merge">Merge vs rebase</a></li><li><a href="#rebase">Rebase interactif</a></li><li><a href="#hooks">Pre-commit hooks</a></li><li><a href="#cherry">Cherry-pick et stash</a></li><li><a href="#urgence">Gestion des urgences</a></li><li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>En contexte data, Git n'est pas optionnel — que ce soit pour versionner des DAGs Airflow, des modèles dbt, des scripts Python ou des notebooks. Un Data Engineer qui ne maîtrise pas le rebase ou les hooks pre-commit introduit de la dette technique dans le code de toute l'équipe.</p>
+
+<h2 id="branches"><span class="sn">1</span>Branches et workflow d'équipe</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment organisez-vous vos branches dans un projet data avec plusieurs contributeurs ? Décrivez votre gitflow.</p></div>
+<p>Un bon workflow Git data suit généralement le principe gitflow ou une variante adaptée : une branche main/master pour la production, une branche develop pour l'intégration, des feature branches par développement.</p>
+<div class="cb"><code># Structure de branches type gitflow data
+main          # production stable, protégée, merge via PR uniquement
+develop       # intégration continue
+feature/xxx   # une branche par fonctionnalité/DAG/modèle
+hotfix/xxx    # correctif urgent directement depuis main
+
+# Conventions de nommage commits
+feat: ajout du DAG extraction Salesforce
+fix: correction timeout sur le pipeline BigQuery
+refactor: simplification des transformations dbt
+docs: mise à jour README pipeline facturation
+chore: mise à jour dépendances requirements.txt</code></div>
+<ul>
+<li><strong>Protection de main</strong> — jamais de push direct, uniquement via Pull Request avec review</li>
+<li><strong>Convention de commits</strong> — Conventional Commits (feat/fix/refactor/docs/chore) pour l'historique lisible et le changelog automatique</li>
+<li><strong>Branch naming</strong> — feature/nom-court, fix/issue-123, hotfix/bug-critique</li>
+<li><strong>.gitignore</strong> — credentials, .env, data/, cache/, __pycache__, .ipynb_checkpoints</li>
+</ul>
+
+<h2 id="merge"><span class="sn">2</span>Merge vs Rebase : quand utiliser quoi</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre git merge et git rebase ? Dans quel cas préférez-vous l'un à l'autre ?</p></div>
+<div class="cb"><code># MERGE : crée un commit de merge, préserve l'historique exact
+git checkout develop
+git merge feature/mon-dag
+# → crée un "Merge branch 'feature/mon-dag'"
+
+# REBASE : réapplique les commits sur une nouvelle base, historique linéaire
+git checkout feature/mon-dag
+git rebase develop
+# → les commits de feature/mon-dag sont réappliqués après le dernier de develop
+
+# Pull avec rebase (recommandé pour éviter les merge commits inutiles)
+git pull --rebase origin develop</code></div>
+<ul>
+<li><strong>Merge</strong> — préserve l'historique exact, crée des merge commits, idéal pour les branches long-lived</li>
+<li><strong>Rebase</strong> — historique linéaire, plus lisible, idéal pour les feature branches avant PR</li>
+<li><strong>Règle d'or</strong> — ne jamais rebaser une branche partagée (main, develop) — cela réécrit l'historique des autres</li>
+<li><strong>git pull --rebase</strong> — évite les merge commits parasites sur les branches de travail</li>
+</ul>
+<div class="cl"><p><strong>Signal GO Senior :</strong> le candidat explique spontanément la règle d'or du rebase (ne pas rebaser les branches partagées) et cite le cas d'usage concret : mettre à jour une feature branch avant la PR.</p></div>
+
+<h2 id="rebase"><span class="sn">3</span>Rebase interactif : réécrire l'historique</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment nettoyez-vous une série de commits WIP avant de soumettre votre Pull Request ?</p></div>
+<p>Le rebase interactif permet de réécrire l'historique local avant de partager son travail. C'est une pratique indispensable pour soumettre des PRs propres.</p>
+<div class="cb"><code># Rebaser les 5 derniers commits de manière interactive
+git rebase -i HEAD~5
+
+# L'éditeur s'ouvre avec les options pour chaque commit :
+# p, pick   = conserver le commit tel quel
+# r, reword = conserver mais modifier le message
+# s, squash = fusionner avec le commit précédent (conserve les deux messages)
+# f, fixup  = fusionner avec le commit précédent (supprime ce message)
+# d, drop   = supprimer ce commit entièrement
+# e, edit   = modifier le commit (pour l'amender)
+
+# Exemple : squasher 3 commits WIP en un seul commit propre
+pick a1b2c3 feat: début extraction Salesforce
+s d4e5f6 wip: en cours
+s g7h8i9 wip: correction bug
+
+# → devient un seul commit avec le message de pick</code></div>
+<ul>
+<li><strong>squash</strong> — fusionner plusieurs petits commits en un seul commit logique</li>
+<li><strong>fixup</strong> — comme squash mais supprime le message du commit annexe</li>
+<li><strong>reword</strong> — corriger un message de commit sans modifier le contenu</li>
+<li><strong>drop</strong> — supprimer un commit entier (attention : perd les modifications)</li>
+</ul>
+
+<h2 id="hooks"><span class="sn">4</span>Pre-commit hooks : qualité automatisée</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment garantissez-vous la qualité du code avant chaque commit ? Qu'est-ce qu'un pre-commit hook ?</p></div>
+<p>Les pre-commit hooks sont des scripts exécutés automatiquement avant chaque commit. En data engineering, ils permettent de linter le code Python, valider le YAML des DAGs, formater automatiquement avec Black.</p>
+<div class="cb"><code># Installation
+pip install pre-commit
+pre-commit install  # installe les hooks dans .git/hooks/
+
+# .pre-commit-config.yaml (à la racine du repo)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-yaml          # valide les fichiers YAML
+      - id: check-json           # valide les fichiers JSON
+      - id: detect-private-key   # bloque si une clé privée est détectée
+      - id: check-added-large-files  # bloque les fichiers > 500KB
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black               # formatage automatique Python
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.15.5
+    hooks:
+      - id: pylint
+        args: ["--fail-under=8"]  # score minimum Pylint
+
+# Exécuter manuellement sur tous les fichiers
+pre-commit run --all-files</code></div>
+<ul>
+<li><strong>detect-private-key</strong> — bloque si une clé SSH ou un mot de passe est détecté dans le commit</li>
+<li><strong>check-yaml</strong> — essentiel pour les DAGs Airflow et les configs dbt (YAML mal formé = pipeline cassé)</li>
+<li><strong>black</strong> — formatage automatique, supprime les débats de style dans l'équipe</li>
+<li><strong>En CI/CD</strong> — pre-commit run --all-files peut être exécuté dans la CI pour bloquer les PRs non conformes</li>
+</ul>
+<div class="cl"><p><strong>Bonne pratique :</strong> detect-private-key est non-négociable dans un projet data. Les credentials pushés accidentellement sont la première cause de failles de sécurité dans les repos data.</p></div>
+
+<h2 id="cherry"><span class="sn">5</span>Cherry-pick et stash</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas utilisez-vous git cherry-pick ? Et git stash ?</p></div>
+<div class="cb"><code># CHERRY-PICK : appliquer un commit spécifique depuis une autre branche
+git cherry-pick a1b2c3d  # applique le commit a1b2c3d sur la branche courante
+
+# Cas d'usage : un fix urgent est sur feature/X mais doit aller en prod maintenant
+git checkout main
+git cherry-pick a1b2c3d  # récupère uniquement ce fix
+
+# STASH : mettre de côté des modifications en cours
+git stash push -m "WIP extraction Salesforce"  # sauvegarde et nettoie le working dir
+git pull origin develop      # récupère les mises à jour
+git stash pop                # réapplique les modifications sauvegardées
+
+# Lister les stashs
+git stash list
+
+# TAGS : marquer une version de déploiement
+git tag -a v1.2.0 -m "Pipeline facturation stable"
+git push origin --tags</code></div>
+<ul>
+<li><strong>cherry-pick</strong> — appliquer un commit spécifique sans merger toute la branche, idéal pour les hotfixes</li>
+<li><strong>stash</strong> — mettre en pause le travail en cours pour changer de contexte rapidement</li>
+<li><strong>tags</strong> — marquer les versions de déploiement, essentiel pour la traçabilité des pipelines en prod</li>
+</ul>
+
+<h2 id="urgence"><span class="sn">6</span>Gestion des urgences : reflog et suppression d'info sensibles</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Vous avez poussé un mot de passe par erreur dans le repo. Que faites-vous ?</p></div>
+<p>La première action est toujours de changer le mot de passe immédiatement — avant même de nettoyer le repo. Ensuite, supprimer la trace de l'historique.</p>
+<div class="cb"><code># Étape 1 : CHANGER LE MOT DE PASSE IMMÉDIATEMENT (avant toute chose)
+
+# Étape 2 : Supprimer le fichier sensible de tout l'historique
+pip install git-filter-repo
+git filter-repo --invert-paths --path secrets.yaml
+git push origin --force --tags
+
+# Récupérer des commits supprimés par erreur (git reflog)
+git reflog                    # liste tous les mouvements de HEAD
+git reset --hard HEAD@{3}     # revient à l'état 3 étapes en arrière
+
+# Annuler un commit déjà poussé sans réécrire l'historique
+git revert HEAD               # crée un nouveau commit qui annule le précédent</code></div>
+<ul>
+<li><strong>git reflog</strong> — journal de tous les mouvements de HEAD, permet de récupérer des commits "perdus"</li>
+<li><strong>git filter-repo</strong> — outil recommandé pour supprimer des fichiers sensibles de tout l'historique (plus rapide que filter-branch)</li>
+<li><strong>git revert vs git reset</strong> — revert crée un nouveau commit d'annulation (safe sur shared branches), reset réécrit l'historique (dangereux sur branches partagées)</li>
+<li><strong>Règle absolue</strong> — ne jamais faire git reset --hard sur main ou develop sauf urgence critique</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>add, commit, push, pull, branches simples, résolution de conflits basique</td><td>Sait créer une branche, faire une PR, résoudre un conflit simple</td><td>Ne sait pas ce qu'est une branche, confond git pull et git fetch</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>Rebase, cherry-pick, stash, .gitignore avancé, gitflow</td><td>Explique merge vs rebase, utilise git rebase -i pour nettoyer ses commits avant PR</td><td>Ne connaît pas le rebase interactif, n'utilise pas de conventions de commits</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Pre-commit hooks, submodules, tags de version, gestion des urgences</td><td>A configuré pre-commit avec black + detect-private-key, sait utiliser git reflog</td><td>N'a jamais configuré de hooks pre-commit, ne sait pas supprimer un fichier sensible de l'historique</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Standards Git équipe, CI/CD pipeline validation, politique de merge</td><td>A défini les conventions de commits et la politique de merge pour une équipe, a intégré pre-commit dans la CI</td><td>Ne peut pas expliquer sa politique de protection des branches</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+const BF=`<p>En contexte data, Git n'est pas optionnel. Un Data Engineer qui ne maîtrise pas le rebase ou les hooks pre-commit introduit de la dette technique dans le code de toute l'équipe.</p><h2 id="branches"><span class="sn">1</span>Branches et workflow d'équipe</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment organisez-vous vos branches dans un projet data avec plusieurs contributeurs ?</p></div><ul><li>main (protégée, merge via PR uniquement), develop, feature/xxx, hotfix/xxx</li><li>Conventional Commits : feat/fix/refactor/docs/chore</li><li>.gitignore : credentials, .env, data/, cache/, __pycache__</li></ul><h2 id="merge"><span class="sn">2</span>Merge vs Rebase</h2><div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre merge et rebase ? Dans quel cas préférez-vous l'un ?</p></div><ul><li><strong>Merge</strong> — préserve l'historique exact, crée des merge commits</li><li><strong>Rebase</strong> — historique linéaire, idéal pour les feature branches avant PR</li><li><strong>Règle d'or</strong> — ne jamais rebaser une branche partagée (main, develop)</li></ul><div class="cl"><p><strong>Signal GO Senior :</strong> le candidat explique spontanément la règle d'or du rebase.</p></div><h2 id="rebase"><span class="sn">3</span>Rebase interactif</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment nettoyez-vous vos commits WIP avant une Pull Request ?</p></div><div class="cb"><code>git rebase -i HEAD~5\n# p, pick = conserver\n# s, squash = fusionner avec le précédent\n# f, fixup = fusionner sans conserver le message\n# d, drop = supprimer</code></div><ul><li>squash : fusionner plusieurs petits commits en un seul</li><li>fixup : comme squash mais supprime le message</li><li>reword : corriger un message sans modifier le contenu</li></ul><h2 id="hooks"><span class="sn">4</span>Pre-commit hooks</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment garantissez-vous la qualité du code avant chaque commit ?</p></div><div class="cb"><code># .pre-commit-config.yaml\nrepos:\n  - repo: https://github.com/pre-commit/pre-commit-hooks\n    hooks:\n      - id: check-yaml\n      - id: detect-private-key\n      - id: check-added-large-files\n  - repo: https://github.com/psf/black\n    hooks:\n      - id: black</code></div><ul><li>detect-private-key : bloque si un credential est détecté</li><li>check-yaml : valide les DAGs Airflow et configs dbt</li><li>black : formatage automatique Python</li></ul><div class="cl"><p><strong>Non-négociable :</strong> detect-private-key est indispensable dans tout projet data.</p></div><h2 id="cherry"><span class="sn">5</span>Cherry-pick et stash</h2><div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas utilisez-vous cherry-pick ? Et stash ?</p></div><ul><li><strong>cherry-pick</strong> : appliquer un commit spécifique sans merger toute la branche (hotfixes)</li><li><strong>stash</strong> : mettre en pause le travail en cours pour changer de contexte</li><li><strong>tags</strong> : marquer les versions de déploiement en prod</li></ul><h2 id="urgence"><span class="sn">6</span>Gestion des urgences</h2><div class="sq"><div class="sl">Question discriminante</div><p>Vous avez poussé un mot de passe par erreur. Que faites-vous ?</p></div><ul><li><strong>Étape 1 :</strong> changer le mot de passe immédiatement</li><li>git filter-repo --invert-paths --path secrets.yaml + force push</li><li>git reflog : récupérer des commits "perdus"</li><li>git revert : annuler sans réécrire l'historique (safe sur branches partagées)</li></ul><h2 id="nv"><span class="sn">7</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>add, commit, push, pull, branches, conflits</td><td>Sait créer une branche et faire une PR</td><td>Ne sait pas ce qu'est une branche</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Rebase, cherry-pick, stash, gitflow</td><td>Explique merge vs rebase, utilise git rebase -i avant PR</td><td>Ne connaît pas le rebase interactif</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Pre-commit hooks, tags, gestion des urgences</td><td>A configuré pre-commit avec black + detect-private-key</td><td>N'a jamais configuré de hooks pre-commit</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Standards Git équipe, CI/CD, politique de merge</td><td>A défini les conventions pour une équipe, intégré pre-commit en CI</td><td>Ne peut pas expliquer sa politique de branches</td></tr></tbody></table>`;
+const BE=`<p>In a data context, Git is not optional. A Data Engineer who doesn't master rebase or pre-commit hooks introduces technical debt into the entire team's codebase.</p><h2 id="branches"><span class="sn">1</span>Branches and team workflow</h2><div class="sq"><div class="sl">Key question</div><p>How do you organize your branches in a data project with multiple contributors?</p></div><ul><li>main (protected, merge via PR only), develop, feature/xxx, hotfix/xxx</li><li>Conventional Commits: feat/fix/refactor/docs/chore</li><li>.gitignore: credentials, .env, data/, cache/, __pycache__</li></ul><h2 id="merge"><span class="sn">2</span>Merge vs Rebase</h2><div class="sq"><div class="sl">Key question</div><p>What is the difference between merge and rebase? When do you prefer each?</p></div><ul><li><strong>Merge</strong> — preserves exact history, creates merge commits</li><li><strong>Rebase</strong> — linear history, ideal for feature branches before a PR</li><li><strong>Golden rule</strong> — never rebase a shared branch (main, develop)</li></ul><h2 id="rebase"><span class="sn">3</span>Interactive rebase</h2><div class="sq"><div class="sl">Key question</div><p>How do you clean up WIP commits before a Pull Request?</p></div><ul><li>squash: merge multiple small commits into one</li><li>fixup: like squash but discards the commit message</li><li>reword: fix a message without changing content</li></ul><h2 id="hooks"><span class="sn">4</span>Pre-commit hooks</h2><div class="sq"><div class="sl">Key question</div><p>How do you enforce code quality before each commit?</p></div><ul><li>detect-private-key: blocks if a credential is detected</li><li>check-yaml: validates Airflow DAGs and dbt configs</li><li>black: automatic Python formatting</li></ul><h2 id="cherry"><span class="sn">5</span>Cherry-pick and stash</h2><div class="sq"><div class="sl">Key question</div><p>When do you use cherry-pick? And stash?</p></div><ul><li><strong>cherry-pick</strong>: apply a specific commit without merging the whole branch (hotfixes)</li><li><strong>stash</strong>: pause current work to switch context</li><li><strong>tags</strong>: mark production deployment versions</li></ul><h2 id="urgence"><span class="sn">6</span>Emergency management</h2><div class="sq"><div class="sl">Key question</div><p>You accidentally pushed a password to the repo. What do you do?</p></div><ul><li><strong>Step 1:</strong> change the password immediately</li><li>git filter-repo --invert-paths --path secrets.yaml + force push</li><li>git reflog: recover "lost" commits</li><li>git revert: undo without rewriting history (safe on shared branches)</li></ul><h2 id="nv"><span class="sn">7</span>Level grid</h2><table class="lt"><thead><tr><th>Level</th><th>Expected skills</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>add, commit, push, pull, branches, conflicts</td><td>Can create a branch and submit a PR</td><td>Does not know what a branch is</td></tr><tr><td><span class="bd bm">Confirmed</span></td><td>Rebase, cherry-pick, stash, gitflow</td><td>Explains merge vs rebase, uses git rebase -i before PR</td><td>Does not know interactive rebase</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Pre-commit hooks, tags, emergency management</td><td>Configured pre-commit with black + detect-private-key</td><td>Never configured pre-commit hooks</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Team Git standards, CI/CD, merge policy</td><td>Defined team conventions, integrated pre-commit in CI</td><td>Cannot explain branch protection policy</td></tr></tbody></table>`;
+const TF=[["branches","Branches et workflow"],["merge","Merge vs Rebase"],["rebase","Rebase interactif"],["hooks","Pre-commit hooks"],["cherry","Cherry-pick et stash"],["urgence","Gestion des urgences"],["nv","Grille"]];
+const TE=[["branches","Branches and workflow"],["merge","Merge vs Rebase"],["rebase","Interactive rebase"],["hooks","Pre-commit hooks"],["cherry","Cherry-pick and stash"],["urgence","Emergency management"],["nv","Level grid"]];
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  document.getElementById('tl').innerHTML=(l==='fr'?TF:TE).map(([a,t])=>`<li><a href="#${a}">${t}</a></li>`).join('');
+  document.getElementById('ab').innerHTML=l==='fr'?BF:BE;
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

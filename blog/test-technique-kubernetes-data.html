@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration — Data Builder</title>
+<meta name="description" content="Pods, nodes, cluster, GKE Autopilot vs Standard, déploiement de pipelines data — ce qu'on évalue dans un entretien Kubernetes pour Data Engineer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-kubernetes-data.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration" data-en="Kubernetes technical interview for data: pods, nodes, GKE, orchestration">Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration" data-en="Kubernetes technical interview for data: pods, nodes, GKE, orchestration">Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration</h1>
+<p class="ai" data-fr="Kubernetes s'impose dans les équipes data pour orchestrer les pipelines, déployer des APIs ML et gérer les workloads Spark ou Airflow. Voici les concepts qu'on teste pour valider un Data Engineer sur K8s." data-en="Kubernetes is becoming essential in data teams to orchestrate pipelines, deploy ML APIs and manage Spark or Airflow workloads. Here are the concepts we test to validate a Data Engineer on K8s.">Kubernetes s'impose dans les équipes data pour orchestrer les pipelines, déployer des APIs ML et gérer les workloads Spark ou Airflow. Voici les concepts qu'on teste pour valider un Data Engineer sur K8s.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#concepts">Concepts fondamentaux</a></li>
+<li><a href="#archi">Architecture du cluster</a></li>
+<li><a href="#gke">GKE : Autopilot vs Standard</a></li>
+<li><a href="#data">Cas d'usage data</a></li>
+<li><a href="#deploy">Déploiement et configuration</a></li>
+<li><a href="#secu">Sécurité et coûts</a></li>
+<li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Kubernetes (K8s) est devenu incontournable dans les architectures data cloud. Qu'il s'agisse d'orchestrer Airflow sur GKE, de déployer une API FastAPI de scoring ML, ou de lancer des jobs Spark sur Kubernetes, les Data Engineers doivent maîtriser les concepts fondamentaux.</p>
+
+<h2 id="concepts"><span class="sn">1</span>Concepts fondamentaux</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre un Pod, un Node et un Cluster ? Que se passe-t-il si un Pod tombe ?</p></div>
+<ul>
+<li><strong>Pod</strong> — unité de base Kubernetes. Contient un ou plusieurs conteneurs qui partagent le réseau et le stockage. Éphémère par nature</li>
+<li><strong>Node</strong> — machine virtuelle ou physique qui héberge des Pods. Contient : Kubelet (communication avec le plan de contrôle), Container Runtime (Docker/containerd), Kube-Proxy (réseau)</li>
+<li><strong>Cluster</strong> — ensemble d'un plan de contrôle et de nodes. Le plan de contrôle contient : kube-apiserver, etcd (stockage d'état), kube-scheduler, kube-controller-manager</li>
+<li><strong>Deployment</strong> — décrit l'état désiré (nombre de replicas, image). Si un Pod tombe, le Deployment le recrée automatiquement</li>
+<li><strong>Service</strong> — abstraction stable pour exposer des Pods (ClusterIP, NodePort, LoadBalancer)</li>
+</ul>
+<div class="cl"><p><strong>Distinction clé :</strong> un Pod est éphémère — il peut être supprimé et recréé à tout moment. Les données persistantes doivent être dans des Persistent Volumes, pas dans le Pod lui-même.</p></div>
+
+<h2 id="archi"><span class="sn">2</span>Architecture du cluster</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quel est le rôle d'etcd dans un cluster Kubernetes ? Que se passe-t-il si etcd devient indisponible ?</p></div>
+<div class="cb"><code># Déploiement minimal d'une API data en K8s
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-scoring-ml
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-scoring
+  template:
+    metadata:
+      labels:
+        app: api-scoring
+    spec:
+      containers:
+      - name: api
+        image: gcr.io/mon-projet/api-scoring:v1.2
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        env:
+        - name: MODEL_PATH
+          valueFrom:
+            secretKeyRef:
+              name: ml-secrets
+              key: model-gcs-path</code></div>
+<ul>
+<li><strong>etcd</strong> — stockage clé-valeur de l'état du cluster. Si etcd est indisponible, le cluster ne peut plus être modifié (mais les workloads en cours continuent)</li>
+<li><strong>kube-scheduler</strong> — attribue les Pods aux Nodes selon les ressources disponibles et les contraintes (affinity, taints/tolerations)</li>
+<li><strong>Namespaces</strong> — isolation logique dans un cluster (dev, staging, prod)</li>
+<li><strong>ConfigMaps et Secrets</strong> — configuration et credentials injectés dans les Pods (ne pas coder en dur dans l'image)</li>
+</ul>
+
+<h2 id="gke"><span class="sn">3</span>GKE : Autopilot vs Standard</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas choisissez-vous GKE Autopilot plutôt que Standard ?</p></div>
+<table class="lt"><thead><tr><th></th><th>GKE Autopilot</th><th>GKE Standard</th></tr></thead><tbody>
+<tr><td><strong>Gestion des nodes</strong></td><td>Automatique (Google)</td><td>Manuelle</td></tr>
+<tr><td><strong>Facturation</strong></td><td>Par Pod (ressources demandées)</td><td>Par Node (ressources allouées)</td></tr>
+<tr><td><strong>Scaling</strong></td><td>Automatique et transparent</td><td>Configurable manuellement</td></tr>
+<tr><td><strong>OS des nodes</strong></td><td>Container-Optimized OS uniquement</td><td>COS, Ubuntu, Windows Server</td></tr>
+<tr><td><strong>Sécurité par défaut</strong></td><td>Workload Identity, démarrage sécurisé inclus</td><td>Configurable, plus de contrôle</td></tr>
+<tr><td><strong>Idéal pour</strong></td><td>Équipes sans infra spécialisée, workloads variables</td><td>Workloads spécialisés, contrôle avancé</td></tr>
+</tbody></table>
+
+<h2 id="data"><span class="sn">4</span>Cas d'usage data sur Kubernetes</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment déploieriez-vous Airflow sur Kubernetes ? Quel executor utiliseriez-vous ?</p></div>
+<ul>
+<li><strong>Airflow sur K8s</strong> — KubernetesExecutor : un Pod par tâche, isolation maximale, scaling automatique. Déploiement via Helm chart officiel</li>
+<li><strong>Spark sur K8s</strong> — spark-submit en mode cluster, driver et executors dans des Pods dédiés, pas besoin de YARN</li>
+<li><strong>APIs ML (FastAPI/Flask)</strong> — Deployment + Service + HorizontalPodAutoscaler pour le scaling automatique selon la charge</li>
+<li><strong>Jobs batch</strong> — CronJob K8s pour les pipelines planifiés simples sans Airflow</li>
+<li><strong>MLflow / Ray</strong> — serveurs de tracking ou de calcul distribué déployés sur GKE</li>
+</ul>
+
+<h2 id="deploy"><span class="sn">5</span>Déploiement et configuration</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous les mises à jour sans downtime (rolling update) et le rollback en cas de problème ?</p></div>
+<div class="cb"><code># Rolling update automatique (stratégie par défaut)
+kubectl set image deployment/api-scoring api=gcr.io/mon-projet/api-scoring:v1.3
+
+# Vérifier le statut
+kubectl rollout status deployment/api-scoring
+
+# Rollback vers la version précédente
+kubectl rollout undo deployment/api-scoring
+
+# Helm : déploiement et rollback
+helm upgrade api-scoring ./chart --set image.tag=v1.3
+helm rollback api-scoring 1  # revenir à la release 1
+
+# Ressources requests/limits : obligatoires sur GKE Autopilot
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"</code></div>
+<ul>
+<li><strong>Rolling update</strong> — mise à jour progressive sans interruption de service, configurable avec maxSurge et maxUnavailable</li>
+<li><strong>Requests vs Limits</strong> — requests pour le scheduling (ressources garanties), limits pour le maximum autorisé</li>
+<li><strong>Liveness et Readiness probes</strong> — K8s vérifie que le Pod répond avant d'envoyer du trafic</li>
+<li><strong>Helm</strong> — gestionnaire de packages K8s, indispensable pour déployer des applications complexes (Airflow, Spark, etc.)</li>
+</ul>
+
+<h2 id="secu"><span class="sn">6</span>Sécurité et optimisation des coûts</h2>
+<ul>
+<li><strong>Workload Identity</strong> — lier un Service Account K8s à un Service Account Google Cloud pour accéder à GCS, BigQuery sans stocker de clés JSON</li>
+<li><strong>Secrets management</strong> — Google Secret Manager intégré via le Secret Store CSI Driver, pas de Secrets K8s en clair</li>
+<li><strong>Spot/Preemptible nodes</strong> — réduction des coûts de 60-90% pour les workloads batch tolérants aux interruptions</li>
+<li><strong>Vertical Pod Autoscaler (VPA)</strong> — ajustement automatique des requests/limits selon l'utilisation réelle</li>
+<li><strong>Namespaces + RBAC</strong> — isolation des équipes et contrôle des accès au cluster</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Concepts Pod/Node/Cluster, kubectl de base, Deployments, Services</td><td>Sait déployer une image Docker sur K8s, comprend le rôle du scheduler</td><td>Ne sait pas ce qu'est un Pod, confond Node et Pod</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>GKE Autopilot vs Standard, Helm, ConfigMaps/Secrets, rolling updates</td><td>A déployé sur GKE, utilise Helm, configure les requests/limits, sait faire un rollback</td><td>N'a jamais utilisé Helm, ne connaît pas GKE Autopilot</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Airflow/Spark sur K8s, Workload Identity, autoscaling, optimisation coûts</td><td>A déployé Airflow avec KubernetesExecutor, utilise Workload Identity, a configuré des Spot nodes</td><td>Ne sait pas déployer Airflow sur K8s, ne connaît pas Workload Identity</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Architecture multi-cluster, GitOps (ArgoCD/Flux), standards d'équipe, FinOps</td><td>A mis en place une stratégie GitOps, a optimisé les coûts GKE de son équipe</td><td>Ne peut pas expliquer sa stratégie de gestion du cluster en production</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer cloud ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

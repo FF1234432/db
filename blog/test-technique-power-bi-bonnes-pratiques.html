@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Power BI bonnes pratiques : rapport, modèle, performance — Data Builder</title>
+<meta name="description" content="Structure de rapport, bonnes pratiques de modélisation, optimisation des performances, signets, RLS — ce qu'on évalue dans un entretien Power BI Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-power-bi-bonnes-pratiques.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Power BI bonnes pratiques : rapport, modèle, performance</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Power BI bonnes pratiques : rapport, modèle, performance</h1>
+<p class="ai">Savoir créer un graphique dans Power BI ne suffit pas. En entretien Senior, on évalue la rigueur dans la construction du rapport : structure des pages, gestion des interactions, optimisation des performances et gouvernance.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Data Analyst</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol id="tl"><li><a href="#modele">Modélisation avant le rapport</a></li>
+<li><a href="#rapport">Structure d'une page de rapport</a></li>
+<li><a href="#viz">Choix des visuels</a></li>
+<li><a href="#perf">Optimisation des performances</a></li>
+<li><a href="#signets">Signets et navigation</a></li>
+<li><a href="#deploy">Avant de publier</a></li>
+<li><a href="#nv">Grille par niveau</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Un rapport Power BI en production, c'est comme un logiciel : il doit être maintenu, documenté, et performant. Les profils qui négligent la modélisation ou ne testent pas avant de publier créent de la dette technique que l'équipe entière devra rembourser.</p>
+
+<h2 id="modele"><span class="sn">1</span>La modélisation : avant de toucher le rapport</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi évitez-vous les relations plusieurs-à-plusieurs ? Et pourquoi organisez-vous vos tables en schéma en étoile ?</p></div>
+<ul>
+<li><strong>Schéma en étoile obligatoire</strong> — table de faits au centre, tables de dimension autour. Simplifie les relations, réduit le temps de traitement</li>
+<li><strong>Relations plusieurs-à-plusieurs (M:M)</strong> — à éviter : augmentent le risque d'erreur dans les filtres, créent des ambiguïtés dans les agrégations. Résoudre avec une table de bridge</li>
+<li><strong>Supprimer les colonnes inutiles</strong> — chaque colonne importée consomme de la mémoire. Ne garder que ce qui est nécessaire au rapport</li>
+<li><strong>Relations inactives</strong> — les supprimer si inutiles : elles peuvent "casser" le rapport lors d'une mise à jour des données</li>
+<li><strong>Table de dates</strong> — créer et marquer une table de dates dédiée pour activer les fonctions de time intelligence</li>
+</ul>
+<div class="cl"><p><strong>Règle de base :</strong> si votre modèle Power BI a plus de 3 niveaux de jointure ou des relations bidirectionnelles partout, c'est un signal que la préparation des données devrait se faire en amont (Power Query ou dbt), pas dans le modèle.</p></div>
+
+<h2 id="rapport"><span class="sn">2</span>Structure d'une page de rapport</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment structurez-vous une page de rapport Power BI ? Quelle est votre logique de mise en page ?</p></div>
+<ul>
+<li><strong>Effet entonnoir</strong> — de haut en bas : filtres/slicers → KPIs → graphiques → table de détail</li>
+<li><strong>Header fixe</strong> — titre clair, date de rafraîchissement, périmètre du rapport</li>
+<li><strong>3-4 visuels maximum par page</strong> — au-delà, les performances se dégradent et l'utilisateur est submergé</li>
+<li><strong>Fond des graphiques</strong> — modifier directement dans la mise en page du graphique, pas avec des formes superposées (meilleure performance)</li>
+<li><strong>Synchronisation des slicers</strong> — si un filtre doit s'appliquer sur plusieurs pages, le synchroniser (Affichage → Synchronisation des segments)</li>
+</ul>
+
+<h2 id="viz"><span class="sn">3</span>Choix des visuels : ce qu'on évite</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quels types de graphiques évitez-vous dans Power BI et pourquoi ?</p></div>
+<ul>
+<li><strong>Graphiques en secteurs (camemberts)</strong> — difficiles à comparer visuellement, surtout avec plus de 4-5 segments. Préférer les barres</li>
+<li><strong>3D nul</strong> — les graphiques 3D déforment les proportions. Toujours préférer les équivalents 2D (donut plutôt que camembert 3D)</li>
+<li><strong>Trop de visuels custom</strong> — les visuels de la marketplace peuvent ralentir le rapport et créer des dépendances. Préférer les natifs quand possible</li>
+<li><strong>Tables avec trop de lignes</strong> — limiter à 10-20 lignes, trier par l'indicateur le plus important. Utiliser la condition de N premiers</li>
+<li><strong>Graphiques linéaires pour des données catégorielles</strong> — utiliser des barres pour les catégories, des lignes pour les séries temporelles</li>
+</ul>
+
+<h2 id="perf"><span class="sn">4</span>Optimisation des performances</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment identifiez-vous et résolvez-vous un rapport Power BI lent ?</p></div>
+<ul>
+<li><strong>Performance Analyzer</strong> — activer dans l'onglet Affichage, mesure le temps de rendu de chaque visuel (requête DAX, affichage, autre)</li>
+<li><strong>Limiter les interactions</strong> — par défaut, tous les visuels s'influencent. Désactiver les interactions non nécessaires (Format → Modifier les interactions)</li>
+<li><strong>Colonnes calculées vs mesures</strong> — les colonnes calculées sont stockées et augmentent la taille du modèle. Préférer les mesures (calculées à la volée)</li>
+<li><strong>KPIs via tables plutôt que cartes</strong> — aligner plusieurs KPIs dans une seule table = 1 requête au lieu de N (améliore les performances)</li>
+<li><strong>Filtres en amont</strong> — filtrer dans Power Query avant le chargement plutôt qu'avec des filtres visuels</li>
+<li><strong>DAX Studio</strong> — analyser les mesures lentes, voir le plan de requête VertiPaq</li>
+</ul>
+
+<h2 id="signets"><span class="sn">5</span>Signets et navigation avancée</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment créez-vous un menu de navigation avec des signets ? Quelle est la différence entre "Données" et "Afficher" dans les paramètres d'un signet ?</p></div>
+<ul>
+<li><strong>Signets</strong> — sauvegardent un état du rapport : filtres actifs, visibilité des éléments, page courante</li>
+<li><strong>Paramètre "Données"</strong> — inclut l'état des filtres/slicers dans le signet. À activer pour les onglets de période (Last day, Last week)</li>
+<li><strong>Paramètre "Afficher"</strong> — inclut la visibilité des éléments. Utile pour montrer/masquer des graphiques</li>
+<li><strong>Visuels sélectionnés</strong> — toujours préférer "Visuels sélectionnés" à "Tous les visuels" pour éviter les effets de bord sur les autres éléments</li>
+<li><strong>Navigation sans signets</strong> — utiliser les boutons de navigation de page natifs (Insérer → Boutons → Navigation dans les pages)</li>
+</ul>
+
+<h2 id="deploy"><span class="sn">6</span>Avant de publier : checklist</h2>
+<ul>
+<li><strong>Actualiser les données</strong> — toujours actualiser avant l'envoi pour éviter les données obsolètes</li>
+<li><strong>Tester tous les boutons et filtres</strong> — vérifier que les slicers fonctionnent, que les boutons naviguent correctement</li>
+<li><strong>Vérifier les performances</strong> — Performance Analyzer sur chaque page avant publication</li>
+<li><strong>Nettoyer les mesures inutilisées</strong> — les mesures orphelines augmentent la taille du fichier et créent de la confusion</li>
+<li><strong>Documenter les sources</strong> — indiquer dans le rapport quelle est la date de dernière actualisation et la source des données</li>
+<li><strong>Row-Level Security</strong> — tester les rôles RLS avec "Tester comme" avant publication</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Visuels natifs, slicers, relations simples, publication basique</td><td>Sait créer un schéma en étoile, évite les camemberts, actualise avant publication</td><td>Utilise des relations bidirectionnelles partout, ne nettoie pas les colonnes inutiles</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>Signets avancés, optimisation interactions, Performance Analyzer</td><td>Utilise les signets pour la navigation, désactive les interactions inutiles, a utilisé Performance Analyzer</td><td>N'a jamais utilisé Performance Analyzer, ne sait pas configurer les signets</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Deployment pipelines, RLS avancé, DAX Studio, standards de rapport</td><td>A déployé via pipelines DEV/TEST/PROD, a configuré du RLS dynamique, utilise DAX Studio</td><td>Ne connaît pas les deployment pipelines, n'a jamais utilisé DAX Studio</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst Power BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html">Comment ca marche</a>
+  <a href="../about.html">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>

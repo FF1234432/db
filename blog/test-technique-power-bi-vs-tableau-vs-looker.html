@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Power BI vs Tableau vs Looker : quel outil pour quel profil ? — Data Builder</title>
+<meta name="description" content="Comparaison approfondie Power BI, Tableau et Looker : connectivité, modélisation, DAX vs LookML, performance, coût et gouvernance."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-power-bi-vs-tableau-vs-looker.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lb.on{color:var(--pul);font-weight:700}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+</div>
+<div class="nr">
+  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
+  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker : quel outil pour quel profil ?</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
+<h1 class="ah" data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker : quel outil pour quel profil ?</h1>
+<p class="ai" data-fr="Les trois outils dominent le marché BI. Mais choisir le bon outil — ou évaluer un candidat sur le bon outil — nécessite de comprendre leurs différences réelles : modélisation, langage de calcul, gouvernance et coût." data-en="These three tools dominate the BI market. But choosing the right tool — or assessing a candidate on the right tool — requires understanding their real differences: modeling, calculation language, governance and cost.">Les trois outils dominent le marché BI. Mais choisir le bon outil — ou évaluer un candidat sur le bon outil — nécessite de comprendre leurs différences réelles : modélisation, langage de calcul, gouvernance et coût.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span><span>·</span><span>Data Analyst · Analytics Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Sommaire</div><ol id="tl"><li><a href="#connect">Connectivité et données</a></li>
+<li><a href="#model">Modélisation</a></li>
+<li><a href="#calcul">Calculs et performances</a></li>
+<li><a href="#viz">Visualisation et design</a></li>
+<li><a href="#gouv">Collaboration et gouvernance</a></li>
+<li><a href="#cout">Coûts et licences</a></li>
+<li><a href="#choix">Quel outil choisir ?</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Power BI, Tableau et Looker sont les trois leaders du marché BI selon Gartner. En entretien, on évalue non seulement la maîtrise technique de l'outil, mais aussi la capacité du candidat à le positionner dans un contexte donné : écosystème Microsoft, stack Google Cloud, ou besoin de semantic layer centralisé.</p>
+
+<h2 id="connect"><span class="sn">1</span>Connectivité et préparation des données</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas choisiriez-vous une connexion Live plutôt qu'un Extract dans Tableau ? Et DirectQuery plutôt qu'Import dans Power BI ?</p></div>
+<table class="lt"><thead><tr><th></th><th>Power BI</th><th>Tableau</th><th>Looker</th></tr></thead><tbody>
+<tr><td><strong>Mode de connexion</strong></td><td>Import, DirectQuery, Dual</td><td>Live Connection, Extract (.hyper)</td><td>Live uniquement (BigQuery/GCP)</td></tr>
+<tr><td><strong>Préparation intégrée</strong></td><td>Power Query (langage M)</td><td>Tableau Prep (outil séparé)</td><td>LookML (outil séparé)</td></tr>
+<tr><td><strong>Intégration native</strong></td><td>Écosystème Microsoft (Azure, Excel, Teams)</td><td>Large (Snowflake, BQ, Redshift, SAP...)</td><td>Google Cloud (BigQuery natif)</td></tr>
+</tbody></table>
+<ul>
+<li><strong>Power BI Import</strong> — copie les données en mémoire (VertiPaq), performances maximales, refresh planifié</li>
+<li><strong>DirectQuery</strong> — requête la source en temps réel, pas de copie locale, performances dépendantes de la source</li>
+<li><strong>Tableau Extract</strong> — fichier .hyper compressé, performances excellentes, déconnecté de la source</li>
+<li><strong>Looker Live</strong> — toujours connecté, exploite la puissance de BigQuery pour les gros volumes</li>
+</ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui utilise DirectQuery par défaut sans justification (latence, volume, temps réel) n'a pas optimisé de rapport Power BI en production.</p></div>
+
+<h2 id="model"><span class="sn">2</span>Modélisation des données</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi Power BI gère mieux les modèles en étoile que Tableau ou Looker Studio ?</p></div>
+<ul>
+<li><strong>Power BI</strong> — vue Modèle dédiée, relations avec cardinalité, filtres croisés, colonnes calculées, hiérarchies. Supporte nativement le schéma en étoile</li>
+<li><strong>Tableau</strong> — blends, jointures et relations, mais moins adapté aux modèles complexes multi-tables. Pas de vraie modélisation en étoile</li>
+<li><strong>Looker/LookML</strong> — modèle sémantique centralisé dans le code (YAML-like), source de vérité unique pour toute l'organisation. Idéal pour la gouvernance à grande échelle</li>
+<li><strong>Looker Studio</strong> — connexion directe sans modélisation, adapté aux rapports simples sur Google Analytics/BQ</li>
+</ul>
+
+<h2 id="calcul"><span class="sn">3</span>Calculs et performances</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelles sont les différences entre DAX (Power BI), les calculs Tableau et LookML ? Lequel est le plus accessible pour un utilisateur métier ?</p></div>
+<table class="lt"><thead><tr><th></th><th>Power BI (DAX)</th><th>Tableau (Formules)</th><th>Looker (LookML)</th></tr></thead><tbody>
+<tr><td><strong>Langage</strong></td><td>DAX — syntaxe Excel, puissant</td><td>Formules Tableau — plus intuitif</td><td>LookML — type SQL, accessible</td></tr>
+<tr><td><strong>Courbe d'apprentissage</strong></td><td>Élevée (contexte de filtre)</td><td>Moyenne</td><td>Faible (si SQL connu)</td></tr>
+<tr><td><strong>Moteur</strong></td><td>VertiPaq — très performant en Import</td><td>Hyper — excellent en Extract</td><td>BigQuery — scalable sur très gros volumes</td></tr>
+<tr><td><strong>Optimisation</strong></td><td>DAX Studio, Performance Analyzer</td><td>Performance Recorder</td><td>Caching BigQuery, PDT</td></tr>
+</tbody></table>
+
+<h2 id="viz"><span class="sn">4</span>Visualisation et design</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Dans quel cas recommandez-vous Tableau pour la visualisation plutôt que Power BI ?</p></div>
+<ul>
+<li><strong>Power BI</strong> — large bibliothèque de visuels, marketplace de visuels custom, application mobile native, bonne intégration Teams/SharePoint</li>
+<li><strong>Tableau</strong> — meilleure flexibilité de design, LOD pour des analyses complexes, Tableau Public pour le partage public, idéal pour les dashboards analytiques avancés</li>
+<li><strong>Looker Studio</strong> — gratuit, simple, intégré Google Workspace, mais visualisations limitées et personnalisation restreinte</li>
+</ul>
+<div class="cl"><p><strong>Règle pratique :</strong> Tableau pour la flexibilité analytique et le design avancé. Power BI pour l'intégration Microsoft et l'accessibilité. Looker pour la gouvernance centralisée et les stacks Google Cloud.</p></div>
+
+<h2 id="gouv"><span class="sn">5</span>Collaboration et gouvernance</h2>
+<ul>
+<li><strong>Power BI</strong> — Power BI Service, workspaces, Row-Level Security, deployment pipelines Dev/Test/Prod, lineage, datasets certifiés</li>
+<li><strong>Tableau</strong> — Tableau Server/Cloud, permissions granulaires, sources certifiées, Tableau Server Client API pour l'automatisation</li>
+<li><strong>Looker</strong> — modèle sémantique centralisé dans Git (LookML versionné), collaboration en temps réel, permissions RBAC avancées</li>
+</ul>
+
+<h2 id="cout"><span class="sn">6</span>Coûts et licences (2025)</h2>
+<table class="lt"><thead><tr><th>Outil</th><th>Tarif indicatif</th><th>Modèle</th></tr></thead><tbody>
+<tr><td>Power BI Pro</td><td>~14 $/user/mois</td><td>Par utilisateur, inclut Service</td></tr>
+<tr><td>Power BI Premium</td><td>~20 $/user/mois ou capacité</td><td>Refresh fréquent, gros volumes</td></tr>
+<tr><td>Tableau Creator</td><td>~70 $/user/mois</td><td>Desktop + Prep + Server/Cloud</td></tr>
+<tr><td>Tableau Viewer</td><td>~15 $/user/mois</td><td>Consultation uniquement</td></tr>
+<tr><td>Looker Studio</td><td>Gratuit</td><td>Basique, Google Workspace</td></tr>
+<tr><td>Looker</td><td>Sur devis</td><td>Enterprise, basé sur GCP</td></tr>
+</tbody></table>
+
+<h2 id="choix"><span class="sn">7</span>Quel outil choisir selon le contexte ?</h2>
+<table class="lt"><thead><tr><th>Contexte</th><th>Outil recommandé</th><th>Pourquoi</th></tr></thead><tbody>
+<tr><td>Stack Microsoft (Azure, Teams, Excel)</td><td>Power BI</td><td>Intégration native, coût réduit, déploiement rapide</td></tr>
+<tr><td>Analyses complexes, design avancé</td><td>Tableau</td><td>Flexibilité LOD, Performance Recorder, Tableau Public</td></tr>
+<tr><td>Stack Google Cloud, BigQuery</td><td>Looker</td><td>Connexion native BQ, LookML versionnable, gouvernance</td></tr>
+<tr><td>Reporting simple, équipe non-technique</td><td>Looker Studio</td><td>Gratuit, accessible, intégration Google Analytics</td></tr>
+<tr><td>Gouvernance centralisée, grande équipe</td><td>Looker ou Power BI Premium</td><td>Semantic layer versionné, lineage, RLS avancé</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un profil BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a>
+  <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
+  <a href="index.html">Blog</a>
+  <a href="../cgu.html">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+function setLang(l){
+  document.documentElement.dataset.lang=l;
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
+  localStorage.setItem('db_lang',l);
+}
+(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
+</script>
+</body>
+</html>
