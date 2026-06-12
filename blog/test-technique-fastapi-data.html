@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique FastAPI pour la data : APIs de scoring ML en production — Data Builder</title>
+<meta name="description" content="FastAPI, endpoints ML, validation Pydantic, Docker, tests, securite — ce qu on evalue pour un Data Scientist ou ML Engineer qui deploie des modeles."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-fastapi-data.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique FastAPI pour la data : APIs de scoring ML en production</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique FastAPI pour la data : APIs de scoring ML en production</h1>
+<p class="ai">FastAPI est devenu le standard pour deployer des APIs de scoring ML en Python. En entretien, on evalue la capacite a aller au-dela du prototype : validation, securite, tests, containerisation.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>6 min de lecture</span><span>·</span><span>Data Scientist · ML Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#basics">FastAPI pour le ML</a></li>
+<li><a href="#pydantic">Validation avec Pydantic</a></li>
+<li><a href="#async">Async et concurrence</a></li>
+<li><a href="#securite">Securite et auth</a></li>
+<li><a href="#tests">Tests et documentation</a></li>
+<li><a href="#docker">Docker et deploiement</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><h2 id='basics'><span class='sn'>1</span>Pourquoi FastAPI pour les APIs ML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi FastAPI plutot que Flask pour exposer un modele ML ?</p></div><div class='cb'><code>from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import numpy as np
+
+app = FastAPI(title='Churn Prediction API', version='1.0')
+model = joblib.load('models/churn_v3.pkl')
+
+class PredictionRequest(BaseModel):
+    age: int
+    nb_purchases: int
+    days_since_last_purchase: int
+    average_basket: float
+
+class PredictionResponse(BaseModel):
+    probability: float
+    prediction: str
+    model_version: str = 'v3'
+
+@app.post('/predict', response_model=PredictionResponse)
+def predict(request: PredictionRequest):
+    features = np.array([[request.age, request.nb_purchases,
+                          request.days_since_last_purchase, request.average_basket]])
+    proba = model.predict_proba(features)[0][1]
+    return PredictionResponse(
+        probability=round(float(proba), 4),
+        prediction='churn' if proba > 0.5 else 'no_churn'
+    )</code></div><ul><li><strong>FastAPI vs Flask</strong> — validation automatique (Pydantic), documentation OpenAPI auto-generee, async natif, typage Python</li><li><strong>Performance</strong> — comparable a NodeJS et Go pour les endpoints IO-bound grace a l async</li></ul><h2 id='pydantic'><span class='sn'>2</span>Validation Pydantic avancee</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment validez-vous que les inputs d un endpoint de scoring sont dans les plages attendues ?</p></div><div class='cb'><code>from pydantic import BaseModel, Field, validator
+
+class PredictionRequest(BaseModel):
+    age: int = Field(ge=18, le=120, description='Age de l utilisateur')
+    nb_purchases: int = Field(ge=0, le=10000)
+    average_basket: float = Field(gt=0, le=100000)
+    
+    @validator('nb_purchases')
+    def purchases_coherence(cls, v, values):
+        if 'age' in values and v > values['age'] * 100:
+            raise ValueError('Nombre d achats incoherent avec l age')
+        return v</code></div><h2 id='async'><span class='sn'>3</span>Async et gestion de la concurrence</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous async def vs def dans FastAPI ?</p></div><ul><li><strong>async def</strong> — pour les operations IO-bound : appels de bases de donnees, requetes HTTP externes, lecture de fichiers</li><li><strong>def synchrone</strong> — pour les operations CPU-bound (calcul ML). FastAPI les execute dans un thread pool</li><li><strong>Background tasks</strong> — executer des operations apres la reponse (logging, envoi email, mise a jour de compteurs)</li></ul><h2 id='securite'><span class='sn'>4</span>Securite : API keys et JWT</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment securisez-vous un endpoint de scoring ML ?</p></div><div class='cb'><code>from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends, HTTPException
+
+security = HTTPBearer()
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    if token not in VALID_API_KEYS:
+        raise HTTPException(status_code=401, detail='Invalid API key')
+    return token
+
+@app.post('/predict')
+async def predict(request: PredictionRequest, token: str = Depends(verify_token)):
+    # endpoint securise
+    ...</code></div><h2 id='tests'><span class='sn'>5</span>Tests automatises et documentation</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous une API FastAPI ?</p></div><div class='cb'><code>from fastapi.testclient import TestClient
+
+client = TestClient(app)
+
+def test_predict_valid():
+    response = client.post('/predict', json={
+        'age': 35, 'nb_purchases': 12,
+        'days_since_last_purchase': 30, 'average_basket': 49.90
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert 0 <= data['probability'] <= 1
+    assert data['prediction'] in ['churn', 'no_churn']
+
+def test_predict_invalid_age():
+    response = client.post('/predict', json={'age': -5, ...})
+    assert response.status_code == 422  # Pydantic validation error</code></div><h2 id='docker'><span class='sn'>6</span>Docker et deploiement production</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment containerisez-vous une API FastAPI pour la production ?</p></div><div class='cb'><code>FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-cache-dir
+COPY . .
+# Gunicorn avec workers Uvicorn pour la production
+CMD ['gunicorn', 'main:app', '--workers', '4', '-k', 'uvicorn.workers.UvicornWorker',
+     '--bind', '0.0.0.0:8000', '--timeout', '60']</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Endpoints basiques, Pydantic, documentation auto</td><td>A deploye une API ML avec FastAPI, utilise Pydantic pour la validation</td><td>N a jamais deploye de modele via API</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Async, securite JWT, tests, Docker production</td><td>A securise une API avec des tokens, a teste avec TestClient, utilise Gunicorn+Uvicorn</td><td>Ne sait pas la difference entre async et sync dans FastAPI</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un ML Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>

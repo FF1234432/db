@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique BigQuery avance : partitionnement, INFORMATION_SCHEMA, couts — Data Builder</title>
+<meta name="description" content="Partitionnement et clustering avances, INFORMATION_SCHEMA, optimisation des couts, BigQuery ML, Omni — ce qu on evalue pour un Data Engineer BigQuery Senior."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-bigquery-avance.html"/>
+<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}.nr{display:flex;align-items:center;gap:10px}.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}.lb.on{color:var(--pul);font-weight:700}.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px}.am strong{color:var(--g6)}.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}.ab strong{font-weight:600}.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}.lt tr:nth-child(even) td{background:var(--ps)}.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}footer{border-top:1px solid var(--pb);padding:28px 32px}.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}.fc{font-size:12px;color:#d1d5db}@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
+</head>
+<body>
+<nav>
+<a href="../index.html" class="nl">Data <span>Builder</span></a>
+<div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
+<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+</nav>
+<div class="aw">
+<div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique BigQuery avance : partitionnement, INFORMATION_SCHEMA, couts</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique BigQuery avance : partitionnement, INFORMATION_SCHEMA, couts</h1>
+<p class="ai"><p>BigQuery facture a la requete selon les octets lus. Un Data Engineer Senior s...</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juin 2025</span><span>·</span><span>7 min</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#partition">Partitionnement et clustering</a></li>
+<li><a href="#info">INFORMATION_SCHEMA</a></li>
+<li><a href="#cost">Maitrise des couts</a></li>
+<li><a href="#ml">BigQuery ML</a></li>
+<li><a href="#omni">BigQuery Omni et Biglake</a></li>
+<li><a href="#best">Bonnes pratiques</a></li>
+<li><a href="#nv">Grille</a></li></ol></div>
+<div class="ab"><p>BigQuery facture a la requete selon les octets lus. Un Data Engineer Senior sait reduire les couts de 90% avec le bon partitionnement et les bonnes pratiques — c est ce qu on evalue en entretien.</p><h2 id='partition'><span class='sn'>1</span>Partitionnement et clustering</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la difference entre partitionnement et clustering dans BigQuery ? Comment choisissez-vous l un, l autre, ou les deux ?</p></div><div class='cb'><code>-- Table partitionnee par date ET clusterisee
+CREATE TABLE `projet.dataset.events`
+PARTITION BY DATE(event_date)
+CLUSTER BY user_id, event_type
+OPTIONS (require_partition_filter = TRUE)  -- force le filtre de partition
+AS SELECT * FROM source_table;
+
+-- Partition Expiration : supprimer auto les vieilles partitions
+ALTER TABLE events
+SET OPTIONS (partition_expiration_days = 365);
+
+-- Cost estimation avant execution
+EXPLAIN SELECT * FROM events WHERE event_date = '2025-01-01';
+-- Voir les bytes processed estimes</code></div><ul><li><strong>Partitionnement</strong> — divise physiquement la table en segments. BigQuery ne lit que les partitions filtrees. Reduction de couts jusqu a 99%</li><li><strong>Clustering</strong> — organise les blocs de donnees a l interieur d une partition. Complement du partitionnement pour les filtres multi-colonnes</li><li><strong>Quand les deux</strong> — tables >100GB avec requetes qui filtrent toujours sur la date ET sur d autres colonnes</li></ul><h2 id='info'><span class='sn'>2</span>INFORMATION_SCHEMA : audit et monitoring</h2><div class='cb'><code>-- Top 10 requetes les plus couteuses du mois
+SELECT
+    user_email,
+    query,
+    total_bytes_billed / POW(1024, 4) AS tb_billed,
+    total_bytes_billed / POW(1024, 4) * 6.25 AS estimated_cost_usd,
+    creation_time
+FROM `region-eu`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE DATE(creation_time) >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+    AND statement_type = 'SELECT'
+ORDER BY total_bytes_billed DESC
+LIMIT 10;
+
+-- Taille de chaque table dans un dataset
+SELECT table_id,
+       row_count,
+       ROUND(size_bytes / POW(1024, 3), 2) AS size_gb
+FROM `dataset`.__TABLES__
+ORDER BY size_bytes DESC;</code></div><h2 id='cost'><span class='sn'>3</span>Maitrise des couts</h2><ul><li><strong>SELECT * est interdit</strong> — specifier toujours les colonnes necessaires. BigQuery facture les colonnes lues, pas les lignes</li><li><strong>require_partition_filter</strong> — forcer l utilisation d un filtre de partition pour eviter les full scans accidentels</li><li><strong>Materialized Views</strong> — precalculer les aggregations couteuses. Refresh automatique et incremental</li><li><strong>Flat rate vs on-demand</strong> — flat rate previsible pour les gros volumes, on-demand pour les charges variables</li><li><strong>BI Engine</strong> — cache en memoire pour les requetes repetitives (Looker Studio, Tableau)</li></ul><h2 id='ml'><span class='sn'>4</span>BigQuery ML : ML directement en SQL</h2><div class='cb'><code>-- Creer un modele de regression logistique en SQL
+CREATE OR REPLACE MODEL `dataset.churn_model`
+OPTIONS(model_type='logistic_reg', input_label_cols=['churned']) AS
+SELECT age, nb_purchases, last_purchase_days, average_basket, churned
+FROM `dataset.customers_features`;
+
+-- Evaluer
+SELECT * FROM ML.EVALUATE(MODEL `dataset.churn_model`);
+
+-- Predire
+SELECT customer_id, predicted_churned, predicted_churned_probs
+FROM ML.PREDICT(MODEL `dataset.churn_model`,
+    (SELECT * FROM `dataset.new_customers`));</code></div><h2 id='omni'><span class='sn'>5</span>BigQuery Omni et Biglake</h2><ul><li><strong>BigQuery Omni</strong> — executer des requetes BigQuery directement sur des donnees dans AWS S3 ou Azure Blob Storage, sans les deplacer</li><li><strong>BigLake</strong> — tables BigQuery sur des fichiers stockes dans GCS, S3 ou ADLS. Securite centralisee (column-level security) sur des donnees externes</li><li><strong>Biglake Metastore</strong> — compatible Apache Iceberg, interoperable avec Spark, Hive, Trino</li></ul><h2 id='best'><span class='sn'>6</span>Bonnes pratiques en production</h2><ul><li><strong>Utiliser _PARTITIONDATE</strong> — pseudo-colonne de partition, plus performante que DATE(timestamp_col)</li><li><strong>Eviter les CROSS JOIN</strong> — dans BigQuery, un CROSS JOIN sur deux tables moyennes peut scanner des teraoctets</li><li><strong>Denormalisation deliberee</strong> — BigQuery fonctionne mieux avec des tables larges et denormalisees (colonnes imbriquees STRUCT/ARRAY) qu avec des jointures multiples</li><li><strong>Colonnes imbriquees</strong> — STRUCT et ARRAY permettent de stocker des donnees hierarchiques sans jointures couteuses</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Partitionnement, clustering, INFORMATION_SCHEMA</td><td>Configure partitionnement + clustering, lit INFORMATION_SCHEMA pour les couts</td><td>Fait des SELECT * sans WHERE sur les partitions</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>BigQuery ML, Omni/BigLake, optimisation avancee</td><td>A utilise BigQuery ML pour un modele simple, connait BigLake, a optimise les couts de 50%+</td><td>Ne sait pas pourquoi le partitionnement reduit les couts</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+</div>
+<footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+</body>
+</html>
