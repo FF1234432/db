@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Docker et Kubernetes avancé pour la data</span></div>
@@ -98,8 +98,50 @@ spec:
   syncPolicy:
     automated:
       prune: true      # supprimer les ressources retirées du repo
-      selfHeal: true   # resynchroniser si quelqu un modifie K8s manuellement</code></div><ul><li><strong>GitOps</strong> — Git est la source de vérité pour l état du cluster. Tout changement passe par une PR</li><li><strong>ArgoCD</strong> — détecte les divergences entre Git et le cluster, synchronise automatiquement</li><li><strong>Avantages</strong> — auditabilité (tout changement est un commit), rollback simple (revert le commit), cohérence entre environnements</li></ul><h2 id='airflow'><span class='sn'>5</span>Airflow sur Kubernetes : KubernetesExecutor</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre CeleryExecutor et KubernetesExecutor pour Airflow ?</p></div><table class='lt'><thead><tr><th></th><th>CeleryExecutor</th><th>KubernetesExecutor</th></tr></thead><tbody><tr><td>Workers</td><td>Pool de workers permanents</td><td>Un Pod par tâche (créé/détruit)</td></tr><tr><td>Isolation</td><td>Faible (workers partagés)</td><td>Maximale (pod dédié)</td></tr><tr><td>Scalabilité</td><td>Fixe ou autoscaling Celery</td><td>Automatique K8s</td></tr><tr><td>Coût</td><td>Workers toujours allumés</td><td>Paye seulement pendant l exécution</td></tr><tr><td>Complexité</td><td>Nécessite Redis/RabbitMQ</td><td>K8s natif, plus simple</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>6</span>Monitoring des workloads data K8s</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment monitorez-vous vos pipelines data déployés sur Kubernetes ?</p></div><ul><li><strong>Prometheus + Grafana</strong> — métriques CPU/RAM par pod, alertes sur les OOM kills ou les crashloops</li><li><strong>Loki</strong> — agrégation des logs de tous les pods (Airflow, Spark, APIs ML). Stack Grafana complète</li><li><strong>kube-state-metrics</strong> — métriques sur l état des ressources K8s (Deployments, StatefulSets, Jobs)</li><li><strong>Alertes critiques data</strong> — pod en CrashLoopBackOff, job Spark OOMKilled, latence API ML > seuil, consumer Kafka en retard</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Helm basique, déploiements K8s, secrets management</td><td>A déployé Airflow avec Helm, utilise External Secrets ou Workload Identity</td><td>Stocke des credentials dans les manifests K8s</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>StatefulSets, GitOps ArgoCD, KubernetesExecutor, monitoring</td><td>A mis en place GitOps avec ArgoCD, a déployé Airflow avec KubernetesExecutor</td><td>Ne sait pas ce qu est GitOps, ne connaît pas ArgoCD</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer K8s avancé ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+      selfHeal: true   # resynchroniser si quelqu un modifie K8s manuellement</code></div><ul><li><strong>GitOps</strong> — Git est la source de vérité pour l état du cluster. Tout changement passe par une PR</li><li><strong>ArgoCD</strong> — détecte les divergences entre Git et le cluster, synchronise automatiquement</li><li><strong>Avantages</strong> — auditabilité (tout changement est un commit), rollback simple (revert le commit), cohérence entre environnements</li></ul><h2 id='airflow'><span class='sn'>5</span>Airflow sur Kubernetes : KubernetesExecutor</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre CeleryExecutor et KubernetesExecutor pour Airflow ?</p></div><table class='lt'><thead><tr><th></th><th>CeleryExecutor</th><th>KubernetesExecutor</th></tr></thead><tbody><tr><td>Workers</td><td>Pool de workers permanents</td><td>Un Pod par tâche (créé/détruit)</td></tr><tr><td>Isolation</td><td>Faible (workers partagés)</td><td>Maximale (pod dédié)</td></tr><tr><td>Scalabilité</td><td>Fixe ou autoscaling Celery</td><td>Automatique K8s</td></tr><tr><td>Coût</td><td>Workers toujours allumés</td><td>Paye seulement pendant l exécution</td></tr><tr><td>Complexité</td><td>Nécessite Redis/RabbitMQ</td><td>K8s natif, plus simple</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>6</span>Monitoring des workloads data K8s</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment monitorez-vous vos pipelines data déployés sur Kubernetes ?</p></div><ul><li><strong>Prometheus + Grafana</strong> — métriques CPU/RAM par pod, alertes sur les OOM kills ou les crashloops</li><li><strong>Loki</strong> — agrégation des logs de tous les pods (Airflow, Spark, APIs ML). Stack Grafana complète</li><li><strong>kube-state-metrics</strong> — métriques sur l état des ressources K8s (Deployments, StatefulSets, Jobs)</li><li><strong>Alertes critiques data</strong> — pod en CrashLoopBackOff, job Spark OOMKilled, latence API ML > seuil, consumer Kafka en retard</li></ul>
+<div class='cb'><code># K8s CronJob pour pipeline data
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-etl
+  namespace: data-platform
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: data-pipeline-sa
+          containers:
+          - name: etl
+            image: europe-west1-docker.pkg.dev/projet/data/pipeline:1.2.3
+            env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            resources:
+              requests: {cpu: "500m", memory: "1Gi"}
+              limits: {cpu: "2", memory: "4Gi"}
+          restartPolicy: OnFailure
+          backoffLimit: 3</code></div>
+<ul>
+<li><strong>KubernetesExecutor Airflow</strong> - chaque task Airflow = pod ephemere. Isolation totale, scaling automatique, pas de workers permanents. Standard pour les deployments K8s prod</li>
+<li><strong>Resource limits obligatoires</strong> - sans limits, un job peut consommer toute la memoire du node et tuer les autres pods. Toujours definir requests ET limits</li>
+<li><strong>Workload Identity</strong> - lier service account K8s a un service account GCP/AWS. Zero credential dans les pods, authentification via identite du pod</li>
+<li><strong>Horizontal Pod Autoscaling</strong> - pour les APIs de scoring ML : scaler selon CPU/memoire ou metriques custom (requetes en attente dans la queue)</li>
+<li><strong>Spark on Kubernetes</strong> - spark-submit vers cluster K8s. Les executors sont des pods ephemeres. GKE Autopilot simplifie le provisioning</li>
+</ul>
+<ul>
+<li><strong>KubernetesExecutor Airflow</strong> - chaque task Airflow = pod ephemere. Isolation totale, scaling automatique, pas de workers permanents. Standard pour les deployments K8s prod</li>
+<li><strong>Resource limits obligatoires</strong> - sans limits, un job peut consommer toute la memoire du node et tuer les autres pods. Toujours definir requests ET limits</li>
+<li><strong>Workload Identity</strong> - lier service account K8s a un service account GCP/AWS. Zero credential dans les pods, authentification via identite du pod</li>
+<li><strong>Horizontal Pod Autoscaling</strong> - pour les APIs de scoring ML : scaler selon CPU/memoire ou metriques custom (requetes en attente dans la queue)</li>
+<li><strong>Spark on Kubernetes</strong> - spark-submit vers cluster K8s. Les executors sont des pods ephemeres. GKE Autopilot simplifie le provisioning</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Helm basique, déploiements K8s, secrets management</td><td>A déployé Airflow avec Helm, utilise External Secrets ou Workload Identity</td><td>Stocke des credentials dans les manifests K8s</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>StatefulSets, GitOps ArgoCD, KubernetesExecutor, monitoring</td><td>A mis en place GitOps avec ArgoCD, a déployé Airflow avec KubernetesExecutor</td><td>Ne sait pas ce qu est GitOps, ne connaît pas ArgoCD</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer K8s avancé ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

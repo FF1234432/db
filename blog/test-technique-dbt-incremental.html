@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt modèles incrémentaux : stratégies et optimisation</span></div>
@@ -94,8 +94,26 @@ dbt run --full-refresh --select fct_orders
     on_schema_change='append_new_columns',
     snowflake_warehouse='TRANSFORM_WH_S',
     merge_exclude_columns=['created_at']  # ne pas updater created_at
-) }}</code></div><ul><li><strong>cluster_by</strong> — pré-trier les données pour que le merge soit plus rapide sur les grandes tables</li><li><strong>merge_exclude_columns</strong> — éviter d écraser des colonnes qui ne doivent pas changer (created_at, inserted_at)</li><li><strong>on_schema_change</strong> — append_new_columns ajoute les nouvelles colonnes sans full refresh</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Stratégie append et merge, is_incremental(), unique_key</td><td>A configuré un modèle merge avec unique_key, comprend is_incremental()</td><td>Ne sait pas ce qu est un modèle incrémental dbt</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Late-arriving data, full refresh strategy, optimisation warehouse</td><td>Gère les late-arriving data avec fenêtre glissante, bloque le full refresh sur les grandes tables</td><td>Ne sait pas ce qu est le late-arriving data</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+) }}</code></div><ul><li><strong>cluster_by</strong> — pré-trier les données pour que le merge soit plus rapide sur les grandes tables</li><li><strong>merge_exclude_columns</strong> — éviter d écraser des colonnes qui ne doivent pas changer (created_at, inserted_at)</li><li><strong>on_schema_change</strong> — append_new_columns ajoute les nouvelles colonnes sans full refresh</li></ul><div class='cb'><code>-- dbt incremental : les strategies
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge',  -- merge, append, delete+insert, insert_overwrite
+    on_schema_change='sync_all_columns'  -- gerer les changements de schema
+) }}
+
+SELECT order_id, customer_id, amount, status, updated_at
+FROM {{ source('raw', 'orders') }}
+{% if is_incremental() %}
+    WHERE updated_at > (SELECT MAX(updated_at) FROM {{ this }})
+    -- Pour Snowflake : WHERE updated_at > (SELECT DATEADD('day',-1,MAX(updated_at)) FROM {{ this }})
+    -- Safety window de 1 jour pour les retards de replication
+{% endif %}
+
+-- Verifier la fraicheur apres un run
+-- SELECT MAX(updated_at) FROM {{ this }} -- doit etre proche de NOW()</code></div><ul><li><strong>Safety window</strong> - toujours inclure un overlap (1-2h ou 1j) dans le filtre incremental pour capturer les donnees en retard de la source. Ne pas filtrer exactement sur MAX(updated_at)</li><li><strong>Strategie merge vs append</strong> - merge : upsert, necessite une unique_key. append : ajoute uniquement les nouvelles lignes (plus rapide mais risque de doublons si rerun). delete+insert : supprime la partition puis reinsere</li><li><strong>on_schema_change</strong> - sync_all_columns ajoute les nouvelles colonnes automatiquement. fail (defaut) : bloquer si le schema change. Choisir selon la maturite de la source</li><li><strong>Full refresh force</strong> - dbt run --full-refresh recrée la table completement. A utiliser apres un changement de logique majeur ou pour corriger des donnees historiques</li><li><strong>Partition pruning avec incremental</strong> - sur BigQuery/Snowflake, filtrer sur la colonne de partition dans la condition incrementale. Evite de scanner toute la table source</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Stratégie append et merge, is_incremental(), unique_key</td><td>A configuré un modèle merge avec unique_key, comprend is_incremental()</td><td>Ne sait pas ce qu est un modèle incrémental dbt</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Late-arriving data, full refresh strategy, optimisation warehouse</td><td>Gère les late-arriving data avec fenêtre glissante, bloque le full refresh sur les grandes tables</td><td>Ne sait pas ce qu est le late-arriving data</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique monitoring de la qualité des données en production</span></div>
@@ -71,8 +71,46 @@ SELECT
     ) AS ratio_vs_moyenne
 FROM fct_orders
 GROUP BY 1
-HAVING ratio_vs_moyenne < 0.5 OR ratio_vs_moyenne > 2.0</code></div><h2 id='schema'><span class='sn'>4</span>Détecter les changements de schéma</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment êtes-vous alerté quand une colonne est supprimée ou renommée dans une table source ?</p></div><ul><li><strong>dbt schema tests</strong> — si une colonne source est renommée, le modèle dbt staging échoue au prochain run</li><li><strong>schema_changes_from_baseline</strong> — test dbt qui compare le schéma actuel avec le schéma attendu</li><li><strong>DataHub notifications</strong> — alertes automatiques quand le schéma d un dataset change</li><li><strong>Fivetran/Airbyte</strong> — les connecteurs managés détectent les breaking changes et envoient des alertes</li></ul><h2 id='outils'><span class='sn'>5</span>Elementary vs Monte Carlo vs Soda</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel outil de data observabilité choisissez-vous selon le contexte ?</p></div><table class='lt'><thead><tr><th>Outil</th><th>Type</th><th>Forces</th><th>Idéal pour</th></tr></thead><tbody><tr><td><strong>Elementary</strong></td><td>Package dbt open source</td><td>Intégration native dbt, gratuit, anomaly detection</td><td>Équipes dbt-first, budget serré</td></tr><tr><td><strong>Monte Carlo</strong></td><td>SaaS enterprise</td><td>Détection automatique sans règles, lineage, MTTR tracking</td><td>Grandes équipes, données critiques</td></tr><tr><td><strong>Soda</strong></td><td>Open source + Cloud</td><td>Data contracts, checks SQL flexibles</td><td>Checks sur mesure, conformité</td></tr><tr><td><strong>Metaplane</strong></td><td>SaaS</td><td>Simple, bonne UX</td><td>Équipes débutantes en observabilité</td></tr></tbody></table><h2 id='alertes'><span class='sn'>6</span>Stratégie d alerting : éviter la fatigue</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évitez-vous que les alertes de qualité soient ignorées ?</p></div><ul><li><strong>Priorisation</strong> — distinguer les alertes critiques (bloquant la production) des warnings (à surveiller)</li><li><strong>Canal adapté</strong> — critique → PagerDuty + Slack #data-incidents. Warning → Slack #data-quality seulement</li><li><strong>Runbook</strong> — chaque alerte critique a un runbook : qui prévenir, quelle action, comment vérifier</li><li><strong>SLA de résolution</strong> — s engager sur un délai de résolution par niveau de gravité</li><li><strong>Réduire le bruit</strong> — un taux de faux positifs > 20% tue la culture d alerte. Tuner les seuils régulièrement</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>dbt source freshness, tests de volume basiques</td><td>A configuré des alertes de fraîcheur, monitore les volumes</td><td>Découvre les problèmes de qualité par les utilisateurs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Anomaly detection, Elementary ou Monte Carlo, stratégie d alerting</td><td>A déployé Elementary ou Monte Carlo, a une stratégie d alerting claire</td><td>Ne sait pas ce qu est l anomaly detection pour la data</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+HAVING ratio_vs_moyenne < 0.5 OR ratio_vs_moyenne > 2.0</code></div><h2 id='schema'><span class='sn'>4</span>Détecter les changements de schéma</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment êtes-vous alerté quand une colonne est supprimée ou renommée dans une table source ?</p></div><ul><li><strong>dbt schema tests</strong> — si une colonne source est renommée, le modèle dbt staging échoue au prochain run</li><li><strong>schema_changes_from_baseline</strong> — test dbt qui compare le schéma actuel avec le schéma attendu</li><li><strong>DataHub notifications</strong> — alertes automatiques quand le schéma d un dataset change</li><li><strong>Fivetran/Airbyte</strong> — les connecteurs managés détectent les breaking changes et envoient des alertes</li></ul><h2 id='outils'><span class='sn'>5</span>Elementary vs Monte Carlo vs Soda</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel outil de data observabilité choisissez-vous selon le contexte ?</p></div><table class='lt'><thead><tr><th>Outil</th><th>Type</th><th>Forces</th><th>Idéal pour</th></tr></thead><tbody><tr><td><strong>Elementary</strong></td><td>Package dbt open source</td><td>Intégration native dbt, gratuit, anomaly detection</td><td>Équipes dbt-first, budget serré</td></tr><tr><td><strong>Monte Carlo</strong></td><td>SaaS enterprise</td><td>Détection automatique sans règles, lineage, MTTR tracking</td><td>Grandes équipes, données critiques</td></tr><tr><td><strong>Soda</strong></td><td>Open source + Cloud</td><td>Data contracts, checks SQL flexibles</td><td>Checks sur mesure, conformité</td></tr><tr><td><strong>Metaplane</strong></td><td>SaaS</td><td>Simple, bonne UX</td><td>Équipes débutantes en observabilité</td></tr></tbody></table><h2 id='alertes'><span class='sn'>6</span>Stratégie d alerting : éviter la fatigue</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évitez-vous que les alertes de qualité soient ignorées ?</p></div><ul><li><strong>Priorisation</strong> — distinguer les alertes critiques (bloquant la production) des warnings (à surveiller)</li><li><strong>Canal adapté</strong> — critique → PagerDuty + Slack #data-incidents. Warning → Slack #data-quality seulement</li><li><strong>Runbook</strong> — chaque alerte critique a un runbook : qui prévenir, quelle action, comment vérifier</li><li><strong>SLA de résolution</strong> — s engager sur un délai de résolution par niveau de gravité</li><li><strong>Réduire le bruit</strong> — un taux de faux positifs > 20% tue la culture d alerte. Tuner les seuils régulièrement</li></ul>
+<div class='cb'><code>import great_expectations as gx
+from evidently import Report
+from evidently.metric_preset import DataQualityPreset
+
+# Great Expectations : suite de validation
+context = gx.get_context()
+suite = context.suites.add(gx.ExpectationSuite(name="orders_quality"))
+suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column="order_id"))
+suite.add_expectation(gx.expectations.ExpectTableRowCountToBeBetween(min_value=1000, max_value=10_000_000))
+suite.add_expectation(gx.expectations.ExpectColumnValuesToBeBetween(column="amount", min_value=0, max_value=100_000))
+
+# Valider un batch de données
+batch = context.data_sources.get("orders_ds").get_asset("orders").get_batch_definition("daily")
+results = context.run_checkpoint(checkpoint_name="orders_checkpoint")
+
+# Evidently : monitoring en production
+report = Report(metrics=[DataQualityPreset()])
+report.run(reference_data=baseline_week1, current_data=data_this_week)
+report.save_html("quality_report.html")
+
+# Alerter sur la dégradation
+if report.as_dict()["metrics"][0]["result"]["missing_values_share"] > 0.05:
+    send_alert(f"Taux de valeurs manquantes anormal : {missing_pct:.1%}")</code></div>
+<ul>
+<li><strong>Anomaly detection automatique</strong> — Elementary (dbt) et Monte Carlo détectent les anomalies statistiques (volume, fraîcheur, distribution) sans écrire de règles manuellement</li>
+<li><strong>SLA de données</strong> — définir formellement : fraîcheur maximale (données mises à jour toutes les 2h), taux de complétude minimum (99%), volume attendu (±20% vs semaine précédente)</li>
+<li><strong>Alerting actionnable</strong> — une alerte sans contexte est ignorée. Inclure : table impactée, métrique concernée, valeur attendue vs observée, lien vers le dashboard de monitoring</li>
+<li><strong>Lineage des incidents</strong> — quand une table est corrompue, le lineage permet d'identifier automatiquement les dashboards et modèles en aval impactés</li>
+<li><strong>Coût de la mauvaise qualité</strong> — calculer l'impact business des données erronées (décisions fausses, rapports incorrects) pour justifier l'investissement dans la qualité</li>
+</ul>
+<ul>
+<li><strong>Anomaly detection automatique</strong> - Elementary (dbt) et Monte Carlo detectent les anomalies statistiques (volume, fraicheur, distribution) sans regles manuelles</li>
+<li><strong>SLA de donnees</strong> - fraicheur maximale (donnees mises a jour toutes les 2h), taux de completude minimum (99%), volume attendu (+-20% vs semaine precedente)</li>
+<li><strong>Alerting actionnable</strong> - une alerte sans contexte est ignoree. Inclure : table impactee, metrique concernee, valeur attendue vs observee, lien vers le dashboard</li>
+<li><strong>Lineage des incidents</strong> - quand une table est corrompue, le lineage permet d identifier automatiquement les dashboards et modeles en aval impactes</li>
+<li><strong>Cout de la mauvaise qualite</strong> - calculer l impact business des donnees erronees (decisions fausses, rapports incorrects) pour justifier l investissement dans la qualite</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>dbt source freshness, tests de volume basiques</td><td>A configuré des alertes de fraîcheur, monitore les volumes</td><td>Découvre les problèmes de qualité par les utilisateurs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Anomaly detection, Elementary ou Monte Carlo, stratégie d alerting</td><td>A déployé Elementary ou Monte Carlo, a une stratégie d alerting claire</td><td>Ne sait pas ce qu est l anomaly detection pour la data</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

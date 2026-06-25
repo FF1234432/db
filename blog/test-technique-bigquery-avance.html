@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique BigQuery avance : partitionnement, INFORMATION_SCHEMA, couts</span></div>
@@ -29,51 +29,148 @@
 <li><a href="#omni">BigQuery Omni et Biglake</a></li>
 <li><a href="#best">Bonnes pratiques</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><p>BigQuery facture a la requete selon les octets lus. Un Data Engineer Senior sait reduire les couts de 90% avec le bon partitionnement et les bonnes pratiques — c est ce qu on evalue en entretien.</p><h2 id='partition'><span class='sn'>1</span>Partitionnement et clustering</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la difference entre partitionnement et clustering dans BigQuery ? Comment choisissez-vous l un, l autre, ou les deux ?</p></div><div class='cb'><code>-- Table partitionnee par date ET clusterisee
-CREATE TABLE `projet.dataset.events`
-PARTITION BY DATE(event_date)
-CLUSTER BY user_id, event_type
-OPTIONS (require_partition_filter = TRUE)  -- force le filtre de partition
-AS SELECT * FROM source_table;
+<div class="ab">
+<h2 id='partition'><span class='sn'>1</span>Partitionnement et clustering</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre partitionnement et clustering dans BigQuery ? Comment choisir ?</p></div>
+<ul>
+<li><strong>Partitionnement</strong> — divise la table par colonnes date/timestamp ou par ingestion time. BigQuery scanne uniquement les partitions filtrées. Réduction des coûts directe</li>
+<li><strong>Clustering</strong> — trie les données dans chaque partition selon 1-4 colonnes. Réduit le volume scanné pour les filtres et les agrégations. Gratuit (pas de surcoût)</li>
+<li><strong>Combo optimal</strong> — PARTITION BY date + CLUSTER BY (region, product_id). La partition réduit les partitions scannées, le clustering réduit les octets dans la partition</li>
+<li><strong>Partition pruning</strong> — fonctionne uniquement si le filtre porte sur la colonne de partition. WHERE DATE(created_at) = '2025-01-01' active le pruning. WHERE EXTRACT(YEAR FROM created_at) = 2025 ne l'active pas</li>
+</ul>
+<div class='cb'><code>-- Table partitionnée et clusterisée
+CREATE TABLE analytics.fct_orders
+PARTITION BY DATE(order_date)
+CLUSTER BY region, product_category
+AS
+SELECT order_id, customer_id, amount, region, product_category, order_date
+FROM raw.orders;
 
--- Partition Expiration : supprimer auto les vieilles partitions
-ALTER TABLE events
-SET OPTIONS (partition_expiration_days = 365);
+-- Vérifier l'efficacité du partitionnement avec INFORMATION_SCHEMA
+SELECT
+    table_name,
+    partition_id,
+    total_rows,
+    total_logical_bytes / POW(1024, 3) AS gb_size
+FROM analytics.INFORMATION_SCHEMA.PARTITIONS
+WHERE table_name = 'fct_orders'
+ORDER BY partition_id DESC
+LIMIT 30;</code></div>
 
--- Cost estimation avant execution
-EXPLAIN SELECT * FROM events WHERE event_date = '2025-01-01';
--- Voir les bytes processed estimes</code></div><ul><li><strong>Partitionnement</strong> — divise physiquement la table en segments. BigQuery ne lit que les partitions filtrees. Reduction de couts jusqu a 99%</li><li><strong>Clustering</strong> — organise les blocs de donnees a l interieur d une partition. Complement du partitionnement pour les filtres multi-colonnes</li><li><strong>Quand les deux</strong> — tables >100GB avec requetes qui filtrent toujours sur la date ET sur d autres colonnes</li></ul><h2 id='info'><span class='sn'>2</span>INFORMATION_SCHEMA : audit et monitoring</h2><div class='cb'><code>-- Top 10 requetes les plus couteuses du mois
+<h2 id='info'><span class='sn'>2</span>INFORMATION_SCHEMA : audit et monitoring</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous INFORMATION_SCHEMA pour monitorer les coûts et les performances BigQuery ?</p></div>
+<div class='cb'><code>-- Top 10 requêtes les plus coûteuses des dernières 24h
 SELECT
     user_email,
-    query,
-    total_bytes_billed / POW(1024, 4) AS tb_billed,
-    total_bytes_billed / POW(1024, 4) * 6.25 AS estimated_cost_usd,
+    job_id,
+    ROUND(total_bytes_billed / POW(1024, 4), 4) AS tb_billed,
+    ROUND(total_bytes_billed / POW(1024, 4) * 5, 4) AS cost_usd,
+    total_slot_ms / 1000 AS slot_seconds,
+    SUBSTR(query, 1, 200) AS query_preview,
     creation_time
 FROM `region-eu`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
-WHERE DATE(creation_time) >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
-    AND statement_type = 'SELECT'
+WHERE creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+  AND job_type = 'QUERY'
+  AND state = 'DONE'
 ORDER BY total_bytes_billed DESC
 LIMIT 10;
 
--- Taille de chaque table dans un dataset
-SELECT table_id,
-       row_count,
+-- Tables les plus grosses du dataset
+SELECT table_name, row_count, 
        ROUND(size_bytes / POW(1024, 3), 2) AS size_gb
-FROM `dataset`.__TABLES__
-ORDER BY size_bytes DESC;</code></div><h2 id='cost'><span class='sn'>3</span>Maitrise des couts</h2><ul><li><strong>SELECT * est interdit</strong> — specifier toujours les colonnes necessaires. BigQuery facture les colonnes lues, pas les lignes</li><li><strong>require_partition_filter</strong> — forcer l utilisation d un filtre de partition pour eviter les full scans accidentels</li><li><strong>Materialized Views</strong> — precalculer les aggregations couteuses. Refresh automatique et incremental</li><li><strong>Flat rate vs on-demand</strong> — flat rate previsible pour les gros volumes, on-demand pour les charges variables</li><li><strong>BI Engine</strong> — cache en memoire pour les requetes repetitives (Looker Studio, Tableau)</li></ul><h2 id='ml'><span class='sn'>4</span>BigQuery ML : ML directement en SQL</h2><div class='cb'><code>-- Creer un modele de regression logistique en SQL
-CREATE OR REPLACE MODEL `dataset.churn_model`
-OPTIONS(model_type='logistic_reg', input_label_cols=['churned']) AS
-SELECT age, nb_purchases, last_purchase_days, average_basket, churned
-FROM `dataset.customers_features`;
+FROM analytics.INFORMATION_SCHEMA.TABLE_STORAGE
+ORDER BY size_bytes DESC;</code></div>
+<ul>
+<li><strong>JOBS_BY_PROJECT</strong> — toutes les requêtes exécutées : user, durée, octets scannés, coût estimé</li>
+<li><strong>TABLE_STORAGE</strong> — taille des tables, nombre de lignes, date de dernière modification</li>
+<li><strong>PARTITIONS</strong> — métadonnées sur chaque partition : lignes, taille, dernière modification</li>
+<li><strong>RESERVATIONS</strong> — monitoring des slots alloués (en mode Capacity)</li>
+</ul>
 
--- Evaluer
-SELECT * FROM ML.EVALUATE(MODEL `dataset.churn_model`);
+<h2 id='cost'><span class='sn'>3</span>Maîtrise des coûts BigQuery</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont vos pratiques pour contrôler les coûts BigQuery en production ?</p></div>
+<ul>
+<li><strong>SELECT * interdit</strong> — BigQuery facture sur les colonnes scannées. Toujours sélectionner uniquement les colonnes nécessaires</li>
+<li><strong>Cost controls</strong> — configurer un maximum de 1TB par requête (custom quotas) pour les développeurs</li>
+<li><strong>Partitioning obligatoire</strong> — toute table &gt;10GB sans partitionnement est un anti-pattern</li>
+<li><strong>BI Engine</strong> — cache en mémoire pour les dashboards Looker Studio. Évite de rescanner la table à chaque actualisation</li>
+<li><strong>Slots vs on-demand</strong> — on-demand : 5$/TB scanné. Slots réservés : coût fixe mensuel, rentable à &gt;10TB/jour de requêtes</li>
+</ul>
+<div class='cb'><code>-- Quotas par utilisateur (Cloud Console → IAM → Quotas)
+-- Ou via gcloud :
+gcloud alpha services quota update --consumer=project:mon-projet     --service=bigquery.googleapis.com     --metric=bigquery.googleapis.com/quota/query/usage     --value=1099511627776  # 1TB max par requête
 
--- Predire
+-- Dry run : estimer le coût avant d'exécuter
+bq query --dry_run --use_legacy_sql=false     "SELECT * FROM analytics.fct_orders WHERE order_date = '2025-01-01'"
+# → This query will process 245 MB when run.</code></div>
+
+<h2 id='ml'><span class='sn'>4</span>BigQuery ML : ML directement en SQL</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous BigQuery ML plutôt qu'un framework Python (sklearn, XGBoost) ?</p></div>
+<div class='cb'><code>-- Entraîner un modèle de régression logistique directement en SQL
+CREATE OR REPLACE MODEL analytics.churn_model
+OPTIONS(
+    model_type='LOGISTIC_REG',
+    input_label_cols=['churned'],
+    max_iterations=20,
+    learn_rate=0.1
+) AS
+SELECT
+    nb_commandes_30j,
+    montant_total_90j,
+    jours_depuis_derniere_connexion,
+    segment,
+    churned
+FROM analytics.features_churn
+WHERE split = 'TRAIN';
+
+-- Scorer les clients actuels
 SELECT customer_id, predicted_churned, predicted_churned_probs
-FROM ML.PREDICT(MODEL `dataset.churn_model`,
-    (SELECT * FROM `dataset.new_customers`));</code></div><h2 id='omni'><span class='sn'>5</span>BigQuery Omni et Biglake</h2><ul><li><strong>BigQuery Omni</strong> — executer des requetes BigQuery directement sur des donnees dans AWS S3 ou Azure Blob Storage, sans les deplacer</li><li><strong>BigLake</strong> — tables BigQuery sur des fichiers stockes dans GCS, S3 ou ADLS. Securite centralisee (column-level security) sur des donnees externes</li><li><strong>Biglake Metastore</strong> — compatible Apache Iceberg, interoperable avec Spark, Hive, Trino</li></ul><h2 id='best'><span class='sn'>6</span>Bonnes pratiques en production</h2><ul><li><strong>Utiliser _PARTITIONDATE</strong> — pseudo-colonne de partition, plus performante que DATE(timestamp_col)</li><li><strong>Eviter les CROSS JOIN</strong> — dans BigQuery, un CROSS JOIN sur deux tables moyennes peut scanner des teraoctets</li><li><strong>Denormalisation deliberee</strong> — BigQuery fonctionne mieux avec des tables larges et denormalisees (colonnes imbriquees STRUCT/ARRAY) qu avec des jointures multiples</li><li><strong>Colonnes imbriquees</strong> — STRUCT et ARRAY permettent de stocker des donnees hierarchiques sans jointures couteuses</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Partitionnement, clustering, INFORMATION_SCHEMA</td><td>Configure partitionnement + clustering, lit INFORMATION_SCHEMA pour les couts</td><td>Fait des SELECT * sans WHERE sur les partitions</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>BigQuery ML, Omni/BigLake, optimisation avancee</td><td>A utilise BigQuery ML pour un modele simple, connait BigLake, a optimise les couts de 50%+</td><td>Ne sait pas pourquoi le partitionnement reduit les couts</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+FROM ML.PREDICT(MODEL analytics.churn_model,
+    (SELECT * FROM analytics.features_churn WHERE split = 'PREDICT'));
+
+-- Évaluer le modèle
+SELECT * FROM ML.EVALUATE(MODEL analytics.churn_model);</code></div>
+<ul>
+<li><strong>Quand BQML</strong> — équipes SQL-first sans infra Python, prototypage rapide, données déjà dans BigQuery</li>
+<li><strong>Quand Python</strong> — modèles complexes (DNN, transformers), feature engineering avancé, plus de contrôle sur l'entraînement</li>
+<li><strong>Modèles disponibles</strong> — régression linéaire/logistique, XGBoost, DNN, k-means, ARIMA, import de modèles TensorFlow/PyTorch</li>
+</ul>
+
+<h2 id='omni'><span class='sn'>5</span>BigQuery Omni et BigLake</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que BigLake ? Dans quel cas l'utilisez-vous ?</p></div>
+<ul>
+<li><strong>BigLake</strong> — requêter des fichiers Parquet/CSV dans GCS, AWS S3 ou Azure Blob comme des tables BigQuery, avec les mêmes permissions Unity Catalog-like et le fine-grained access</li>
+<li><strong>BigQuery Omni</strong> — exécuter des requêtes BigQuery sur AWS/Azure sans déplacer les données. Utile pour le multi-cloud</li>
+<li><strong>Connexions externes</strong> — connecter BigQuery à des APIs externes ou à des fonctions Cloud Run pour enrichir les données</li>
+<li><strong>Avantage BigLake</strong> — gérer les permissions d'accès aux fichiers S3/GCS via BigQuery IAM plutôt que des ACLs stockage complexes</li>
+</ul>
+
+<h2 id='best'><span class='sn'>6</span>Bonnes pratiques en production</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont vos règles non-négociables pour BigQuery en production ?</p></div>
+<ul>
+<li><strong>Partitionnement systématique</strong> — toute table &gt;5GB partitionnée par date</li>
+<li><strong>Clustering sur les colonnes de filtre</strong> — les colonnes les plus souvent utilisées dans WHERE et GROUP BY</li>
+<li><strong>Pas de SELECT *</strong> — politique de revue de code qui bloque les PR avec SELECT *</li>
+<li><strong>Labels sur les jobs</strong> — labelliser les requêtes par équipe et projet pour l'attribution des coûts</li>
+<li><strong>Monitoring INFORMATION_SCHEMA</strong> — dashboard de coûts hebdomadaire par utilisateur/équipe</li>
+<li><strong>Dataset par environnement</strong> — analytics_dev, analytics_staging, analytics_prod. Pas de dev sur le dataset de prod</li>
+</ul>
+
+<ul>
+<li><strong>BI Engine</strong> - cache en memoire pour les dashboards Looker Studio. Evite de rescanner la table a chaque actualisation. Facturation au Go de memoire reserve</li>
+<li><strong>Slots vs on-demand</strong> - on-demand : 5 USD/TB scanne. Slots reserves : cout fixe mensuel, rentable a plus de 10TB/j de requetes</li>
+<li><strong>BigLake</strong> - requeter des fichiers Parquet dans GCS, AWS S3 ou Azure Blob comme des tables BigQuery, avec les memes permissions et le fine-grained access</li>
+<li><strong>BigQuery ML</strong> - BQML : quand equipes SQL-first sans infra Python, prototypage rapide. Python : modeles complexes (DNN, transformers), feature engineering avance</li>
+<li><strong>Labels sur les jobs</strong> - labelliser les requetes par equipe et projet pour l attribution des couts. Configurer dans les settings BigQuery ou via les APIs</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Partitionnement, clustering, contrôle des coûts basique</td><td>Configure systématiquement le partitionnement, connaît l'impact du SELECT *, utilise INFORMATION_SCHEMA</td><td>Crée des tables sans partitionnement, fait des SELECT * en production</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>BQML, BigLake, optimisation slots, architecture multi-projet</td><td>A utilisé BQML pour du ML en SQL, configure des slots réservés, gère les coûts par équipe via labels</td><td>Ne sait pas la différence entre on-demand et slots réservés</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

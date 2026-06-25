@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique implémentation d un data catalog : DataHub, OpenMetadata</span></div>
@@ -78,8 +78,67 @@ source:
 ## Schedule : ingérer quotidiennement
 schedule:
   interval: '@daily'
-  timezone: 'Europe/Paris'</code></div><h2 id='adoption'><span class='sn'>5</span>Faire adopter le catalog par les équipes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les stratégies pour que les équipes utilisent vraiment le catalog ?</p></div><ul><li><strong>Problème à résoudre</strong> — ne pas déployer le catalog pour la gouvernance. Le déployer parce qu il résout le problème 'je ne sais pas d où vient cette donnée'</li><li><strong>Quick wins</strong> — documenter les 10 tables les plus utilisées en semaine 1. Visibilité immédiate</li><li><strong>Integration dans le workflow</strong> — lier le catalog dans les PRs dbt, dans les tickets, dans les dashboards</li><li><strong>Data Stewards</strong> — désigner des responsables par domaine, pas attendre que tout le monde documente spontanément</li><li><strong>Mesurer l adoption</strong> — traquer les vues, les recherches, les descriptions ajoutées. Ce qui se mesure s améliore</li></ul><h2 id='lineage'><span class='sn'>6</span>Lineage automatique : les intégrations clés</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles intégrations configurez-vous en priorité pour le lineage ?</p></div><ul><li><strong>dbt → DataHub</strong> — lineage complet des modèles, colonne par colonne. Premier à configurer</li><li><strong>Airflow → DataHub</strong> — lineage des pipelines ETL. Quels DAGs alimentent quelles tables</li><li><strong>Snowflake/BigQuery → DataHub</strong> — lineage des requêtes SQL en production. Capturé via Query History</li><li><strong>Looker/Power BI → DataHub</strong> — quels dashboards consomment quelles tables. Lineage jusqu aux consommateurs finaux</li><li><strong>Résultat</strong> — lineage complet source → ingestion → transformation dbt → warehouse → dashboard</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>A utilisé un catalog, sait ce que le lineage apporte</td><td>A configuré l ingestion dbt → DataHub, utilise le catalog pour l impact analysis</td><td>Ne sait pas ce qu est un data catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Déploiement DataHub/OpenMetadata, stratégie d adoption, lineage multi-sources</td><td>A déployé un catalog en production, a défini une stratégie d adoption</td><td>Ne peut pas expliquer comment faire adopter un catalog par les équipes</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+  timezone: 'Europe/Paris'</code></div><h2 id='adoption'><span class='sn'>5</span>Faire adopter le catalog par les équipes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les stratégies pour que les équipes utilisent vraiment le catalog ?</p></div><ul><li><strong>Problème à résoudre</strong> — ne pas déployer le catalog pour la gouvernance. Le déployer parce qu il résout le problème 'je ne sais pas d où vient cette donnée'</li><li><strong>Quick wins</strong> — documenter les 10 tables les plus utilisées en semaine 1. Visibilité immédiate</li><li><strong>Integration dans le workflow</strong> — lier le catalog dans les PRs dbt, dans les tickets, dans les dashboards</li><li><strong>Data Stewards</strong> — désigner des responsables par domaine, pas attendre que tout le monde documente spontanément</li><li><strong>Mesurer l adoption</strong> — traquer les vues, les recherches, les descriptions ajoutées. Ce qui se mesure s améliore</li></ul><h2 id='lineage'><span class='sn'>6</span>Lineage automatique : les intégrations clés</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles intégrations configurez-vous en priorité pour le lineage ?</p></div><ul><li><strong>dbt → DataHub</strong> — lineage complet des modèles, colonne par colonne. Premier à configurer</li><li><strong>Airflow → DataHub</strong> — lineage des pipelines ETL. Quels DAGs alimentent quelles tables</li><li><strong>Snowflake/BigQuery → DataHub</strong> — lineage des requêtes SQL en production. Capturé via Query History</li><li><strong>Looker/Power BI → DataHub</strong> — quels dashboards consomment quelles tables. Lineage jusqu aux consommateurs finaux</li><li><strong>Résultat</strong> — lineage complet source → ingestion → transformation dbt → warehouse → dashboard</li></ul>
+<div class='cb'><code># DataHub ingestion YAML (BigQuery + dbt lineage)
+source:
+  type: dbt
+  config:
+    manifest_path: /dbt/target/manifest.json
+    catalog_path: /dbt/target/catalog.json
+    target_platform: bigquery
+    include_column_lineage: true
+
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080
+
+# Ingestion BigQuery
+source:
+  type: bigquery
+  config:
+    project_id: mon-projet-gcp
+    include_table_lineage: true
+    include_usage_statistics: true  # qui consomme quelle table</code></div>
+<ul>
+<li><strong>DataHub vs OpenMetadata vs Collibra</strong> — DataHub (LinkedIn, open source) : API-first, Kubernetes, extensible. OpenMetadata : UX soignée, déploiement simple. Collibra : enterprise, gouvernance avancée, prix élevé</li>
+<li><strong>Adoption progressive</strong> — commencer par les 20 tables les plus consommées. Un catalog complet mais non maintenu vaut moins qu'un petit catalog bien curé</li>
+<li><strong>Data Owners obligatoires</strong> — sans propriétaire défini par domaine, les métadonnées se dégradent en 6 mois. Processus d'attribution dès le lancement</li>
+<li><strong>Intégration dbt</strong> — les modèles dbt génèrent automatiquement descriptions, tests et lineage. Source principale de métadonnées pour les équipes dbt-first</li>
+<li><strong>Lineage automatique</strong> — DataHub et OpenMetadata peuvent extraire le lineage depuis Airflow, Spark, dbt et SQL pour tracer les dépendances end-to-end</li>
+</ul>
+<div class='cb'><code># DataHub ingestion multi-sources
+source:
+  type: dbt
+  config:
+    manifest_path: /dbt/target/manifest.json
+    catalog_path: /dbt/target/catalog.json
+    target_platform: snowflake
+    include_column_lineage: true
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080
+---
+source:
+  type: bigquery
+  config:
+    project_id: mon-projet-gcp
+    include_table_lineage: true
+    include_usage_statistics: true
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080</code></div>
+<ul>
+<li><strong>DataHub vs OpenMetadata vs Collibra</strong> - DataHub (LinkedIn OSS) : API-first, Kubernetes, tres extensible. OpenMetadata : UX moderne, simple a deployer. Collibra : enterprise, prix eleve</li>
+<li><strong>Adoption en 3 phases</strong> - Phase 1 : cataloguer les 20 tables les plus consommees avec owners. Phase 2 : lineage automatique dbt + Airflow. Phase 3 : search semantique</li>
+<li><strong>Data Owners obligatoires</strong> - sans proprietaire par domaine, les metadonnees se degradent en 6 mois. Attribution lors du lancement</li>
+<li><strong>Lineage automatique</strong> - DataHub extrait le lineage depuis dbt, Airflow, Spark et SQL. Tracer les dependances end-to-end sans effort manuel</li>
+<li><strong>ROI mesurable</strong> - temps pour trouver la bonne table (avant : 30min, apres : 30s), requetes par semaine sur le catalog, reduction des questions Slack</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>A utilisé un catalog, sait ce que le lineage apporte</td><td>A configuré l ingestion dbt → DataHub, utilise le catalog pour l impact analysis</td><td>Ne sait pas ce qu est un data catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Déploiement DataHub/OpenMetadata, stratégie d adoption, lineage multi-sources</td><td>A déployé un catalog en production, a défini une stratégie d adoption</td><td>Ne peut pas expliquer comment faire adopter un catalog par les équipes</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

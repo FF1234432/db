@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique data lineage : OpenLineage, DataHub et traçabilité</span></div>
@@ -74,8 +74,47 @@ from datahub.ingestion.api.common import PipelineContext
 # Requêter les downstream datasets d une colonne
 client.get_downstream_lineage(
     dataset='urn:li:dataset:(urn:li:dataPlatform:snowflake,PROD_DB.STAGING.STG_ORDERS,PROD)'
-)</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Lineage dbt, dbt docs, comprend le concept</td><td>Utilise ref() systématiquement, sait générer dbt docs avec le lineage</td><td>Ne sait pas ce qu est le data lineage</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OpenLineage, DataHub, column-level lineage, impact analysis</td><td>A déployé DataHub, utilise l impact analysis avant chaque changement critique</td><td>N a jamais entendu parler d OpenLineage</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+)</code></div>
+<div class='cb'><code># OpenLineage : émettre du lineage depuis n'importe quel job
+from openlineage.client import OpenLineageClient, set_producer
+from openlineage.client.run import RunEvent, Run, Job
+from openlineage.client.facet import SqlJobFacet, DatasetFacet
+
+client = OpenLineageClient.from_environment()
+set_producer("https://github.com/my-org/data-pipeline")
+
+# Émettre un event de début de job
+run_event = RunEvent(
+    eventType="START",
+    eventTime=datetime.now().isoformat(),
+    run=Run(runId=str(uuid.uuid4())),
+    job=Job(namespace="data-platform", name="transform_orders"),
+    inputs=[DatasetFacet(namespace="snowflake", name="raw.orders")],
+    outputs=[DatasetFacet(namespace="snowflake", name="analytics.fct_orders")]
+)
+client.emit(run_event)
+
+# Intégrations natives OpenLineage
+# - dbt : dbt-ol package (lineage automatique)
+# - Airflow : openlineage-airflow provider
+# - Spark : openlineage-spark jar
+# - Great Expectations : openlineage-great-expectations</code></div>
+<ul>
+<li><strong>OpenLineage vs DataHub lineage</strong> — OpenLineage : standard ouvert pour émettre du lineage depuis n'importe quel outil. DataHub/Marquez/Atlan : backends qui consomment ces events</li>
+<li><strong>Marquez</strong> — metadata repository open source compatible OpenLineage. Alternative légère à DataHub pour le lineage seul</li>
+<li><strong>Lineage colonne par colonne</strong> — le lineage table-to-table ne suffit pas. Le lineage colonne permet de tracer l'origine de chaque champ (ex : amount dans fct_orders vient de raw.transactions.price)</li>
+<li><strong>Impact analysis</strong> — avec le lineage, répondre en 30 secondes à "si je change cette colonne source, quels dashboards seront impactés ?"</li>
+<li><strong>Airflow integration</strong> — installer <code>apache-airflow-providers-openlineage</code>. Chaque task Airflow émet automatiquement des events de lineage vers Marquez ou DataHub</li>
+</ul>
+<ul>
+<li><strong>OpenLineage vs DataHub lineage</strong> - OpenLineage : standard ouvert pour emettre du lineage depuis n importe quel outil. DataHub/Marquez/Atlan : backends qui consomment ces events</li>
+<li><strong>Marquez</strong> - metadata repository open source compatible OpenLineage. Alternative legere a DataHub pour le lineage seul</li>
+<li><strong>Lineage colonne par colonne</strong> - le lineage table-to-table ne suffit pas. Tracer l origine de chaque champ permet l impact analysis precise</li>
+<li><strong>Impact analysis</strong> - avec le lineage, repondre en 30 secondes a : si je change cette colonne source, quels dashboards seront impactes ?</li>
+<li><strong>Airflow integration</strong> - installer apache-airflow-providers-openlineage. Chaque task Airflow emet automatiquement des events de lineage vers Marquez ou DataHub</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Lineage dbt, dbt docs, comprend le concept</td><td>Utilise ref() systématiquement, sait générer dbt docs avec le lineage</td><td>Ne sait pas ce qu est le data lineage</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OpenLineage, DataHub, column-level lineage, impact analysis</td><td>A déployé DataHub, utilise l impact analysis avant chaque changement critique</td><td>N a jamais entendu parler d OpenLineage</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

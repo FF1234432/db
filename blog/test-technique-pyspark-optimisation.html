@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique PySpark optimisation : partitions, caching, broadcast joins</span></div>
@@ -125,8 +125,44 @@ df.withColumn('tier',
     when(col('amount') > 1000, 'high')
     .when(col('amount') > 100, 'medium')
     .otherwise('low')
-)</code></div><h2 id='diagnostic'><span class='sn'>6</span>Diagnostiquer avec Spark UI</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous l UI Spark pour identifier les goulots d étranglement ?</p></div><ul><li><strong>Jobs → Stages</strong> — identifier le stage le plus long. C est là que se cache le problème</li><li><strong>Data Skew</strong> — dans l onglet Stage, si une task prend 10x plus que les autres = data skew sur la clé de partition</li><li><strong>Shuffle Read/Write</strong> — un volume de shuffle élevé indique des jointures ou groupBy coûteux</li><li><strong>GC Time</strong> — si GC Time > 10% du temps total, la mémoire est trop petite ou les objets Python sont trop lourds</li><li><strong>SQL onglet</strong> — voir le plan d exécution physique pour identifier les sort-merge joins évitables</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Partitions basiques, broadcast joins, cache()</td><td>Ajuste les shuffle partitions, utilise broadcast sur les petites tables</td><td>Ne sait pas ce qu est une partition Spark</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Bucketing, Pandas UDFs, Spark UI diagnostic, AQE</td><td>A résolu un data skew, remplace les Python UDFs par des Pandas UDFs</td><td>Utilise des Python UDFs sans savoir pourquoi c est lent</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer PySpark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+)</code></div><h2 id='diagnostic'><span class='sn'>6</span>Diagnostiquer avec Spark UI</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous l UI Spark pour identifier les goulots d étranglement ?</p></div><ul><li><strong>Jobs → Stages</strong> — identifier le stage le plus long. C est là que se cache le problème</li><li><strong>Data Skew</strong> — dans l onglet Stage, si une task prend 10x plus que les autres = data skew sur la clé de partition</li><li><strong>Shuffle Read/Write</strong> — un volume de shuffle élevé indique des jointures ou groupBy coûteux</li><li><strong>GC Time</strong> — si GC Time > 10% du temps total, la mémoire est trop petite ou les objets Python sont trop lourds</li><li><strong>SQL onglet</strong> — voir le plan d exécution physique pour identifier les sort-merge joins évitables</li></ul><div class='cb'><code>from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, broadcast, spark_partition_id, count, rand, concat, lit
+
+spark = SparkSession.builder \
+    .config('spark.sql.adaptive.enabled', 'true') \
+    .config('spark.sql.adaptive.coalescePartitions.enabled', 'true') \
+    .config('spark.sql.adaptive.skewJoin.enabled', 'true') \
+    .config('spark.sql.shuffle.partitions', '200') \
+    .getOrCreate()
+
+# Diagnostiquer le data skew
+df.groupBy(spark_partition_id()).agg(count('*').alias('n')).orderBy('n', ascending=False).show()
+
+# Broadcast join (table < 10MB)
+result = large_df.join(broadcast(small_lookup), 'product_id')
+
+# Salting anti-skew
+SALT = 10
+large_df = large_df.withColumn('salt', (rand() * SALT).cast('int'))
+large_df = large_df.withColumn('key_salted', concat(col('customer_id'), lit('_'), col('salt')))
+
+# Persist les DataFrames reutilises
+from pyspark import StorageLevel
+df_enriched = df.join(dim, 'id').persist(StorageLevel.MEMORY_AND_DISK)
+count_total = df_enriched.count()
+agg = df_enriched.groupBy('region').sum('amount')
+
+# Plan d execution
+result.explain(mode='formatted')</code></div>
+<ul>
+<li><strong>AQE (Adaptive Query Execution)</strong> - Spark 3+ optimise le plan au runtime : coalesce les partitions vides, detecte le skew, choisit le broadcast join. Toujours activer</li>
+<li><strong>Salting anti-skew</strong> - ajouter un suffixe aleatoire a la cle de join pour distribuer les donnees skewees. Jointure en deux etapes : explode + reduce</li>
+<li><strong>Repartition vs coalesce</strong> - repartition(n) : shuffle complet. coalesce(n) : reduit sans shuffle. Utiliser coalesce pour reduire avant ecriture</li>
+<li><strong>Kryo serializer</strong> - spark.serializer=KryoSerializer : 2-10x plus rapide que Java serializer pour les shuffles et le cache RDD</li>
+<li><strong>Off-heap memory</strong> - spark.memory.offHeap.enabled=true pour les jobs avec beaucoup de donnees en cache. Evite la GC pressure Java</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Partitions basiques, broadcast joins, cache()</td><td>Ajuste les shuffle partitions, utilise broadcast sur les petites tables</td><td>Ne sait pas ce qu est une partition Spark</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Bucketing, Pandas UDFs, Spark UI diagnostic, AQE</td><td>A résolu un data skew, remplace les Python UDFs par des Pandas UDFs</td><td>Utilise des Python UDFs sans savoir pourquoi c est lent</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer PySpark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

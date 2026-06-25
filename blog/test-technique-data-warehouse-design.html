@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique conception de data warehouse : modélisation avancée</span></div>
@@ -120,7 +120,7 @@ FROM fct_orders o
 JOIN dim_date od ON o.order_date_id = od.date_id
 JOIN dim_date dd ON o.delivery_date_id = dd.date_id
 GROUP BY 1, 2;</code></div><h2 id='mini'><span class='sn'>6</span>Mini-dimensions : gérer les grandes dimensions qui changent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une mini-dimension ? Quand l utilisez-vous à la place d un SCD2 ?</p></div><ul><li><strong>Problème</strong> — une dimension client a 50M de lignes et des attributs qui changent souvent (segment, score de crédit). SCD2 ferait exploser la table</li><li><strong>Mini-dimension</strong> — extraire les attributs qui changent fréquemment dans une petite dimension séparée</li><li><strong>Structure</strong> — dim_customers (attributs stables) + dim_customer_profile (segment, score, statut) + bridge si nécessaire</li><li><strong>Avantages</strong> — les requêtes sur les attributs stables restent rapides, seule la mini-dimension utilise le SCD2</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Grain, additivité, schéma en étoile complet</td><td>Définit le grain avant de modéliser, distingue additif et semi-additif</td><td>Ne sait pas ce qu est le grain</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Factless facts, bridge tables, junk dimensions, role-playing</td><td>A utilisé une bridge table pour un M:N, explique les junk dimensions</td><td>Ne connaît pas les patterns avancés de Kimball</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Architect ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+<div class="cb2"><h3>Vous recrutez un Data Architect ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

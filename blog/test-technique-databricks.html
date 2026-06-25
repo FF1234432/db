@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Databricks : Unity Catalog, Jobs, MLflow, Lakehouse</span></div>
@@ -29,48 +29,126 @@
 <li><a href="#compute">Optimisation compute</a></li>
 <li><a href="#serverless">Serverless et cost</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><h2 id='catalog'><span class='sn'>1</span>Unity Catalog : gouvernance centralisee</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que Unity Catalog ? En quoi remplace-t-il le Hive Metastore ?</p></div><ul><li><strong>Unity Catalog</strong> — metastore unifie pour tous les assets Databricks : tables Delta, fichiers, modeles ML, notebooks, dashboards</li><li><strong>3 niveaux</strong> — Catalog > Schema > Table. Une workspace peut acceder a plusieurs catalogs</li><li><strong>Column-level security</strong> — masquer des colonnes selon le role de l utilisateur. Avec le Hive Metastore, c etait seulement au niveau de la table</li><li><strong>Row filters</strong> — appliquer des filtres de securite au niveau des lignes</li><li><strong>Data lineage</strong> — trace automatiquement le lineage jusqu a la colonne entre notebooks, jobs et tables</li></ul><h2 id='jobs'><span class='sn'>2</span>Jobs et Workflows : orchestration Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas utilisez-vous Databricks Jobs plutot qu Airflow pour orchestrer vos pipelines ?</p></div><div class='cb'><code># Configuration d un Job multi-tasks via Python SDK
-from databricks.sdk import WorkspaceClient
-from databricks.sdk.service import jobs
+<div class="ab">
+<h2 id='catalog'><span class='sn'>1</span>Unity Catalog : gouvernance centralisée</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que Unity Catalog ? Pourquoi remplace-t-il Hive Metastore ?</p></div>
+<ul>
+<li><strong>Unity Catalog</strong> — couche de gouvernance unifiée Databricks : gère les permissions sur tables, vues, volumes (fichiers), modèles ML et functions dans un seul endroit</li>
+<li><strong>Hiérarchie</strong> — Catalog → Schema (Database) → Table/View/Volume. Notation 3 niveaux : <code>catalog.schema.table</code></li>
+<li><strong>Row-level et Column-level security</strong> — masquage dynamique des colonnes PII selon le rôle, filtrage de lignes par user</li>
+<li><strong>Data lineage</strong> — Unity Catalog trace automatiquement le lineage colonne par colonne entre tables</li>
+<li><strong>vs Hive Metastore</strong> — Hive Metastore est limité à un workspace. Unity Catalog est cross-workspace et cross-cloud</li>
+</ul>
+<div class='cb'><code>-- Créer un catalog et un schema avec Unity Catalog
+CREATE CATALOG IF NOT EXISTS prod_catalog
+  COMMENT 'Catalogue de production';
 
-w = WorkspaceClient()
+CREATE SCHEMA IF NOT EXISTS prod_catalog.analytics
+  COMMENT 'Données analytiques';
 
-job = w.jobs.create(
-    name='pipeline_ventes',
-    tasks=[
-        jobs.Task(
-            task_key='ingestion',
-            notebook_task=jobs.NotebookTask(notebook_path='/pipelines/ingest'),
-            new_cluster=jobs.ClusterSpec(spark_version='13.3.x-scala2.12',
-                                         node_type_id='i3.xlarge', num_workers=2)
-        ),
-        jobs.Task(
-            task_key='transformation',
-            depends_on=[jobs.TaskDependency(task_key='ingestion')],
-            notebook_task=jobs.NotebookTask(notebook_path='/pipelines/transform')
-        )
-    ]
-)</code></div><h2 id='dlt'><span class='sn'>3</span>Delta Live Tables : pipelines declaratifs</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la difference entre une DLT table LIVE et une table STREAMING LIVE ?</p></div><div class='cb'><code>import dlt
+-- Attribuer des permissions
+GRANT USE CATALOG ON CATALOG prod_catalog TO `data-analysts`;
+GRANT SELECT ON SCHEMA prod_catalog.analytics TO `data-analysts`;
+GRANT MODIFY ON TABLE prod_catalog.analytics.orders TO `data-engineers`;
+
+-- Masquage dynamique d'une colonne PII
+CREATE OR REPLACE FUNCTION prod_catalog.security.mask_email(email STRING)
+  RETURNS STRING
+  RETURN CASE WHEN is_member('pii-readers') THEN email 
+              ELSE REGEXP_REPLACE(email, '.+@', '****@') END;
+
+ALTER TABLE prod_catalog.analytics.users 
+  ALTER COLUMN email SET MASK prod_catalog.security.mask_email;</code></div>
+
+<h2 id='jobs'><span class='sn'>2</span>Jobs et Workflows : orchestration Databricks</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Databricks Workflows plutôt qu'Airflow ?</p></div>
+<ul>
+<li><strong>Databricks Workflows</strong> — orchestrateur natif pour les jobs Databricks. Idéal quand tout le traitement est dans Databricks et que l'équipe veut éviter une infra Airflow séparée</li>
+<li><strong>Tasks</strong> — notebook, script Python, dbt, Spark JAR, SQL. Chaque task peut avoir son propre cluster ou partager un cluster job</li>
+<li><strong>Dépendances</strong> — graph DAG entre tasks avec conditions (run-if: all_success, at_least_one_success, none_failed)</li>
+<li><strong>Job clusters vs All-purpose clusters</strong> — job clusters s'éteignent à la fin du job. All-purpose restent actifs. Toujours utiliser des job clusters en production</li>
+<li><strong>Triggers</strong> — CRON, event-based (file arrival dans un volume), continu, ou déclenché par API</li>
+</ul>
+<div class='cb'><code># Déclencher un job Databricks via API depuis Airflow
+import requests
+
+def trigger_databricks_job(job_id, params):
+    resp = requests.post(
+        f"{DATABRICKS_HOST}/api/2.1/jobs/run-now",
+        headers={"Authorization": f"Bearer {DATABRICKS_TOKEN}"},
+        json={"job_id": job_id, "notebook_params": params}
+    )
+    run_id = resp.json()['run_id']
+    return run_id</code></div>
+
+<h2 id='dlt'><span class='sn'>3</span>Delta Live Tables : pipelines déclaratifs</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que Delta Live Tables ? En quoi diffère-t-il d'un pipeline dbt ?</p></div>
+<ul>
+<li><strong>DLT</strong> — framework Databricks pour définir des pipelines de données comme des tables Python/SQL avec des attentes de qualité (expectations)</li>
+<li><strong>@dlt.table</strong> — déclare une table, Databricks gère l'orchestration, le rafraîchissement incrémental et la gestion des erreurs</li>
+<li><strong>Expectations</strong> — règles de qualité intégrées : warn, drop (rejeter les lignes invalides) ou fail (bloquer le pipeline)</li>
+<li><strong>vs dbt</strong> — DLT intègre Spark nativement, gère le streaming. dbt est SQL-first, plus portable, meilleur écosystème de tests</li>
+<li><strong>Streaming tables vs Materialized Views</strong> — Streaming Tables : ingestion continue depuis Kafka/Auto Loader. MV : agrégations recalculées périodiquement</li>
+</ul>
+<div class='cb'><code>import dlt
 from pyspark.sql.functions import col
 
-# Table batch (refreshed a chaque run)
-@dlt.table(comment='Commandes nettoyees')
-def orders_clean():
-    return (
-        dlt.read('orders_raw')
-        .filter(col('amount') > 0)
-        .dropDuplicates(['order_id'])
-    )
+@dlt.table(comment="Commandes brutes depuis S3")
+def raw_orders():
+    return spark.readStream.format("cloudFiles")         .option("cloudFiles.format", "json")         .load("/mnt/landing/orders/")
 
-# Table streaming (incremental)
-@dlt.table(comment='Evenements temps reel')
-def events_stream():
-    return (
-        spark.readStream.format('kafka')
-        .option('subscribe', 'events')
-        .load()
-    )</code></div><ul><li><strong>LIVE TABLE</strong> — rafraichie entierement a chaque run. Pour les donnees batch</li><li><strong>STREAMING LIVE TABLE</strong> — traitement incremental. Pour Kafka, Kinesis, evenements continus</li><li><strong>Avantage DLT</strong> — Databricks gere automatiquement les dependances, les retentatives et la qualite des donnees</li></ul><h2 id='mlflow'><span class='sn'>4</span>MLflow integre dans Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous le MLflow Managed dans Databricks par rapport au MLflow open source ?</p></div><ul><li><strong>Tracking server manage</strong> — stockage automatique dans le workspace Databricks. Pas besoin de configurer un serveur</li><li><strong>Model Registry</strong> — promouvoir un modele de Staging a Production. Acces via Unity Catalog (Databricks 13+)</li><li><strong>Auto logging</strong> — mlflow.autolog() capture automatiquement les parametres, metriques et artefacts pour sklearn, XGBoost, PyTorch</li><li><strong>Serving</strong> — deployer un modele comme endpoint REST depuis le Model Registry en un clic</li></ul><h2 id='compute'><span class='sn'>5</span>Optimisation compute</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment reduisez-vous les couts compute Databricks ?</p></div><ul><li><strong>Spot instances</strong> — utiliser les instance pools avec des noeuds spot/preemptibles. 60-80% moins cher pour les jobs batch</li><li><strong>Auto-scaling</strong> — cluster qui scale entre min et max workers selon la charge</li><li><strong>Job clusters vs Interactive</strong> — toujours utiliser des job clusters pour les pipelines en production (crees et detruits par job)</li><li><strong>Photon engine</strong> — moteur vectorise natif Databricks. 2-5x plus rapide que Spark standard sur certaines requetes SQL</li></ul><h2 id='serverless'><span class='sn'>6</span>Serverless : zero gestion d infrastructure</h2><ul><li><strong>Serverless Compute</strong> — Databricks gere entierement l infrastructure. Pas de nodes a configurer</li><li><strong>DBU Serverless</strong> — facturation a la seconde. Ideal pour les workloads intermittents</li><li><strong>Serverless Jobs</strong> — executer des notebooks/DLT sans cluster. Startup en moins de 10 secondes</li><li><strong>Serverless SQL</strong> — Databricks SQL Warehouse serverless pour les requetes analytiques rapides</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Notebooks, Jobs, Delta Lake, MLflow basique</td><td>A configure un Job multi-tasks, utilise auto-scaling, connait Unity Catalog</td><td>Ne sait pas ce qu est Unity Catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>DLT, MLflow avance, Unity Catalog securite, optimisation couts</td><td>A deploye un pipeline DLT en production, configure le column-level security</td><td>N a jamais fait de DLT, ne connait pas le model serving Databricks</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+@dlt.table(comment="Commandes validées")
+@dlt.expect_or_drop("montant_positif", col("amount") > 0)
+@dlt.expect_or_warn("email_valide", col("email").rlike(r".+@.+\..+"))
+def validated_orders():
+    return dlt.read_stream("raw_orders")         .filter(col("status") != "cancelled")         .select("order_id", "customer_id", "amount", "email", "created_at")</code></div>
+
+<h2 id='mlflow'><span class='sn'>4</span>MLflow intégré dans Databricks</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment Databricks intègre-t-il MLflow dans le cycle de vie des modèles ML ?</p></div>
+<ul>
+<li><strong>MLflow autolog</strong> — Databricks active l'autologging MLflow automatiquement : chaque run sklearn/XGBoost/PyTorch est tracé sans code supplémentaire</li>
+<li><strong>Model Registry</strong> — versionner et promouvoir les modèles (Staging → Production). Avec Unity Catalog : <code>models:/catalog.schema.model/version</code></li>
+<li><strong>Model Serving</strong> — déployer un modèle en endpoint REST en 2 clics depuis le Model Registry</li>
+<li><strong>Feature Store</strong> — stocker et réutiliser des features ML entre différents modèles et équipes</li>
+</ul>
+
+<h2 id='compute'><span class='sn'>5</span>Optimisation compute</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment réduire les coûts compute dans Databricks ?</p></div>
+<ul>
+<li><strong>Photon Engine</strong> — moteur d'exécution vectorisé en C++. Accélère les requêtes SQL et DataFrames jusqu'à 12x sans changer le code</li>
+<li><strong>Auto-termination</strong> — configurer un timeout d'inactivité sur tous les clusters interactifs (20-30 min max)</li>
+<li><strong>Spot instances</strong> — utiliser des instances spot AWS/Azure/GCP pour les workers (économie 50-80%). Configurer un fallback on-demand</li>
+<li><strong>OPTIMIZE et ZORDER</strong> — compacter les petits fichiers Delta et trier les données pour améliorer le pruning</li>
+<li><strong>Serverless SQL</strong> — pour les requêtes SQL analytiques : pas de cluster à gérer, facturation par seconde de compute</li>
+</ul>
+<div class='cb'><code>-- Optimiser une table Delta en production
+OPTIMIZE prod_catalog.analytics.orders
+  ZORDER BY (order_date, customer_id);
+
+-- Analyser les statistiques pour le query planner
+ANALYZE TABLE prod_catalog.analytics.orders
+  COMPUTE STATISTICS FOR ALL COLUMNS;
+
+-- Vacuum : supprimer les fichiers anciens (>7j par défaut)
+VACUUM prod_catalog.analytics.orders RETAIN 168 HOURS;</code></div>
+
+<h2 id='serverless'><span class='sn'>6</span>Serverless et architecture moderne</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que le serverless Databricks ? Quand l'utiliser ?</p></div>
+<ul>
+<li><strong>Serverless SQL Warehouse</strong> — warehouse géré par Databricks, démarrage en &lt;5s, facturation à la seconde. Idéal pour le BI et les dashboards</li>
+<li><strong>Serverless Jobs</strong> — exécuter des jobs sans gérer de clusters. Databricks gère le provisioning automatiquement</li>
+<li><strong>Lakehouse Federation</strong> — requêter BigQuery, Snowflake, Redshift, PostgreSQL directement depuis Databricks sans déplacer les données</li>
+<li><strong>Quand NOT serverless</strong> — workloads Spark très lourds avec besoins mémoire spécifiques, jobs GPU pour le ML</li>
+</ul>
+
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Notebooks, Jobs basiques, Delta Lake, Unity Catalog permissions</td><td>A créé des jobs Databricks, gère des tables Delta, utilise Unity Catalog</td><td>Travaille sur All-purpose clusters en production, n'utilise pas Delta</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>DLT, MLflow, optimisation compute (Photon, ZORDER), architecture Lakehouse</td><td>A déployé des pipelines DLT, réduit les coûts via spot + auto-termination + OPTIMIZE</td><td>Ne sait pas ce que sont Delta Live Tables ni Unity Catalog</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

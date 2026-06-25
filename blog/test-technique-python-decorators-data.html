@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Python décorateurs pour la data : caching, retry, logging</span></div>
@@ -159,8 +159,100 @@ def fetch_and_cache(url: str) -> dict:
 # Règle : mettre retry en extérieur (première couche)
 # pour que les retries bénéficient du cache
 # Si cache en extérieur, les retries ne sont pas déclenchés
-# car le cache retourne directement</code></div><ul><li><strong>Ordre critique</strong> — le décorateur le plus externe s exécute en premier à l appel</li><li><strong>Retry en externe</strong> — le retry doit envelopper le cache pour que les erreurs déclenchent des retries</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Écrire un décorateur simple avec wraps, comprend l ordre</td><td>A écrit un décorateur retry ou cache, utilise functools.wraps</td><td>Ne sait pas ce qu est un décorateur</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Décorateurs paramétrés, composition, décorateurs de classe</td><td>Écrit des décorateurs paramétrés, gère l ordre de composition</td><td>N utilise jamais functools.wraps</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# car le cache retourne directement</code></div><ul><li><strong>Ordre critique</strong> — le décorateur le plus externe s exécute en premier à l appel</li><li><strong>Retry en externe</strong> — le retry doit envelopper le cache pour que les erreurs déclenchent des retries</li></ul><div class='cb'><code>import functools, time, logging
+
+def retry(max_attempts=3, delay=1.0, exceptions=(Exception,)):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    if attempt == max_attempts - 1: raise
+                    time.sleep(delay * (2 ** attempt))
+        return wrapper
+    return decorator
+
+def timed_cache(seconds=300):
+    def decorator(func):
+        cache = {}
+        @functools.wraps(func)
+        def wrapper(*args):
+            import datetime
+            now = datetime.datetime.now()
+            if args in cache:
+                result, ts = cache[args]
+                if (now - ts).seconds < seconds:
+                    return result
+            result = func(*args)
+            cache[args] = (result, now)
+            return result
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2.0, exceptions=(ConnectionError,))
+@timed_cache(seconds=600)
+def fetch_data(url: str) -> dict:
+    return requests.get(url).json()</code></div>
+<ul>
+<li><strong>functools.wraps</strong> - preserve le nom et la docstring. Sans wraps, func.__name__ retourne wrapper au lieu du nom reel</li>
+<li><strong>Decorateurs en production data</strong> - retry pour les appels API instables, caching pour les lookups frequents, logging pour tracer les appels</li>
+<li><strong>Chaining de decorateurs</strong> - ordre important : @retry @cache signifie retry(cache(func)). Le decorateur le plus proche de def s applique en premier</li>
+<li><strong>Decorateurs de classe</strong> - @dataclass, @property, @classmethod, @staticmethod sont tous des decorateurs natifs Python. Meme mecanique</li>
+<li><strong>Decorateur avec arguments</strong> - triple imbrication : decorator_factory(args) retourne decorator(func) qui retourne wrapper(*args). Pattern standard</li>
+</ul>
+<div class='cb'><code>import functools, time, logging
+from typing import Callable, Any
+
+def retry(max_attempts=3, delay=1.0, backoff=2.0, exceptions=(Exception,)):
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Any:
+            last_exc = None
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    last_exc = e
+                    if attempt < max_attempts - 1:
+                        wait = delay * (backoff ** attempt)
+                        logging.warning(f"{func.__name__} failed ({attempt+1}/{max_attempts}): retry in {wait:.1f}s")
+                        time.sleep(wait)
+            raise last_exc
+        return wrapper
+    return decorator
+
+def timed_cache(ttl_seconds=300):
+    def decorator(func):
+        cache = {}
+        @functools.wraps(func)
+        def wrapper(*args):
+            import time as t
+            now = t.monotonic()
+            if args in cache:
+                result, ts = cache[args]
+                if now - ts < ttl_seconds:
+                    return result
+            result = func(*args)
+            cache[args] = (result, now)
+            return result
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2.0, exceptions=(ConnectionError, TimeoutError))
+@timed_cache(ttl_seconds=600)
+def fetch_rate(currency: str) -> float:
+    return requests.get(f"https://api.rates.io/{currency}").json()['rate']</code></div>
+<ul>
+<li><strong>functools.wraps obligatoire</strong> - preserve le nom et la docstring. Sans wraps, func.__name__ retourne 'wrapper' ce qui casse les logs et le debugging</li>
+<li><strong>Stacking de decorateurs</strong> - ordre important : @retry @cache signifie retry(cache(f)). Le decorateur le plus proche de def s applique en premier</li>
+<li><strong>Decorateurs de classe</strong> - @dataclass, @property, @classmethod, @staticmethod sont tous des decorateurs natifs Python, meme mecanique</li>
+<li><strong>Cas data concrets</strong> - retry pour les appels API instables, timed_cache pour les lookups referentiels, logging/timing pour les pipelines</li>
+<li><strong>Context manager vs decorateur</strong> - une fonction qui gere une ressource (connexion DB) = preferer context manager. Une fonction qui modifie le comportement = decorateur</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Écrire un décorateur simple avec wraps, comprend l ordre</td><td>A écrit un décorateur retry ou cache, utilise functools.wraps</td><td>Ne sait pas ce qu est un décorateur</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Décorateurs paramétrés, composition, décorateurs de classe</td><td>Écrit des décorateurs paramétrés, gère l ordre de composition</td><td>N utilise jamais functools.wraps</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Python testing avancé : property-based testing, mutation testing</span></div>
@@ -144,8 +144,56 @@ fail_under = 85  # échoue si coverage < 85%
 
 ## Voir les branches non couvertes
 coverage html
-# Ouvrir htmlcov/index.html : lignes et branches en rouge</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Hypothesis, paramétrisation avancée, branch coverage</td><td>A utilisé Hypothesis pour découvrir des bugs, configure le branch coverage</td><td>Ne sait pas ce qu est le property-based testing</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Mutation testing, benchmarks, stratégies Hypothesis custom</td><td>A utilisé mutmut pour trouver des lacunes dans ses tests, a des benchmarks en CI</td><td>N a jamais entendu parler du mutation testing</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Ouvrir htmlcov/index.html : lignes et branches en rouge</code></div><div class='cb'><code>import pytest
+from unittest.mock import patch, AsyncMock
+from hypothesis import given, strategies as st
+
+# Tests async
+@pytest.mark.asyncio
+async def test_async_extract():
+    result = await extract_orders_async('2025-01-01')
+    assert len(result) > 0
+
+# Mock d une API externe
+@patch('src.pipeline.requests.get')
+def test_extract_with_mock(mock_get):
+    mock_get.return_value.json.return_value = [{'id': 1, 'amount': 100}]
+    mock_get.return_value.status_code = 200
+    result = extract_orders('https://api.example.com')
+    assert len(result) == 1
+
+# Hypothesis : property-based testing
+@given(st.floats(min_value=-1e6, max_value=1e6))
+def test_amount_never_raises(amount):
+    result = process_amount(amount)
+    assert isinstance(result, (int, float))
+
+# Factory fixture
+@pytest.fixture
+def make_order():
+    def _make(order_id='ORD-001', amount=100.0, status='completed'):
+        return {'order_id': order_id, 'amount': amount, 'status': status}
+    return _make
+
+def test_transform(make_order):
+    result = transform(make_order(amount=250.0))
+    assert result['amount_eur'] == 250.0</code></div>
+<ul>
+<li><strong>pytest-asyncio</strong> - tester du code async Python. Configurer asyncio_mode=auto dans pytest.ini pour eviter le marqueur sur chaque test</li>
+<li><strong>Hypothesis</strong> - genere automatiquement des cas de test (valeurs limites, NaN, unicode). Trouve les bugs edge-case impossibles a anticiper manuellement</li>
+<li><strong>Factory fixtures</strong> - fixture qui retourne une fonction de creation. Creer des objets avec des parametres varies dans chaque test sans duplication</li>
+<li><strong>AsyncMock</strong> - mocker des fonctions async (coroutines). MagicMock ne fonctionne pas pour async, utiliser unittest.mock.AsyncMock</li>
+<li><strong>scope session</strong> - partager une connexion DB entre tous les tests. scope=session cree la fixture une seule fois, reduit le temps de setup</li>
+</ul>
+<ul>
+<li><strong>pytest-asyncio</strong> - tester du code async Python. Configurer asyncio_mode=auto dans pytest.ini pour eviter le marqueur sur chaque test</li>
+<li><strong>Hypothesis</strong> - genere automatiquement des cas de test (valeurs limites, NaN, unicode). Trouve les bugs edge-case impossibles a anticiper manuellement</li>
+<li><strong>Factory fixtures</strong> - fixture qui retourne une fonction de creation. Creer des objets avec des parametres varies dans chaque test sans duplication</li>
+<li><strong>AsyncMock</strong> - mocker des fonctions async (coroutines). MagicMock ne fonctionne pas pour async, utiliser unittest.mock.AsyncMock</li>
+<li><strong>scope session</strong> - partager une connexion DB entre tous les tests. scope=session cree la fixture une seule fois, reduit le temps de setup significativement</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Hypothesis, paramétrisation avancée, branch coverage</td><td>A utilisé Hypothesis pour découvrir des bugs, configure le branch coverage</td><td>Ne sait pas ce qu est le property-based testing</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Mutation testing, benchmarks, stratégies Hypothesis custom</td><td>A utilisé mutmut pour trouver des lacunes dans ses tests, a des benchmarks en CI</td><td>N a jamais entendu parler du mutation testing</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

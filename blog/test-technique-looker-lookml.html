@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Looker avancé : LookML, explores, PDTs, déploiement</span></div>
@@ -115,8 +115,54 @@ view: revenue_by_cohort {
     sql: ${active_customers_30d} * 1.0 / NULLIF(${total_customers}, 0) ;;
     value_format_name: percent_2
   }
-}</code></div><h2 id='git'><span class='sn'>5</span>Git et déploiement : workflow LookML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous le cycle de vie d un projet LookML en équipe ?</p></div><ul><li><strong>Git intégré</strong> — Looker est nativement connecté à Git (GitHub/GitLab). Chaque modification est un commit</li><li><strong>Branches de développement</strong> — chaque développeur travaille sur sa branche. L UI Looker permet de switcher de branche</li><li><strong>PR et review</strong> — revue de code sur les changements LookML avant merge sur main</li><li><strong>lookml-validator</strong> — outil CLI pour valider le LookML en CI/CD sans l UI Looker</li><li><strong>Environnements</strong> — pointer vers différents schémas (dev/prod) selon la branche</li></ul><h2 id='perf'><span class='sn'>6</span>Performance et optimisation Looker</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment optimisez-vous les performances d un explore Looker lent ?</p></div><ul><li><strong>Aggregate Awareness</strong> — définir des rollup tables que Looker utilise automatiquement quand la requête le permet</li><li><strong>Caching</strong> — configurer des datagroups pour invalider le cache intelligemment</li><li><strong>PDT pour les calculs lourds</strong> — sortir les calculs complexes du runtime</li><li><strong>Limiter les explores</strong> — un explore trop large avec 20 vues jointes sera lent. Créer des explores spécialisés par cas d usage</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>LookML basics, views/explores/models, dimensions/mesures</td><td>A créé un explore avec jointures, sait la différence dimension/mesure</td><td>N a fait que cliquer dans l UI Looker sans toucher au LookML</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PDTs, aggregate awareness, Git workflow, access filters</td><td>A créé des PDTs, gère le cache avec datagroups, travaille en branches Git</td><td>Ne sait pas ce qu est une PDT, n a jamais utilisé Git dans Looker</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer Looker ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+}</code></div><h2 id='git'><span class='sn'>5</span>Git et déploiement : workflow LookML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous le cycle de vie d un projet LookML en équipe ?</p></div><ul><li><strong>Git intégré</strong> — Looker est nativement connecté à Git (GitHub/GitLab). Chaque modification est un commit</li><li><strong>Branches de développement</strong> — chaque développeur travaille sur sa branche. L UI Looker permet de switcher de branche</li><li><strong>PR et review</strong> — revue de code sur les changements LookML avant merge sur main</li><li><strong>lookml-validator</strong> — outil CLI pour valider le LookML en CI/CD sans l UI Looker</li><li><strong>Environnements</strong> — pointer vers différents schémas (dev/prod) selon la branche</li></ul><h2 id='perf'><span class='sn'>6</span>Performance et optimisation Looker</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment optimisez-vous les performances d un explore Looker lent ?</p></div><ul><li><strong>Aggregate Awareness</strong> — définir des rollup tables que Looker utilise automatiquement quand la requête le permet</li><li><strong>Caching</strong> — configurer des datagroups pour invalider le cache intelligemment</li><li><strong>PDT pour les calculs lourds</strong> — sortir les calculs complexes du runtime</li><li><strong>Limiter les explores</strong> — un explore trop large avec 20 vues jointes sera lent. Créer des explores spécialisés par cas d usage</li></ul>
+<div class='cb'><code># LookML : modélisation sémantique
+# views/orders.view.lkml
+view: orders {
+  sql_table_name: analytics.fct_orders ;;
+  
+  dimension: order_id {
+    type: string
+    primary_key: yes
+    sql: ${TABLE}.order_id ;;
+  }
+  
+  dimension_group: order_date {
+    type: time
+    timeframes: [date, week, month, quarter, year]
+    sql: ${TABLE}.order_date ;;
+  }
+  
+  measure: total_revenue {
+    type: sum
+    sql: ${TABLE}.amount ;;
+    value_format_name: usd
+    drill_fields: [order_id, customer_id, order_date_date, amount]
+  }
+  
+  measure: average_order_value {
+    type: average
+    sql: ${TABLE}.amount ;;
+    value_format_name: usd
+  }
+  
+  # Derived table : SQL dans LookML
+  derived_table: {
+    sql: SELECT customer_id, COUNT(*) as order_count, SUM(amount) as ltv
+         FROM analytics.fct_orders
+         GROUP BY customer_id ;;
+    persist_for: "24 hours"
+  }
+}</code></div>
+<ul>
+<li><strong>Explore = point d'entrée</strong> — définir quelles views un utilisateur peut joindre et comment. Un explore bien conçu = une question business précise (orders with customers, events with sessions)</li>
+<li><strong>PDT (Persistent Derived Tables)</strong> — matérialiser des requêtes SQL lourdes dans Looker. Rafraîchissement CRON ou trigger. Gain de performance pour les analyses récurrentes</li>
+<li><strong>LookML vs dbt</strong> — les deux font de la modélisation mais à des niveaux différents. dbt : transformations SQL dans le warehouse (source of truth). LookML : couche sémantique pour le BI (métriques, labels, formatage)</li>
+<li><strong>Git integration</strong> — tout le LookML est versionné dans Git. Développement sur branches, review en Pull Request, déploiement sur production via merge</li>
+<li><strong>Content Validator</strong> — outil Looker qui détecte les Looks/Dashboards cassés quand un champ LookML est renommé ou supprimé. Indispensable avant chaque déploiement</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>LookML basics, views/explores/models, dimensions/mesures</td><td>A créé un explore avec jointures, sait la différence dimension/mesure</td><td>N a fait que cliquer dans l UI Looker sans toucher au LookML</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PDTs, aggregate awareness, Git workflow, access filters</td><td>A créé des PDTs, gère le cache avec datagroups, travaille en branches Git</td><td>Ne sait pas ce qu est une PDT, n a jamais utilisé Git dans Looker</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer Looker ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

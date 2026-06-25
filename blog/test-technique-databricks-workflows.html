@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Databricks Workflows : orchestration et MLOps</span></div>
@@ -29,80 +29,138 @@
 <li><a href="#cicd">CI/CD Databricks</a></li>
 <li><a href="#couts">Optimiser les coûts</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><h2 id='concepts'><span class='sn'>1</span>Databricks Workflows vs Airflow</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Databricks Workflows plutôt qu Airflow ?</p></div><ul><li><strong>Databricks Workflows</strong> — orchestrateur natif, intégré au workspace, zéro infrastructure à gérer</li><li><strong>Avantages vs Airflow</strong> — accès direct aux jobs Spark, notebooks, DLT pipelines. Pas de dépendances à installer. Job clusters optimisés</li><li><strong>Quand Airflow</strong> — orchestration multi-cloud (Salesforce + Snowflake + S3), équipe avec expertise Airflow existante, providers non disponibles dans Databricks</li><li><strong>Quand Databricks Workflows</strong> — stack 100% Databricks, pipelines ML complexes, simplicité opérationnelle</li></ul><h2 id='tasks'><span class='sn'>2</span>Tasks et dépendances complexes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment modélisez-vous un pipeline à 10 étapes avec dépendances conditionnelles ?</p></div><div class='cb'><code>## Configuration Job via SDK Python
-from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.jobs import *
+<div class="ab">
+<h2 id='concepts'><span class='sn'>1</span>Databricks Workflows vs Airflow</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quand choisissez-vous Databricks Workflows plutôt qu'Airflow ?</p></div>
+<ul>
+<li><strong>Databricks Workflows</strong> — orchestrateur natif intégré dans la plateforme. Zéro infrastructure à gérer, monitoring dans l'UI Databricks, accès direct aux clusters</li>
+<li><strong>Avantages vs Airflow</strong> — pas de DAG Python à maintenir, clusters partagés entre tasks, monitoring unifié avec les notebooks, retry natif avec reprise depuis la task échouée</li>
+<li><strong>Limites vs Airflow</strong> — moins de connecteurs (pas de provider ecosystem), difficile d'orchestrer des ressources hors Databricks, moins mature pour les pipelines complexes</li>
+<li><strong>Règle pratique</strong> — si 90% de votre traitement est dans Databricks : Workflows. Si vous orchestrez des services externes (Fivetran, dbt Cloud, APIs) : Airflow ou Prefect</li>
+<li><strong>Coexistence</strong> — beaucoup d'équipes utilisent Airflow pour orchestrer et déclenchent des jobs Databricks via l'opérateur DatabricksSubmitRunOperator</li>
+</ul>
+<div class='cb'><code># Déclencher un job Databricks depuis Airflow
+from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
 
-w = WorkspaceClient()
+dbt_task = DatabricksSubmitRunOperator(
+    task_id='run_dbt_databricks',
+    databricks_conn_id='databricks_default',
+    new_cluster={
+        'spark_version': '14.3.x-scala2.12',
+        'node_type_id': 'i3.xlarge',
+        'num_workers': 4
+    },
+    notebook_task={
+        'notebook_path': '/Repos/production/dbt_run',
+        'base_parameters': {'env': 'production', 'target': 'prod'}
+    }
+)</code></div>
 
-job = w.jobs.create(
-    name='pipeline_analytics',
-    tasks=[
-        Task(
-            task_key='ingest',
-            notebook_task=NotebookTask(notebook_path='/pipelines/01_ingest'),
-            job_cluster_key='shared_cluster'
-        ),
-        Task(
-            task_key='transform_dbt',
-            depends_on=[TaskDependency(task_key='ingest')],
-            python_wheel_task=PythonWheelTask(package_name='dbt-databricks', entry_point='dbt', parameters=['run', '--select', 'tag:daily'])
-        ),
-        Task(
-            task_key='validate',
-            depends_on=[TaskDependency(task_key='transform_dbt')],
-            condition_task=ConditionTask(
-                op=ConditionTaskOp.EQUAL_TO,
-                left='{{tasks.transform_dbt.values.status}}',
-                right='SUCCESS'
-            )
-        ),
-        Task(
-            task_key='alert_on_failure',
-            depends_on=[TaskDependency(
-                task_key='validate',
-                outcome='false'  # déclencher si validate échoue
-            )],
-            notebook_task=NotebookTask(notebook_path='/pipelines/alert')
-        )
-    ]
-)</code></div><h2 id='git'><span class='sn'>3</span>Git integration dans Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment versionnnez-vous vos notebooks et jobs Databricks avec Git ?</p></div><ul><li><strong>Git Folders</strong> — synchroniser des dossiers avec un repo GitHub/GitLab. Les notebooks sont dans Git, pas seulement dans Databricks</li><li><strong>Remote Git reference</strong> — les jobs pointent vers une branche ou un tag Git. Le CI/CD met à jour le tag</li><li><strong>DBSQL + Git</strong> — les queries SQL dans Databricks SQL peuvent être versionnées dans Git</li><li><strong>Asset Bundles</strong> — définir toute l infrastructure (jobs, clusters, pipelines) en YAML versionné dans Git</li></ul><h2 id='bundles'><span class='sn'>4</span>Asset Bundles : IaC pour Databricks</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que les Databricks Asset Bundles ? Comment les utilisez-vous ?</p></div><div class='cb'><code>## databricks.yml - Asset Bundle configuration
+<h2 id='tasks'><span class='sn'>2</span>Tasks et dépendances complexes</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quels types de tasks Databricks Workflows supporte-t-il ? Comment gérez-vous les dépendances ?</p></div>
+<ul>
+<li><strong>Notebook task</strong> — exécuter un notebook Databricks avec des paramètres. Le type le plus courant</li>
+<li><strong>Python script</strong> — exécuter un script .py depuis un repo Git ou un volume Unity Catalog</li>
+<li><strong>dbt task</strong> — intégration native avec dbt Core ou dbt Cloud. Lance les modèles dbt sur un cluster Databricks</li>
+<li><strong>SQL task</strong> — exécuter des requêtes SQL sur un SQL Warehouse (serverless ou classique)</li>
+<li><strong>Pipeline task</strong> — déclencher un pipeline Delta Live Tables</li>
+<li><strong>Conditions run-if</strong> — ALL_SUCCESS (défaut), AT_LEAST_ONE_SUCCESS, NONE_FAILED, ALL_DONE, AT_LEAST_ONE_FAILED. Permet des branches conditionnelles</li>
+</ul>
+<div class='cb'><code"># Exemple de workflow JSON (config as code)
+{
+  "name": "pipeline-data-quotidien",
+  "tasks": [
+    {
+      "task_key": "ingestion",
+      "notebook_task": {"notebook_path": "/Repos/prod/ingestion"},
+      "job_cluster_key": "ingestion-cluster"
+    },
+    {
+      "task_key": "transformation",
+      "depends_on": [{"task_key": "ingestion"}],
+      "dbt_task": {
+        "project_directory": "/Repos/prod/dbt_project",
+        "commands": ["dbt run --select tag:daily"]
+      },
+      "job_cluster_key": "transform-cluster"
+    },
+    {
+      "task_key": "notification",
+      "depends_on": [{"task_key": "transformation"}],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {"notebook_path": "/Repos/prod/notify_success"}
+    }
+  ]
+}</code></div>
+
+<h2 id='git'><span class='sn'>3</span>Git integration dans Databricks</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous Git avec Databricks Repos pour un workflow CI/CD ?</p></div>
+<ul>
+<li><strong>Databricks Repos</strong> — cloner un repo GitHub/GitLab/Bitbucket directement dans Databricks. Synchronisation manuelle ou via API</li>
+<li><strong>Branches par environnement</strong> — main → production, develop → staging, feature/* → dev personnel</li>
+<li><strong>Jobs pointent sur des branches</strong> — le job de prod pointe sur main, le job de staging sur develop. Promotion = merge PR</li>
+<li><strong>Code review obligatoire</strong> — les notebooks sont des fichiers Python dans le repo. Pull requests normales avec revue de code</li>
+</ul>
+<div class='cb'><code># Mettre à jour un repo Databricks via API (depuis CI/CD)
+import requests
+
+def update_databricks_repo(repo_id, branch):
+    resp = requests.patch(
+        f"{DATABRICKS_HOST}/api/2.0/repos/{repo_id}",
+        headers={"Authorization": f"Bearer {TOKEN}"},
+        json={"branch": branch}
+    )
+    return resp.json()
+
+# Dans GitHub Actions : update repo → trigger job
+update_databricks_repo(PROD_REPO_ID, "main")
+trigger_job(PROD_JOB_ID)</code></div>
+
+<h2 id='bundles'><span class='sn'>4</span>Asset Bundles : IaC pour Databricks</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que Databricks Asset Bundles ? Pourquoi remplacer les configurations manuelles ?</p></div>
+<ul>
+<li><strong>DAB (Databricks Asset Bundles)</strong> — définir jobs, pipelines DLT, permissions, clusters en YAML versionné dans Git</li>
+<li><strong>Environnements</strong> — dev/staging/prod avec des variables différentes (cluster size, credentials, targets) dans le même fichier</li>
+<li><strong>Deploy via CLI</strong> — <code>databricks bundle deploy</code> synchronise la configuration dans l'environnement cible</li>
+<li><strong>vs configuration manuelle</strong> — la config manuelle dans l'UI n'est pas versionnée, pas reproductible, pas testable</li>
+</ul>
+<div class='cb'><code"># databricks.yml - Asset Bundle
 bundle:
-  name: mon-pipeline-analytics
+  name: pipeline-ventes
 
 variables:
-  environment:
-    default: dev
+  cluster_size:
+    default: "Small"
 
 targets:
   dev:
     mode: development
-    workspace:
-      host: https://adb-xxxx.azuredatabricks.net
+    variables:
+      cluster_size: "Small"
   prod:
     mode: production
-    workspace:
-      host: https://adb-yyyy.azuredatabricks.net
+    variables:
+      cluster_size: "Large"
 
 resources:
   jobs:
-    pipeline_daily:
-      name: pipeline-daily-${bundle.target}
+    pipeline_quotidien:
+      name: "Pipeline Ventes Quotidien"
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
       tasks:
-        - task_key: ingest
+        - task_key: ingestion
           notebook_task:
-            notebook_path: ./notebooks/01_ingest
-        - task_key: transform
-          depends_on: [{task_key: ingest}]
-          notebook_task:
-            notebook_path: ./notebooks/02_transform
+            notebook_path: ./notebooks/ingestion.py</code></div>
 
-## Déploiement
-databricks bundle deploy --target dev
-databricks bundle deploy --target prod</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD avec Databricks Asset Bundles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous les Databricks Asset Bundles dans GitHub Actions ?</p></div><div class='cb'><code>## .github/workflows/databricks-deploy.yml
-name: Deploy to Databricks
+<h2 id='cicd'><span class='sn'>5</span>CI/CD avec Databricks Asset Bundles</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment configurez-vous un pipeline CI/CD pour déployer des jobs Databricks ?</p></div>
+<div class='cb'><code"># .github/workflows/deploy.yml
+name: Deploy Databricks
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
@@ -111,20 +169,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - uses: databricks/setup-cli@main
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
       
-      - name: Validate bundle
-        run: databricks bundle validate
+      - name: Validate bundle (PR)
+        if: github.event_name == 'pull_request'
+        run: databricks bundle validate --target staging
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       
-      - name: Deploy to production
+      - name: Deploy to production (main)
+        if: github.ref == 'refs/heads/main'
         run: databricks bundle deploy --target prod
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}</code></div><h2 id='couts'><span class='sn'>6</span>Optimiser les coûts des Workflows</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment minimisez-vous les coûts des jobs Databricks Workflows ?</p></div><ul><li><strong>Job clusters</strong> — créer un cluster dédié par job, détruit après. Pas de cluster all-purpose qui tourne en permanence</li><li><strong>Instance pools</strong> — pré-allouer des instances en standby pour réduire le startup time sans coût permanent</li><li><strong>Spot instances</strong> — utiliser des workers spot/preemptible pour les jobs batch. 60-80% d économie</li><li><strong>Sizing automatique</strong> — autoscaling entre min et max workers selon la charge réelle</li><li><strong>Photon</strong> — activer Photon pour les jobs SQL intensifs. 2-5x plus rapide = moins de DBU</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Jobs basiques, tâches avec dépendances, job clusters</td><td>A créé un job multi-tâches avec dépendances, utilise des job clusters</td><td>Utilise des clusters all-purpose pour tous les jobs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Asset Bundles, CI/CD, Git integration, optimisation coûts</td><td>A déployé via Asset Bundles dans GitHub Actions, utilise des spot instances</td><td>Ne sait pas ce que sont les Asset Bundles</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_PROD_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_PROD_TOKEN }}</code></div>
+
+<h2 id='couts'><span class='sn'>6</span>Optimiser les coûts des Workflows</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment réduire les coûts de vos jobs Databricks en production ?</p></div>
+<ul>
+<li><strong>Job clusters vs All-purpose</strong> — toujours utiliser des job clusters pour la production. Ils s'éteignent à la fin du job. Les all-purpose restent actifs et coûtent en permanence</li>
+<li><strong>Spot instances pour les workers</strong> — économie de 50-80%. Configurer un fallback on-demand si les spots ne sont pas disponibles</li>
+<li><strong>Photon Engine</strong> — activer Photon sur les tasks SQL/DataFrame. Jusqu'à 12x plus rapide = moins de DBUs consommés</li>
+<li><strong>Serverless pour les tâches SQL</strong> — SQL Warehouse serverless : facturation à la seconde, démarrage rapide, zéro gestion</li>
+<li><strong>Taille de cluster adaptée</strong> — commencer petit (2-4 workers) et mesurer. Beaucoup de pipelines n'ont pas besoin de 8 workers</li>
+</ul>
+
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Jobs Workflows, types de tasks, Git integration, job clusters</td><td>A configuré des jobs avec dépendances, utilise des job clusters, pointe sur des branches Git</td><td>Exécute en production sur des all-purpose clusters, config manuelle dans l'UI</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Asset Bundles, CI/CD GitHub Actions, optimisation coûts, spot instances</td><td>A mis en place un pipeline CI/CD avec DAB, réduit les coûts via spot + Photon</td><td>Ne sait pas ce que sont les Asset Bundles, pas de CI/CD sur les jobs Databricks</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique CI/CD Power BI : deployment pipelines et automatisation</span></div>
@@ -50,8 +50,48 @@ headers = {'Authorization': f'Bearer {token}'}
 requests.post(
     f'https://api.powerbi.com/v1.0/myorg/groups/{WORKSPACE_ID}/datasets/{DATASET_ID}/refreshes',
     headers=headers
-)</code></div><ul><li><strong>Service Principal</strong> — authentification non interactive pour les pipelines CI/CD. Jamais de compte utilisateur dans les scripts</li><li><strong>Operations disponibles</strong> — refresh de dataset, deploiement de rapport, gestion des espaces de travail, permissions</li></ul><h2 id='git'><span class='sn'>4</span>Git et versioning des rapports Power BI</h2><ul><li><strong>PBIP format</strong> — Power BI Project : format source-control friendly (JSON/YAML) introduit en 2023. Remplace le .pbix binaire dans Git</li><li><strong>Git integration</strong> — Power BI Service peut se connecter a Azure DevOps ou GitHub pour le versioning automatique des workspaces</li><li><strong>Workflow</strong> — developpeur travaille en local → commit sur branche feature → PR → review → merge sur main → deploiement automatique via pipeline CI/CD</li></ul><h2 id='tests'><span class='sn'>5</span>Tests automatises sur les rapports</h2><ul><li><strong>Tests de donnees</strong> — verifier via l API REST que les valeurs cles n ont pas change de maniere inattendue apres un deploiement</li><li><strong>DAX tests</strong> — librairie PyDAX pour tester les mesures DAX de maniere automatisee</li><li><strong>Screenshotting</strong> — capturer les visuels avant/apres deploiement et comparer les differences (PowerBI-Automation)</li></ul><h2 id='fabric'><span class='sn'>6</span>Power BI et Microsoft Fabric</h2><ul><li><strong>Microsoft Fabric</strong> — plateforme unifiee Microsoft qui englobe Power BI, Synapse, Data Factory. Partage la meme couche de stockage (OneLake)</li><li><strong>Direct Lake</strong> — connexion Zero-Copy entre les modeles semantiques Power BI et les tables Delta dans OneLake. Performances en temps reel sans Import ni DirectQuery</li><li><strong>Fabric Workspaces</strong> — les deployment pipelines fonctionnent avec les workspaces Fabric pour tous les artefacts (notebooks, dataflows, semantic models)</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Deployment Pipelines, API REST basique, PBIP format</td><td>A configure un pipeline DEV/TEST/PROD, connait le format PBIP</td><td>Deploie toujours manuellement en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Service Principal, CI/CD complet, Git integration, tests automatises</td><td>A integre Power BI dans un pipeline GitHub Actions, utilise un Service Principal</td><td>N a jamais automatise de deploiement Power BI</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture Fabric, standards de gouvernance, XMLA avance</td><td>A migre vers Fabric, a defini les standards CI/CD Power BI de son equipe</td><td>Ne connait pas Microsoft Fabric ni l XMLA Endpoint</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Analyst Power BI Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+)</code></div><ul><li><strong>Service Principal</strong> — authentification non interactive pour les pipelines CI/CD. Jamais de compte utilisateur dans les scripts</li><li><strong>Operations disponibles</strong> — refresh de dataset, deploiement de rapport, gestion des espaces de travail, permissions</li></ul><h2 id='git'><span class='sn'>4</span>Git et versioning des rapports Power BI</h2><ul><li><strong>PBIP format</strong> — Power BI Project : format source-control friendly (JSON/YAML) introduit en 2023. Remplace le .pbix binaire dans Git</li><li><strong>Git integration</strong> — Power BI Service peut se connecter a Azure DevOps ou GitHub pour le versioning automatique des workspaces</li><li><strong>Workflow</strong> — developpeur travaille en local → commit sur branche feature → PR → review → merge sur main → deploiement automatique via pipeline CI/CD</li></ul><h2 id='tests'><span class='sn'>5</span>Tests automatises sur les rapports</h2><ul><li><strong>Tests de donnees</strong> — verifier via l API REST que les valeurs cles n ont pas change de maniere inattendue apres un deploiement</li><li><strong>DAX tests</strong> — librairie PyDAX pour tester les mesures DAX de maniere automatisee</li><li><strong>Screenshotting</strong> — capturer les visuels avant/apres deploiement et comparer les differences (PowerBI-Automation)</li></ul><h2 id='fabric'><span class='sn'>6</span>Power BI et Microsoft Fabric</h2><ul><li><strong>Microsoft Fabric</strong> — plateforme unifiee Microsoft qui englobe Power BI, Synapse, Data Factory. Partage la meme couche de stockage (OneLake)</li><li><strong>Direct Lake</strong> — connexion Zero-Copy entre les modeles semantiques Power BI et les tables Delta dans OneLake. Performances en temps reel sans Import ni DirectQuery</li><li><strong>Fabric Workspaces</strong> — les deployment pipelines fonctionnent avec les workspaces Fabric pour tous les artefacts (notebooks, dataflows, semantic models)</li></ul>
+<div class='cb'><code># GitHub Actions : déploiement Power BI via API REST
+name: Deploy Power BI
+on:
+  push:
+    branches: [main]
+    paths: ['powerbi/**']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get Access Token
+        run: |
+          TOKEN=$(curl -X POST             "https://login.microsoftonline.com/${{ secrets.TENANT_ID }}/oauth2/v2.0/token"             -d "client_id=${{ secrets.CLIENT_ID }}&client_secret=${{ secrets.CLIENT_SECRET }}&grant_type=client_credentials&scope=https://analysis.windows.net/powerbi/api/.default"             | jq -r '.access_token')
+          echo "PBI_TOKEN=$TOKEN" >> $GITHUB_ENV
+      
+      - name: Import PBIX to staging workspace
+        run: |
+          curl -X POST             "https://api.powerbi.com/v1.0/myorg/groups/${{ secrets.WORKSPACE_ID_STAGING }}/imports?datasetDisplayName=Dashboard_Sales"             -H "Authorization: Bearer $PBI_TOKEN"             -F file=@powerbi/dashboard_sales.pbix
+      
+      - name: Refresh dataset
+        run: |
+          curl -X POST             "https://api.powerbi.com/v1.0/myorg/groups/${{ secrets.WORKSPACE_ID_STAGING }}/datasets/${{ secrets.DATASET_ID }}/refreshes"             -H "Authorization: Bearer $PBI_TOKEN"</code></div>
+<ul>
+<li><strong>Service Principal pour CI/CD</strong> — ne jamais utiliser un compte utilisateur dans le pipeline. Créer un Service Principal Azure AD avec les droits minimum sur les workspaces</li>
+<li><strong>Power BI REST API</strong> — importer des .pbix, déclencher des refreshes, gérer les permissions, créer des workspaces — tout automatisable via l'API</li>
+<li><strong>Thin reports vs fat reports</strong> — séparer les .pbix en "thin reports" (visualisations uniquement) et datasets partagés. Facilite le versioning et le CI/CD</li>
+<li><strong>Deployment Pipelines natifs</strong> — Power BI Premium propose des pipelines dev/test/prod intégrés. Alternative à la gestion via API si l'organisation a Premium</li>
+<li><strong>PBIP format</strong> — Power BI Projects (.pbip) : format texte versionnable dans Git contrairement aux .pbix binaires. Support GA depuis fin 2024</li>
+</ul>
+<ul>
+<li><strong>Service Principal pour CI/CD</strong> - ne jamais utiliser un compte utilisateur dans le pipeline. Creer un Service Principal Azure AD avec les droits minimum sur les workspaces</li>
+<li><strong>Power BI REST API</strong> - importer des .pbix, declencher des refreshes, gerer les permissions, creer des workspaces. Tout automatisable</li>
+<li><strong>Thin reports vs fat reports</strong> - separer les .pbix en thin reports (visualisations) et datasets partages. Facilite le versioning et le CI/CD</li>
+<li><strong>PBIP format</strong> - Power BI Projects (.pbip) : format texte versionnable dans Git contrairement aux .pbix binaires. Support GA depuis fin 2024</li>
+<li><strong>Deployment Pipelines natifs</strong> - Power BI Premium propose des pipelines dev/test/prod integres. Alternative a la gestion via API</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Deployment Pipelines, API REST basique, PBIP format</td><td>A configure un pipeline DEV/TEST/PROD, connait le format PBIP</td><td>Deploie toujours manuellement en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Service Principal, CI/CD complet, Git integration, tests automatises</td><td>A integre Power BI dans un pipeline GitHub Actions, utilise un Service Principal</td><td>N a jamais automatise de deploiement Power BI</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture Fabric, standards de gouvernance, XMLA avance</td><td>A migre vers Fabric, a defini les standards CI/CD Power BI de son equipe</td><td>Ne connait pas Microsoft Fabric ni l XMLA Endpoint</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst Power BI Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

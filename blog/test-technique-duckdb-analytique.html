@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique DuckDB : SQL analytique in-process pour la data</span></div>
@@ -138,8 +138,41 @@ conn_persistent = duckdb.connect('analytics.duckdb')
 conn_persistent.execute("""
     CREATE TABLE IF NOT EXISTS orders AS
     SELECT * FROM read_parquet('data/orders/*.parquet')
-""")</code></div><h2 id='usecases'><span class='sn'>6</span>DuckDB en production : cas d usage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous DuckDB dans un pipeline de production ?</p></div><ul><li><strong>Script de transformation local</strong> — remplacer un script pandas lourd par DuckDB SQL. 10x moins de code, 100x plus rapide</li><li><strong>Validation de données</strong> — vérifier la qualité d un dump Parquet avant de le charger dans BigQuery</li><li><strong>Prototype de modèle dbt</strong> — tester la logique SQL localement avec DuckDB avant de déployer sur Snowflake</li><li><strong>Analytics serverless</strong> — DuckDB + S3 comme stack analytics sans cluster. Coût quasi-nul pour des analyses ad-hoc</li><li><strong>dbt avec DuckDB adapter</strong> — exécuter dbt localement avec DuckDB comme warehouse. Itérations ultra-rapides</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>SQL DuckDB basique, read_parquet, intégration pandas</td><td>Remplace pandas par DuckDB pour les agrégations, utilise read_parquet</td><td>N a jamais utilisé DuckDB</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PIVOT/UNPIVOT natif, ASOF JOIN, S3, optimisation</td><td>Utilise DuckDB en production, configure la mémoire et les threads</td><td>Ne sait pas que DuckDB peut lire directement depuis S3</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+""")</code></div><h2 id='usecases'><span class='sn'>6</span>DuckDB en production : cas d usage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment utilisez-vous DuckDB dans un pipeline de production ?</p></div><ul><li><strong>Script de transformation local</strong> — remplacer un script pandas lourd par DuckDB SQL. 10x moins de code, 100x plus rapide</li><li><strong>Validation de données</strong> — vérifier la qualité d un dump Parquet avant de le charger dans BigQuery</li><li><strong>Prototype de modèle dbt</strong> — tester la logique SQL localement avec DuckDB avant de déployer sur Snowflake</li><li><strong>Analytics serverless</strong> — DuckDB + S3 comme stack analytics sans cluster. Coût quasi-nul pour des analyses ad-hoc</li><li><strong>dbt avec DuckDB adapter</strong> — exécuter dbt localement avec DuckDB comme warehouse. Itérations ultra-rapides</li></ul>
+<div class='cb'><code>import duckdb
+
+conn = duckdb.connect()
+
+# Lire directement depuis S3 sans telecharger
+conn.execute("""
+    INSTALL httpfs; LOAD httpfs;
+    SET s3_region='eu-west-1';
+    SET s3_access_key_id='KEY'; SET s3_secret_access_key='SECRET';
+""")
+
+result = conn.execute("""
+    SELECT region, SUM(amount) as revenue, COUNT(*) as orders
+    FROM read_parquet('s3://bucket/orders/year=2025/**/*.parquet')
+    WHERE order_date >= '2025-01-01'
+    GROUP BY region ORDER BY revenue DESC
+""").df()
+
+# DuckDB comme ETL local
+conn.execute("CREATE TABLE orders AS SELECT * FROM read_csv_auto('orders.csv')")
+conn.execute("COPY (SELECT * FROM orders WHERE amount > 100) TO 'filtered.parquet' (FORMAT PARQUET)")
+
+# MotherDuck : DuckDB cloud partage
+import duckdb
+conn = duckdb.connect('md:mon_projet?motherduck_token=TOKEN')</code></div>
+<ul>
+<li><strong>OLAP columnar vectorise</strong> - DuckDB utilise un moteur vectorise en memoire. 10-100x plus rapide que pandas sur les agregations analytiques, sans JVM ni cluster</li>
+<li><strong>S3/GCS direct</strong> - lire des Parquet sur S3 sans telecharger. Predicate et projection pushdown : tire uniquement les colonnes et partitions necessaires</li>
+<li><strong>MotherDuck</strong> - DuckDB manage dans le cloud. Partager requetes et donnees sans infrastructure. Hybrid local/cloud</li>
+<li><strong>Cas d usage parfaits</strong> - exploration locale, ETL leger (moins de 50GB), tests de pipelines, remplacement de pandas pour l analytique, SQL dans notebooks</li>
+<li><strong>Limites</strong> - mono-noeud (pas de distribue), pas adapte aux workloads haute volumetrie Spark, pas de streaming natif</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>SQL DuckDB basique, read_parquet, intégration pandas</td><td>Remplace pandas par DuckDB pour les agrégations, utilise read_parquet</td><td>N a jamais utilisé DuckDB</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PIVOT/UNPIVOT natif, ASOF JOIN, S3, optimisation</td><td>Utilise DuckDB en production, configure la mémoire et les threads</td><td>Ne sait pas que DuckDB peut lire directement depuis S3</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

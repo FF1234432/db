@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Azure Data Factory : pipelines, triggers, DataFlow</span></div>
@@ -57,8 +57,66 @@
       }]
     }
   ]
-}</code></div><ul><li><strong>dependencyConditions</strong> — Succeeded, Failed, Skipped, Completed. Permet de créer des branches conditionnelles</li><li><strong>Try-Catch</strong> — activer une alerte en cas d échec via WebActivity (webhook Slack/Teams)</li></ul><h2 id='linked'><span class='sn'>3</span>Linked Services et paramétrage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évitez-vous de dupliquer vos Linked Services pour DEV/PROD ?</p></div><ul><li><strong>Parameters</strong> — paramétrer les Linked Services avec des variables d environnement</li><li><strong>Azure Key Vault</strong> — stocker les credentials dans Key Vault, ADF y accède via Managed Identity. Jamais de mot de passe en dur</li><li><strong>Global Parameters</strong> — paramètres partagés par tous les pipelines (environnement, date de référence)</li><li><strong>Managed Identity</strong> — ADF s authentifie sur les services Azure sans stocker de credentials</li></ul><h2 id='triggers'><span class='sn'>4</span>Triggers : déclencher les pipelines</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels types de triggers ADF connaissez-vous ? Dans quel cas utilisez-vous chacun ?</p></div><table class='lt'><thead><tr><th>Trigger</th><th>Déclenchement</th><th>Cas d usage</th></tr></thead><tbody><tr><td>Schedule</td><td>CRON planifié</td><td>Rafraîchissement quotidien, rapports hebdomadaires</td></tr><tr><td>Tumbling Window</td><td>Fenêtres fixes, backfill possible</td><td>Traitement par tranches horaires, avec retry et dépendances</td></tr><tr><td>Event-based</td><td>Arrivée d un fichier dans Blob Storage</td><td>Ingestion déclenchée par l arrivée de fichiers partenaires</td></tr><tr><td>Manual</td><td>Déclenchement manuel ou via API REST</td><td>Tests, reprises, triggers depuis une autre application</td></tr></tbody></table><h2 id='dataflow'><span class='sn'>5</span>Mapping Data Flow : transformation visuelle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Mapping Data Flow plutôt qu une activité Databricks ?</p></div><ul><li><strong>Mapping Data Flow</strong> — transformation de données en mode no-code/low-code dans ADF. S exécute sur Spark managé</li><li><strong>Cas d usage</strong> — transformations standard (filtres, jointures, pivots, aggrégations) sans expertise Spark</li><li><strong>Limites</strong> — moins flexible qu un notebook Databricks, plus cher à l exécution que du SQL natif</li><li><strong>Databricks Activity</strong> — préférer pour la logique complexe, le ML, ou quand l équipe maîtrise Python/Spark</li><li><strong>Stored Procedure</strong> — préférer pour les transformations SQL natives dans Azure SQL ou Synapse</li></ul><h2 id='synapse'><span class='sn'>6</span>ADF vs Azure Synapse vs Microsoft Fabric</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment positionnez-vous ADF, Synapse et Fabric ?</p></div><table class='lt'><thead><tr><th>Service</th><th>Rôle</th><th>Idéal pour</th></tr></thead><tbody><tr><td>Azure Data Factory</td><td>Orchestration ETL/ELT pure</td><td>Ingestion et mouvement de données, intégration d outils tiers</td></tr><tr><td>Azure Synapse</td><td>Analytics + intégration + Spark</td><td>SQL Analytics + pipelines Spark dans une interface unifiée</td></tr><tr><td>Microsoft Fabric</td><td>Plateforme unifiée Microsoft</td><td>Nouvelle stack end-to-end (Power BI + Synapse + ADF) sur OneLake</td></tr></tbody></table><div class='cl'><p><strong>Tendance 2025 :</strong> Microsoft pousse vers Fabric comme plateforme unifiée. ADF reste pertinent pour les intégrations avec des systèmes non-Microsoft.</p></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Pipelines, Copy Activity, Schedule Trigger, Key Vault</td><td>A déployé un pipeline Copy + transformation, utilise Key Vault</td><td>Stocke les mots de passe en dur dans les Linked Services</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tumbling Window, Event Trigger, Mapping Data Flow, ARM templates</td><td>A configuré un Event Trigger, déploie via ARM/CI-CD, justifie ADF vs Databricks</td><td>Ne sait pas la différence entre Schedule et Tumbling Window</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Azure ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+}</code></div><ul><li><strong>dependencyConditions</strong> — Succeeded, Failed, Skipped, Completed. Permet de créer des branches conditionnelles</li><li><strong>Try-Catch</strong> — activer une alerte en cas d échec via WebActivity (webhook Slack/Teams)</li></ul><h2 id='linked'><span class='sn'>3</span>Linked Services et paramétrage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment évitez-vous de dupliquer vos Linked Services pour DEV/PROD ?</p></div><ul><li><strong>Parameters</strong> — paramétrer les Linked Services avec des variables d environnement</li><li><strong>Azure Key Vault</strong> — stocker les credentials dans Key Vault, ADF y accède via Managed Identity. Jamais de mot de passe en dur</li><li><strong>Global Parameters</strong> — paramètres partagés par tous les pipelines (environnement, date de référence)</li><li><strong>Managed Identity</strong> — ADF s authentifie sur les services Azure sans stocker de credentials</li></ul><h2 id='triggers'><span class='sn'>4</span>Triggers : déclencher les pipelines</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels types de triggers ADF connaissez-vous ? Dans quel cas utilisez-vous chacun ?</p></div><table class='lt'><thead><tr><th>Trigger</th><th>Déclenchement</th><th>Cas d usage</th></tr></thead><tbody><tr><td>Schedule</td><td>CRON planifié</td><td>Rafraîchissement quotidien, rapports hebdomadaires</td></tr><tr><td>Tumbling Window</td><td>Fenêtres fixes, backfill possible</td><td>Traitement par tranches horaires, avec retry et dépendances</td></tr><tr><td>Event-based</td><td>Arrivée d un fichier dans Blob Storage</td><td>Ingestion déclenchée par l arrivée de fichiers partenaires</td></tr><tr><td>Manual</td><td>Déclenchement manuel ou via API REST</td><td>Tests, reprises, triggers depuis une autre application</td></tr></tbody></table><h2 id='dataflow'><span class='sn'>5</span>Mapping Data Flow : transformation visuelle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Mapping Data Flow plutôt qu une activité Databricks ?</p></div><ul><li><strong>Mapping Data Flow</strong> — transformation de données en mode no-code/low-code dans ADF. S exécute sur Spark managé</li><li><strong>Cas d usage</strong> — transformations standard (filtres, jointures, pivots, aggrégations) sans expertise Spark</li><li><strong>Limites</strong> — moins flexible qu un notebook Databricks, plus cher à l exécution que du SQL natif</li><li><strong>Databricks Activity</strong> — préférer pour la logique complexe, le ML, ou quand l équipe maîtrise Python/Spark</li><li><strong>Stored Procedure</strong> — préférer pour les transformations SQL natives dans Azure SQL ou Synapse</li></ul><h2 id='synapse'><span class='sn'>6</span>ADF vs Azure Synapse vs Microsoft Fabric</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment positionnez-vous ADF, Synapse et Fabric ?</p></div><table class='lt'><thead><tr><th>Service</th><th>Rôle</th><th>Idéal pour</th></tr></thead><tbody><tr><td>Azure Data Factory</td><td>Orchestration ETL/ELT pure</td><td>Ingestion et mouvement de données, intégration d outils tiers</td></tr><tr><td>Azure Synapse</td><td>Analytics + intégration + Spark</td><td>SQL Analytics + pipelines Spark dans une interface unifiée</td></tr><tr><td>Microsoft Fabric</td><td>Plateforme unifiée Microsoft</td><td>Nouvelle stack end-to-end (Power BI + Synapse + ADF) sur OneLake</td></tr></tbody></table><div class='cl'><p><strong>Tendance 2025 :</strong> Microsoft pousse vers Fabric comme plateforme unifiée. ADF reste pertinent pour les intégrations avec des systèmes non-Microsoft.</p></div>
+<div class='cb'><code># Paramétrage d'un pipeline ADF (éviter les duplications)
+# pipeline_copy_table.json
+{
+  "parameters": {
+    "source_table": {"type": "String"},
+    "start_date": {"type": "String", "defaultValue": "@utcnow()"},
+    "container": {"type": "String", "defaultValue": "raw"}
+  },
+  "activities": [{
+    "name": "CopyData",
+    "type": "Copy",
+    "typeProperties": {
+      "source": {
+        "type": "SqlServerSource",
+        "sqlReaderQuery": "SELECT * FROM @{pipeline().parameters.source_table} WHERE updated_at >= '@{pipeline().parameters.start_date}'"
+      },
+      "sink": {
+        "type": "ParquetSink",
+        "storeSettings": {"type": "AzureBlobFSWriteSettings"}
+      }
+    }
+  }]
+}</code></div>
+<ul>
+<li><strong>Integration Runtime self-hosted</strong> — pour les sources on-premise (SQL Server datacenter). Installer l'IR sur un serveur Windows avec accès réseau à la source</li>
+<li><strong>CI/CD ADF</strong> — connecter ADF à Git Azure DevOps. Développer sur feature branch, merger vers main déclenche le déploiement automatique via ARM templates</li>
+<li><strong>Data Flows</strong> — transformations visuelles Spark-backed dans ADF. Éviter pour la logique complexe : préférer Databricks ou dbt pour la maintenabilité</li>
+<li><strong>Triggers</strong> — Schedule, Tumbling Window (rattrapages possibles), Event-based (déclenchement sur création de fichier dans ADLS)</li>
+<li><strong>Cost control</strong> — les activités Lookup et ForEach avec beaucoup d'itérations coûtent cher. Préférer les Copy Activities en batch plutôt que ligne par ligne</li>
+</ul>
+<div class='cb'><code># Pipeline ADF parametrable
+# pipeline_copy_table.json
+{
+  "parameters": {
+    "source_table": {"type": "String"},
+    "start_date": {"type": "String"},
+    "container": {"type": "String", "defaultValue": "raw"}
+  },
+  "activities": [{
+    "name": "CopyData",
+    "type": "Copy",
+    "typeProperties": {
+      "source": {
+        "type": "SqlServerSource",
+        "sqlReaderQuery": "SELECT * FROM @{pipeline().parameters.source_table} WHERE updated_at >= '@{pipeline().parameters.start_date}'"
+      },
+      "sink": {"type": "ParquetSink"}
+    }
+  }]
+}</code></div>
+<ul>
+<li><strong>Integration Runtime self-hosted</strong> - pour les sources on-premise (SQL Server datacenter). Installer l IR sur un serveur Windows avec acces reseau a la source</li>
+<li><strong>CI/CD ADF</strong> - connecter ADF a Git Azure DevOps. Merger vers main declenche le deploiement automatique via ARM templates</li>
+<li><strong>Triggers Event-based</strong> - declencher un pipeline sur creation de fichier dans ADLS Gen2. Remplace le polling par des evenements</li>
+<li><strong>Data Flows</strong> - transformations visuelles Spark-backed dans ADF. Pour la logique complexe, preferer Databricks ou dbt pour la maintenabilite</li>
+<li><strong>Cost control</strong> - les activites Lookup et ForEach avec beaucoup d iterations coutent cher. Preferer les Copy Activities en batch</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Pipelines, Copy Activity, Schedule Trigger, Key Vault</td><td>A déployé un pipeline Copy + transformation, utilise Key Vault</td><td>Stocke les mots de passe en dur dans les Linked Services</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tumbling Window, Event Trigger, Mapping Data Flow, ARM templates</td><td>A configuré un Event Trigger, déploie via ARM/CI-CD, justifie ADF vs Databricks</td><td>Ne sait pas la différence entre Schedule et Tumbling Window</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Azure ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

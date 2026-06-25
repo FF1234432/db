@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Python async pour la data : asyncio, httpx, ingestion parallèle</span></div>
@@ -127,8 +127,32 @@ class AsyncIngestionPipeline:
                     *[self.fetch(client, url) for url in batch]
                 )
                 all_results.extend([r for r in results if r is not None])
-            return all_results</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>asyncio basique, asyncio.gather, httpx async</td><td>A écrit un ingestion d API avec asyncio.gather, comprend await vs create_task</td><td>Utilise requests en sync pour ingérer 1000 endpoints</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Semaphore, retry async, gestion rate limiting, TaskGroup</td><td>Utilise Semaphore pour contrôler la concurrence, gère le rate limiting de manière async</td><td>Lance asyncio.gather sur 10000 URLs sans Semaphore</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+            return all_results</code></div><div class='cb'><code>import asyncio, aiohttp
+from typing import AsyncIterator
+
+async def fetch_batch(session: aiohttp.ClientSession, url: str) -> dict:
+    async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+        resp.raise_for_status()
+        return await resp.json()
+
+async def extract_all_pages(base_url: str, pages: list[int]) -> list:
+    async with aiohttp.ClientSession() as session:
+        # Limiter la concurrence a 10 requetes simultanees
+        semaphore = asyncio.Semaphore(10)
+        async def fetch_limited(page):
+            async with semaphore:
+                return await fetch_batch(session, f'{base_url}?page={page}')
+        results = await asyncio.gather(*[fetch_limited(p) for p in pages])
+        return [item for batch in results for item in batch]
+
+# Streaming async pour les gros volumes
+async def stream_large_dataset(url: str) -> AsyncIterator[dict]:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            async for line in resp.content:
+                yield json.loads(line)</code></div><ul><li><strong>asyncio.gather vs asyncio.wait</strong> - gather : collecte tous les resultats dans l ordre, leve une exception si l un echoue. wait : plus de controle (FIRST_COMPLETED, FIRST_EXCEPTION, ALL_COMPLETED)</li><li><strong>Semaphore pour le rate limiting</strong> - asyncio.Semaphore(N) limite N coroutines simultanees. Essentiel pour ne pas surcharger une API avec des quotas</li><li><strong>aiofiles pour l IO fichier</strong> - remplacer open() par aiofiles.open() dans les contextes async. L IO fichier bloque sinon la boucle d evenements</li><li><strong>asyncpg et aiomysql</strong> - drivers de bases de donnees natifs async. Plus performants que les drivers sync dans un contexte asyncio</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>asyncio basique, asyncio.gather, httpx async</td><td>A écrit un ingestion d API avec asyncio.gather, comprend await vs create_task</td><td>Utilise requests en sync pour ingérer 1000 endpoints</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Semaphore, retry async, gestion rate limiting, TaskGroup</td><td>Utilise Semaphore pour contrôler la concurrence, gère le rate limiting de manière async</td><td>Lance asyncio.gather sur 10000 URLs sans Semaphore</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

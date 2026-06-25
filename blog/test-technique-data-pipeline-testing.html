@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique : tester les pipelines data de bout en bout</span></div>
@@ -97,8 +97,50 @@ SELECT
     ABS(SUM(amount) - (SELECT SUM(amount) FROM {{ ref('fct_revenue_new') }}))
         / NULLIF(SUM(amount), 0) AS pct_diff
 FROM {{ ref('fct_revenue_old') }}
-HAVING pct_diff > 0.001  -- plus de 0.1% de différence = alerte</code></div><h2 id='chaos'><span class='sn'>6</span>Chaos engineering pour les pipelines</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le chaos engineering appliqué aux pipelines data ?</p></div><ul><li><strong>Principe</strong> — injecter délibérément des pannes pour tester la résilience du pipeline</li><li><strong>Exemples pour la data</strong> — couper la source de données, injecter des données corrompues, retarder des livraisons</li><li><strong>'Si ma table source est vide, que se passe-t-il ?'</strong> — le pipeline échoue proprement avec une alerte, ou produit silencieusement une table vide en production</li><li><strong>'Si une colonne est renommée, comment je le détecte ?'</strong> — les tests dbt staging détectent le changement de schéma</li><li><strong>Objectif</strong> — trouver les points de défaillance avant qu ils surviennent en production</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tests unitaires, tests DAGs Airflow, dbt tests</td><td>A des tests unitaires pour ses transformations, teste ses DAGs avec DagBag</td><td>N a aucun test automatisé sur ses pipelines</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests d intégration, contract testing, tests de régression</td><td>A un environnement de test isolé, utilise dbt-audit-helper pour les régressions</td><td>Ne sait pas comment tester un pipeline complet</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+HAVING pct_diff > 0.001  -- plus de 0.1% de différence = alerte</code></div><h2 id='chaos'><span class='sn'>6</span>Chaos engineering pour les pipelines</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le chaos engineering appliqué aux pipelines data ?</p></div><ul><li><strong>Principe</strong> — injecter délibérément des pannes pour tester la résilience du pipeline</li><li><strong>Exemples pour la data</strong> — couper la source de données, injecter des données corrompues, retarder des livraisons</li><li><strong>'Si ma table source est vide, que se passe-t-il ?'</strong> — le pipeline échoue proprement avec une alerte, ou produit silencieusement une table vide en production</li><li><strong>'Si une colonne est renommée, comment je le détecte ?'</strong> — les tests dbt staging détectent le changement de schéma</li><li><strong>Objectif</strong> — trouver les points de défaillance avant qu ils surviennent en production</li></ul>
+<div class='cb'><code>import pytest
+import pandas as pd
+from unittest.mock import patch, MagicMock
+from datetime import date
+
+# Test d'un pipeline de transformation
+def test_transform_orders():
+    input_df = pd.DataFrame({
+        "order_id": [1, 2, 3],
+        "amount": [100.0, -50.0, 200.0],  # -50 = cas invalide
+        "status": ["completed", "completed", "pending"]
+    })
+    result = transform_orders(input_df)
+    
+    assert len(result) == 2  # les négatifs sont filtrés
+    assert result["amount"].min() > 0
+    assert "order_date" in result.columns  # colonne ajoutée
+    assert result["amount"].sum() == 300.0
+
+# Test avec mock de la base de données
+@patch("src.pipeline.get_db_connection")
+def test_extract_with_mock_db(mock_conn):
+    mock_conn.return_value.__enter__.return_value.execute.return_value.fetchall.return_value = [
+        (1, "2025-01-01", 100.0), (2, "2025-01-02", 200.0)
+    ]
+    result = extract_orders(start_date=date(2025, 1, 1))
+    assert len(result) == 2
+
+# Test de contrat de données (schéma)
+def test_output_schema():
+    result = transform_orders(sample_df)
+    assert set(result.columns) == {"order_id", "customer_id", "amount", "status", "order_date"}
+    assert result.dtypes["amount"] == float
+    assert result["order_id"].is_unique</code></div>
+<ul>
+<li><strong>Pyramide de tests data</strong> — unité (logique de transformation) + intégration (connexion source/dest) + end-to-end (pipeline complet en staging). Priorité aux tests unitaires</li>
+<li><strong>Fixtures pytest</strong> — créer des DataFrames de test réutilisables via <code>@pytest.fixture</code>. Centralise les données de test et évite la duplication</li>
+<li><strong>Tests de contrat</strong> — vérifier que le schéma de sortie est stable. Un changement de colonne ou de type casse les consumers en aval</li>
+<li><strong>Property-based testing</strong> — Hypothesis génère automatiquement des cas de test (valeurs limites, NaN, chaînes vides) que vous n'auriez pas pensé à écrire</li>
+<li><strong>dbt tests vs pytest</strong> — dbt tests pour la qualité des données en SQL (uniqueness, not null, accepted values). pytest pour la logique Python des pipelines</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tests unitaires, tests DAGs Airflow, dbt tests</td><td>A des tests unitaires pour ses transformations, teste ses DAGs avec DagBag</td><td>N a aucun test automatisé sur ses pipelines</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests d intégration, contract testing, tests de régression</td><td>A un environnement de test isolé, utilise dbt-audit-helper pour les régressions</td><td>Ne sait pas comment tester un pipeline complet</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Stack dbt + Snowflake : architecture complète en production</span></div>
@@ -114,8 +114,49 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dbt-artifacts
-          path: target/manifest.json</code></div><ul><li><strong>state:modified+</strong> — rebuild uniquement les modèles changés et leurs descendants</li><li><strong>--defer</strong> — utiliser les relations de PROD pour les modèles non modifiés. Pas besoin de rebuilder toute la stack</li><li><strong>CI warehouse</strong> — utiliser un XS warehouse dédié pour la CI. Arrêter après chaque run</li></ul><h2 id='cost'><span class='sn'>5</span>Maîtrise des coûts Snowflake + dbt</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment réduisez-vous les coûts Snowflake de vos pipelines dbt ?</p></div><ul><li><strong>Incremental models</strong> — premier levier. Éviter les full refresh sur les grandes tables</li><li><strong>Auto-suspend agressif</strong> — 1 minute de suspension pour les warehouses dbt (les jobs sont courts)</li><li><strong>Warehouse par use case</strong> — un warehouse pour la CI (XS), un pour les transformations quotidiennes (S-M), un pour la BI (XS avec cache)</li><li><strong>INFORMATION_SCHEMA monitoring</strong> — suivre les credits consommés par modèle dbt via query_tag</li><li><strong>Éviter SELECT *</strong> — toujours sélectionner les colonnes nécessaires dans les modèles dbt</li></ul><h2 id='gouv'><span class='sn'>6</span>Gouvernance : documentation et lineage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment assurez-vous que votre projet dbt reste maintenable dans le temps ?</p></div><ul><li><strong>Descriptions obligatoires</strong> — configurer dbt pour forcer la documentation des colonnes clés via pre-commit hooks</li><li><strong>Exposures</strong> — documenter qui consomme chaque modèle (dashboards Power BI, APIs, rapports automatiques)</li><li><strong>dbt docs</strong> — générer et publier la documentation automatiquement à chaque merge sur main</li><li><strong>Elementary</strong> — package de data observabilité pour monitorer la qualité des données en production</li><li><strong>Conventions de nommage</strong> — stg_ pour staging, int_ pour intermediate, fct_ et dim_ pour les marts</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Structure staging/marts, tests, déploiement manuel</td><td>A structuré un projet dbt en 3 layers, a configuré Snowflake warehouses</td><td>Met toute la logique dans les marts sans staging</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Incremental models, slim CI, coûts maîtrisés, gouvernance</td><td>A mis en place le slim CI, utilise des incremental models, monitore les coûts</td><td>Ne sait pas ce qu est un incremental model, ne connaît pas le slim CI</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt + Snowflake ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+          path: target/manifest.json</code></div><ul><li><strong>state:modified+</strong> — rebuild uniquement les modèles changés et leurs descendants</li><li><strong>--defer</strong> — utiliser les relations de PROD pour les modèles non modifiés. Pas besoin de rebuilder toute la stack</li><li><strong>CI warehouse</strong> — utiliser un XS warehouse dédié pour la CI. Arrêter après chaque run</li></ul><h2 id='cost'><span class='sn'>5</span>Maîtrise des coûts Snowflake + dbt</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment réduisez-vous les coûts Snowflake de vos pipelines dbt ?</p></div><ul><li><strong>Incremental models</strong> — premier levier. Éviter les full refresh sur les grandes tables</li><li><strong>Auto-suspend agressif</strong> — 1 minute de suspension pour les warehouses dbt (les jobs sont courts)</li><li><strong>Warehouse par use case</strong> — un warehouse pour la CI (XS), un pour les transformations quotidiennes (S-M), un pour la BI (XS avec cache)</li><li><strong>INFORMATION_SCHEMA monitoring</strong> — suivre les credits consommés par modèle dbt via query_tag</li><li><strong>Éviter SELECT *</strong> — toujours sélectionner les colonnes nécessaires dans les modèles dbt</li></ul><h2 id='gouv'><span class='sn'>6</span>Gouvernance : documentation et lineage</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment assurez-vous que votre projet dbt reste maintenable dans le temps ?</p></div><ul><li><strong>Descriptions obligatoires</strong> — configurer dbt pour forcer la documentation des colonnes clés via pre-commit hooks</li><li><strong>Exposures</strong> — documenter qui consomme chaque modèle (dashboards Power BI, APIs, rapports automatiques)</li><li><strong>dbt docs</strong> — générer et publier la documentation automatiquement à chaque merge sur main</li><li><strong>Elementary</strong> — package de data observabilité pour monitorer la qualité des données en production</li><li><strong>Conventions de nommage</strong> — stg_ pour staging, int_ pour intermediate, fct_ et dim_ pour les marts</li></ul><div class='cb'><code># profiles.yml Snowflake multi-env
+my_project:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: myorg.snowflakecomputing.com
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      role: TRANSFORMER_DEV
+      database: DEV_DB
+      warehouse: TRANSFORM_WH_XS
+      schema: "dbt_{{ env_var('USER', 'dev') }}"
+      threads: 4
+    prod:
+      type: snowflake
+      account: myorg.snowflakecomputing.com
+      user: dbt_prod_svc
+      private_key_path: /secrets/snowflake_pk.p8
+      role: TRANSFORMER_PROD
+      database: PROD_DB
+      warehouse: TRANSFORM_WH_M
+      schema: analytics
+      threads: 16
+
+# dbt_project.yml optimisations Snowflake
+models:
+  my_project:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+      +snowflake_warehouse: TRANSFORM_WH_L
+      +post-hook: "GRANT SELECT ON {{ this }} TO ROLE REPORTER"</code></div>
+<ul>
+<li><strong>Key pair authentication</strong> - privilegier la cle privee RSA plutot que mot de passe pour les comptes de service. Plus securise, supporte par les secrets managers</li>
+<li><strong>Warehouse sizing par couche</strong> - staging/intermediate sur XS (views legeres), marts sur M ou L pour les tables materialisees</li>
+<li><strong>Dynamic tables vs dbt incremental</strong> - pour les agregations simples, les Snowflake Dynamic Tables remplacent avantageusement dbt incremental : zero orchestration externe</li>
+<li><strong>Cloning pour les tests</strong> - CREATE DATABASE dev_clone CLONE production avant les tests de migration. Zero-copy, instantane, sans impacter la prod</li>
+<li><strong>COPY INTO vs INSERT</strong> - charger de gros volumes dans Snowflake via COPY INTO depuis S3/GCS. 10-100x plus rapide que des INSERT en batch</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Structure staging/marts, tests, déploiement manuel</td><td>A structuré un projet dbt en 3 layers, a configuré Snowflake warehouses</td><td>Met toute la logique dans les marts sans staging</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Incremental models, slim CI, coûts maîtrisés, gouvernance</td><td>A mis en place le slim CI, utilise des incremental models, monitore les coûts</td><td>Ne sait pas ce qu est un incremental model, ne connaît pas le slim CI</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt + Snowflake ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

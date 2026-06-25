@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>&rsaquo;</span><a href="index.html">Blog</a><span>&rsaquo;</span><span>Test technique RAG : architecture, embeddings, bases vectorielles</span></div>
@@ -45,10 +45,63 @@ Pipeline ONLINE (temps reel) :
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=512,
     chunk_overlap=50,
-    separators=['\n\n', '\n', '.', ' ']
+    separators=['
+
+', '
+', '.', ' ']
 )
-chunks = splitter.split_documents(docs)</code></div><ul><li><strong>256-512 tokens</strong> — sweet spot. Trop petit = perte contexte, trop grand = dilution pertinence</li><li><strong>Chunk overlap 10-15%</strong> — evite de couper une idee entre deux chunks</li><li><strong>Modeles d embedding</strong> — text-embedding-3-small (OpenAI), BGE-M3 (open source multilingue), Cohere Embed v3</li></ul><h2 id='vdb'><span class='sn'>4</span>Bases vectorielles : savoir choisir</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle base vectorielle choisissez-vous pour un RAG en production sur GCP ? Et pour un POC rapide ?</p></div><table class='lt'><thead><tr><th>Solution</th><th>Type</th><th>Ideal pour</th></tr></thead><tbody><tr><td><strong>Vertex AI Vector Search</strong></td><td>Managee GCP</td><td>Production GCP haute scalabilite</td></tr><tr><td><strong>Pinecone</strong></td><td>Managee tiers</td><td>POC rapide, SaaS</td></tr><tr><td><strong>Qdrant</strong></td><td>Open source self-hosted</td><td>Projets sensibles, controle total</td></tr><tr><td><strong>ChromaDB</strong></td><td>Open source local</td><td>Dev local, POC</td></tr><tr><td><strong>pgvector</strong></td><td>Extension PostgreSQL</td><td>Equipes SQL, infra existante</td></tr></tbody></table><ul><li><strong>HNSW</strong> — haute precision, memoire elevee. Defaut Qdrant et Weaviate</li><li><strong>IVF-PQ</strong> — plus scalable, precision legerement reduite sur tres gros volumes</li><li><strong>Similarite cosinus</strong> — metrique standard pour les embeddings de texte</li></ul><h2 id='retrieval'><span class='sn'>5</span>Optimisation du retrieval</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment ameliorez-vous la qualite du retrieval quand les resultats ne sont pas assez pertinents ?</p></div><ul><li><strong>Hybrid search</strong> — combiner recherche vectorielle (semantique) + BM25 (lexicale)</li><li><strong>Re-ranking</strong> — apres retrieval, scorer avec un modele de cross-attention (Cohere Rerank, BGE Reranker)</li><li><strong>Query reformulation</strong> — transformer la question en plusieurs requetes</li><li><strong>Filtrage par metadata</strong> — filtrer par source, date, auteur avant la recherche vectorielle</li></ul><h2 id='llm'><span class='sn'>6</span>Choix du LLM de generation</h2><table class='lt'><thead><tr><th>LLM</th><th>Avantages</th><th>Cas d usage</th></tr></thead><tbody><tr><td>GPT-4o</td><td>Qualite elevee, context 128k, multimodal</td><td>Production generale</td></tr><tr><td>Claude 3.5</td><td>Context 200k, excellent documents longs</td><td>Analyse documentaire</td></tr><tr><td>Gemini 1.5 Pro</td><td>Context 1M tokens</td><td>Stack GCP, tres longs documents</td></tr><tr><td>Llama 3.1 / Mistral</td><td>Open source, auto-heberge</td><td>Donnees confidentielles, on-premise</td></tr></tbody></table><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Comprend RAG, a fait un POC LangChain</td><td>Explique pipeline offline/online, a utilise ChromaDB</td><td>Confond RAG et fine-tuning</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Chunking, choix embedding, bases vecto production</td><td>Justifie la taille de chunk, a deploye sur Qdrant ou pgvector</td><td>N a utilise que ChromaDB local</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Hybrid search, re-ranking, evaluation RAGAS</td><td>A implemente re-ranking, mesure faithfulness avec RAGAS</td><td>N a jamais evalue la qualite de son RAG</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil GenAI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+chunks = splitter.split_documents(docs)</code></div><ul><li><strong>256-512 tokens</strong> — sweet spot. Trop petit = perte contexte, trop grand = dilution pertinence</li><li><strong>Chunk overlap 10-15%</strong> — evite de couper une idee entre deux chunks</li><li><strong>Modeles d embedding</strong> — text-embedding-3-small (OpenAI), BGE-M3 (open source multilingue), Cohere Embed v3</li></ul><h2 id='vdb'><span class='sn'>4</span>Bases vectorielles : savoir choisir</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle base vectorielle choisissez-vous pour un RAG en production sur GCP ? Et pour un POC rapide ?</p></div><table class='lt'><thead><tr><th>Solution</th><th>Type</th><th>Ideal pour</th></tr></thead><tbody><tr><td><strong>Vertex AI Vector Search</strong></td><td>Managee GCP</td><td>Production GCP haute scalabilite</td></tr><tr><td><strong>Pinecone</strong></td><td>Managee tiers</td><td>POC rapide, SaaS</td></tr><tr><td><strong>Qdrant</strong></td><td>Open source self-hosted</td><td>Projets sensibles, controle total</td></tr><tr><td><strong>ChromaDB</strong></td><td>Open source local</td><td>Dev local, POC</td></tr><tr><td><strong>pgvector</strong></td><td>Extension PostgreSQL</td><td>Equipes SQL, infra existante</td></tr></tbody></table><ul><li><strong>HNSW</strong> — haute precision, memoire elevee. Defaut Qdrant et Weaviate</li><li><strong>IVF-PQ</strong> — plus scalable, precision legerement reduite sur tres gros volumes</li><li><strong>Similarite cosinus</strong> — metrique standard pour les embeddings de texte</li></ul><h2 id='retrieval'><span class='sn'>5</span>Optimisation du retrieval</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment ameliorez-vous la qualite du retrieval quand les resultats ne sont pas assez pertinents ?</p></div><ul><li><strong>Hybrid search</strong> — combiner recherche vectorielle (semantique) + BM25 (lexicale)</li><li><strong>Re-ranking</strong> — apres retrieval, scorer avec un modele de cross-attention (Cohere Rerank, BGE Reranker)</li><li><strong>Query reformulation</strong> — transformer la question en plusieurs requetes</li><li><strong>Filtrage par metadata</strong> — filtrer par source, date, auteur avant la recherche vectorielle</li></ul><h2 id='llm'><span class='sn'>6</span>Choix du LLM de generation</h2><table class='lt'><thead><tr><th>LLM</th><th>Avantages</th><th>Cas d usage</th></tr></thead><tbody><tr><td>GPT-4o</td><td>Qualite elevee, context 128k, multimodal</td><td>Production generale</td></tr><tr><td>Claude 3.5</td><td>Context 200k, excellent documents longs</td><td>Analyse documentaire</td></tr><tr><td>Gemini 1.5 Pro</td><td>Context 1M tokens</td><td>Stack GCP, tres longs documents</td></tr><tr><td>Llama 3.1 / Mistral</td><td>Open source, auto-heberge</td><td>Donnees confidentielles, on-premise</td></tr></tbody></table>
+<div class='cb'><code>from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
+import cohere
+
+# Qdrant en production + Hybrid Search
+client = QdrantClient("http://qdrant:6333")
+client.create_collection("knowledge_base",
+    vectors_config={"dense": VectorParams(size=1536, distance=Distance.COSINE)},
+    sparse_vectors_config={"sparse": SparseVectorParams()}  # pour hybrid search
+)
+
+# Hybrid search : vectoriel (sémantique) + BM25 (lexical)
+results = client.query_points(
+    collection_name="knowledge_base",
+    prefetch=[
+        Prefetch(query=dense_vector, using="dense", limit=20),
+        Prefetch(query=sparse_vector, using="sparse", limit=20),
+    ],
+    query=FusionQuery(fusion=Fusion.RRF),  # Reciprocal Rank Fusion
+    limit=10
+)
+
+# Re-ranking Cohere après retrieval
+co = cohere.Client()
+reranked = co.rerank(
+    model="rerank-multilingual-v3.0",
+    query=user_question,
+    documents=[r.payload["text"] for r in results.points],
+    top_n=3
+)
+
+# Évaluation avec RAGAS
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_recall
+score = evaluate(dataset, metrics=[faithfulness, answer_relevancy, context_recall])</code></div>
+<ul>
+<li><strong>Chunking par structure</strong> — pour les documents structurés (PDF, markdown), chunker par heading plutôt que par taille fixe. Meilleure cohérence sémantique</li>
+<li><strong>Parent-child chunking</strong> — indexer de petits chunks pour la précision du retrieval, mais retourner le chunk parent (contexte plus large) au LLM</li>
+<li><strong>Metadata filtering</strong> — filtrer par date, source, auteur avant la recherche vectorielle. Réduit le bruit et améliore la précision sans changer le modèle</li>
+<li><strong>RAGAS evaluation</strong> — faithfulness (réponse ancrée dans le contexte ?), answer_relevancy (répond à la question ?), context_recall (contexte pertinent récupéré ?). Mettre en place avant la mise en prod</li>
+<li><strong>Observabilité</strong> — tracer chaque requête (query, chunks, réponse, score) avec Langfuse ou LangSmith. Détecter les gaps de connaissance et les hallucinations systématiques</li>
+</ul>
+<ul>
+<li><strong>Chunking par structure</strong> - pour les documents structures (PDF, markdown), chunker par heading plutot que par taille fixe. Meilleure coherence semantique</li>
+<li><strong>Parent-child chunking</strong> - indexer de petits chunks pour la precision du retrieval, retourner le chunk parent (contexte plus large) au LLM</li>
+<li><strong>Metadata filtering</strong> - filtrer par date, source, auteur avant la recherche vectorielle. Reduit le bruit et ameliore la precision sans changer le modele</li>
+<li><strong>RAGAS evaluation</strong> - faithfulness (reponse ancree dans le contexte ?), answer_relevancy (repond a la question ?), context_recall. Mettre en place avant la mise en prod</li>
+<li><strong>Observabilite</strong> - tracer chaque requete (query, chunks, reponse, score) avec Langfuse ou LangSmith. Detecter les gaps de connaissance et les hallucinations systematiques</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Comprend RAG, a fait un POC LangChain</td><td>Explique pipeline offline/online, a utilise ChromaDB</td><td>Confond RAG et fine-tuning</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Chunking, choix embedding, bases vecto production</td><td>Justifie la taille de chunk, a deploye sur Qdrant ou pgvector</td><td>N a utilise que ChromaDB local</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Hybrid search, re-ranking, evaluation RAGAS</td><td>A implemente re-ranking, mesure faithfulness avec RAGAS</td><td>N a jamais evalue la qualite de son RAG</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un profil GenAI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">&copy; 2025 Data Builder</div></div></footer>
 </body>

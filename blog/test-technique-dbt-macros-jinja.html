@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt macros et Jinja avancé : générer du SQL dynamiquement</span></div>
@@ -134,8 +134,41 @@ SELECT '{{ model }}' AS source_model, * FROM {{ ref(model) }}
 {%- if not loop.last %} UNION ALL {% endif %}
 {%- endfor %}
 
-{% endmacro %}</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Macros avec boucles et conditions, run_query, generate_schema_name</td><td>A écrit des macros avec run_query, a personnalisé generate_schema_name</td><td>Ne sait pas ce qu est run_query</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Dispatch, packages internes, introspection du graph</td><td>A créé un package dbt interne, utilise dispatch pour le multi-warehouse</td><td>Ne sait pas ce qu est dispatch</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Expert ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+{% endmacro %}</code></div><div class='cb'><code>-- generate_schema_name.sql : routing d environnement
+{% macro generate_schema_name(custom_schema_name, node) -%}
+    {%- set default_schema = target.schema -%}
+    {%- if custom_schema_name is none -%}
+        {{ default_schema }}
+    {%- elif target.name == 'prod' -%}
+        {{ custom_schema_name | trim }}
+    {%- else -%}
+        {{ default_schema }}_{{ custom_schema_name | trim }}
+    {%- endif -%}
+{%- endmacro %}
+
+-- macros/incremental_filter.sql
+{% macro incremental_filter(column, lookback_days=1) %}
+    {% if is_incremental() %}
+        WHERE {{ column }} > (
+            SELECT DATEADD('day', -{{ lookback_days }}, MAX({{ column }}))
+            FROM {{ this }}
+        )
+    {% endif %}
+{% endmacro %}
+
+-- Usage dans un modele
+SELECT order_id, ROUND(amount_cents / 100.0, 2) AS amount_eur
+FROM {{ source('raw', 'orders') }}
+{{ incremental_filter('updated_at', lookback_days=2) }}</code></div>
+<ul>
+<li><strong>Macros vs models</strong> - les macros generent du SQL, les modeles sont du SQL. Macro = logique reutilisable. Modele = transformation de donnees</li>
+<li><strong>generate_schema_name</strong> - override dbt pour router les schemas selon l environnement. En dev : dbt_jean_marts. En prod : marts. Evite les collisions</li>
+<li><strong>Jinja filters</strong> - pipe | trim, | upper, | replace, | join. Composables : column | trim | upper</li>
+<li><strong>dispatch (polymorphisme)</strong> - adapter.dispatch('date_trunc') appelle la version Snowflake, BigQuery ou Spark selon l adaptateur</li>
+<li><strong>Tests custom via macros</strong> - creer des tests generiques reutilisables dans tests/generic/. Plus DRY que les tests inline schema.yml</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Macros avec boucles et conditions, run_query, generate_schema_name</td><td>A écrit des macros avec run_query, a personnalisé generate_schema_name</td><td>Ne sait pas ce qu est run_query</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Dispatch, packages internes, introspection du graph</td><td>A créé un package dbt interne, utilise dispatch pour le multi-warehouse</td><td>Ne sait pas ce qu est dispatch</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Expert ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

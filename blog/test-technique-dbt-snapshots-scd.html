@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt snapshots et SCD : historiser les changements</span></div>
@@ -29,72 +29,177 @@
 <li><a href="#delete">Gestion des suppressions</a></li>
 <li><a href="#consume">Consommer les snapshots</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><h2 id='scd'><span class='sn'>1</span>Types de SCD : lequel choisir</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre SCD Type 1, 2 et 3 ? Donnez un exemple pour chaque.</p></div><table class='lt'><thead><tr><th>Type</th><th>Comportement</th><th>Exemple</th><th>Historique</th></tr></thead><tbody><tr><td><strong>SCD 1</strong></td><td>Écraser l ancienne valeur</td><td>Corriger l email d un client</td><td>Non</td></tr><tr><td><strong>SCD 2</strong></td><td>Créer une nouvelle ligne avec dates de validité</td><td>Client qui change de segment</td><td>Complet</td></tr><tr><td><strong>SCD 3</strong></td><td>Ajouter une colonne previous_value</td><td>Statut actuel + précédent</td><td>Partiel (1 version)</td></tr><tr><td><strong>SCD 4</strong></td><td>Table d historique séparée</td><td>Audit trail complet</td><td>Complet mais séparé</td></tr></tbody></table><h2 id='snapshot'><span class='sn'>2</span>Snapshots dbt : SCD2 automatique</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment configurez-vous un snapshot dbt pour historiser les changements d une table clients ?</p></div><div class='cb'><code>{# snapshots/snap_clients.sql #}
-{% snapshot snap_clients %}
+<div class="ab">
+<h2 id='scd'><span class='sn'>1</span>Types de SCD : lequel choisir</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre SCD1, SCD2 et SCD3 ? Quand utilisez-vous SCD2 ?</p></div>
+<ul>
+<li><strong>SCD Type 1</strong> — overwrite. La valeur actuelle écrase l'ancienne. Pas d'historique. Simple, idéal pour les corrections d'erreurs</li>
+<li><strong>SCD Type 2</strong> — nouvelle ligne pour chaque changement. Conserve tout l'historique avec des colonnes valid_from/valid_to/is_current. Le plus courant en data warehousing</li>
+<li><strong>SCD Type 3</strong> — colonne supplémentaire pour la valeur précédente. Limite : ne conserve que N versions. Rare en pratique</li>
+<li><strong>Quand SCD2</strong> — analyse des comportements dans le temps (comment le segment client a évolué), attribution correcte (le prix au moment de l'achat), conformité réglementaire</li>
+<li><strong>Coût SCD2</strong> — les jointures avec une table SCD2 nécessitent de filtrer sur is_current=true ou sur la plage de dates. Ajoute de la complexité aux requêtes</li>
+</ul>
+<table class='lt'><thead><tr><th>Type</th><th>Historique</th><th>Complexité</th><th>Cas d'usage</th></tr></thead>
+<tbody>
+<tr><td>SCD1</td><td>Aucun</td><td>Simple</td><td>Données de référence, corrections</td></tr>
+<tr><td>SCD2</td><td>Complet</td><td>Élevée</td><td>Dimensions clients, produits, géographie</td></tr>
+<tr><td>SCD3</td><td>Partiel (N versions)</td><td>Moyenne</td><td>Rare</td></tr>
+</tbody></table>
 
-{{ config(
-    target_schema='snapshots',
-    unique_key='client_id',
-    strategy='timestamp',
-    updated_at='updated_at',
-    invalidate_hard_deletes=True
-) }}
+<h2 id='snapshot'><span class='sn'>2</span>Snapshots dbt : SCD2 automatique</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce qu'un snapshot dbt ? Comment le configurez-vous ?</p></div>
+<div class='cb'><code>-- snapshots/customers_snapshot.sql
+{% snapshot customers_snapshot %}
 
-SELECT
-    client_id,
-    nom,
+{{
+    config(
+        target_schema='snapshots',
+        unique_key='customer_id',
+        strategy='timestamp',
+        updated_at='updated_at',
+        invalidate_hard_deletes=True
+    )
+}}
+
+SELECT 
+    customer_id,
     email,
-    segment,          -- la colonne qui change
-    statut,
+    plan,
+    segment,
+    country,
     updated_at
-FROM {{ source('crm', 'clients') }}
+FROM {{ source('crm', 'customers') }}
 
 {% endsnapshot %}
 
 -- Colonnes ajoutées automatiquement par dbt :
--- dbt_scd_id     : identifiant unique de chaque version
--- dbt_updated_at : quand cette version a été créée
--- dbt_valid_from : début de validité
--- dbt_valid_to   : fin de validité (NULL = version courante)</code></div><h2 id='timestamp'><span class='sn'>3</span>Stratégie timestamp vs check</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre strategy='timestamp' et strategy='check' ?</p></div><div class='cb'><code>{# Stratégie timestamp : se base sur updated_at #}
-{{ config(
-    strategy='timestamp',
-    updated_at='updated_at'     -- colonne qui indique une modification
-) }}
--- Simple mais nécessite une colonne updated_at fiable
+-- dbt_scd_id     : clé primaire du snapshot (hash)
+-- dbt_valid_from : date de début de validité
+-- dbt_valid_to   : date de fin (NULL = enregistrement actuel)
+-- dbt_updated_at : timestamp de la dernière mise à jour</code></div>
+<ul>
+<li><strong>dbt snapshot run</strong> — crée le snapshot si inexistant, sinon détecte les changements et insère de nouvelles lignes</li>
+<li><strong>target_schema</strong> — stocker les snapshots dans un schema dédié, séparé des modèles marts</li>
+<li><strong>unique_key</strong> — identifiant naturel de l'entité. Plusieurs colonnes possibles : <code>unique_key=['id', 'source']</code></li>
+</ul>
 
-{# Stratégie check : compare les valeurs de colonnes #}
-{{ config(
-    strategy='check',
-    check_cols=['segment', 'statut', 'email']  -- colonnes à surveiller
-    -- ou check_cols='all' pour toutes les colonnes
-) }}
--- Plus robuste si updated_at n est pas fiable
--- Plus lent car compare toutes les valeurs</code></div><ul><li><strong>Timestamp recommandé</strong> — si la source a un updated_at fiable. Plus rapide</li><li><strong>Check recommandé</strong> — si la source peut changer des données sans mettre à jour updated_at</li></ul><h2 id='delete'><span class='sn'>4</span>Gérer les suppressions dans les snapshots</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Que se passe-t-il quand une ligne source est supprimée ? Comment invalidate_hard_deletes fonctionne ?</p></div><ul><li><strong>Sans invalidate_hard_deletes</strong> — si un client est supprimé dans la source, sa ligne dans le snapshot reste avec dbt_valid_to = NULL (comme si toujours actif)</li><li><strong>Avec invalidate_hard_deletes=True</strong> — dbt détecte la disparition et ferme la version (dbt_valid_to = date de disparition)</li><li><strong>Soft deletes</strong> — si la source utilise un flag deleted_at ou is_active, filtrer dans le snapshot pour exclure les suppressions logiques</li></ul><h2 id='consume'><span class='sn'>5</span>Consommer les snapshots dans les modèles dbt</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment créez-vous une vue de l état actuel et une vue de l historique complet ?</p></div><div class='cb'><code>-- Vue de l état ACTUEL (SCD2 -> SCD1)
+<h2 id='timestamp'><span class='sn'>3</span>Stratégie timestamp vs check</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre la stratégie timestamp et check dans les snapshots dbt ?</p></div>
+<div class='cb'><code>-- Stratégie TIMESTAMP : recommandée
+-- Utilise une colonne updated_at pour détecter les changements
+-- Rapide : compare juste un timestamp
+{{
+    config(
+        strategy='timestamp',
+        updated_at='updated_at'  -- colonne de la source
+    )
+}}
+
+-- Stratégie CHECK : quand pas d'updated_at
+-- Compare la valeur de colonnes spécifiées
+-- Plus lente : hash des colonnes à chaque run
+{{
+    config(
+        strategy='check',
+        check_cols=['plan', 'segment', 'country']
+        -- ou check_cols='all' pour toutes les colonnes
+    )
+}}</code></div>
+<ul>
+<li><strong>Timestamp</strong> — nécessite une colonne <code>updated_at</code> fiable dans la source. Rapide et scalable</li>
+<li><strong>Check</strong> — dbt compare un hash des colonnes spécifiées. Plus lent sur grandes tables mais fonctionne sans updated_at</li>
+<li><strong>Piège timestamp</strong> — si la source ne met pas updated_at à jour correctement, des changements seront manqués</li>
+</ul>
+
+<h2 id='delete'><span class='sn'>4</span>Gérer les suppressions dans les snapshots</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Que se passe-t-il quand une ligne est supprimée dans la source ? Comment le gérer ?</p></div>
+<div class='cb'><code>-- Avec invalidate_hard_deletes=True
+-- dbt marque les enregistrements supprimés avec dbt_valid_to = current_timestamp
+-- La colonne dbt_is_deleted est ajoutée automatiquement
+
+-- Requête pour analyser les suppressions
 SELECT
-    client_id,
-    nom,
+    customer_id,
+    email,
+    dbt_valid_from,
+    dbt_valid_to,
+    CASE WHEN dbt_valid_to IS NULL THEN 'actif' ELSE 'inactif/supprimé' END AS statut
+FROM {{ ref('customers_snapshot') }}
+WHERE customer_id = 12345
+ORDER BY dbt_valid_from;</code></div>
+<ul>
+<li><strong>invalidate_hard_deletes=True</strong> — recommandé. dbt détecte les suppressions et ferme la ligne courante</li>
+<li><strong>Sans cette option</strong> — les enregistrements supprimés restent ouverts (dbt_valid_to = NULL) indéfiniment</li>
+<li><strong>Soft deletes</strong> — si la source a une colonne is_deleted, filtrer dans la requête du snapshot : <code>WHERE is_deleted = false</code></li>
+</ul>
+
+<h2 id='consume'><span class='sn'>5</span>Consommer les snapshots dans les modèles dbt</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment interrogez-vous un snapshot pour obtenir l'état actuel vs l'état historique ?</p></div>
+<div class='cb'><code>-- État ACTUEL : enregistrements dont dbt_valid_to est NULL
+-- models/marts/dim_customers.sql
+SELECT
+    customer_id,
+    email,
+    plan,
     segment,
-    dbt_valid_from AS segment_changed_at
-FROM {{ ref('snap_clients') }}
-WHERE dbt_valid_to IS NULL   -- version courante
+    dbt_valid_from AS snapshot_date
+FROM {{ ref('customers_snapshot') }}
+WHERE dbt_valid_to IS NULL  -- enregistrements actifs uniquement
 
--- Vue historique : état à une date donnée
+-- État HISTORIQUE : quel segment avait ce client au moment de sa commande ?
+-- Utile pour l'attribution correcte
 SELECT
-    client_id,
-    nom,
-    segment
-FROM {{ ref('snap_clients') }}
-WHERE '2024-06-01' BETWEEN dbt_valid_from AND COALESCE(dbt_valid_to, '9999-12-31')
+    o.order_id,
+    o.customer_id,
+    o.amount,
+    o.order_date,
+    c.segment AS segment_at_order_time  -- segment du client AU MOMENT de la commande
+FROM {{ ref('fct_orders') }} o
+JOIN {{ ref('customers_snapshot') }} c
+    ON o.customer_id = c.customer_id
+    AND o.order_date BETWEEN c.dbt_valid_from AND COALESCE(c.dbt_valid_to, CURRENT_DATE)</code></div>
 
--- Analyse des changements de segment
+<ul>
+<li><strong>SCD Type 2 en pratique</strong> - la complexite est dans les jointures aval. Toujours joindre avec la condition temporelle : order_date BETWEEN dbt_valid_from AND COALESCE(dbt_valid_to, CURRENT_DATE)</li>
+<li><strong>Piege timestamp</strong> - si la source ne met pas updated_at a jour correctement, des changements seront manques. Verifier la fiabilite de la colonne avant de choisir la strategie timestamp</li>
+<li><strong>invalidate_hard_deletes</strong> - recommande. dbt detecte les suppressions et ferme la ligne courante avec dbt_valid_to = current_timestamp</li>
+<li><strong>Performance</strong> - les snapshots sur des tables source de plusieurs millions de lignes peuvent etre lents avec la strategie check. Privilegier timestamp quand possible</li>
+<li><strong>Snapshot testing</strong> - tester que dbt_valid_to IS NULL pour les enregistrements actifs, dbt_valid_from < dbt_valid_to pour les historiques, pas de chevauchement de periodes</li>
+</ul>
+<div class='cb'><code>-- Consommer un snapshot dbt correctement
+-- Etat ACTUEL : enregistrements dont dbt_valid_to est NULL
+SELECT customer_id, email, plan, segment, dbt_valid_from AS depuis
+FROM {{ ref('customers_snapshot') }}
+WHERE dbt_valid_to IS NULL;
+
+-- Etat HISTORIQUE : quel segment avait ce client au moment de sa commande ?
+-- Indispensable pour l attribution correcte
 SELECT
-    client_id,
-    LAG(segment) OVER (PARTITION BY client_id ORDER BY dbt_valid_from) AS ancien_segment,
-    segment AS nouveau_segment,
-    dbt_valid_from AS date_changement
-FROM {{ ref('snap_clients') }}
-WHERE segment != LAG(segment) OVER (PARTITION BY client_id ORDER BY dbt_valid_from)</code></div><h2 id='nv'><span class='sn'>6</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>SCD Type 1 et 2, snapshot dbt avec timestamp</td><td>A configuré un snapshot dbt, explique la différence SCD1 vs SCD2</td><td>Ne sait pas ce qu est un SCD</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Stratégie check, invalidate_hard_deletes, consommation avancée</td><td>A géré des suppressions avec invalidate_hard_deletes, fait des requêtes historiques</td><td>Ne sait pas ce que dbt_valid_to IS NULL signifie</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+    o.order_id, o.amount, o.order_date,
+    c.segment AS segment_au_moment_de_la_commande
+FROM {{ ref('fct_orders') }} o
+JOIN {{ ref('customers_snapshot') }} c
+    ON o.customer_id = c.customer_id
+    AND o.order_date BETWEEN c.dbt_valid_from AND COALESCE(c.dbt_valid_to, CURRENT_DATE);
+
+-- Analyser l evolution d un client
+SELECT customer_id, plan, segment, dbt_valid_from, dbt_valid_to
+FROM {{ ref('customers_snapshot') }}
+WHERE customer_id = 'CUST-42'
+ORDER BY dbt_valid_from;</code></div>
+<ul>
+<li><strong>Jointure temporelle</strong> - joindre une table de faits avec un SCD2 via la condition : event_date BETWEEN dbt_valid_from AND COALESCE(dbt_valid_to, CURRENT_DATE)</li>
+<li><strong>Performance snapshot</strong> - les snapshots sur des tables source de plusieurs millions de lignes peuvent etre lents avec la strategie check. Privilegier timestamp quand disponible</li>
+<li><strong>Snapshot testing</strong> - tester que dbt_valid_to IS NULL pour les enregistrements actifs, que dbt_valid_from est anterieur a dbt_valid_to pour les historiques</li>
+</ul>
+<h2 id='nv'><span class='sn'>6</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>SCD1 vs SCD2, configuration snapshot dbt, stratégie timestamp</td><td>Explique les 3 types de SCD, a configuré un snapshot avec stratégie timestamp, sait requêter l'état actuel</td><td>Ne sait pas ce qu'est un SCD2, n'a jamais utilisé les snapshots dbt</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Gestion des suppressions, jointures historiques, check vs timestamp, performance</td><td>Gère les hard deletes, fait des jointures temporelles pour l'attribution historique, connaît les limites de performance</td><td>Ne sait pas comment joindre une table de faits avec un SCD2 au bon moment</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

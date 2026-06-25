@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt testing avancé : singular tests, macros de test, coverage</span></div>
@@ -117,8 +117,53 @@ tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           config:
             tags: ['non_critical']
-            severity: warn</code></div><h2 id='debug'><span class='sn'>6</span>Debugger les tests qui échouent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment investiguer un test dbt qui échoue en production ?</p></div><ul><li><strong>dbt test --store-failures</strong> — stocker les lignes en échec dans une table de debug dans le warehouse</li><li><strong>--select model_name</strong> — relancer uniquement le test qui pose problème</li><li><strong>dbt compile --select test_name</strong> — voir le SQL généré par le test sans l exécuter</li><li><strong>Requêter la table failures</strong> — SELECT * FROM dbt_test__audit.not_null_fct_orders_order_id</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tests YAML, dbt-expectations, singular tests</td><td>A écrit des singular tests, utilise dbt-expectations</td><td>N utilise que not_null et unique</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Macros de test, coverage strategy, CI optimisé</td><td>A créé des macros de test réutilisables, stratégie de coverage documentée</td><td>Ne sait pas écrire une macro de test</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+            severity: warn</code></div><h2 id='debug'><span class='sn'>6</span>Debugger les tests qui échouent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment investiguer un test dbt qui échoue en production ?</p></div><ul><li><strong>dbt test --store-failures</strong> — stocker les lignes en échec dans une table de debug dans le warehouse</li><li><strong>--select model_name</strong> — relancer uniquement le test qui pose problème</li><li><strong>dbt compile --select test_name</strong> — voir le SQL généré par le test sans l exécuter</li><li><strong>Requêter la table failures</strong> — SELECT * FROM dbt_test__audit.not_null_fct_orders_order_id</li></ul>
+<div class='cb'><code># packages.yml - extensions de test
+packages:
+  - package: calogica/dbt_expectations
+    version: [">=0.9.0", "<0.10.0"]
+  - package: elementary-data/elementary
+    version: [">=0.10.0"]
+
+# models/marts/schema.yml - tests avancés
+models:
+  - name: fct_orders
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 1000
+          max_value: 10000000
+    columns:
+      - name: amount
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100000
+          - dbt_expectations.expect_column_mean_to_be_between:
+              min_value: 40
+              max_value: 200
+      - name: email
+        tests:
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: ".+@.+\..+"
+
+# Lancer uniquement les tests des modèles modifiés (CI efficace)
+dbt test --select state:modified+ --defer --state ./prod-artifacts</code></div>
+<ul>
+<li><strong>dbt-expectations</strong> — 50+ tests avancés : distributions, regex, comparaisons entre tables, pourcentages de valeurs nulles. Le package le plus utile après le core dbt</li>
+<li><strong>Severity</strong> — <code>error</code> (bloque le pipeline) vs <code>warn</code> (alerte sans bloquer). Règle : warn pour les métriques métier qui peuvent fluctuer, error pour les contraintes techniques absolues</li>
+<li><strong>Elementary</strong> — package dbt qui génère un rapport de qualité et détecte automatiquement les anomalies statistiques (volume, distributions) sans écrire de tests manuellement</li>
+<li><strong>Store failures</strong> — <code>store_failures: true</code> dans dbt_project.yml stocke les lignes échouées dans une table pour diagnostic. Indispensable en production</li>
+<li><strong>Source freshness</strong> — configurer <code>freshness</code> dans sources.yml pour alerter si la source n'a pas été mise à jour depuis N heures. Premier signal d'un pipeline upstream en panne</li>
+</ul>
+<ul>
+<li><strong>dbt-expectations</strong> - 50+ tests avances : distributions, regex, comparaisons entre tables. Le package le plus utile apres le core dbt</li>
+<li><strong>Severity</strong> - error (bloque le pipeline) vs warn (alerte sans bloquer). Regle : warn pour les metriques metier qui peuvent fluctuer, error pour les contraintes techniques absolues</li>
+<li><strong>Elementary</strong> - package dbt qui genere un rapport de qualite et detecte automatiquement les anomalies statistiques sans tests manuels</li>
+<li><strong>Store failures</strong> - store_failures: true stocke les lignes echouees dans une table pour diagnostic. Indispensable en production pour deboguer rapidement</li>
+<li><strong>Source freshness</strong> - configurer freshness dans sources.yml pour alerter si la source n a pas ete mise a jour depuis N heures. Premier signal d un pipeline upstream en panne</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tests YAML, dbt-expectations, singular tests</td><td>A écrit des singular tests, utilise dbt-expectations</td><td>N utilise que not_null et unique</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Macros de test, coverage strategy, CI optimisé</td><td>A créé des macros de test réutilisables, stratégie de coverage documentée</td><td>Ne sait pas écrire une macro de test</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

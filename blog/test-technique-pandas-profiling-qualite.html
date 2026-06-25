@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique pandas profiling et diagnostic qualité des données</span></div>
@@ -130,8 +130,28 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 vif = pd.DataFrame()
 vif['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
 vif['feature'] = X.columns
-# VIF > 10 : multicolinéarité problématique</code></div><h2 id='rapport'><span class='sn'>6</span>Produire un rapport de qualité actionnable</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un rapport de qualité de données actionnable ?</p></div><ul><li><strong>Structure recommandée</strong> — résumé exécutif (nombre de problèmes critiques), puis détail par dimension de qualité</li><li><strong>Priorisation</strong> — distinguer bloquant (ne peut pas utiliser la donnée), majeur (biais possible), mineur (à surveiller)</li><li><strong>Recommandations concrètes</strong> — pour chaque problème : action recommandée, responsable, délai</li><li><strong>Format</strong> — notebook Jupyter exporté en HTML, ou rapport YData Profiling, ou dashboard Metabase</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>df.describe(), valeurs manquantes, doublons</td><td>Fait une exploration systématique avant de modéliser</td><td>Commence à modéliser sans explorer les données</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>YData Profiling, IQR outliers, corrélations</td><td>Utilise YData Profiling, distingue MCAR/MAR/MNAR, détecte les outliers</td><td>Ne sait pas ce que sont MCAR et MAR</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Isolation Forest, VIF, rapport de qualité structuré</td><td>Utilise des méthodes multivariées, produit un rapport avec recommandations</td><td>N a jamais produit de rapport de qualité de données</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Analyst ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# VIF > 10 : multicolinéarité problématique</code></div><h2 id='rapport'><span class='sn'>6</span>Produire un rapport de qualité actionnable</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un rapport de qualité de données actionnable ?</p></div><ul><li><strong>Structure recommandée</strong> — résumé exécutif (nombre de problèmes critiques), puis détail par dimension de qualité</li><li><strong>Priorisation</strong> — distinguer bloquant (ne peut pas utiliser la donnée), majeur (biais possible), mineur (à surveiller)</li><li><strong>Recommandations concrètes</strong> — pour chaque problème : action recommandée, responsable, délai</li><li><strong>Format</strong> — notebook Jupyter exporté en HTML, ou rapport YData Profiling, ou dashboard Metabase</li></ul><div class='cb'><code>import pandas as pd
+from ydata_profiling import ProfileReport
+
+df = pd.read_csv('orders.csv')
+
+# Rapport complet de qualite
+profile = ProfileReport(df, title='Orders Quality Report', explorative=True)
+profile.to_file('quality_report.html')
+
+# Comparaison deux periodes (drift detection)
+profile_week1 = ProfileReport(df_week1, title='Week 1')
+profile_week2 = ProfileReport(df_week2, title='Week 2')
+comparison = profile_week1.compare(profile_week2)
+comparison.to_file('drift_comparison.html')
+
+# Verifications manuelles cles
+print(df.dtypes)
+print(df.isnull().sum() / len(df))  # taux de nullite par colonne
+print(df.describe())  # stats descriptives
+print(df.duplicated().sum())  # doublons</code></div><ul><li><strong>ydata-profiling</strong> - remplace pandas-profiling (abandonne). Genere automatiquement un rapport HTML : distributions, correlations, valeurs manquantes, outliers, doublons</li><li><strong>Correlations dangereuses</strong> - une correlation > 0.95 entre deux features = potentielle colinearite. A identifier avant d envoyer dans un modele ML</li><li><strong>Profiling en CI</strong> - generer le profil sur un echantillon a chaque run dbt. Detecter les changements de distribution avant qu ils n atteignent les dashboards</li><li><strong>Great Expectations integration</strong> - exporter les expectations depuis le profil ydata-profiling. Transformer les observations en regles de validation automatiques</li><li><strong>Sampling strategique</strong> - sur > 10M lignes, profiler un echantillon stratifie (par date, region) plutot que les premieres lignes. Evite les biais de position</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>df.describe(), valeurs manquantes, doublons</td><td>Fait une exploration systématique avant de modéliser</td><td>Commence à modéliser sans explorer les données</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>YData Profiling, IQR outliers, corrélations</td><td>Utilise YData Profiling, distingue MCAR/MAR/MNAR, détecte les outliers</td><td>Ne sait pas ce que sont MCAR et MAR</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Isolation Forest, VIF, rapport de qualité structuré</td><td>Utilise des méthodes multivariées, produit un rapport avec recommandations</td><td>N a jamais produit de rapport de qualité de données</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

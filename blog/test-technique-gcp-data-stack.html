@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique GCP stack data : BigQuery, Dataflow, Pub/Sub, Vertex AI</span></div>
@@ -95,8 +95,46 @@ def publish_order_event(order: dict):
 
 # Pattern typique : API → Pub/Sub → Dataflow → BigQuery
 # Pub/Sub garantit la livraison at-least-once
-# Dataflow déduplique avec les windows et watermarks</code></div><ul><li><strong>At-least-once</strong> — Pub/Sub garantit la livraison mais peut livrer en double. Gérer la déduplication en aval</li><li><strong>Pull vs Push</strong> — Pull : le subscriber tire les messages. Push : Pub/Sub envoie vers un endpoint HTTP</li><li><strong>Dead Letter Topic</strong> — messages non traités après N tentatives → DLT pour investigation</li></ul><h2 id='composer'><span class='sn'>5</span>Cloud Composer : Airflow managé GCP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi Cloud Composer plutôt qu Airflow self-hosted sur K8s ?</p></div><ul><li><strong>Cloud Composer</strong> — Airflow entièrement managé sur GKE. Pas de maintenance du cluster, mises à jour automatiques</li><li><strong>Intégrations GCP natives</strong> — BigQueryOperator, DataflowOperator, GCSOperator, VertexAIOperator pré-configurés</li><li><strong>Workload Identity</strong> — les DAGs s authentifient sur GCP sans credentials explicites</li><li><strong>Coût</strong> — plus cher que self-hosted mais zéro maintenance. Composer 2 (basé sur KubernetesExecutor) est plus économique</li></ul><h2 id='vertex'><span class='sn'>6</span>Vertex AI : plateforme ML GCP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels composants Vertex AI utilisez-vous dans un projet ML end-to-end ?</p></div><ul><li><strong>Vertex AI Training</strong> — entraîner des modèles avec GPU managés, monitoring intégré, hyperparameter tuning</li><li><strong>Vertex AI Model Registry</strong> — versionner et promouvoir les modèles en production</li><li><strong>Vertex AI Endpoints</strong> — déployer un modèle comme API REST avec autoscaling</li><li><strong>Feature Store</strong> — stocker et partager les features ML entre projets</li><li><strong>Vertex AI Pipelines</strong> — orchestrer les pipelines ML avec Kubeflow Pipelines ou TFX</li><li><strong>BigQuery ML</strong> — entraîner directement dans BigQuery pour les modèles simples</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>BigQuery, GCS, Cloud Composer, IAM basique</td><td>A déployé des pipelines sur Cloud Composer, optimise BigQuery avec partitionnement</td><td>Ne sait pas ce qu est Workload Identity sur GCP</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Dataflow, Pub/Sub, Vertex AI, architecture end-to-end</td><td>A construit un pipeline streaming Pub/Sub → Dataflow → BigQuery, connaît Vertex AI</td><td>Ne sait pas la différence entre Dataflow et Spark/Dataproc</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer GCP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Dataflow déduplique avec les windows et watermarks</code></div><ul><li><strong>At-least-once</strong> — Pub/Sub garantit la livraison mais peut livrer en double. Gérer la déduplication en aval</li><li><strong>Pull vs Push</strong> — Pull : le subscriber tire les messages. Push : Pub/Sub envoie vers un endpoint HTTP</li><li><strong>Dead Letter Topic</strong> — messages non traités après N tentatives → DLT pour investigation</li></ul><h2 id='composer'><span class='sn'>5</span>Cloud Composer : Airflow managé GCP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi Cloud Composer plutôt qu Airflow self-hosted sur K8s ?</p></div><ul><li><strong>Cloud Composer</strong> — Airflow entièrement managé sur GKE. Pas de maintenance du cluster, mises à jour automatiques</li><li><strong>Intégrations GCP natives</strong> — BigQueryOperator, DataflowOperator, GCSOperator, VertexAIOperator pré-configurés</li><li><strong>Workload Identity</strong> — les DAGs s authentifient sur GCP sans credentials explicites</li><li><strong>Coût</strong> — plus cher que self-hosted mais zéro maintenance. Composer 2 (basé sur KubernetesExecutor) est plus économique</li></ul><h2 id='vertex'><span class='sn'>6</span>Vertex AI : plateforme ML GCP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels composants Vertex AI utilisez-vous dans un projet ML end-to-end ?</p></div><ul><li><strong>Vertex AI Training</strong> — entraîner des modèles avec GPU managés, monitoring intégré, hyperparameter tuning</li><li><strong>Vertex AI Model Registry</strong> — versionner et promouvoir les modèles en production</li><li><strong>Vertex AI Endpoints</strong> — déployer un modèle comme API REST avec autoscaling</li><li><strong>Feature Store</strong> — stocker et partager les features ML entre projets</li><li><strong>Vertex AI Pipelines</strong> — orchestrer les pipelines ML avec Kubeflow Pipelines ou TFX</li><li><strong>BigQuery ML</strong> — entraîner directement dans BigQuery pour les modèles simples</li></ul>
+<div class='cb'><code># GCP Data Stack avec Terraform
+resource "google_bigquery_dataset" "analytics" {
+  dataset_id = "analytics_prod"
+  location   = "EU"
+  labels     = { env = "production", team = "data" }
+}
+
+resource "google_dataflow_job" "streaming" {
+  name              = "orders-streaming"
+  template_gcs_path = "gs://dataflow-templates/latest/PubSub_to_BigQuery"
+  parameters = {
+    inputTopic      = "projects/${var.project}/topics/orders"
+    outputTableSpec = "${var.project}:analytics.orders_stream"
+  }
+}
+
+resource "google_composer_environment" "orchestration" {
+  name   = "data-platform"
+  region = "europe-west1"
+  config {
+    software_config {
+      airflow_config_overrides = {
+        "core-dags_are_paused_at_creation" = "True"
+      }
+    }
+    workloads_config {
+      worker { min_count = 1; max_count = 6 }
+    }
+  }
+}</code></div>
+<ul>
+<li><strong>Pub/Sub vers BigQuery</strong> - pattern streaming natif GCP. Pub/Sub bufferise, Dataflow transforme, BigQuery stocke. Latence quelques secondes end-to-end</li>
+<li><strong>Cloud Composer</strong> - Airflow manage sur GCP. Zero ops scheduler, upgrades automatiques. Couteux mais economise une FTE de maintenance infra</li>
+<li><strong>Dataproc vs Dataflow</strong> - Dataproc : cluster Spark/Hadoop manage. Dataflow : Apache Beam manage, autoscaling serverless. Privilegier Dataflow pour les nouveaux projets</li>
+<li><strong>Vertex AI</strong> - plateforme ML GCP : Feature Store, training pipelines, model serving, monitoring. Alternative managee a MLflow + Kubernetes</li>
+<li><strong>Data Catalog GCP</strong> - inventaire automatique BigQuery, GCS, Pub/Sub. Policy tags pour la gouvernance et la conformite RGPD</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>BigQuery, GCS, Cloud Composer, IAM basique</td><td>A déployé des pipelines sur Cloud Composer, optimise BigQuery avec partitionnement</td><td>Ne sait pas ce qu est Workload Identity sur GCP</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Dataflow, Pub/Sub, Vertex AI, architecture end-to-end</td><td>A construit un pipeline streaming Pub/Sub → Dataflow → BigQuery, connaît Vertex AI</td><td>Ne sait pas la différence entre Dataflow et Spark/Dataproc</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer GCP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

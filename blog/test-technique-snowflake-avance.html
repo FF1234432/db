@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Snowflake avance : Streams, Tasks, Dynamic Tables</span></div>
@@ -29,53 +29,177 @@
 <li><a href="#snowpark">Snowpark Python</a></li>
 <li><a href="#cost">Optimisation des couts</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><p>Snowflake n est pas juste un data warehouse SQL. En entretien Senior, on evalue Streams pour le CDC, Tasks pour l orchestration legere, et Snowpark pour le Python dans Snowflake.</p><h2 id='streams'><span class='sn'>1</span>Streams : CDC natif dans Snowflake</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un Stream Snowflake ? Quelle est la difference entre APPEND_ONLY et DEFAULT ?</p></div><div class='cb'><code>-- Creer un stream sur une table source
+<div class="ab">
+<h2 id='streams'><span class='sn'>1</span>Streams : CDC natif dans Snowflake</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce qu'un Stream Snowflake ? Quelle est la différence entre APPEND_ONLY et DEFAULT ?</p></div>
+<div class='cb'><code>-- Créer un stream sur une table source
 CREATE STREAM orders_stream ON TABLE orders
     APPEND_ONLY = FALSE;  -- capture INSERT + UPDATE + DELETE
 
--- Consommer le stream dans un merge
+-- APPEND_ONLY = TRUE : capture uniquement les INSERT (plus performant)
+-- APPEND_ONLY = FALSE : capture INSERT + UPDATE + DELETE via METADATA$ACTION
+
+-- Consommer le stream dans un MERGE
 MERGE INTO orders_target AS t
 USING (
     SELECT order_id, customer_id, amount,
            METADATA$ACTION,      -- INSERT ou DELETE
-           METADATA$ISUPDATE     -- True si c est un update
+           METADATA$ISUPDATE     -- True si c'est un UPDATE (représenté par DELETE+INSERT)
     FROM orders_stream
-    WHERE METADATA$ACTION = 'INSERT'
 ) AS s ON t.order_id = s.order_id
-WHEN MATCHED THEN UPDATE SET t.amount = s.amount
-WHEN NOT MATCHED THEN INSERT (order_id, customer_id, amount)
-VALUES (s.order_id, s.customer_id, s.amount);
+WHEN MATCHED AND s.METADATA$ACTION = 'DELETE' AND NOT s.METADATA$ISUPDATE 
+    THEN DELETE
+WHEN MATCHED AND s.METADATA$ACTION = 'INSERT' AND s.METADATA$ISUPDATE 
+    THEN UPDATE SET t.amount = s.amount, t.customer_id = s.customer_id
+WHEN NOT MATCHED AND s.METADATA$ACTION = 'INSERT' 
+    THEN INSERT (order_id, customer_id, amount) VALUES (s.order_id, s.customer_id, s.amount);
 
--- Le stream se vide automatiquement apres consommation</code></div><h2 id='tasks'><span class='sn'>2</span>Tasks : orchestration native Snowflake</h2><div class='cb'><code>-- Task planifiee toutes les heures
+-- Vérifier si le stream a des données à consommer
+SELECT SYSTEM$STREAM_HAS_DATA('orders_stream');</code></div>
+<ul>
+<li><strong>Streams sont des pointeurs</strong> — ils pointent sur un offset dans l'historique de la table (comme Kafka). Consommer le stream avance l'offset</li>
+<li><strong>Multiple streams</strong> — plusieurs streams peuvent pointer sur la même table indépendamment</li>
+<li><strong>Expiration</strong> — si un stream n'est pas consommé dans la fenêtre Time Travel (7-90 jours), il expire et doit être recréé</li>
+</ul>
+
+<h2 id='tasks'><span class='sn'>2</span>Tasks : orchestration native Snowflake</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment combinez-vous Streams et Tasks pour un pipeline CDC automatique ?</p></div>
+<div class='cb'><code>-- Task planifiée toutes les heures
 CREATE OR REPLACE TASK refresh_aggregates
     WAREHOUSE = 'ETL_WH'
     SCHEDULE = 'USING CRON 0 * * * * UTC'
+    ERROR_INTEGRATION = 'my_notification_int'  -- alerte en cas d'erreur
 AS
-    INSERT INTO daily_revenue
-    SELECT DATE(order_date), SUM(amount)
-    FROM orders
-    WHERE order_date >= DATEADD('day', -1, CURRENT_DATE)
-    GROUP BY 1;
+    CALL refresh_daily_revenue();
 
 ALTER TASK refresh_aggregates RESUME;
 
--- Task declenchee par un stream (quand nouvelles donnees)
-CREATE TASK process_new_orders
+-- Task déclenchée automatiquement par un Stream (quand nouvelles données)
+CREATE OR REPLACE TASK process_new_orders
     WAREHOUSE = 'ETL_WH'
+    AFTER refresh_aggregates  -- task parente (DAG de tasks)
     WHEN SYSTEM$STREAM_HAS_DATA('orders_stream')
 AS
-    CALL process_orders_proc();</code></div><h2 id='dynamic'><span class='sn'>3</span>Dynamic Tables : incremental automatique</h2><ul><li><strong>Dynamic Tables</strong> — tables materialises qui se rafraichissent automatiquement quand les sources changent. Snowflake calcule le plan incremental tout seul</li><li><strong>Avantages vs Materialized Views</strong> — supporte les JOINs, les sous-requetes, plus expressif. Cible pour dbt + Snowflake en 2025</li><li><strong>TARGET_LAG</strong> — definir le delai acceptable entre les donnees sources et la Dynamic Table</li></ul><h2 id='clone'><span class='sn'>4</span>Zero-Copy Cloning</h2><div class='cb'><code>-- Cloner une base entiere en quelques secondes, sans copier les donnees
-CREATE DATABASE prod_clone CLONE production;
--- Utilise pour : tests de migration, environnements de dev, snapshots rapides
+    MERGE INTO orders_processed AS t
+    USING orders_stream AS s ON t.order_id = s.order_id
+    WHEN MATCHED THEN UPDATE SET t.amount = s.amount
+    WHEN NOT MATCHED THEN INSERT VALUES (s.order_id, s.customer_id, s.amount);
 
--- Time Travel : requeter les donnees passees
-SELECT * FROM orders AT(TIMESTAMP => '2025-01-01 12:00:00'::TIMESTAMP_TZ);
-SELECT * FROM orders BEFORE(STATEMENT => 'last_query_id');
+-- Surveiller les tasks
+SELECT *
+FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY(
+    SCHEDULED_TIME_RANGE_START => DATEADD('hour', -24, CURRENT_TIMESTAMP)
+))
+ORDER BY SCHEDULED_TIME DESC;</code></div>
 
--- Undrop : restaurer une table supprimee
+<h2 id='dynamic'><span class='sn'>3</span>Dynamic Tables : incrémental automatique</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce qu'une Dynamic Table ? Quand l'utiliser à la place d'un modèle dbt ?</p></div>
+<div class='cb'><code>-- Créer une Dynamic Table
+CREATE OR REPLACE DYNAMIC TABLE analytics.daily_revenue
+    TARGET_LAG = '1 hour'  -- fraîcheur souhaitée
+    WAREHOUSE = ETL_WH
+AS
+SELECT
+    DATE(order_date) AS day,
+    region,
+    SUM(amount) AS revenue,
+    COUNT(*) AS order_count
+FROM raw.orders
+GROUP BY 1, 2;
+
+-- Snowflake gère automatiquement le refresh incrémental
+-- Pas besoin de scheduler externe ni de logique incremental manuelle
+
+-- Vérifier le statut
+SHOW DYNAMIC TABLES LIKE 'daily_revenue';</code></div>
+<ul>
+<li><strong>TARGET_LAG</strong> — délai acceptable entre les sources et la Dynamic Table. '1 hour' = données fraîches de moins d'1h</li>
+<li><strong>vs Materialized Views</strong> — les Dynamic Tables supportent les JOINs complexes, les CTEs, les sous-requêtes. Bien plus expressif</li>
+<li><strong>vs dbt incremental</strong> — les Dynamic Tables sont automatiques (pas de scheduler). dbt incremental nécessite une orchestration externe</li>
+<li><strong>Coût</strong> — Snowflake facture le compute de refresh. Un TARGET_LAG court = plus de refreshes = plus de coût</li>
+</ul>
+
+<h2 id='clone'><span class='sn'>4</span>Zero-Copy Cloning</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que le Zero-Copy Cloning ? Comment l'utilisez-vous en pratique ?</p></div>
+<div class='cb'><code>-- Cloner une base entière en quelques secondes, sans copier les données
+CREATE DATABASE staging_clone CLONE production;
+-- Les données ne sont PAS dupliquées. Partage des micro-partitions.
+-- Écriture en staging → copie uniquement des partitions modifiées (copy-on-write)
+
+-- Use cases :
+-- 1. Test de migration sans risque
+-- 2. Environnement de dev avec données de production
+-- 3. Snapshot rapide avant une opération risquée
+
+-- Time Travel : requêter les données passées
+SELECT * FROM orders AT(TIMESTAMP => '2025-01-01 00:00:00'::TIMESTAMP_TZ);
+SELECT * FROM orders BEFORE(STATEMENT => 'last_bad_query_id');
+
+-- Restaurer une table depuis Time Travel
+CREATE TABLE orders_restored CLONE orders
+    AT(TIMESTAMP => '2025-01-01 00:00:00'::TIMESTAMP_TZ);
+
+-- Undrop : restaurer une table supprimée (dans la fenêtre Time Travel)
 DROP TABLE orders;
-UNDROP TABLE orders;  -- fonctionne dans la fenetre Time Travel (7-90 jours)</code></div><h2 id='snowpark'><span class='sn'>5</span>Snowpark Python : Python dans Snowflake</h2><ul><li><strong>Snowpark</strong> — executer du Python directement dans Snowflake. Les calculs se font dans Snowflake, pas sur le client</li><li><strong>DataFrame API</strong> — similaire a pandas mais traduit en SQL Snowflake. Tout s execute dans le warehouse</li><li><strong>UDFs et UDTFs</strong> — fonctions Python deployees dans Snowflake, appelables en SQL</li><li><strong>Snowpark ML</strong> — entrainer et scorer des modeles ML dans Snowflake sans sortir les donnees</li></ul><h2 id='cost'><span class='sn'>6</span>Optimisation des couts Snowflake</h2><ul><li><strong>Warehouse sizing</strong> — commencer petit, scaler vers le haut uniquement si les requetes sont lentes (XS suffit pour la plupart des requetes)</li><li><strong>Auto-suspend</strong> — toujours configurer un auto-suspend (1-5 minutes) pour eviter les warehouses qui tournent inutilement</li><li><strong>Clustering keys</strong> — definir des clustering keys sur les grandes tables tres souvent filtrees sur les memes colonnes</li><li><strong>Result cache</strong> — les resultats de requetes sont mis en cache 24h. Exploiter le cache en standardisant les requetes</li><li><strong>Query Profile</strong> — diagnostiquer les requetes lentes dans l interface Snowflake</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Streams basiques, Tasks, Time Travel, Zero-Copy Clone</td><td>A configure un Stream + Task pour du CDC, a utilise Time Travel</td><td>Ne sait pas ce qu est un Stream Snowflake</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Dynamic Tables, Snowpark, optimisation couts, architecture avancee</td><td>A deploye des Dynamic Tables, utilise Snowpark, optimise les couts warehouse</td><td>N a jamais touche a Snowpark ni aux Dynamic Tables</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+UNDROP TABLE orders;  -- fonctionne pendant 7 à 90 jours selon la config</code></div>
+
+<h2 id='snowpark'><span class='sn'>5</span>Snowpark Python : Python dans Snowflake</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce que Snowpark ? Quand l'utiliser à la place d'un script Python externe ?</p></div>
+<div class='cb'><code>from snowflake.snowpark import Session
+from snowflake.snowpark.functions import col, sum as sum_, when
+
+session = Session.builder.configs({
+    "account": "mon-compte",
+    "user": "data_engineer",
+    "private_key": load_private_key()
+}).create()
+
+# DataFrame API Snowpark - s'exécute dans Snowflake (pas en local)
+df = session.table("raw.orders")
+
+result = (
+    df.filter(col("status") == "completed")
+    .group_by("region")
+    .agg(
+        sum_("amount").alias("total_revenue"),
+        count("*").alias("order_count")
+    )
+    .sort("total_revenue", ascending=False)
+)
+
+result.write.save_as_table("analytics.revenue_by_region", mode="overwrite")</code></div>
+<ul>
+<li><strong>Exécution dans Snowflake</strong> — le DataFrame Snowpark se traduit en SQL qui s'exécute dans le warehouse. Les données ne sortent pas</li>
+<li><strong>UDFs Python</strong> — déployer des fonctions Python dans Snowflake, appelables en SQL depuis n'importe quel outil</li>
+<li><strong>Snowpark ML</strong> — entraîner des modèles sklearn/XGBoost directement dans Snowflake avec Snowpark</li>
+</ul>
+
+<h2 id='cost'><span class='sn'>6</span>Optimisation des coûts Snowflake</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont vos pratiques pour optimiser les coûts Snowflake en production ?</p></div>
+<ul>
+<li><strong>Auto-suspend obligatoire</strong> — 1-2 minutes pour les warehouses interactifs, 5 minutes pour les ETL. Ne jamais laisser un warehouse sans auto-suspend</li>
+<li><strong>Warehouse sizing</strong> — commencer XS, scaler uniquement si les requêtes sont lentes. Un warehouse M consomme 8x plus qu'un XS pour la même requête simple</li>
+<li><strong>Clustering keys</strong> — sur les grandes tables (&gt;100GB) filtrées systématiquement sur les mêmes colonnes (date, region)</li>
+<li><strong>Result cache</strong> — résultats mis en cache 24h si la table n'a pas changé. Standardiser les requêtes BI pour exploiter le cache</li>
+<li><strong>Resource monitors</strong> — alertes et suspensions automatiques quand le budget mensuel de credits est atteint</li>
+</ul>
+<div class='cb'><code>-- Resource monitor : alerter à 80% et suspendre à 100% du budget mensuel
+CREATE OR REPLACE RESOURCE MONITOR monthly_budget
+    WITH CREDIT_QUOTA = 500  -- 500 crédits/mois
+    TRIGGERS
+        ON 80 PERCENT DO NOTIFY
+        ON 100 PERCENT DO SUSPEND_IMMEDIATE;
+
+ALTER WAREHOUSE ETL_WH SET RESOURCE_MONITOR = monthly_budget;</code></div>
+
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Streams basiques, Tasks, Time Travel, Zero-Copy Clone</td><td>A configuré un Stream + Task pour du CDC, a utilisé Time Travel pour débugger</td><td>Ne sait pas ce qu'est un Stream Snowflake</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Dynamic Tables, Snowpark, optimisation coûts, resource monitors</td><td>A déployé des Dynamic Tables, utilise Snowpark, a mis en place un resource monitor</td><td>N'a jamais touché à Snowpark ni aux Dynamic Tables</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

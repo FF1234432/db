@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique LangChain pour les Data Engineers : agents, chains, tools</span></div>
@@ -73,8 +73,52 @@ def search_web(query: str) -> str:
 
 tools = [query_sales_db, search_web]
 agent = create_tool_calling_agent(llm, tools, prompt)
-executor = AgentExecutor(agent=agent, tools=tools, verbose=True)</code></div><h2 id='memory'><span class='sn'>4</span>Memoire et gestion du contexte</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gerez-vous la memoire d un chatbot pour maintenir le contexte de la conversation ?</p></div><ul><li><strong>ConversationBufferMemory</strong> — stocke toute la conversation. Simple mais consomme des tokens</li><li><strong>ConversationSummaryMemory</strong> — resume l historique pour economiser les tokens</li><li><strong>ConversationBufferWindowMemory</strong> — garde seulement les N derniers echanges</li><li><strong>Persistance</strong> — Redis, PostgreSQL, MongoDB pour la memoire persistante entre sessions</li><li><strong>LangGraph checkpointer</strong> — persistance du state dans les workflows LangGraph</li></ul><h2 id='langgraph'><span class='sn'>5</span>LangGraph : agents multi-etapes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous LangGraph plutot qu un simple agent LangChain ?</p></div><ul><li><strong>LangGraph</strong> — framework pour les agents avec des workflows cycliques et conditionnels. State machine pour les LLMs</li><li><strong>Quand</strong> — workflows avec boucles (retry, self-correction), decision conditionnelle, agents paralleles, human-in-the-loop</li><li><strong>Exemple</strong> — agent qui ecrit du code, l execute, analyse l erreur, corrige, re-execute jusqu au succes</li><li><strong>Human-in-the-loop</strong> — pause du workflow pour validation humaine avant certaines actions critiques</li></ul><h2 id='langsmith'><span class='sn'>6</span>LangSmith : observabilite des LLMs</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment deboguez-vous et monitorez-vous un agent LangChain en production ?</p></div><ul><li><strong>LangSmith</strong> — plateforme de tracing et d evaluation pour les applications LangChain</li><li><strong>Tracing</strong> — voir chaque appel LLM, chaque tool call, les tokens consommes, la latence</li><li><strong>Evaluation</strong> — noter les reponses (automatique ou humaine) pour mesurer la qualite</li><li><strong>Datasets</strong> — constituer des jeux de test pour les regressions</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>LCEL, chains simples, RAG avec LangChain</td><td>A construit un RAG avec LCEL, connait la syntaxe |</td><td>N utilise que les anciennes LLMChain, ne connait pas LCEL</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Agents avec tools, LangGraph, LangSmith, production</td><td>A deploye un agent avec tools custom, a trace avec LangSmith, connait LangGraph</td><td>N a fait que des POCs, ne sait pas monitorer un agent en production</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil GenAI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True)</code></div><h2 id='memory'><span class='sn'>4</span>Memoire et gestion du contexte</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gerez-vous la memoire d un chatbot pour maintenir le contexte de la conversation ?</p></div><ul><li><strong>ConversationBufferMemory</strong> — stocke toute la conversation. Simple mais consomme des tokens</li><li><strong>ConversationSummaryMemory</strong> — resume l historique pour economiser les tokens</li><li><strong>ConversationBufferWindowMemory</strong> — garde seulement les N derniers echanges</li><li><strong>Persistance</strong> — Redis, PostgreSQL, MongoDB pour la memoire persistante entre sessions</li><li><strong>LangGraph checkpointer</strong> — persistance du state dans les workflows LangGraph</li></ul><h2 id='langgraph'><span class='sn'>5</span>LangGraph : agents multi-etapes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous LangGraph plutot qu un simple agent LangChain ?</p></div><ul><li><strong>LangGraph</strong> — framework pour les agents avec des workflows cycliques et conditionnels. State machine pour les LLMs</li><li><strong>Quand</strong> — workflows avec boucles (retry, self-correction), decision conditionnelle, agents paralleles, human-in-the-loop</li><li><strong>Exemple</strong> — agent qui ecrit du code, l execute, analyse l erreur, corrige, re-execute jusqu au succes</li><li><strong>Human-in-the-loop</strong> — pause du workflow pour validation humaine avant certaines actions critiques</li></ul><h2 id='langsmith'><span class='sn'>6</span>LangSmith : observabilite des LLMs</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment deboguez-vous et monitorez-vous un agent LangChain en production ?</p></div><ul><li><strong>LangSmith</strong> — plateforme de tracing et d evaluation pour les applications LangChain</li><li><strong>Tracing</strong> — voir chaque appel LLM, chaque tool call, les tokens consommes, la latence</li><li><strong>Evaluation</strong> — noter les reponses (automatique ou humaine) pour mesurer la qualite</li><li><strong>Datasets</strong> — constituer des jeux de test pour les regressions</li></ul>
+<div class='cb'><code>from langchain_anthropic import ChatAnthropic
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.vectorstores import Qdrant
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+
+# RAG avec LCEL (LangChain Expression Language)
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Qdrant.from_existing_collection("knowledge_base", embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Réponds en te basant uniquement sur ce contexte:
+{context}"),
+    ("human", "{question}")
+])
+
+llm = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+
+# Chain composable (LCEL)
+chain = (
+    RunnableParallel(context=retriever, question=RunnablePassthrough())
+    | prompt
+    | llm
+)
+
+# Avec historique de conversation
+from langchain_core.chat_history import InMemoryChatMessageHistory
+chain_with_history = chain.with_types(input_type=str)     .with_config({"run_name": "RAG_conversation"})</code></div>
+<ul>
+<li><strong>LCEL</strong> — LangChain Expression Language : syntaxe pipe pour composer des chains. Plus lisible et plus performant que les classes héritées (LLMChain deprecated)</li>
+<li><strong>LangSmith</strong> — tracing et évaluation des chains. Indispensable en prod pour débugger les hallucinations et mesurer faithfulness/relevancy automatiquement</li>
+<li><strong>Agents vs Chains</strong> — Chain : séquence fixe d'étapes. Agent : le LLM décide dynamiquement quels outils appeler (search, SQL, API). Plus puissant mais moins prévisible</li>
+<li><strong>Alternatives</strong> — LlamaIndex (focus RAG, plus simple à déployer), LangGraph (graphs d'agents avec état), code Python pur (plus de contrôle, moins de magie)</li>
+<li><strong>Memory stratégies</strong> — ConversationBufferMemory (tout garder), ConversationSummaryMemory (résumer l'historique), RedisChatMessageHistory (persistance multi-sessions)</li>
+</ul>
+<ul>
+<li><strong>LCEL (LangChain Expression Language)</strong> - syntaxe pipe pour composer des chains. Plus lisible et plus performant que les classes heritees (LLMChain deprecated en 2024)</li>
+<li><strong>LangSmith</strong> - tracing et evaluation des chains. Indispensable en prod pour debugger les hallucinations et mesurer faithfulness/relevancy automatiquement</li>
+<li><strong>Agents vs Chains</strong> - Chain : sequence fixe d etapes. Agent : le LLM decide dynamiquement quels outils appeler. Plus puissant mais moins predictible</li>
+<li><strong>Alternatives</strong> - LlamaIndex (focus RAG, plus simple), LangGraph (graphs d agents avec etat), code Python pur (plus de controle, moins de magie noire)</li>
+<li><strong>Memory strategies</strong> - ConversationBufferMemory (tout garder), ConversationSummaryMemory (resumer l historique), RedisChatMessageHistory (persistance multi-sessions)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>LCEL, chains simples, RAG avec LangChain</td><td>A construit un RAG avec LCEL, connait la syntaxe |</td><td>N utilise que les anciennes LLMChain, ne connait pas LCEL</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Agents avec tools, LangGraph, LangSmith, production</td><td>A deploye un agent avec tools custom, a trace avec LangSmith, connait LangGraph</td><td>N a fait que des POCs, ne sait pas monitorer un agent en production</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un profil GenAI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

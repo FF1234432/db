@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Apache Kafka : topics, partitions, consumers, Kafka Streams</span></div>
@@ -29,20 +29,128 @@
 <li><a href="#schema">Schema Registry</a></li>
 <li><a href="#patterns">Patterns d architecture</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><h2 id='concepts'><span class='sn'>1</span>Topics, partitions et offsets</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une partition Kafka ? Pourquoi le nombre de partitions est-il important ?</p></div><ul><li><strong>Topic</strong> — canal de messages nomme. Analogue a une table de base de donnees</li><li><strong>Partition</strong> — subdivision d un topic. Unite de parallelisme et de scalabilite. Les messages d une partition sont ordonnes</li><li><strong>Offset</strong> — identifiant unique d un message dans une partition. Immutable</li><li><strong>Retention</strong> — les messages sont conserves pendant une duree configurable (par defaut 7 jours), independamment de leur consommation</li><li><strong>Nombre de partitions</strong> — determine le parallelisme max des consumers. Augmenter apres coup est possible mais complexe</li></ul><h2 id='producers'><span class='sn'>2</span>Guaranties de livraison des producers</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la difference entre at-most-once, at-least-once et exactly-once ?</p></div><div class='cb'><code>from kafka import KafkaProducer
+<div class="ab">
+<h2 id='concepts'><span class='sn'>1</span>Topics, partitions et offsets</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce qu'une partition Kafka ? Pourquoi le nombre de partitions est-il critique ?</p></div>
+<ul>
+<li><strong>Topic</strong> — canal de messages nommé, analogue à une table. Un topic peut avoir N partitions et est répliqué sur M brokers</li>
+<li><strong>Partition</strong> — subdivision d'un topic. Unité de parallélisme : chaque partition n'est lue que par un seul consumer dans un group. L'ordre n'est garanti qu'au sein d'une partition</li>
+<li><strong>Offset</strong> — identifiant séquentiel d'un message dans une partition. Immuable, croissant. C'est le consumer qui gère sa position</li>
+<li><strong>Retention</strong> — messages conservés N jours (défaut 7j) ou jusqu'à N GB, indépendamment de la consommation. Configurable par topic</li>
+<li><strong>Nombre de partitions</strong> — détermine le parallélisme max. Règle : partitions ≥ consumers. Augmenter après coup possible mais casse le partitioning par clé</li>
+<li><strong>Clé de message</strong> — messages avec la même clé vont toujours dans la même partition (garantie d'ordre par entité). Ex : customer_id comme clé pour les événements commandes</li>
+</ul>
+<div class='cb'><code># Créer un topic avec 6 partitions et facteur de réplication 3
+kafka-topics.sh --create   --topic orders   --partitions 6   --replication-factor 3   --bootstrap-server kafka:9092
+
+# Vérifier le lag d'un consumer group
+kafka-consumer-groups.sh --bootstrap-server kafka:9092   --group order-processor --describe
+# → LAG = offset max - offset consommé par partition</code></div>
+
+<h2 id='producers'><span class='sn'>2</span>Garanties de livraison des producers</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quelle est la différence entre at-most-once, at-least-once et exactly-once ? Comment les configurer ?</p></div>
+<div class='cb'><code>from kafka import KafkaProducer
 import json
 
+# Exactly-once producer
 producer = KafkaProducer(
     bootstrap_servers='kafka:9092',
     value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-    acks='all',                # attendre confirmation de tous les replicas
-    retries=3,                 # reessayer en cas d erreur
-    enable_idempotence=True    # exactly-once
+    acks='all',              # confirmation de tous les replicas ISR
+    retries=5,               # retry en cas d'erreur réseau
+    retry_backoff_ms=300,
+    enable_idempotence=True, # exactly-once : déduplique les retries
+    max_in_flight_requests_per_connection=5
 )
 
-producer.send('orders', {'order_id': 123, 'amount': 49.90})
-producer.flush()</code></div><ul><li><strong>at-most-once</strong> — 0 ou 1 livraison. Risque de perte</li><li><strong>at-least-once</strong> — au moins 1 livraison. Risque de doublons</li><li><strong>exactly-once</strong> — exactement 1 livraison. Necessite acks=all + enable_idempotence=True</li></ul><h2 id='consumers'><span class='sn'>3</span>Consumer groups et repartitionnement</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un consumer group ? Que se passe-t-il quand un consumer rejoint ou quitte le groupe ?</p></div><ul><li><strong>Consumer group</strong> — groupe de consumers qui lisent cooperativement un topic. Chaque partition est assignee a un seul consumer du groupe</li><li><strong>Rebalancing</strong> — redistribution des partitions quand un consumer rejoint ou quitte. Pendant ce temps, la consommation est suspendue</li><li><strong>Lag</strong> — difference entre le dernier offset produit et le dernier offset consomme. Metrique cle pour le monitoring</li><li><strong>__consumer_offsets</strong> — topic interne Kafka qui stocke la position de chaque consumer group</li></ul><h2 id='streams'><span class='sn'>4</span>Kafka Streams vs ksqlDB</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand utilisez-vous Kafka Streams vs ksqlDB vs Flink pour le traitement de streams ?</p></div><table class='lt'><thead><tr><th>Outil</th><th>Paradigme</th><th>Cas d usage</th></tr></thead><tbody><tr><td>Kafka Streams</td><td>Librairie Java/Scala</td><td>Transformations temps reel embarquees dans une application</td></tr><tr><td>ksqlDB</td><td>SQL sur Kafka</td><td>Aggregations et filtres sur streams sans code Java</td></tr><tr><td>Apache Flink</td><td>Framework distribue</td><td>Latence sub-seconde, state management complexe, grande echelle</td></tr></tbody></table><h2 id='schema'><span class='sn'>5</span>Schema Registry</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi avez-vous besoin d un Schema Registry avec Kafka ?</p></div><ul><li><strong>Schema Registry</strong> — stocke les schemas Avro/Protobuf/JSON des messages. Les producers et consumers s y referent</li><li><strong>Probleme resolu</strong> — sans schema registry, un changement de format de message casse silencieusement les consumers</li><li><strong>Schema evolution</strong> — compatibilite backward (le nouveau schema lit les anciens messages) ou forward</li></ul><h2 id='patterns'><span class='sn'>6</span>Patterns d architecture</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le pattern outbox ? Et l event sourcing ?</p></div><ul><li><strong>Outbox pattern</strong> — ecrire dans une table outbox en meme temps que la transaction metier, puis publier dans Kafka depuis l outbox. Garantit la coherence sans 2PC</li><li><strong>Event Sourcing</strong> — stocker l historique des evenements plutot que l etat courant. Kafka comme source de verite</li><li><strong>CQRS</strong> — separer les commandes (ecriture) des requetes (lecture). Kafka comme bus entre les deux</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Topics, producers/consumers basiques, CLI Kafka</td><td>Sait creer un topic, envoyer et lire des messages</td><td>Ne sait pas ce qu est un consumer group</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Consumer groups, offsets, Kafka Streams basique, monitoring lag</td><td>Explique le rebalancing, surveille le consumer lag</td><td>Ne sait pas ce qu est un offset</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Schema Registry, exactly-once, outbox pattern, Flink</td><td>A implemente le Schema Registry, connait les patterns outbox/event sourcing</td><td>Ne connait pas Schema Registry</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Kafka ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+future = producer.send('orders', 
+    key=b'customer-123',
+    value={'order_id': 456, 'amount': 89.90}
+)
+record_metadata = future.get(timeout=10)
+print(f"Partition: {record_metadata.partition}, Offset: {record_metadata.offset}")</code></div>
+<ul>
+<li><strong>at-most-once</strong> — acks=0. Pas de retry. Performance max, tolérance à la perte de messages</li>
+<li><strong>at-least-once</strong> — acks=all + retries. Peut produire des doublons en cas de retry après timeout. Cas le plus courant</li>
+<li><strong>exactly-once</strong> — acks=all + enable_idempotence=True. Producer déduplique les retries. Nécessite Kafka ≥ 0.11</li>
+<li><strong>acks=all vs acks=1</strong> — acks=1 confirme dès que le leader a écrit. acks=all attend tous les ISR (In-Sync Replicas). Plus lent mais plus sûr</li>
+</ul>
+
+<h2 id='consumers'><span class='sn'>3</span>Consumer groups et rebalancing</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Qu'est-ce qu'un consumer group ? Que se passe-t-il lors d'un rebalancing ?</p></div>
+<div class='cb'><code>from kafka import KafkaConsumer
+import json
+
+consumer = KafkaConsumer(
+    'orders',
+    bootstrap_servers='kafka:9092',
+    group_id='order-processor',       # consumer group ID
+    auto_offset_reset='earliest',     # 'latest' = ignorer le backlog
+    enable_auto_commit=False,          # commit manuel = contrôle total
+    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+)
+
+for msg in consumer:
+    process(msg.value)
+    consumer.commit()  # committer après traitement réussi</code></div>
+<ul>
+<li><strong>Consumer group</strong> — groupe de processes qui lisent coopérativement un topic. Chaque partition → 1 seul consumer dans le groupe</li>
+<li><strong>Rebalancing</strong> — redistribution des partitions quand un consumer rejoint/quitte. Les consumers stoppent pendant le rebalancing (stop-the-world)</li>
+<li><strong>Lag</strong> — offset max produit - offset consommé. Un lag qui croît = consumer trop lent. Monitoring obligatoire</li>
+<li><strong>Commit strategy</strong> — auto_commit=True est risqué (commit avant traitement). Préférer le commit manuel après traitement réussi</li>
+<li><strong>Partition assignment</strong> — Range (par défaut), RoundRobin, StickyAssignor (minimise les mouvements de partitions)</li>
+</ul>
+
+<h2 id='streams'><span class='sn'>4</span>Kafka Streams vs ksqlDB vs Flink</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quand choisissez-vous Kafka Streams, ksqlDB ou Flink ?</p></div>
+<table class='lt'><thead><tr><th>Outil</th><th>Paradigme</th><th>Cas d'usage</th><th>Complexité</th></tr></thead>
+<tbody>
+<tr><td><strong>Kafka Streams</strong></td><td>Librairie Java/Scala</td><td>Transformations légères, enrichissement, agrégations</td><td>Faible</td></tr>
+<tr><td><strong>ksqlDB</strong></td><td>SQL sur Kafka</td><td>Prototypage, équipes SQL, streams simples</td><td>Très faible</td></tr>
+<tr><td><strong>Flink</strong></td><td>Framework distribué</td><td>Streaming complexe, joins multi-sources, exactement-once</td><td>Élevée</td></tr>
+<tr><td><strong>Spark Streaming</strong></td><td>Micro-batch</td><td>Équipes Spark existantes, latence &gt;1s acceptable</td><td>Moyenne</td></tr>
+</tbody></table>
+
+<h2 id='schema'><span class='sn'>5</span>Schema Registry</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi utiliser un Schema Registry ? Comment gérez-vous l'évolution des schémas ?</p></div>
+<ul>
+<li><strong>Schema Registry</strong> — service centralisé qui stocke et valide les schémas Avro/Protobuf/JSON des topics. Empêche les producers d'envoyer des messages incompatibles</li>
+<li><strong>Évolution backward-compatible</strong> — ajouter un champ avec valeur par défaut. Les anciens consumers continuent de fonctionner</li>
+<li><strong>Évolution breaking</strong> — renommer ou supprimer un champ. Nécessite une migration coordonnée consumers/producers</li>
+<li><strong>Avro vs Protobuf</strong> — Avro : standard Confluent, schéma inclus dans les messages. Protobuf : meilleur support multi-langages, plus verbeux</li>
+</ul>
+<div class='cb'><code># Schéma Avro pour un event commande
+{
+  "type": "record",
+  "name": "Order",
+  "namespace": "io.databuilder",
+  "fields": [
+    {"name": "order_id", "type": "string"},
+    {"name": "amount", "type": "double"},
+    {"name": "currency", "type": "string", "default": "EUR"},
+    {"name": "created_at", "type": "long", "logicalType": "timestamp-millis"}
+  ]
+}</code></div>
+
+<h2 id='patterns'><span class='sn'>6</span>Patterns d'architecture avec Kafka</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quels patterns d'architecture utilisez-vous avec Kafka en production ?</p></div>
+<ul>
+<li><strong>Event sourcing</strong> — Kafka comme source de vérité. Les états sont reconstruits en rejouant les events depuis le début</li>
+<li><strong>CQRS</strong> — séparer la lecture (projections materialisées) de l'écriture (events Kafka)</li>
+<li><strong>CDC avec Kafka Connect</strong> — Debezium capture les changements PostgreSQL/MySQL et les publie dans Kafka. Pont entre OLTP et streaming</li>
+<li><strong>Saga pattern</strong> — orchestrer des transactions distribuées via des events Kafka entre microservices</li>
+<li><strong>Compacted topics</strong> — Kafka conserve uniquement le dernier message par clé. Idéal pour les tables de référence (état courant)</li>
+</ul>
+
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bj'>Junior</span></td><td>Concepts topics/partitions/offsets, consumer group basique</td><td>Explique ce qu'est un offset et un consumer group, sait produire/consommer en Python</td><td>Confond topic et partition, ne sait pas ce qu'est un offset</td></tr>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Garanties de livraison, rebalancing, Schema Registry, Kafka Connect</td><td>Configure exactly-once, utilise Debezium pour le CDC, a géré des lags en prod</td><td>Ne sait pas la différence entre at-least-once et exactly-once</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Architecture event-driven, patterns Saga/CQRS, optimisation throughput, monitoring</td><td>A conçu une architecture event-driven complète, sait dimensionner les partitions</td><td>Ne sait pas ce qu'est le rebalancing ni son impact</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Kafka ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

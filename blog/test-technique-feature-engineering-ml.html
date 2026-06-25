@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique feature engineering ML : creer de bonnes features</span></div>
@@ -96,8 +96,40 @@ mi_scores = mutual_info_classif(X_train, y_train)
 
 # Attention : collinearite
 corr_matrix = X_train.corr().abs()
-# Supprimer les features avec correlation > 0.95</code></div><h2 id='leakage'><span class='sn'>6</span>Data leakage : le piege majeur</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le data leakage ? Donnez un exemple concret.</p></div><ul><li><strong>Data leakage</strong> — les features d entrainement contiennent de l information sur la target qui ne sera pas disponible en production. Le modele performe tres bien sur le test set mais echoue en production</li><li><strong>Exemple classique</strong> — predire le churn avec une feature 'dernier_appel_service_client' creee APRES la decision de churn. En prod, cette info n existe pas encore au moment de la prediction</li><li><strong>Target encoding mal fait</strong> — calculer le target encoding sur tout le dataset avant le train/test split</li><li><strong>Prevention</strong> — construire les features en respectant la temporalite, ne jamais fitter les encodeurs sur le test set</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Encodages basiques, imputation simple, scaling</td><td>Sait faire un OHE, impute par la mediane, sait quand normaliser</td><td>Applique le scaler avant le train/test split</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Target encoding, features temporelles, SHAP selection</td><td>Utilise le Target Encoding avec cross-val, cree des lag features, selectionne avec SHAP</td><td>Ne sait pas ce qu est le data leakage, ne cree pas de lag features</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline sklearn complet, feature store, prevention leakage</td><td>A concu un pipeline sklearn avec ColumnTransformer, connait les feature stores</td><td>Ne peut pas expliquer un cas concret de data leakage</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Supprimer les features avec correlation > 0.95</code></div><h2 id='leakage'><span class='sn'>6</span>Data leakage : le piege majeur</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le data leakage ? Donnez un exemple concret.</p></div><ul><li><strong>Data leakage</strong> — les features d entrainement contiennent de l information sur la target qui ne sera pas disponible en production. Le modele performe tres bien sur le test set mais echoue en production</li><li><strong>Exemple classique</strong> — predire le churn avec une feature 'dernier_appel_service_client' creee APRES la decision de churn. En prod, cette info n existe pas encore au moment de la prediction</li><li><strong>Target encoding mal fait</strong> — calculer le target encoding sur tout le dataset avant le train/test split</li><li><strong>Prevention</strong> — construire les features en respectant la temporalite, ne jamais fitter les encodeurs sur le test set</li></ul><div class='cb'><code>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, TargetEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+
+preprocessor = ColumnTransformer([
+    ('num', StandardScaler(), ['age', 'tenure_days', 'nb_commandes_30j']),
+    ('cat', TargetEncoder(cv=5, smooth='auto'),
+     ['region', 'plan', 'device_type']),
+])
+
+# Features temporelles
+df['day_of_week'] = df['order_date'].dt.dayofweek
+df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+df['days_since_first_order'] = (df['order_date'] - df['first_order_date']).dt.days
+
+# Features d interaction
+df['amount_per_order'] = df['total_amount'] / df['nb_commandes'].clip(lower=1)
+
+# Rolling features SANS data leakage
+df = df.sort_values('order_date')
+df['avg_amount_7d'] = df.groupby('customer_id')['amount'].transform(
+    lambda x: x.shift(1).rolling(7, min_periods=1).mean()  # shift(1) = pas de leakage
+)</code></div>
+<ul>
+<li><strong>Data leakage</strong> - la faute la plus frequente : utiliser des donnees du futur dans les features. Les rolling features doivent toujours avoir un shift(1)</li>
+<li><strong>Target Encoding</strong> - encoder les categories haute-cardinalite par la moyenne de la cible. Avec cross-validation pour eviter le leakage du target</li>
+<li><strong>Feature selection</strong> - SHAP values pour identifier les features inutiles, Spearman correlation pour la colinearite, Recursive Feature Elimination</li>
+<li><strong>Feature Store</strong> - centraliser les features reutilisables (Feast, Databricks Feature Store). Evite de recalculer les memes features dans 5 notebooks differents</li>
+<li><strong>Pipelines sklearn</strong> - toujours encapsuler le preprocessing dans un Pipeline. Garantit que le fit est fait uniquement sur le train set</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Encodages basiques, imputation simple, scaling</td><td>Sait faire un OHE, impute par la mediane, sait quand normaliser</td><td>Applique le scaler avant le train/test split</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Target encoding, features temporelles, SHAP selection</td><td>Utilise le Target Encoding avec cross-val, cree des lag features, selectionne avec SHAP</td><td>Ne sait pas ce qu est le data leakage, ne cree pas de lag features</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline sklearn complet, feature store, prevention leakage</td><td>A concu un pipeline sklearn avec ColumnTransformer, connait les feature stores</td><td>Ne peut pas expliquer un cas concret de data leakage</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

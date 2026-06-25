@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique dbt avance : macros, packages, snapshots, analyses</span></div>
@@ -93,8 +93,64 @@ models:
 on-run-start:
   - 'CREATE SCHEMA IF NOT EXISTS {{ target.schema }}'
 on-run-end:
-  - '{{ elementary.on_run_end() }}'  # package de monitoring</code></div><h2 id='docs'><span class='sn'>6</span>Documentation et lineage automatique</h2><ul><li><strong>dbt docs generate</strong> — genere une documentation navigable avec le lineage complet de toutes les sources jusqu aux modeles finals</li><li><strong>Descriptions YAML</strong> — documenter chaque modele et chaque colonne dans les fichiers schema.yml</li><li><strong>dbt docs serve</strong> — interface web locale pour naviguer dans la documentation et le graphe de dependances</li><li><strong>Column-level lineage</strong> — avec dbt 1.6+, le lineage est trace au niveau des colonnes (quelle colonne source alimente quelle colonne cible)</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Modeles SQL, tests generiques, ref() et source()</td><td>Structure un projet dbt, utilise not_null/unique, sait ce que fait ref()</td><td>Ne sait pas ce que fait ref() vs une jointure directe</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Macros, dbt-utils, snapshots, CI/CD slim</td><td>A ecrit une macro avec run_query, utilise dbt_utils.surrogate_key, a configure un snapshot</td><td>N a jamais utilise dbt_utils, ne sait pas ce qu est un snapshot</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Packages custom, hooks, exposures, column-level lineage, performance</td><td>A cree un package dbt interne, configure les hooks GRANT, documenté les exposures</td><td>Ne sait pas ce que sont les exposures, n a jamais optimise les performances dbt</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+  - '{{ elementary.on_run_end() }}'  # package de monitoring</code></div><h2 id='docs'><span class='sn'>6</span>Documentation et lineage automatique</h2><ul><li><strong>dbt docs generate</strong> — genere une documentation navigable avec le lineage complet de toutes les sources jusqu aux modeles finals</li><li><strong>Descriptions YAML</strong> — documenter chaque modele et chaque colonne dans les fichiers schema.yml</li><li><strong>dbt docs serve</strong> — interface web locale pour naviguer dans la documentation et le graphe de dependances</li><li><strong>Column-level lineage</strong> — avec dbt 1.6+, le lineage est trace au niveau des colonnes (quelle colonne source alimente quelle colonne cible)</li></ul>
+<div class='cb'><code># Techniques avancées dbt
+
+# 1. Custom generic test (réutilisable)
+# tests/generic/test_not_negative.sql
+{% test not_negative(model, column_name) %}
+    SELECT {{ column_name }} FROM {{ model }}
+    WHERE {{ column_name }} < 0
+{% endtest %}
+
+# 2. Hooks pour des opérations custom
+# dbt_project.yml
+models:
+  mon_projet:
+    marts:
+      +post-hook: "GRANT SELECT ON {{ this }} TO ROLE analyst_role"
+      +pre-hook: "DROP TABLE IF EXISTS {{ this }}_old"
+
+# 3. Selector yaml pour orchestration fine
+# selectors.yml  
+selectors:
+  - name: daily_pipeline
+    definition:
+      union:
+        - tag: daily
+        - method: path
+          value: models/marts/
+  - name: modified_and_downstream
+    definition:
+      method: state
+      value: modified+
+
+# 4. dbt Mesh : cross-project references
+# Référencer un modèle d'un autre projet dbt
+SELECT * FROM {{ ref('project_a', 'dim_customers') }}
+
+# 5. Environment-based configs
+{% if target.name == 'prod' %}
+  {{ config(materialized='table', full_refresh=false) }}
+{% else %}
+  {{ config(materialized='view') }}
+{% endif %}</code></div>
+<ul>
+<li><strong>dbt Mesh</strong> — partager des modèles dbt entre projets via des cross-project refs. Idéal pour les grandes organisations avec plusieurs équipes dbt indépendantes</li>
+<li><strong>Exposure tracking</strong> — documenter quels dashboards consomment quels modèles dbt. Permet l'impact analysis : "si je change ce modèle, quels rapports sont affectés ?"</li>
+<li><strong>Artifacts dbt</strong> — manifest.json, catalog.json, run_results.json générés après chaque run. Exploitables pour du lineage (DataHub), des métriques CI/CD, la documentation</li>
+<li><strong>Slim CI</strong> — <code>dbt build --select state:modified+</code> ne teste que les modèles modifiés et leurs descendants. Réduit de 80% le temps de CI sur les PRs</li>
+<li><strong>Performance</strong> — <code>--threads 8</code> parallélise les modèles indépendants. Sur Snowflake/BigQuery, 8-16 threads est le sweet spot</li>
+</ul>
+<ul>
+<li><strong>dbt Mesh</strong> - partager des modeles dbt entre projets via des cross-project refs. Ideal pour les grandes organisations avec plusieurs equipes dbt independantes</li>
+<li><strong>Exposure tracking</strong> - documenter quels dashboards consomment quels modeles dbt. Impact analysis : si je change ce modele, quels rapports sont affectes ?</li>
+<li><strong>Slim CI</strong> - dbt build --select state:modified+ ne teste que les modeles modifies et leurs descendants. Reduit de 80% le temps de CI sur les PRs</li>
+<li><strong>Performance</strong> - --threads 8 parallelise les modeles independants. Sur Snowflake/BigQuery, 8-16 threads est le sweet spot</li>
+<li><strong>Artifacts dbt</strong> - manifest.json, catalog.json, run_results.json generes apres chaque run. Exploitables pour du lineage (DataHub), metriques CI/CD, documentation</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Modeles SQL, tests generiques, ref() et source()</td><td>Structure un projet dbt, utilise not_null/unique, sait ce que fait ref()</td><td>Ne sait pas ce que fait ref() vs une jointure directe</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Macros, dbt-utils, snapshots, CI/CD slim</td><td>A ecrit une macro avec run_query, utilise dbt_utils.surrogate_key, a configure un snapshot</td><td>N a jamais utilise dbt_utils, ne sait pas ce qu est un snapshot</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Packages custom, hooks, exposures, column-level lineage, performance</td><td>A cree un package dbt interne, configure les hooks GRANT, documenté les exposures</td><td>Ne sait pas ce que sont les exposures, n a jamais optimise les performances dbt</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

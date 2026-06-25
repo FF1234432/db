@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique données synthétiques : générer des données de test réalistes</span></div>
@@ -77,8 +77,48 @@ synthetic_df = synth.sample(num_rows=10000)
 from sdv.evaluation.single_table import run_diagnostic, evaluate_quality
 diag = run_diagnostic(real_orders_df, synthetic_df, metadata)
 quality = evaluate_quality(real_orders_df, synthetic_df, metadata)
-print(f'Quality score: {quality.get_score():.2f}')</code></div><h2 id='gretel'><span class='sn'>4</span>Gretel.ai : confidentialité différentielle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand avez-vous besoin de données synthétiques avec garanties de confidentialité ?</p></div><ul><li><strong>Gretel.ai</strong> — génère des données synthétiques avec differential privacy. Les données synthétiques ne peuvent pas être utilisées pour retrouver des individus réels</li><li><strong>Cas d usage</strong> — partager des données médicales ou financières pour de la recherche externe, développement offshore avec des données sensibles</li><li><strong>Privacy guarantee</strong> — epsilon-differential privacy : même si on connaît N-1 lignes du dataset réel, on ne peut pas déterminer la N-ième</li><li><strong>Trade-off</strong> — plus la garantie de confidentialité est forte (epsilon faible), moins les données synthétiques sont fidèles aux vraies</li></ul><h2 id='evaluation'><span class='sn'>5</span>Évaluer la qualité des données synthétiques</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment vérifiez-vous que vos données synthétiques sont suffisamment réalistes ?</p></div><ul><li><strong>Statistical fidelity</strong> — comparer les distributions (KS test), les corrélations, les valeurs manquantes entre real et synthétique</li><li><strong>ML efficacy</strong> — entraîner un modèle sur le synthétique, évaluer sur le réel. Si les performances sont proches = bonne fidélité</li><li><strong>Privacy test</strong> — vérifier que les données synthétiques ne contiennent pas de vraies données (Distance to Closest Record)</li><li><strong>SDV Quality Report</strong> — rapport automatique qui compare les propriétés statistiques des deux datasets</li></ul><h2 id='usecases'><span class='sn'>6</span>Cas d usage concrets</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Donnez 3 cas d usage où vous avez utilisé ou auriez dû utiliser des données synthétiques.</p></div><ul><li><strong>Tests de pipeline</strong> — générer 10M de lignes avec les distributions connues pour tester les performances avant la mise en production</li><li><strong>Classe minoritaire ML</strong> — SMOTE pour augmenter les exemples positifs dans un dataset de détection de fraude déséquilibré (1% de fraude)</li><li><strong>Staging environment</strong> — copier la production dans staging avec SDV pour avoir les mêmes distributions sans données personnelles</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Faker pour les tests, comprend les cas d usage</td><td>A utilisé Faker pour générer des fixtures de test réalistes</td><td>Utilise des données de production dans les tests</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>SDV, SMOTE, évaluation de la qualité</td><td>A utilisé SDV pour préserver les distributions, évalue la fidélité statistique</td><td>Ne sait pas ce que sont les données synthétiques</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+print(f'Quality score: {quality.get_score():.2f}')</code></div><h2 id='gretel'><span class='sn'>4</span>Gretel.ai : confidentialité différentielle</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quand avez-vous besoin de données synthétiques avec garanties de confidentialité ?</p></div><ul><li><strong>Gretel.ai</strong> — génère des données synthétiques avec differential privacy. Les données synthétiques ne peuvent pas être utilisées pour retrouver des individus réels</li><li><strong>Cas d usage</strong> — partager des données médicales ou financières pour de la recherche externe, développement offshore avec des données sensibles</li><li><strong>Privacy guarantee</strong> — epsilon-differential privacy : même si on connaît N-1 lignes du dataset réel, on ne peut pas déterminer la N-ième</li><li><strong>Trade-off</strong> — plus la garantie de confidentialité est forte (epsilon faible), moins les données synthétiques sont fidèles aux vraies</li></ul><h2 id='evaluation'><span class='sn'>5</span>Évaluer la qualité des données synthétiques</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment vérifiez-vous que vos données synthétiques sont suffisamment réalistes ?</p></div><ul><li><strong>Statistical fidelity</strong> — comparer les distributions (KS test), les corrélations, les valeurs manquantes entre real et synthétique</li><li><strong>ML efficacy</strong> — entraîner un modèle sur le synthétique, évaluer sur le réel. Si les performances sont proches = bonne fidélité</li><li><strong>Privacy test</strong> — vérifier que les données synthétiques ne contiennent pas de vraies données (Distance to Closest Record)</li><li><strong>SDV Quality Report</strong> — rapport automatique qui compare les propriétés statistiques des deux datasets</li></ul><h2 id='usecases'><span class='sn'>6</span>Cas d usage concrets</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Donnez 3 cas d usage où vous avez utilisé ou auriez dû utiliser des données synthétiques.</p></div><ul><li><strong>Tests de pipeline</strong> — générer 10M de lignes avec les distributions connues pour tester les performances avant la mise en production</li><li><strong>Classe minoritaire ML</strong> — SMOTE pour augmenter les exemples positifs dans un dataset de détection de fraude déséquilibré (1% de fraude)</li><li><strong>Staging environment</strong> — copier la production dans staging avec SDV pour avoir les mêmes distributions sans données personnelles</li></ul>
+<div class='cb'><code>from sdv.single_table import GaussianCopulaSynthesizer
+from sdv.metadata import SingleTableMetadata
+from sdv.evaluation.single_table import run_diagnostic, evaluate_quality
+
+# SDV : préserver les distributions statistiques
+metadata = SingleTableMetadata()
+metadata.detect_from_dataframe(real_df)
+metadata.update_column('email', sdtype='email')  # anonymiser PII
+metadata.update_column('phone', sdtype='phone_number')
+
+synth = GaussianCopulaSynthesizer(metadata)
+synth.fit(real_df)  # apprend les distributions
+
+synthetic_df = synth.sample(num_rows=50000)
+
+# Évaluation automatique
+quality = evaluate_quality(real_df, synthetic_df, metadata)
+print(f"Quality score: {quality.get_score():.2f}")  # 0.8+ = bon
+
+# SMOTE pour les classes déséquilibrées (ML)
+from imblearn.over_sampling import SMOTE
+sm = SMOTE(sampling_strategy=0.3, random_state=42)  # 30% de positifs
+X_resampled, y_resampled = sm.fit_resample(X_train, y_train)
+print(f"Avant SMOTE: {Counter(y_train)}")
+print(f"Après SMOTE: {Counter(y_resampled)}")</code></div>
+<ul>
+<li><strong>Faker vs SDV</strong> — Faker génère des données plausibles mais pas statistiquement fidèles. SDV apprend les distributions réelles et préserve les corrélations entre colonnes</li>
+<li><strong>Differential Privacy (Gretel.ai)</strong> — garantie mathématique que les données synthétiques ne permettent pas de réidentifier des individus. Nécessaire pour les données médicales ou financières partagées en externe</li>
+<li><strong>SMOTE</strong> — Synthetic Minority Oversampling TEchnique : générer des exemples synthétiques de la classe minoritaire pour l'entraînement ML. Standard pour la détection de fraude (1% de positifs)</li>
+<li><strong>Évaluation</strong> — train on synthetic, test on real (TSTR) : le modèle entraîné sur données synthétiques doit performer proche d'un modèle entraîné sur données réelles</li>
+<li><strong>Adversarial testing</strong> — générer délibérément des cas limites (valeurs extrêmes, données manquantes, formats inattendus) pour tester la robustesse des pipelines</li>
+</ul>
+<ul>
+<li><strong>Faker vs SDV</strong> - Faker genere des donnees plausibles mais pas statistiquement fideles. SDV apprend les distributions reelles et preserve les correlations entre colonnes</li>
+<li><strong>Differential Privacy (Gretel.ai)</strong> - garantie mathematique que les donnees synthetiques ne permettent pas de reidentifier des individus. Necessaire pour les donnees medicales partagees en externe</li>
+<li><strong>SMOTE</strong> - Synthetic Minority Oversampling Technique : generer des exemples synthetiques de la classe minoritaire pour le ML. Standard pour la detection de fraude (1% de positifs)</li>
+<li><strong>Evaluation TSTR</strong> - Train on Synthetic, Test on Real : le modele entraine sur donnees synthetiques doit performer proche d un modele entraine sur donnees reelles</li>
+<li><strong>Adversarial testing</strong> - generer deliberement des cas limites (valeurs extremes, NaN, formats inattendus) pour tester la robustesse des pipelines</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Faker pour les tests, comprend les cas d usage</td><td>A utilisé Faker pour générer des fixtures de test réalistes</td><td>Utilise des données de production dans les tests</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>SDV, SMOTE, évaluation de la qualité</td><td>A utilisé SDV pour préserver les distributions, évalue la fidélité statistique</td><td>Ne sait pas ce que sont les données synthétiques</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

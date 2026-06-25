@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Spark avance : Structured Streaming, Delta Lake, optimisation</span></div>
@@ -97,8 +97,31 @@ spark.conf.set('spark.executor.extraJavaOptions', '-XX:+UseG1GC')
 # Persistance strategique
 df_heavy.persist(StorageLevel.MEMORY_AND_DISK)  # si reutilise plusieurs fois
 # Nettoyer apres usage
-df_heavy.unpersist()</code></div><h2 id='catalog'><span class='sn'>6</span>Unity Catalog : gouvernance Databricks</h2><ul><li><strong>Unity Catalog</strong> — couche de gouvernance centralisee pour tous les assets Databricks (tables Delta, fichiers, modeles ML, notebooks)</li><li><strong>3 niveaux</strong> — Catalog > Schema > Table. Remplace le Hive metastore</li><li><strong>Column-level security</strong> — masquer des colonnes selon le role de l utilisateur</li><li><strong>Data lineage automatique</strong> — lineage jusqu a la colonne, integre avec dbt et Spark</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>DataFrame API, Delta Lake basique, partitionnement</td><td>A utilise Delta MERGE, sait ce qu est Time Travel, configure les partitions shuffle</td><td>N a jamais utilise Delta Lake, ne sait pas ce qu est AQE</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Structured Streaming, AQE, Spark on K8s, memory tuning</td><td>A deploye un job Spark Streaming, a debug un skew join, a optimise la memoire</td><td>N a jamais fait de streaming, ne sait pas diagnostiquer un OOM Spark</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture lakehouse, Unity Catalog, standards d equipe</td><td>A concu une architecture lakehouse, defini les standards de gouvernance Databricks</td><td>Ne peut pas expliquer la difference entre Data Lake et Lakehouse</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Spark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+df_heavy.unpersist()</code></div><h2 id='catalog'><span class='sn'>6</span>Unity Catalog : gouvernance Databricks</h2><ul><li><strong>Unity Catalog</strong> — couche de gouvernance centralisee pour tous les assets Databricks (tables Delta, fichiers, modeles ML, notebooks)</li><li><strong>3 niveaux</strong> — Catalog > Schema > Table. Remplace le Hive metastore</li><li><strong>Column-level security</strong> — masquer des colonnes selon le role de l utilisateur</li><li><strong>Data lineage automatique</strong> — lineage jusqu a la colonne, integre avec dbt et Spark</li></ul><div class='cb'><code>from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, broadcast
+
+spark = SparkSession.builder \
+    .config('spark.sql.adaptive.enabled', 'true') \
+    .config('spark.sql.adaptive.coalescePartitions.enabled', 'true') \
+    .config('spark.sql.adaptive.skewJoin.enabled', 'true') \
+    .getOrCreate()
+
+# Broadcast join : diffuser la petite table sur tous les workers
+result = large_df.join(broadcast(small_df), 'category_id')
+
+# Repartition strategique avant un groupBy lourd
+df_repartitioned = df.repartition(200, col('customer_id'))
+agg_result = df_repartitioned.groupBy('customer_id').agg({'amount': 'sum'})
+
+# Persist pour reutiliser un DataFrame calcule plusieurs fois
+df_filtered = df.filter(col('status') == 'completed').persist()
+count = df_filtered.count()
+agg = df_filtered.groupBy('region').sum('amount')
+
+# Lire le plan d execution
+result.explain(extended=True)  # voir les stages, shuffles, pushdowns</code></div><ul><li><strong>AQE (Adaptive Query Execution)</strong> - Spark 3.x optimise le plan d execution au runtime. Coalesce les partitions vides, detecte le data skew, choisit broadcast join automatiquement</li><li><strong>Shuffle partitions</strong> - spark.sql.shuffle.partitions=200 par defaut. Regler selon la volumetrie : 1 partition ~128MB de donnees shufflees est un bon point de depart</li><li><strong>Data skew</strong> - une partition 100x plus grosse que les autres = un executor qui bloque tous les autres. Remedies : salting (ajouter du bruit a la cle de join), AQE skewJoin, ou filter + union</li><li><strong>Catalyst optimizer</strong> - Spark convertit les DataFrames en plan logique puis physique optimise. Privilegier les DataFrames sur les RDDs pour profiter de Catalyst</li><li><strong>Tungsten</strong> - moteur d execution memoire de Spark. Serialisation binaire, generation de bytecode. Utilise automatiquement avec les DataFrames</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>DataFrame API, Delta Lake basique, partitionnement</td><td>A utilise Delta MERGE, sait ce qu est Time Travel, configure les partitions shuffle</td><td>N a jamais utilise Delta Lake, ne sait pas ce qu est AQE</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Structured Streaming, AQE, Spark on K8s, memory tuning</td><td>A deploye un job Spark Streaming, a debug un skew join, a optimise la memoire</td><td>N a jamais fait de streaming, ne sait pas diagnostiquer un OOM Spark</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture lakehouse, Unity Catalog, standards d equipe</td><td>A concu une architecture lakehouse, defini les standards de gouvernance Databricks</td><td>Ne peut pas expliquer la difference entre Data Lake et Lakehouse</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Spark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

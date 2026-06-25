@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique AWS stack data : S3, Glue, Athena, EMR, Redshift</span></div>
@@ -85,8 +85,49 @@ glue_context.write_dynamic_frame.from_options(
     connection_type='s3',
     connection_options={'path': 's3://mon-bucket/silver/orders/'},
     format='parquet'
-)</code></div><h2 id='athena'><span class='sn'>4</span>Amazon Athena : SQL serverless sur S3</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels cas Athena est-il plus adapté que Redshift ?</p></div><ul><li><strong>Athena</strong> — serverless, SQL sur S3. Payer uniquement les octets scannés. Idéal pour les requêtes ad-hoc et les analyses exploratoires</li><li><strong>Partitionnement Hive</strong> — les tables Athena utilisent le partitionnement S3 pour réduire les coûts (require_partition_filter)</li><li><strong>Athena Federated Query</strong> — requêter DynamoDB, RDS, Redshift depuis Athena. Query federation</li><li><strong>Athena pour Iceberg</strong> — support natif Iceberg 2.x. Merge, update, delete, time travel</li><li><strong>Quand Redshift</strong> — BI interactive (sub-seconde), requêtes complexes répétitives, workloads BI avec concurrence</li></ul><h2 id='redshift'><span class='sn'>5</span>Redshift Serverless</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que Redshift Serverless ? Quand le préférer au Redshift classique ?</p></div><ul><li><strong>Redshift Serverless</strong> — pas de cluster à provisionner. Capacité automatique selon la charge</li><li><strong>Facturation RPU</strong> — Redshift Processing Units à la seconde. Plus économique pour les charges variables</li><li><strong>Quand Serverless</strong> — charges imprévisibles, équipes petites, pas d expertise Redshift en interne</li><li><strong>Quand Redshift RA3</strong> — charge prévisible et intensive, besoin de contrôle précis, workloads très concurrents</li><li><strong>Data Sharing</strong> — partager des données entre clusters Redshift sans les copier. Lecture cross-account</li></ul><h2 id='lake_formation'><span class='sn'>6</span>Lake Formation : gouvernance centralisée</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que AWS Lake Formation ? Quand l utilisez-vous ?</p></div><ul><li><strong>Lake Formation</strong> — couche de gouvernance centrale sur S3. Gère les permissions au niveau colonne et ligne</li><li><strong>Column-level security</strong> — masquer ou supprimer des colonnes PII selon le rôle de l utilisateur. Compatible Athena, Redshift Spectrum, EMR</li><li><strong>Row-level filtering</strong> — filtrer les lignes selon des attributs de l utilisateur. Ex : un analyst FR ne voit que les données France</li><li><strong>Governed Tables</strong> — tables S3 avec transactions ACID et time travel. Alternative à Delta/Iceberg dans l écosystème AWS</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>S3, Glue Catalog, Athena, IAM basique</td><td>A déployé un pipeline S3 → Glue → Athena, utilise le partitionnement Athena</td><td>Ne sait pas ce qu est le Glue Data Catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Lake Formation, Redshift Serverless, architecture complète, cost optimization</td><td>A configuré Lake Formation avec column-level security, justifie Athena vs Redshift</td><td>Ne sait pas la différence entre Athena et Redshift</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer AWS ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+)</code></div><h2 id='athena'><span class='sn'>4</span>Amazon Athena : SQL serverless sur S3</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels cas Athena est-il plus adapté que Redshift ?</p></div><ul><li><strong>Athena</strong> — serverless, SQL sur S3. Payer uniquement les octets scannés. Idéal pour les requêtes ad-hoc et les analyses exploratoires</li><li><strong>Partitionnement Hive</strong> — les tables Athena utilisent le partitionnement S3 pour réduire les coûts (require_partition_filter)</li><li><strong>Athena Federated Query</strong> — requêter DynamoDB, RDS, Redshift depuis Athena. Query federation</li><li><strong>Athena pour Iceberg</strong> — support natif Iceberg 2.x. Merge, update, delete, time travel</li><li><strong>Quand Redshift</strong> — BI interactive (sub-seconde), requêtes complexes répétitives, workloads BI avec concurrence</li></ul><h2 id='redshift'><span class='sn'>5</span>Redshift Serverless</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que Redshift Serverless ? Quand le préférer au Redshift classique ?</p></div><ul><li><strong>Redshift Serverless</strong> — pas de cluster à provisionner. Capacité automatique selon la charge</li><li><strong>Facturation RPU</strong> — Redshift Processing Units à la seconde. Plus économique pour les charges variables</li><li><strong>Quand Serverless</strong> — charges imprévisibles, équipes petites, pas d expertise Redshift en interne</li><li><strong>Quand Redshift RA3</strong> — charge prévisible et intensive, besoin de contrôle précis, workloads très concurrents</li><li><strong>Data Sharing</strong> — partager des données entre clusters Redshift sans les copier. Lecture cross-account</li></ul><h2 id='lake_formation'><span class='sn'>6</span>Lake Formation : gouvernance centralisée</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que AWS Lake Formation ? Quand l utilisez-vous ?</p></div><ul><li><strong>Lake Formation</strong> — couche de gouvernance centrale sur S3. Gère les permissions au niveau colonne et ligne</li><li><strong>Column-level security</strong> — masquer ou supprimer des colonnes PII selon le rôle de l utilisateur. Compatible Athena, Redshift Spectrum, EMR</li><li><strong>Row-level filtering</strong> — filtrer les lignes selon des attributs de l utilisateur. Ex : un analyst FR ne voit que les données France</li><li><strong>Governed Tables</strong> — tables S3 avec transactions ACID et time travel. Alternative à Delta/Iceberg dans l écosystème AWS</li></ul>
+<div class='cb'><code># AWS Data Stack IaC (Terraform)
+# Glue Catalog + S3 Data Lake + Redshift + Step Functions
+
+resource "aws_glue_catalog_database" "analytics" {
+  name = "analytics_prod"
+}
+
+resource "aws_glue_crawler" "orders" {
+  name     = "orders_crawler"
+  role     = aws_iam_role.glue_role.arn
+  database_name = aws_glue_catalog_database.analytics.name
+  s3_target {
+    path = "s3://${aws_s3_bucket.datalake.bucket}/orders/"
+  }
+  schedule = "cron(0 6 * * ? *)"
+}
+
+# Step Functions pour orchestrer ETL
+resource "aws_sfn_state_machine" "pipeline" {
+  name = "data_pipeline"
+  definition = jsonencode({
+    Comment: "ETL Pipeline"
+    StartAt: "RunGlueJob"
+    States: {
+      RunGlueJob: {
+        Type: "Task"
+        Resource: "arn:aws:states:::glue:startJobRun.sync"
+        Parameters: {"JobName": "transform_orders"}
+        Next: "RefreshRedshift"
+      }
+    }
+  })
+}</code></div>
+<ul>
+<li><strong>AWS Glue vs EMR</strong> — Glue : serverless, payer à la minute, idéal pour les ETL ponctuels. EMR : cluster managé, meilleur rapport coût/performance pour les workloads Spark continus</li>
+<li><strong>Lake Formation</strong> — couche de gouvernance sur S3 : gestion des permissions fine-grained (colonne, row-level), catalog centralisé, audit des accès</li>
+<li><strong>Redshift Serverless</strong> — pas de cluster à provisionner, facturation par RPU-second. Pour les charges variables. Redshift classique pour les charges prévisibles et continues</li>
+<li><strong>Step Functions pour l'orchestration</strong> — orchestrateur natif AWS pour les pipelines simples. Pour les workflows complexes : MWAA (Airflow managé sur AWS) ou Step Functions + Lambda</li>
+<li><strong>Cost optimization</strong> — S3 Intelligent-Tiering pour les données dont l'accès est imprévisible. Glue jobs en spot. EMR Spot instances pour les workers (économie 70-90%)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>S3, Glue Catalog, Athena, IAM basique</td><td>A déployé un pipeline S3 → Glue → Athena, utilise le partitionnement Athena</td><td>Ne sait pas ce qu est le Glue Data Catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Lake Formation, Redshift Serverless, architecture complète, cost optimization</td><td>A configuré Lake Formation avec column-level security, justifie Athena vs Redshift</td><td>Ne sait pas la différence entre Athena et Redshift</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer AWS ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

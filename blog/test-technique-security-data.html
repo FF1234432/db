@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique sécurité des données : chiffrement, accès, RGPD technique</span></div>
@@ -75,8 +75,42 @@ SELECT
         WHEN age < 35 THEN '25-34'
         ELSE '35+'
     END AS age_bracket
-FROM users;</code></div><h2 id='audit'><span class='sn'>5</span>Audit logs : tracer tous les accès</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment implémentez-vous les audit logs sur votre data warehouse ?</p></div><ul><li><strong>Snowflake Access History</strong> — qui a accédé à quelle table, à quelle heure, quelles colonnes</li><li><strong>BigQuery Data Access audit logs</strong> — activés dans Cloud Audit Logs. Chaque requête BigQuery est loguée</li><li><strong>Rétention des logs</strong> — RGPD : conserver les logs d accès suffisamment longtemps pour auditer les incidents</li><li><strong>Alertes sur accès anormaux</strong> — alerter si un utilisateur accède à 100x plus de données que d habitude</li></ul><h2 id='secure'><span class='sn'>6</span>Secure by default : le principe</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que 'secure by default' dans une architecture data ?</p></div><ul><li><strong>Accès refusé par défaut</strong> — aucun accès sans grant explicite. Contraire d un bucket S3 public par défaut</li><li><strong>Chiffrement activé par défaut</strong> — activer le chiffrement at-rest sur tous les services dès la création</li><li><strong>Pas d accès internet direct</strong> — les pipelines data tournent dans un VPC sans accès internet. Utiliser des Private Endpoints</li><li><strong>Scanning automatique des secrets</strong> — git-secrets, truffleHog dans la CI pour détecter les credentials avant le push</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Secrets dans variables d env, TLS, RBAC basique</td><td>N a jamais de credentials en dur dans le code, utilise des variables d environnement</td><td>Stocke des mots de passe dans le code ou les logs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Secret Manager, Workload Identity, dynamic masking, audit logs</td><td>Utilise Workload Identity ou Secret Manager, a mis en place le dynamic masking</td><td>Ne sait pas ce qu est Workload Identity</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer soucieux de la sécurité ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+FROM users;</code></div><h2 id='audit'><span class='sn'>5</span>Audit logs : tracer tous les accès</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment implémentez-vous les audit logs sur votre data warehouse ?</p></div><ul><li><strong>Snowflake Access History</strong> — qui a accédé à quelle table, à quelle heure, quelles colonnes</li><li><strong>BigQuery Data Access audit logs</strong> — activés dans Cloud Audit Logs. Chaque requête BigQuery est loguée</li><li><strong>Rétention des logs</strong> — RGPD : conserver les logs d accès suffisamment longtemps pour auditer les incidents</li><li><strong>Alertes sur accès anormaux</strong> — alerter si un utilisateur accède à 100x plus de données que d habitude</li></ul><h2 id='secure'><span class='sn'>6</span>Secure by default : le principe</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que 'secure by default' dans une architecture data ?</p></div><ul><li><strong>Accès refusé par défaut</strong> — aucun accès sans grant explicite. Contraire d un bucket S3 public par défaut</li><li><strong>Chiffrement activé par défaut</strong> — activer le chiffrement at-rest sur tous les services dès la création</li><li><strong>Pas d accès internet direct</strong> — les pipelines data tournent dans un VPC sans accès internet. Utiliser des Private Endpoints</li><li><strong>Scanning automatique des secrets</strong> — git-secrets, truffleHog dans la CI pour détecter les credentials avant le push</li></ul>
+<div class='cb'><code>from google.cloud import secretmanager
+import os
+
+# JAMAIS : credentials en dur
+# conn = psycopg2.connect(password='motdepasse123')  ← NON
+
+# Bonne pratique 1 : Secret Manager (GCP)
+def get_secret(project_id: str, secret_name: str) -> str:
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8")
+
+# Bonne pratique 2 : Workload Identity (zéro credential)
+# Le pod K8s s'authentifie via son service account → accès GCS sans stocker de clé
+# Configurer dans GKE : gcloud iam service-accounts add-iam-policy-binding ...
+
+# Bonne pratique 3 : Variables d'environnement + secrets K8s
+import os
+db_password = os.environ.get("DB_PASSWORD")  # injecté par K8s Secret ou HashiCorp Vault
+
+# Scanning automatique des secrets dans Git
+# Pre-commit hook avec detect-secrets :
+# pip install detect-secrets
+# detect-secrets scan > .secrets.baseline
+# detect-secrets audit .secrets.baseline</code></div>
+<ul>
+<li><strong>Workload Identity Federation</strong> — le standard moderne pour AWS/GCP : les services s'authentifient via leur identité cloud sans aucune clé à stocker. Elimine les rotation de secrets</li>
+<li><strong>HashiCorp Vault</strong> — secrets dynamiques (credentials qui expirent après N minutes), audit complet des accès, multi-cloud. Standard en entreprise pour les secrets centralisés</li>
+<li><strong>Dynamic masking Snowflake/BigQuery</strong> — masquer les colonnes PII (email, IBAN) selon le rôle de l'utilisateur au moment de la requête, sans toucher aux données stockées</li>
+<li><strong>Column-level encryption</strong> — chiffrer individuellement les colonnes PII dans le data warehouse avec des clés gérées par le client (BYOK/CMEK). Protection même si la DB est compromise</li>
+<li><strong>Audit logs obligatoires</strong> — BigQuery Data Access logs, Snowflake Access History, CloudTrail AWS. Rétention minimale 1 an pour la conformité RGPD et les audits de sécurité</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Secrets dans variables d env, TLS, RBAC basique</td><td>N a jamais de credentials en dur dans le code, utilise des variables d environnement</td><td>Stocke des mots de passe dans le code ou les logs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Secret Manager, Workload Identity, dynamic masking, audit logs</td><td>Utilise Workload Identity ou Secret Manager, a mis en place le dynamic masking</td><td>Ne sait pas ce qu est Workload Identity</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer soucieux de la sécurité ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

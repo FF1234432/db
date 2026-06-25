@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Docker et Docker Compose pour la data : stacks locales</span></div>
@@ -91,8 +91,66 @@ services:
     command: ['dbt', 'run']
 
 volumes:
-  postgres_data:</code></div><h2 id='network'><span class='sn'>3</span>Networking : comment les services communiquent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment un service Airflow appelle-t-il un service PostgreSQL dans Docker Compose ?</p></div><ul><li><strong>DNS interne</strong> — dans Docker Compose, chaque service est accessible via son nom de service. Ex : postgres:5432 depuis airflow</li><li><strong>Ports exposes</strong> — ports: expose sur la machine hote. Pas necessaire pour la communication inter-services</li><li><strong>healthcheck + depends_on</strong> — attendre que le service soit vraiment pret avant de demarrer les dependances</li><li><strong>Networks</strong> — isoler des groupes de services. Par defaut, tous les services d un Compose sont sur le meme reseau</li></ul><h2 id='multistage'><span class='sn'>4</span>Multi-stage builds : optimiser la taille</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi utilise-t-on les multi-stage builds ? Quelle reduction de taille obtient-on typiquement ?</p></div><ul><li><strong>Probleme</strong> — les outils de build (gcc, pip, headers) ne sont pas necessaires en production mais augmentent la taille de l image</li><li><strong>Solution</strong> — builder dans une image complete, copier seulement les artefacts finaux dans une image slim</li><li><strong>Gains typiques</strong> — image Python avec numpy/pandas : 800MB → 200MB avec multi-stage</li><li><strong>Layer caching</strong> — les layers sont mis en cache. Copier requirements.txt avant le code pour que le rebuild soit rapide</li></ul><h2 id='registry'><span class='sn'>5</span>Registry et CI/CD des images</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment organisez-vous la gestion des images Docker dans un projet data d equipe ?</p></div><ul><li><strong>Registry</strong> — Google Artifact Registry, AWS ECR, Docker Hub (public). Jamais pousser directement en latest sans tag</li><li><strong>Tagging</strong> — tag avec le SHA du commit (image:sha-abc123) pour la tracabilite</li><li><strong>Build en CI</strong> — GitHub Actions ou Cloud Build construit et pousse l image automatiquement</li><li><strong>.dockerignore</strong> — exclure .git, __pycache__, .env, les fichiers de donnees. Reduit le contexte de build</li></ul><h2 id='k8s'><span class='sn'>6</span>De Docker Compose vers Kubernetes</h2><ul><li><strong>docker-compose.yml → Kubernetes manifests</strong> — un service Compose = un Deployment + Service K8s</li><li><strong>kompose convert</strong> — outil officiel pour convertir un docker-compose.yml en manifests K8s</li><li><strong>Docker Compose pour le dev local</strong> — K8s pour la production. Ne pas essayer de faire du K8s en local pour le dev quotidien</li><li><strong>Tilt / Skaffold</strong> — workflows de developpement local qui synchronisent le code avec un cluster K8s</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Dockerfile basique, docker run, docker-compose up</td><td>Sait ecrire un Dockerfile Python, lance une stack avec Compose</td><td>Ne sait pas ce qu est un volume</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Multi-stage, healthchecks, networking Compose, .dockerignore</td><td>Utilise multi-stage, configure les healthchecks, sait pourquoi postgres:5432 marche entre services</td><td>Utilise :latest partout, ne connait pas les multi-stage builds</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Registry CI/CD, securite (non-root, secrets), migration K8s</td><td>A configure le push automatique en CI, utilise des users non-root, connait kompose</td><td>Pousse des images avec des credentials en dur dans le Dockerfile</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+  postgres_data:</code></div><h2 id='network'><span class='sn'>3</span>Networking : comment les services communiquent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment un service Airflow appelle-t-il un service PostgreSQL dans Docker Compose ?</p></div><ul><li><strong>DNS interne</strong> — dans Docker Compose, chaque service est accessible via son nom de service. Ex : postgres:5432 depuis airflow</li><li><strong>Ports exposes</strong> — ports: expose sur la machine hote. Pas necessaire pour la communication inter-services</li><li><strong>healthcheck + depends_on</strong> — attendre que le service soit vraiment pret avant de demarrer les dependances</li><li><strong>Networks</strong> — isoler des groupes de services. Par defaut, tous les services d un Compose sont sur le meme reseau</li></ul><h2 id='multistage'><span class='sn'>4</span>Multi-stage builds : optimiser la taille</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi utilise-t-on les multi-stage builds ? Quelle reduction de taille obtient-on typiquement ?</p></div><ul><li><strong>Probleme</strong> — les outils de build (gcc, pip, headers) ne sont pas necessaires en production mais augmentent la taille de l image</li><li><strong>Solution</strong> — builder dans une image complete, copier seulement les artefacts finaux dans une image slim</li><li><strong>Gains typiques</strong> — image Python avec numpy/pandas : 800MB → 200MB avec multi-stage</li><li><strong>Layer caching</strong> — les layers sont mis en cache. Copier requirements.txt avant le code pour que le rebuild soit rapide</li></ul><h2 id='registry'><span class='sn'>5</span>Registry et CI/CD des images</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment organisez-vous la gestion des images Docker dans un projet data d equipe ?</p></div><ul><li><strong>Registry</strong> — Google Artifact Registry, AWS ECR, Docker Hub (public). Jamais pousser directement en latest sans tag</li><li><strong>Tagging</strong> — tag avec le SHA du commit (image:sha-abc123) pour la tracabilite</li><li><strong>Build en CI</strong> — GitHub Actions ou Cloud Build construit et pousse l image automatiquement</li><li><strong>.dockerignore</strong> — exclure .git, __pycache__, .env, les fichiers de donnees. Reduit le contexte de build</li></ul><h2 id='k8s'><span class='sn'>6</span>De Docker Compose vers Kubernetes</h2><ul><li><strong>docker-compose.yml → Kubernetes manifests</strong> — un service Compose = un Deployment + Service K8s</li><li><strong>kompose convert</strong> — outil officiel pour convertir un docker-compose.yml en manifests K8s</li><li><strong>Docker Compose pour le dev local</strong> — K8s pour la production. Ne pas essayer de faire du K8s en local pour le dev quotidien</li><li><strong>Tilt / Skaffold</strong> — workflows de developpement local qui synchronisent le code avec un cluster K8s</li></ul>
+<div class='cb'><code># docker-compose.yml stack data locale complète
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: databuilder
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  airflow:
+    image: apache/airflow:2.8.0
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@postgres/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    volumes:
+      - ./dags:/opt/airflow/dags
+    command: ["airflow", "standalone"]
+
+  dbt:
+    build: ./dbt
+    volumes:
+      - ./dbt:/dbt
+    depends_on: [postgres]
+    command: ["dbt", "run", "--profiles-dir", "/dbt"]
+
+volumes:
+  postgres_data:</code></div>
+<ul>
+<li><strong>Healthchecks</strong> — toujours définir des healthchecks sur les services stateful (Postgres, Kafka, Redis). Les <code>depends_on</code> sans condition vérifient seulement que le container démarre, pas qu'il est prêt</li>
+<li><strong>Volumes nommés vs bind mounts</strong> — volumes nommés pour les données persistantes (Postgres data). Bind mounts pour le code source (./dags:/opt/airflow/dags) afin de développer sans rebuild</li>
+<li><strong>.env files</strong> — stocker les secrets dans .env (jamais dans docker-compose.yml). Ajouter .env au .gitignore. Fournir un .env.example avec des valeurs factices</li>
+<li><strong>Docker Compose profiles</strong> — <code>--profile monitoring</code> pour démarrer Prometheus + Grafana uniquement en dev. Évite de surcharger l'environnement de base</li>
+<li><strong>Multi-stage builds</strong> — pour les images Python avec dependencies lourdes (PyTorch, Spark) : build stage installe les dépendances, runtime stage copie uniquement le nécessaire. Réduit la taille de l'image</li>
+</ul>
+<ul>
+<li><strong>Healthchecks obligatoires</strong> - definir des healthchecks sur les services stateful (Postgres, Kafka, Redis). Les depends_on sans condition verifient seulement que le container demarre</li>
+<li><strong>Volumes nommes vs bind mounts</strong> - volumes nommes pour les donnees persistantes (Postgres data). Bind mounts pour le code source (./dags:/opt/airflow/dags)</li>
+<li><strong>.env files</strong> - stocker les secrets dans .env (jamais dans docker-compose.yml). Ajouter .env au .gitignore. Fournir un .env.example avec des valeurs factices</li>
+<li><strong>Docker Compose profiles</strong> - --profile monitoring pour demarrer Prometheus + Grafana uniquement en dev. Evite de surcharger l environnement de base</li>
+<li><strong>Multi-stage builds</strong> - build stage installe les dependances, runtime stage copie uniquement le necessaire. Reduit la taille de l image de 3GB a 500MB</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Dockerfile basique, docker run, docker-compose up</td><td>Sait ecrire un Dockerfile Python, lance une stack avec Compose</td><td>Ne sait pas ce qu est un volume</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Multi-stage, healthchecks, networking Compose, .dockerignore</td><td>Utilise multi-stage, configure les healthchecks, sait pourquoi postgres:5432 marche entre services</td><td>Utilise :latest partout, ne connait pas les multi-stage builds</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Registry CI/CD, securite (non-root, secrets), migration K8s</td><td>A configure le push automatique en CI, utilise des users non-root, connait kompose</td><td>Pousse des images avec des credentials en dur dans le Dockerfile</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

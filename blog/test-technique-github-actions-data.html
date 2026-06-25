@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique GitHub Actions pour la data : CI/CD pipelines data</span></div>
@@ -115,8 +115,83 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install ${{ matrix.dbt-adapter }}</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Workflows basiques, tests automatises, secrets</td><td>A configure un workflow dbt CI avec tests, gere les secrets</td><td>Lance les tests manuellement, ne sait pas ce qu est un workflow</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Slim CI dbt, OIDC, matrix, deploiement Docker</td><td>A mis en place le slim CI dbt, utilise OIDC au lieu des cles JSON</td><td>Stocke les cles GCP en clair, ne connait pas le slim CI</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+      - run: pip install ${{ matrix.dbt-adapter }}</code></div>
+<div class='cb'><code># Workflow complet: lint + test + deploy
+name: Data Pipeline CI
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python lint
+        run: |
+          pip install ruff
+          ruff check src/
+      - name: Unit tests
+        run: pytest tests/ -v --cov=src
+      - name: Integration test (staging)
+        if: github.ref == 'refs/heads/main'
+        run: python src/pipeline.py --env staging
+        env:
+          DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+      - name: Deploy prod
+        if: github.ref == 'refs/heads/main' && success()
+        run: python deploy.py --env production
+        env:
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}</code></div>
+<div class='cb'><code># .github/workflows/data_ci.yml
+name: Data Pipeline CI/CD
+on:
+  push: {branches: [main]}
+  pull_request: {branches: [main]}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: {python-version: '3.11'}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+      - run: pip install -r requirements.txt
+      - run: ruff check src/
+      - run: pytest tests/ --cov=src --cov-report=xml
+
+  dbt-check:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install dbt-snowflake
+      - run: dbt deps --project-dir dbt/
+      - run: dbt compile --project-dir dbt/ --profiles-dir dbt/
+      - run: dbt test --select state:modified+ --defer --state ./prod-artifacts
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+
+  deploy:
+    needs: dbt-check
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - run: python deploy.py --env production
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}</code></div>
+<ul>
+<li><strong>Cache pip</strong> - actions/cache sur pip reduit le temps de CI de 3min a 30s. Cle de cache basee sur le hash du fichier requirements.txt</li>
+<li><strong>Secrets GitHub</strong> - Settings -> Secrets -> Actions. Jamais de credentials en dur dans le YAML. Utiliser des environments pour les secrets de prod avec protection</li>
+<li><strong>Matrix builds</strong> - tester sur Python 3.10, 3.11, 3.12 en parallele avec strategy.matrix. Decouvrir les incompatibilites de version avant la prod</li>
+<li><strong>GitHub Environments</strong> - configurer une approbation manuelle obligatoire avant le deploy en production. Tracabilite complete de qui a approuve quoi</li>
+<li><strong>Self-hosted runners</strong> - executer les workflows sur vos propres machines (acces VPN, GPU, ressources puissantes). Utile pour les jobs de training ML ou d acces aux donnees sensibles</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Workflows basiques, tests automatises, secrets</td><td>A configure un workflow dbt CI avec tests, gere les secrets</td><td>Lance les tests manuellement, ne sait pas ce qu est un workflow</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Slim CI dbt, OIDC, matrix, deploiement Docker</td><td>A mis en place le slim CI dbt, utilise OIDC au lieu des cles JSON</td><td>Stocke les cles GCP en clair, ne connait pas le slim CI</td></tr></tbody></table></div><div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

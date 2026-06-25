@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Data Contracts : implémenter avec dbt et OpenAPI</span></div>
@@ -74,8 +74,56 @@ terms:
           - name: status
             tests:
               - accepted_values:
-                  values: [completed, pending, cancelled]</code></div><h2 id='versioning'><span class='sn'>4</span>Schema versioning : gérer les breaking changes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous une breaking change sur un dataset qui a des consommateurs ?</p></div><ul><li><strong>Semantic versioning</strong> — MAJOR.MINOR.PATCH : breaking change = incrémentation MAJOR</li><li><strong>Backward compatible changes</strong> — ajouter une colonne nullable : MINOR. Supprimer ou renommer une colonne : MAJOR</li><li><strong>Dépréciation progressive</strong> — maintenir l ancienne colonne avec un flag deprecated pendant 30 jours, documenter la migration</li><li><strong>Communication</strong> — notifier tous les consommateurs enregistrés avant toute breaking change</li><li><strong>Consumers registry</strong> — tenir un registre des consommateurs de chaque dataset (exposures dbt)</li></ul><h2 id='process'><span class='sn'>5</span>Processus organisationnel</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment convainquez-vous une équipe de mettre en place des data contracts ?</p></div><ul><li><strong>Commencer par les datasets critiques</strong> — les 5-10 tables les plus consommées, pas toute la stack d un coup</li><li><strong>Outiller le producteur</strong> — le contract doit être facile à créer et à maintenir. Si c est une corvée, personne ne le fera</li><li><strong>Automatiser la validation</strong> — les tests de contract doivent tourner automatiquement en CI à chaque PR</li><li><strong>Data stewards</strong> — désigner des responsables par domaine pour valider et maintenir les contracts</li></ul><h2 id='outils'><span class='sn'>6</span>Outils et frameworks en 2025</h2><ul><li><strong>Data Contract CLI</strong> — outil open source pour créer, valider et publier des data contracts (format YAML standard)</li><li><strong>dbt + tests YAML</strong> — la forme la plus répandue et la plus pratique de data contract pour les équipes dbt</li><li><strong>Soda</strong> — framework de qualité qui supporte les data contracts avec des SLA explicites</li><li><strong>DataHub / OpenMetadata</strong> — catalogues qui peuvent stocker et publier les contracts</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Comprend le concept, sait qu un test dbt est une forme de contract</td><td>Peut expliquer pourquoi les data contracts existent, a mis des tests dbt en place</td><td>N a jamais entendu parler de data contracts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>A formalisé des contracts YAML, gère le versioning, communique les breaking changes</td><td>A mis en place des contracts sur des datasets critiques, gère la dépréciation</td><td>Ne sait pas comment gérer une breaking change sans casser les consommateurs</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Analytics Engineer Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+                  values: [completed, pending, cancelled]</code></div><h2 id='versioning'><span class='sn'>4</span>Schema versioning : gérer les breaking changes</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous une breaking change sur un dataset qui a des consommateurs ?</p></div><ul><li><strong>Semantic versioning</strong> — MAJOR.MINOR.PATCH : breaking change = incrémentation MAJOR</li><li><strong>Backward compatible changes</strong> — ajouter une colonne nullable : MINOR. Supprimer ou renommer une colonne : MAJOR</li><li><strong>Dépréciation progressive</strong> — maintenir l ancienne colonne avec un flag deprecated pendant 30 jours, documenter la migration</li><li><strong>Communication</strong> — notifier tous les consommateurs enregistrés avant toute breaking change</li><li><strong>Consumers registry</strong> — tenir un registre des consommateurs de chaque dataset (exposures dbt)</li></ul><h2 id='process'><span class='sn'>5</span>Processus organisationnel</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment convainquez-vous une équipe de mettre en place des data contracts ?</p></div><ul><li><strong>Commencer par les datasets critiques</strong> — les 5-10 tables les plus consommées, pas toute la stack d un coup</li><li><strong>Outiller le producteur</strong> — le contract doit être facile à créer et à maintenir. Si c est une corvée, personne ne le fera</li><li><strong>Automatiser la validation</strong> — les tests de contract doivent tourner automatiquement en CI à chaque PR</li><li><strong>Data stewards</strong> — désigner des responsables par domaine pour valider et maintenir les contracts</li></ul><h2 id='outils'><span class='sn'>6</span>Outils et frameworks en 2025</h2><ul><li><strong>Data Contract CLI</strong> — outil open source pour créer, valider et publier des data contracts (format YAML standard)</li><li><strong>dbt + tests YAML</strong> — la forme la plus répandue et la plus pratique de data contract pour les équipes dbt</li><li><strong>Soda</strong> — framework de qualité qui supporte les data contracts avec des SLA explicites</li><li><strong>DataHub / OpenMetadata</strong> — catalogues qui peuvent stocker et publier les contracts</li></ul>
+<div class='cb'><code># Data Contract YAML (OpenDataContracts standard)
+dataContractSpecification: 0.9.3
+id: orders-contract-v2
+info:
+  title: Orders Contract
+  version: 2.1.0
+  owner: data-platform-team
+  contact: slack://data-platform
+
+models:
+  orders:
+    description: "Table des commandes validées"
+    fields:
+      order_id:
+        type: string
+        required: true
+        unique: true
+        pii: false
+      amount:
+        type: number
+        minimum: 0
+        maximum: 1000000
+      status:
+        type: string
+        enum: [pending, completed, cancelled, refunded]
+      created_at:
+        type: timestamp
+        required: true
+
+quality:
+  - rule: freshness
+    metric: max(created_at) > now() - interval 24 hours
+  - rule: volume
+    metric: count(*) BETWEEN 10000 AND 10000000
+  - rule: completeness
+    metric: count(order_id is not null) / count(*) > 0.99
+
+sla:
+  latency: 2h
+  uptime: 99.5%</code></div>
+<ul>
+<li><strong>OpenDataContracts</strong> — standard ouvert pour décrire les contrats de données en YAML. Compatible avec dbt, Great Expectations, et les outils de monitoring</li>
+<li><strong>Qui définit le contrat</strong> — le producteur (équipe source) définit le schéma et les SLAs. Le consommateur valide que le contrat répond à ses besoins. Négociation avant accord</li>
+<li><strong>Versioning sémantique</strong> — breaking changes (suppression colonne, changement de type) = bump majeur. Backward-compatible changes (ajout colonne) = bump mineur. Les consommateurs doivent être notifiés avant un bump majeur</li>
+<li><strong>Enforcement automatique</strong> — valider le contrat en CI/CD à chaque merge. Si une migration SQL supprime une colonne contractualisée, le pipeline échoue avant d'atteindre la prod</li>
+<li><strong>Data Contract Studio</strong> — outil open source de visualisation et validation des contrats. Générer des tests dbt ou Great Expectations depuis un contrat YAML</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Comprend le concept, sait qu un test dbt est une forme de contract</td><td>Peut expliquer pourquoi les data contracts existent, a mis des tests dbt en place</td><td>N a jamais entendu parler de data contracts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>A formalisé des contracts YAML, gère le versioning, communique les breaking changes</td><td>A mis en place des contracts sur des datasets critiques, gère la dépréciation</td><td>Ne sait pas comment gérer une breaking change sans casser les consommateurs</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Analytics Engineer Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

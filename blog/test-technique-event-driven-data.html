@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique architecture event-driven pour la data</span></div>
@@ -68,8 +68,50 @@ def create_order(order: dict):
 
 # Débrayeur (Debezium ou polling) :
 # Lire l outbox et publier dans Kafka
-# Marquer comme 'published' après succès</code></div><h2 id='saga'><span class='sn'>5</span>Saga Pattern : transactions distribuées</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un Saga ? Comment gère-t-il l échec d une étape dans un processus multi-services ?</p></div><ul><li><strong>Saga</strong> — séquence de transactions locales compensables. Remplace les transactions distribuées (2PC) dans les architectures microservices</li><li><strong>Orchestration</strong> — un orchestrateur central coordonne les étapes. En cas d échec, déclenche les compensations</li><li><strong>Chorégraphie</strong> — chaque service écoute les events et réagit. Plus découplé mais plus difficile à debugger</li><li><strong>Compensation</strong> — chaque étape a une transaction inverse. Si l étape 3 échoue, les étapes 2 et 1 sont compensées</li></ul><h2 id='choix'><span class='sn'>6</span>Quand utiliser l architecture event-driven</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment décidez-vous si une architecture event-driven est justifiée ?</p></div><ul><li><strong>Oui si</strong> — plusieurs consommateurs indépendants, besoin d auditabilité, pics de charge imprévisibles, couplage faible requis</li><li><strong>Non si</strong> — système simple avec 1-2 services, cohérence forte requise partout, équipe petite sans expertise messaging</li><li><strong>Complexité supplémentaire</strong> — eventual consistency, debugging plus difficile, gestion des duplicats (at-least-once delivery)</li><li><strong>Start simple</strong> — une API REST monolithique bien conçue est souvent préférable à une EDA prématurée</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>EDA principes, Kafka producer/consumer, découplage</td><td>Explique les avantages du découplage via events, a consommé Kafka</td><td>Ne sait pas ce qu est l eventual consistency</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CQRS, Event Sourcing, Outbox pattern, Saga</td><td>A implémenté l outbox pattern, explique CQRS et ses trade-offs</td><td>Ne sait pas ce qu est l outbox pattern</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Marquer comme 'published' après succès</code></div><h2 id='saga'><span class='sn'>5</span>Saga Pattern : transactions distribuées</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu un Saga ? Comment gère-t-il l échec d une étape dans un processus multi-services ?</p></div><ul><li><strong>Saga</strong> — séquence de transactions locales compensables. Remplace les transactions distribuées (2PC) dans les architectures microservices</li><li><strong>Orchestration</strong> — un orchestrateur central coordonne les étapes. En cas d échec, déclenche les compensations</li><li><strong>Chorégraphie</strong> — chaque service écoute les events et réagit. Plus découplé mais plus difficile à debugger</li><li><strong>Compensation</strong> — chaque étape a une transaction inverse. Si l étape 3 échoue, les étapes 2 et 1 sont compensées</li></ul><h2 id='choix'><span class='sn'>6</span>Quand utiliser l architecture event-driven</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment décidez-vous si une architecture event-driven est justifiée ?</p></div><ul><li><strong>Oui si</strong> — plusieurs consommateurs indépendants, besoin d auditabilité, pics de charge imprévisibles, couplage faible requis</li><li><strong>Non si</strong> — système simple avec 1-2 services, cohérence forte requise partout, équipe petite sans expertise messaging</li><li><strong>Complexité supplémentaire</strong> — eventual consistency, debugging plus difficile, gestion des duplicats (at-least-once delivery)</li><li><strong>Start simple</strong> — une API REST monolithique bien conçue est souvent préférable à une EDA prématurée</li></ul>
+<div class='cb'><code>import asyncio
+from dataclasses import dataclass
+from typing import Callable
+import json
+
+# Event-driven pipeline simple avec Kafka
+@dataclass
+class OrderEvent:
+    order_id: str
+    customer_id: str
+    amount: float
+    event_type: str  # order_created, order_paid, order_shipped
+
+class EventBus:
+    def __init__(self):
+        self.handlers: dict[str, list[Callable]] = {}
+    
+    def subscribe(self, event_type: str, handler: Callable):
+        self.handlers.setdefault(event_type, []).append(handler)
+    
+    async def publish(self, event: OrderEvent):
+        for handler in self.handlers.get(event.event_type, []):
+            await handler(event)
+
+# Handlers
+async def update_inventory(event: OrderEvent):
+    await db.execute("UPDATE inventory SET stock = stock - 1 WHERE product_id = ?", [event.order_id])
+
+async def send_confirmation_email(event: OrderEvent):
+    await email_service.send(customer_id=event.customer_id, template="order_confirmation")
+
+bus = EventBus()
+bus.subscribe("order_paid", update_inventory)
+bus.subscribe("order_paid", send_confirmation_email)</code></div>
+<ul>
+<li><strong>Event Sourcing</strong> — l'état du système est reconstitué en rejouant les events depuis le début. Kafka comme log immuable. Permet l'audit complet et le time travel</li>
+<li><strong>CQRS (Command Query Responsibility Segregation)</strong> — séparer les writes (commands → events) des reads (projections matérialisées). Optimiser chaque chemin indépendamment</li>
+<li><strong>Saga pattern</strong> — orchestrer des transactions distribuées via des events. Chaque service émet un event de succès ou d'échec. Compensation en cas d'échec partiel</li>
+<li><strong>Outbox pattern</strong> — écrire dans la DB et dans la queue de façon atomique. Évite les situations où la DB est mise à jour mais l'event n'est pas publié</li>
+<li><strong>At-least-once et idempotence</strong> — les consumers peuvent recevoir un event plusieurs fois. Toujours rendre les handlers idempotents (check si l'event a déjà été traité)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>EDA principes, Kafka producer/consumer, découplage</td><td>Explique les avantages du découplage via events, a consommé Kafka</td><td>Ne sait pas ce qu est l eventual consistency</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CQRS, Event Sourcing, Outbox pattern, Saga</td><td>A implémenté l outbox pattern, explique CQRS et ses trade-offs</td><td>Ne sait pas ce qu est l outbox pattern</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

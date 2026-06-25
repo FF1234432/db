@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Airbyte et Fivetran : connecteurs ELT et ingestion</span></div>
@@ -44,8 +44,50 @@ class CustomAPISource(AbstractSource):
         return response.status_code == 200, None
 
     def streams(self, config):
-        return [OrdersStream(config), CustomersStream(config)]</code></div><ul><li><strong>Open source</strong> — hébergeable sur son infra. Airbyte Cloud pour la version managée</li><li><strong>CDK Python</strong> — écrire un connecteur custom en Python avec le Connector Development Kit</li><li><strong>Moins de connecteurs</strong> — moins de 400 connecteurs vs 500+ pour Fivetran, mais suffisant pour la plupart des cas</li></ul><h2 id='vs'><span class='sn'>4</span>Airbyte vs Fivetran : quel choix ?</h2><table class='lt'><thead><tr><th></th><th>Fivetran</th><th>Airbyte Cloud</th><th>Airbyte self-hosted</th></tr></thead><tbody><tr><td>Maintenance</td><td>Zéro</td><td>Minimale</td><td>Gérée par l équipe</td></tr><tr><td>Connecteurs</td><td>500+ (enterprise-grade)</td><td>400+</td><td>400+ + custom</td></tr><tr><td>Coût</td><td>Élevé (par volume)</td><td>Modéré</td><td>Infrastructure uniquement</td></tr><tr><td>Flexibilité</td><td>Faible</td><td>Moyenne</td><td>Maximale</td></tr><tr><td>CDC</td><td>Excellent (HVR)</td><td>Bon</td><td>Bon</td></tr><tr><td>Idéal pour</td><td>Sources standards, zéro maintenance</td><td>Mix sources standards + custom</td><td>Contraintes de sécurité, budget serré</td></tr></tbody></table><h2 id='custom'><span class='sn'>5</span>Connecteurs custom : quand et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas créez-vous un connecteur custom plutôt que d utiliser un connecteur standard ?</p></div><ul><li><strong>API propriétaire</strong> — aucun connecteur standard ne couvre votre source de données</li><li><strong>Authentification complexe</strong> — OAuth2 avec rotation de tokens, certificats mutuels</li><li><strong>Format exotique</strong> — fichiers XML, EDI, formats métier spécifiques</li><li><strong>Options</strong> — Airbyte CDK (Python), Singer (standard ouvert), ou script Python personnalisé orchestré par Airflow</li></ul><h2 id='cdc'><span class='sn'>6</span>CDC : Change Data Capture</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le CDC ? Comment l implémentez-vous avec Fivetran ou Airbyte ?</p></div><ul><li><strong>CDC</strong> — capturer les modifications (INSERT, UPDATE, DELETE) d une base transactionnelle en temps quasi-réel</li><li><strong>Log-based CDC</strong> — lit le binlog MySQL / WAL PostgreSQL. Impact minimal sur la base source. Fivetran HVR, Debezium</li><li><strong>Timestamp-based</strong> — filtre sur updated_at. Simple mais ne capture pas les suppressions</li><li><strong>Full refresh</strong> — recharge toute la table. Simple mais coûteux sur les grandes tables</li><li><strong>Fivetran HVR</strong> — solution de CDC enterprise haute performance, supporte Oracle, DB2, SAP</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>ELT vs ETL, Fivetran ou Airbyte, CDC basique</td><td>A configuré un connecteur Fivetran ou Airbyte, explique ELT vs ETL</td><td>Ne sait pas la différence entre ELT et ETL</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Connecteurs custom, CDC log-based, choix selon contexte</td><td>A écrit un connecteur custom Airbyte, compare Fivetran vs Airbyte selon le contexte</td><td>Ne sait pas ce qu est le CDC log-based</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+        return [OrdersStream(config), CustomersStream(config)]</code></div><ul><li><strong>Open source</strong> — hébergeable sur son infra. Airbyte Cloud pour la version managée</li><li><strong>CDK Python</strong> — écrire un connecteur custom en Python avec le Connector Development Kit</li><li><strong>Moins de connecteurs</strong> — moins de 400 connecteurs vs 500+ pour Fivetran, mais suffisant pour la plupart des cas</li></ul><h2 id='vs'><span class='sn'>4</span>Airbyte vs Fivetran : quel choix ?</h2><table class='lt'><thead><tr><th></th><th>Fivetran</th><th>Airbyte Cloud</th><th>Airbyte self-hosted</th></tr></thead><tbody><tr><td>Maintenance</td><td>Zéro</td><td>Minimale</td><td>Gérée par l équipe</td></tr><tr><td>Connecteurs</td><td>500+ (enterprise-grade)</td><td>400+</td><td>400+ + custom</td></tr><tr><td>Coût</td><td>Élevé (par volume)</td><td>Modéré</td><td>Infrastructure uniquement</td></tr><tr><td>Flexibilité</td><td>Faible</td><td>Moyenne</td><td>Maximale</td></tr><tr><td>CDC</td><td>Excellent (HVR)</td><td>Bon</td><td>Bon</td></tr><tr><td>Idéal pour</td><td>Sources standards, zéro maintenance</td><td>Mix sources standards + custom</td><td>Contraintes de sécurité, budget serré</td></tr></tbody></table><h2 id='custom'><span class='sn'>5</span>Connecteurs custom : quand et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas créez-vous un connecteur custom plutôt que d utiliser un connecteur standard ?</p></div><ul><li><strong>API propriétaire</strong> — aucun connecteur standard ne couvre votre source de données</li><li><strong>Authentification complexe</strong> — OAuth2 avec rotation de tokens, certificats mutuels</li><li><strong>Format exotique</strong> — fichiers XML, EDI, formats métier spécifiques</li><li><strong>Options</strong> — Airbyte CDK (Python), Singer (standard ouvert), ou script Python personnalisé orchestré par Airflow</li></ul><h2 id='cdc'><span class='sn'>6</span>CDC : Change Data Capture</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce que le CDC ? Comment l implémentez-vous avec Fivetran ou Airbyte ?</p></div><ul><li><strong>CDC</strong> — capturer les modifications (INSERT, UPDATE, DELETE) d une base transactionnelle en temps quasi-réel</li><li><strong>Log-based CDC</strong> — lit le binlog MySQL / WAL PostgreSQL. Impact minimal sur la base source. Fivetran HVR, Debezium</li><li><strong>Timestamp-based</strong> — filtre sur updated_at. Simple mais ne capture pas les suppressions</li><li><strong>Full refresh</strong> — recharge toute la table. Simple mais coûteux sur les grandes tables</li><li><strong>Fivetran HVR</strong> — solution de CDC enterprise haute performance, supporte Oracle, DB2, SAP</li></ul>
+<div class='cl'><p><strong>Production tip :</strong> versionner la configuration des connecteurs via l'API Airbyte ou Terraform provider. En cas de rupture de schéma source, Airbyte stoppe le sync automatiquement — configurer des alertes Slack sur les sync failures.</p></div>
+<ul>
+<li><strong>Airbyte Cloud vs self-hosted</strong> — Cloud : zéro maintenance, facturation à la ligne. OSS self-hosted : contrôle total, gratuit, mais upgrades à gérer</li>
+<li><strong>Custom connectors CDK</strong> — Airbyte Connector Development Kit Python : créer un connecteur REST en 2-3h. Idéal pour les sources internes ou APIs non couvertes</li>
+<li><strong>Fivetran HVA (High Volume Agent)</strong> — sync sub-minute pour les sources critiques (Salesforce, NetSuite). L'agent standard suffit dans 90% des cas</li>
+<li><strong>Transformations post-sync</strong> — Airbyte peut déclencher des jobs dbt après chaque sync via la configuration de destination. Remplace le déclenchement manuel</li>
+<li><strong>Monitoring</strong> — surveiller sync_success_rate et volume de lignes par sync. Un sync 3x plus long = signal d'alarme (changement de volume source ou timeout)</li>
+</ul>
+<div class='cb'><code>import requests
+
+AIRBYTE_URL = 'http://airbyte:8000/api/v1'
+
+# Creer une source Postgres via API
+source = requests.post(f'{AIRBYTE_URL}/sources/create', json={
+    'name': 'postgres-prod',
+    'workspaceId': 'workspace-id',
+    'sourceDefinitionId': 'decd338e-5647-4c0e-aed4-642ebc15b5b2',
+    'connectionConfiguration': {
+        'host': 'postgres.internal',
+        'port': 5432,
+        'database': 'ecommerce',
+        'username': 'airbyte_user',
+        'password': '${POSTGRES_PASSWORD}',
+        'replication_method': {'method': 'CDC'}
+    }
+}).json()
+
+# Connexion avec scheduling
+conn = requests.post(f'{AIRBYTE_URL}/connections/create', json={
+    'sourceId': source['sourceId'],
+    'destinationId': 'dest-snowflake-id',
+    'scheduleType': 'cron',
+    'scheduleData': {'cron': {'cronExpression': '0 * * * * ?', 'cronTimeZone': 'UTC'}}
+}).json()</code></div>
+<ul>
+<li><strong>CDC (Change Data Capture)</strong> - Airbyte Postgres CDC via Debezium lit le WAL. Capture INSERT/UPDATE/DELETE sans polling. Latence quasi-temps-reel</li>
+<li><strong>Airbyte vs Fivetran</strong> - Fivetran : zero maintenance, 300+ connecteurs enterprise, cout eleve a volume. Airbyte : open source, connecteurs custom, self-hosted</li>
+<li><strong>Schema drift handling</strong> - configurer la reaction aux changements de schema source : propagate (ajouter la colonne), ignore, ou fail (stopper le sync)</li>
+<li><strong>Normalization post-sync</strong> - Airbyte Basic Normalization transforme le JSON en tables relationnelles. Pour la transformation avancee : dbt post-sync</li>
+<li><strong>Monitoring</strong> - alertes sur sync failures via webhooks. Suivre le sync success rate et le lag par connexion</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>ELT vs ETL, Fivetran ou Airbyte, CDC basique</td><td>A configuré un connecteur Fivetran ou Airbyte, explique ELT vs ETL</td><td>Ne sait pas la différence entre ELT et ETL</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Connecteurs custom, CDC log-based, choix selon contexte</td><td>A écrit un connecteur custom Airbyte, compare Fivetran vs Airbyte selon le contexte</td><td>Ne sait pas ce qu est le CDC log-based</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

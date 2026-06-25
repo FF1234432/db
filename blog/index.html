@@ -1,837 +1,724 @@
 <!DOCTYPE html>
-<html lang="fr" data-lang="fr">
+<html lang="fr">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title data-fr="Blog Data Builder — Guides entretiens techniques data" data-en="Data Builder Blog — Data Technical Interview Guides">Blog Data Builder — Guides entretiens techniques data</title>
-<meta name="description" content="Guides complets pour evaluer les profils data en entretien : SQL, Power BI, dbt, Spark, Airflow, Python, Tableau, BigQuery, Snowflake, Docker, Linux, AWS."/>
-<meta name="robots" content="index,follow"/>
-<link rel="canonical" href="https://www.databuilder.io/blog/index.html"/>
-<link rel="icon" type="image/svg+xml" href="../data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Blog — Guides recrutement data | Data Builder</title>
+<meta name="description" content="Guides techniques pour évaluer les profils data en entretien : Data Engineer, Analytics Engineer, Data Scientist, Data Lead."/>
+<link rel="canonical" href="https://www.databuilder.io/blog/"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<meta property="og:title" content="Blog Data Builder — Guides entretiens techniques data"/>
-<meta property="og:type" content="website"/>
+<link rel="stylesheet" href="../styles.css"/>
+<!-- GTM -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#fff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:1100px}
-html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
-.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
-.nm{display:flex;gap:26px}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
-.nr{display:flex;align-items:center;gap:10px}
-.lb{font-size:12px;font-weight:600;color:var(--g4);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
-.lb.on{color:var(--pul);font-weight:700}
-.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
-.hero{background:var(--ps);border-bottom:1px solid var(--pb);padding:56px 32px 48px;text-align:center}
-.hero-tag{display:inline-flex;background:var(--pu);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:var(--rp);margin-bottom:18px}
-.hero h1{font-size:clamp(28px,5vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:14px}
-.hero h1 span{color:var(--pul)}
-.hero p{font-size:17px;color:var(--g5);max-width:540px;margin:0 auto 28px}
-.filters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.fb{background:var(--wh);border:1.5px solid var(--pb);color:var(--g5);padding:7px 16px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
-.fb.active{background:var(--pu);border-color:var(--pu);color:#fff}
-.fb:hover:not(.active){border-color:var(--pul);color:var(--pul)}
-.grid-wrap{max-width:var(--mx);margin:0 auto;padding:48px 32px 80px}
-.grid-count{font-size:13px;color:var(--g4);margin-bottom:24px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.card{background:var(--wh);border:1.5px solid var(--pb);border-radius:var(--rc);padding:22px;text-decoration:none;color:inherit;display:block;transition:border-color .15s,box-shadow .15s}
-.card:hover{border-color:var(--pul);box-shadow:0 4px 20px rgba(76,29,149,.08)}
-.card.hidden{display:none}
-.card-roles{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.rp{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:99px}
-.rp-da{background:#dbeafe;color:#1e40af}
-.rp-de{background:#e0e7ff;color:#3730a3}
-.rp-ds{background:#f3e8ff;color:#6b21a8}
-.rp-ae{background:#d1fae5;color:#065f46}
-.card-title{font-size:16px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;line-height:1.3}
-.card-desc{font-size:14px;color:var(--g5);line-height:1.6;margin-bottom:14px}
-.card-meta{font-size:12px;color:var(--g4)}
-footer{border-top:1px solid var(--pb);padding:28px 32px}
-.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
-.fc{font-size:12px;color:#d1d5db}
-@media(max-width:560px){.nm{display:none}.grid{grid-template-columns:1fr}.hero{padding:36px 20px 32px}.grid-wrap{padding:32px 20px 60px}}
+.bh{padding:56px 24px 40px;max-width:1100px;margin:0 auto;text-align:center}
+.be{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pul);margin-bottom:12px}
+.bh h1{font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.bs{font-size:17px;color:var(--g5);max-width:540px;margin:0 auto 36px;line-height:1.6}
+.fb{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;padding:0 24px}
+.ft{font-size:13px;font-weight:500;padding:7px 16px;border-radius:99px;border:1.5px solid var(--pb);background:white;color:var(--g5);cursor:pointer;font-family:inherit;transition:all .15s}
+.ft:hover,.ft.on{background:var(--pu);color:white;border-color:var(--pu)}
+.cn{text-align:center;color:var(--g4);font-size:13px;margin-bottom:32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.card{display:flex;flex-direction:column;background:white;border:1px solid var(--pb);border-radius:14px;padding:22px;text-decoration:none;color:var(--bk);transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:0 6px 24px rgba(76,29,149,.1);transform:translateY(-2px)}
+.ctag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:10px;width:fit-content}
+.ctitle{font-size:15px;font-weight:700;letter-spacing:-.02em;line-height:1.35;margin-bottom:8px;flex:1}
+.cdesc{font-size:13px;color:var(--g5);line-height:1.55;margin-bottom:12px}
+.clink{font-size:12px;color:var(--pul);font-weight:600}
+@media(max-width:600px){.grid{grid-template-columns:1fr;padding:0 16px 60px}.bh{padding:36px 16px 28px}.fb{padding:0 16px}}
 </style>
 </head>
 <body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <nav>
-<a href="../index.html" class="nl">Data <span>Builder</span></a>
-<div class="nm"><a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a><a href="../about.html" data-fr="A propos" data-en="About">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button><button class="lb" id="btn-en" onclick="setLang('en')">EN</button><a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a></div>
+  <a href="../index.html" class="nl">Data <span>Builder</span></a>
+  <div class="nm">
+    <a href="../how.html">Comment ça marche</a>
+    <a href="../about.html">À propos</a>
+    <a href="index.html" style="color:var(--pul);font-weight:600">Blog</a>
+  </div>
+  <div class="nr">
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Prendre RDV</a>
+  </div>
 </nav>
-<div class="hero">
-<div class="hero-tag" data-fr="Recrutement data" data-en="Data hiring">Recrutement data</div>
-<h1 data-fr="Guides d'entretien <span>techniques data</span>" data-en="<span>Data technical</span> interview guides">Guides d'entretien <span>techniques data</span></h1>
-<p data-fr="Guides pour evaluer rigoureusement les competences techniques data — SQL, dbt, Spark, Power BI, Tableau, Cloud, MLOps et plus." data-en="Guides to rigorously assess data technical skills — SQL, dbt, Spark, Power BI, Tableau, Cloud, MLOps and more.">Guides pour evaluer rigoureusement les competences techniques data — SQL, dbt, Spark, Power BI, Tableau, Cloud, MLOps et plus.</p>
-<div class="filters" id="filter-bar">
-<button class="fb active" data-filter="all" onclick="filterCards('all')" data-fr="Tous les articles" data-en="All articles">Tous les articles</button>
-<button class="fb" data-filter="da" onclick="filterCards('da')">Data Analyst</button>
-<button class="fb" data-filter="de" onclick="filterCards('de')">Data Engineer</button>
-<button class="fb" data-filter="ds" onclick="filterCards('ds')">Data Scientist</button>
-<button class="fb" data-filter="ae" onclick="filterCards('ae')">Analytics Engineer</button>
-</div></div>
-<div class="grid-wrap">
-<div class="grid-count" id="count"></div>
-<div class="grid">
-<a href="test-technique-sql.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique SQL" data-en="SQL technical interview">Test technique SQL</h2>
-<p class="card-desc" data-fr="Jointures, window functions, optimisation — ce que SQL signifie vraiment en entretien data." data-en="Joins, window functions, optimization — what SQL really means in a data interview.">Jointures, window functions, optimisation — ce que SQL signifie vraiment en entretien data.</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-power-bi.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Test technique Power BI" data-en="Power BI technical interview">Test technique Power BI</h2>
-<p class="card-desc" data-fr="Power Query, DAX et contexte de filtre, modelisation en etoile, deploiement en production." data-en="Power Query, DAX filter context, star schema modeling, production deployment.">Power Query, DAX et contexte de filtre, modelisation en etoile, deploiement en production.</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-git.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Git" data-en="Git technical interview">Test technique Git</h2>
-<p class="card-desc" data-fr="Branches, conflits, rebase et workflow CI/CD dans un contexte data." data-en="Branches, conflicts, rebase and CI/CD workflow in a data context.">Branches, conflits, rebase et workflow CI/CD dans un contexte data.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique dbt" data-en="dbt technical interview">Test technique dbt</h2>
-<p class="card-desc" data-fr="Structure projet, tests generiques et custom, macros Jinja, CI/CD slim." data-en="Project structure, generic and custom tests, Jinja macros, slim CI/CD.">Structure projet, tests generiques et custom, macros Jinja, CI/CD slim.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-spark.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Spark" data-en="Spark technical interview">Test technique Spark</h2>
-<p class="card-desc" data-fr="Lazy execution, partitionnement, data skew et optimisation de cluster." data-en="Lazy execution, partitioning, data skew and cluster optimization.">Lazy execution, partitionnement, data skew et optimisation de cluster.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-airflow.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Airflow" data-en="Airflow technical interview">Test technique Airflow</h2>
-<p class="card-desc" data-fr="DAGs, operateurs, TaskFlow API, SLAs et monitoring en production." data-en="DAGs, operators, TaskFlow API, SLAs and production monitoring.">DAGs, operateurs, TaskFlow API, SLAs et monitoring en production.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-python-data.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Test technique Python data" data-en="Python data interview">Test technique Python data</h2>
-<p class="card-desc" data-fr="Pandas/DuckDB, POO, tests unitaires, FastAPI — Python orientee production." data-en="Pandas/DuckDB, OOP, unit testing, FastAPI — production-oriented Python.">Pandas/DuckDB, POO, tests unitaires, FastAPI — Python orientee production.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-tableau.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Test technique Tableau" data-en="Tableau technical interview">Test technique Tableau</h2>
-<p class="card-desc" data-fr="LOD expressions, table calculations, Performance Recorder et gouvernance." data-en="LOD expressions, table calculations, Performance Recorder and governance.">LOD expressions, table calculations, Performance Recorder et gouvernance.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-looker.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Looker / LookML" data-en="Looker technical interview">Test technique Looker / LookML</h2>
-<p class="card-desc" data-fr="LookML, PDT, RBAC et semantic layer d'entreprise." data-en="LookML, PDT, RBAC and enterprise semantic layer.">LookML, PDT, RBAC et semantic layer d'entreprise.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-bigquery.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique BigQuery" data-en="BigQuery technical interview">Test technique BigQuery</h2>
-<p class="card-desc" data-fr="Partitionnement, clustering, QUALIFY et gestion des couts BQ." data-en="Partitioning, clustering, QUALIFY and BQ cost management.">Partitionnement, clustering, QUALIFY et gestion des couts BQ.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-snowflake.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Snowflake" data-en="Snowflake technical interview">Test technique Snowflake</h2>
-<p class="card-desc" data-fr="Time Travel, Streams/Tasks, Dynamic Tables et optimisation couts." data-en="Time Travel, Streams/Tasks, Dynamic Tables and cost optimization.">Time Travel, Streams/Tasks, Dynamic Tables et optimisation couts.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-docker.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Docker" data-en="Docker technical interview">Test technique Docker</h2>
-<p class="card-desc" data-fr="Dockerfile optimise, volumes, Docker Compose et CI/CD containerisee." data-en="Optimized Dockerfile, volumes, Docker Compose and containerized CI/CD.">Dockerfile optimise, volumes, Docker Compose et CI/CD containerisee.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-linux-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Linux / Bash" data-en="Linux/Bash technical interview">Test technique Linux / Bash</h2>
-<p class="card-desc" data-fr="Navigation, scripts bash, processus et monitoring en production." data-en="Navigation, bash scripts, processes and production monitoring.">Navigation, scripts bash, processus et monitoring en production.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-aws-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique AWS pour la Data" data-en="AWS for Data interview">Test technique AWS pour la Data</h2>
-<p class="card-desc" data-fr="S3, IAM, Glue/Athena/Redshift, MWAA et gestion des couts AWS." data-en="S3, IAM, Glue/Athena/Redshift, MWAA and AWS cost management.">S3, IAM, Glue/Athena/Redshift, MWAA et gestion des couts AWS.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-power-apps.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Test technique Power Apps" data-en="Power Apps technical interview">Test technique Power Apps</h2>
-<p class="card-desc" data-fr="Canvas apps, Power Fx, delegation et gouvernance ALM." data-en="Canvas apps, Power Fx, delegation and ALM governance.">Canvas apps, Power Fx, delegation et gouvernance ALM.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-power-automate.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Test technique Power Automate" data-en="Power Automate technical interview">Test technique Power Automate</h2>
-<p class="card-desc" data-fr="Flows automatises, custom connectors, gestion d'erreurs et DLP." data-en="Automated flows, custom connectors, error handling and DLP.">Flows automatises, custom connectors, gestion d'erreurs et DLP.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-dataiku.html" class="card" data-roles='["ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique Dataiku" data-en="Dataiku technical interview">Test technique Dataiku</h2>
-<p class="card-desc" data-fr="Projets/flows, Visual ML, MLOps et gouvernance multi-instances." data-en="Projects/flows, Visual ML, MLOps and multi-instance governance.">Projets/flows, Visual ML, MLOps et gouvernance multi-instances.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-dax-power-bi.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="DAX avancé Power BI" data-en="Advanced DAX Power BI">DAX avancé Power BI</h2>
-<p class="card-desc" data-fr="CALCULATE, VAR/RETURN, time intelligence, SUMX, DAX Studio — les formules qu'on teste en entretien." data-en="CALCULATE, VAR/RETURN, time intelligence, SUMX, DAX Studio — the formulas tested in interviews.">CALCULATE, VAR/RETURN, time intelligence, SUMX, DAX Studio — les formules qu'on teste en entretien.</p>
-<div class="card-meta"><span data-fr="10 min de lecture" data-en="10 min read">10 min de lecture</span></div>
-</a>
-<a href="test-technique-tableau-avance.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Tableau avancé : LOD, calculs de table" data-en="Advanced Tableau: LOD, table calculations">Tableau avancé : LOD, calculs de table</h2>
-<p class="card-desc" data-fr="LOD FIXED/INCLUDE/EXCLUDE, calculs de table, Tableau Prep, dashboards dynamiques, Performance Recorder." data-en="LOD FIXED/INCLUDE/EXCLUDE, table calculations, Tableau Prep, dynamic dashboards, Performance Recorder.">LOD FIXED/INCLUDE/EXCLUDE, calculs de table, Tableau Prep, dashboards dynamiques, Performance Recorder.</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-airflow-avance.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Airflow avancé : DAGs, XCom, TaskFlow" data-en="Advanced Airflow: DAGs, XCom, TaskFlow">Airflow avancé : DAGs, XCom, TaskFlow</h2>
-<p class="card-desc" data-fr="TaskFlow API, XCom, trigger rules, executors, Secrets Backend et architecture en production." data-en="TaskFlow API, XCom, trigger rules, executors, Secrets Backend and production architecture.">TaskFlow API, XCom, trigger rules, executors, Secrets Backend et architecture en production.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-git-avance.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Git avancé : rebase, hooks, gitflow" data-en="Advanced Git: rebase, hooks, gitflow">Git avancé : rebase, hooks, gitflow</h2>
-<p class="card-desc" data-fr="Rebase interactif, pre-commit hooks, cherry-pick, gestion des urgences et standards d'equipe." data-en="Interactive rebase, pre-commit hooks, cherry-pick, emergency management and team standards.">Rebase interactif, pre-commit hooks, cherry-pick, gestion des urgences et standards d'equipe.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-power-bi-vs-tableau-vs-looker.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Power BI vs Tableau vs Looker" data-en="Power BI vs Tableau vs Looker">Power BI vs Tableau vs Looker</h2>
-<p class="card-desc" data-fr="Connectivite, modelisation, DAX vs LookML, performances, couts et gouvernance — quel outil pour quel contexte ?" data-en="Connectivity, modeling, DAX vs LookML, performance, costs and governance — which tool for which context?">Connectivite, modelisation, DAX vs LookML, performances, couts et gouvernance — quel outil pour quel contexte ?</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-power-apps-data.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Power Apps pour la data" data-en="Power Apps for data">Power Apps pour la data</h2>
-<p class="card-desc" data-fr="Canvas apps, Power Fx, Dataverse vs SharePoint, Power Automate et gouvernance ALM DEV/TEST/PROD." data-en="Canvas apps, Power Fx, Dataverse vs SharePoint, Power Automate and ALM DEV/TEST/PROD governance.">Canvas apps, Power Fx, Dataverse vs SharePoint, Power Automate et gouvernance ALM DEV/TEST/PROD.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-kubernetes-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Kubernetes pour la data : GKE, pods, nodes" data-en="Kubernetes for data: GKE, pods, nodes">Kubernetes pour la data : GKE, pods, nodes</h2>
-<p class="card-desc" data-fr="Pods, nodes, cluster, GKE Autopilot vs Standard, Airflow et Spark sur K8s, Workload Identity." data-en="Pods, nodes, cluster, GKE Autopilot vs Standard, Airflow and Spark on K8s, Workload Identity.">Pods, nodes, cluster, GKE Autopilot vs Standard, Airflow et Spark sur K8s, Workload Identity.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-data-mesh.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Data Mesh : domaines, data products, gouvernance" data-en="Data Mesh: domains, data products, governance">Data Mesh : domaines, data products, gouvernance</h2>
-<p class="card-desc" data-fr="Les 4 principes, data products, self-serve infrastructure et gouvernance federee — vs Data Lakehouse." data-en="The 4 principles, data products, self-serve infrastructure and federated governance — vs Data Lakehouse.">Les 4 principes, data products, self-serve infrastructure et gouvernance federee — vs Data Lakehouse.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-ux-dashboards.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="UX design pour dashboards" data-en="UX design for dashboards">UX design pour dashboards</h2>
-<p class="card-desc" data-fr="Discovery utilisateur, Double Diamond, wireframes, choix des visuels et hierarchie d'information." data-en="User discovery, Double Diamond, wireframes, visual choices and information hierarchy.">Discovery utilisateur, Double Diamond, wireframes, choix des visuels et hierarchie d'information.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-mlops.html" class="card" data-roles='["ds","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="MLOps : CI/CD ML, MLflow, deploiement" data-en="MLOps: CI/CD ML, MLflow, deployment">MLOps : CI/CD ML, MLflow, deploiement</h2>
-<p class="card-desc" data-fr="MLOps 0/1/2, MLflow Registry, CI/CD pour le ML, deploiement de modeles et monitoring de drift." data-en="MLOps 0/1/2, MLflow Registry, CI/CD for ML, model deployment and drift monitoring.">MLOps 0/1/2, MLflow Registry, CI/CD pour le ML, deploiement de modeles et monitoring de drift.</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-data-gouvernance.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Data Gouvernance : catalogue, lineage, qualite" data-en="Data Governance: catalog, lineage, quality">Data Gouvernance : catalogue, lineage, qualite</h2>
-<p class="card-desc" data-fr="Catalogue de donnees, data lineage, data quality (dbt + Great Expectations), MDM et RGPD." data-en="Data catalog, data lineage, data quality (dbt + Great Expectations), MDM and GDPR.">Catalogue de donnees, data lineage, data quality (dbt + Great Expectations), MDM et RGPD.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-scraping-python.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Web scraping Python : BeautifulSoup, Selenium, Scrapy" data-en="Python web scraping: BeautifulSoup, Selenium, Scrapy">Web scraping Python : BeautifulSoup, Selenium, Scrapy</h2>
-<p class="card-desc" data-fr="HTTP, pages statiques vs dynamiques, Scrapy pour la production, anti-bots et legalite." data-en="HTTP, static vs dynamic pages, Scrapy for production, anti-bots and legality.">HTTP, pages statiques vs dynamiques, Scrapy pour la production, anti-bots et legalite.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-power-bi-bonnes-pratiques.html" class="card" data-roles='["da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Power BI bonnes pratiques rapport et modele" data-en="Power BI best practices: report and model">Power BI bonnes pratiques rapport et modele</h2>
-<p class="card-desc" data-fr="Structure de rapport, optimisation des performances, signets, Performance Analyzer et deploiement." data-en="Report structure, performance optimization, bookmarks, Performance Analyzer and deployment.">Structure de rapport, optimisation des performances, signets, Performance Analyzer et deploiement.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-python-pandas-avance.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Python data avance : pandas, DuckDB, Polars" data-en="Advanced Python data: pandas, DuckDB, Polars">Python data avance : pandas, DuckDB, Polars</h2>
-<p class="card-desc" data-fr="Vectorisation, optimisation memoire, DuckDB pour les gros volumes et API lazy Polars." data-en="Vectorization, memory optimization, DuckDB for large volumes and Polars lazy API.">Vectorisation, optimisation memoire, DuckDB pour les gros volumes et API lazy Polars.</p>
-<div class="card-meta"><span data-fr="9 min de lecture" data-en="9 min read">9 min de lecture</span></div>
-</a>
-<a href="test-technique-metabase-self-service-bi.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="BI self-service : Metabase, Streamlit, Redash" data-en="Self-service BI: Metabase, Streamlit, Redash">BI self-service : Metabase, Streamlit, Redash</h2>
-<p class="card-desc" data-fr="Quel outil self-service choisir selon le contexte ? Gouvernance, limites et positionnement vs Power BI." data-en="Which self-service tool to choose by context? Governance, limits and positioning vs Power BI.">Quel outil self-service choisir selon le contexte ? Gouvernance, limites et positionnement vs Power BI.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-rag-infrastructure.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="RAG : architecture, embeddings, bases vectorielles" data-en="RAG : architecture, embeddings, bases vectorielles">RAG : architecture, embeddings, bases vectorielles</h2>
-<p class="card-desc" data-fr="Retrieval-Augmented Generation, chunks, bases vectorielles, hybrid search, re-ranking." data-en="Retrieval-Augmented Generation, chunks, bases vectorielles, hybrid search, re-ranking.">Retrieval-Augmented Generation, chunks, bases vectorielles, hybrid search, re-ranking.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-mcp-agents-ia.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="MCP : Model Context Protocol pour les agents IA" data-en="MCP : Model Context Protocol pour les agents IA">MCP : Model Context Protocol pour les agents IA</h2>
-<p class="card-desc" data-fr="Architecture MCP, transports STDIO vs HTTP, creation de serveurs Python, ecosysteme." data-en="Architecture MCP, transports STDIO vs HTTP, creation de serveurs Python, ecosysteme.">Architecture MCP, transports STDIO vs HTTP, creation de serveurs Python, ecosysteme.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-responsible-ai.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="IA responsable : biais, equite, SHAP, AI Act" data-en="IA responsable : biais, equite, SHAP, AI Act">IA responsable : biais, equite, SHAP, AI Act</h2>
-<p class="card-desc" data-fr="Biais algorithmiques, SHAP, equite algorithmique, IA generative, impact carbone." data-en="Biais algorithmiques, SHAP, equite algorithmique, IA generative, impact carbone.">Biais algorithmiques, SHAP, equite algorithmique, IA generative, impact carbone.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
 
-<a href="test-technique-tableau-server-client.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Tableau Server Client : automatisation Python" data-en="Tableau Server Client : automatisation Python">Tableau Server Client : automatisation Python</h2>
-<p class="card-desc" data-fr="TSC Python, deploiement STAGE-PROD, gestion utilisateurs, refresh API, audit securite." data-en="TSC Python, deploiement STAGE-PROD, gestion utilisateurs, refresh API, audit securite.">TSC Python, deploiement STAGE-PROD, gestion utilisateurs, refresh API, audit securite.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-scraping-automatisation-avance.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Scraping et automatisation Python avancee" data-en="Scraping et automatisation Python avancee">Scraping et automatisation Python avancee</h2>
-<p class="card-desc" data-fr="Playwright, Scrapy, anti-detection, crawling vs scraping, legislation." data-en="Playwright, Scrapy, anti-detection, crawling vs scraping, legislation.">Playwright, Scrapy, anti-detection, crawling vs scraping, legislation.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-web-analytics-ga4.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Web Analytics : GA4, GTM, server-side tracking" data-en="Web Analytics : GA4, GTM, server-side tracking">Web Analytics : GA4, GTM, server-side tracking</h2>
-<p class="card-desc" data-fr="GA4, Google Tag Manager, SGTM, CRO, data quality web." data-en="GA4, Google Tag Manager, SGTM, CRO, data quality web.">GA4, Google Tag Manager, SGTM, CRO, data quality web.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-cicd-power-bi.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="CI/CD Power BI : deployment pipelines" data-en="CI/CD Power BI : deployment pipelines">CI/CD Power BI : deployment pipelines</h2>
-<p class="card-desc" data-fr="Deployment Pipelines, XMLA, API REST, PBIP format, Git integration." data-en="Deployment Pipelines, XMLA, API REST, PBIP format, Git integration.">Deployment Pipelines, XMLA, API REST, PBIP format, Git integration.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-mlops-cas-concret.html" class="card" data-roles='["ds","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="MLOps en pratique : CI/CD ML et monitoring modeles" data-en="MLOps en pratique : CI/CD ML et monitoring modeles">MLOps en pratique : CI/CD ML et monitoring modeles</h2>
-<p class="card-desc" data-fr="Cycle de vie ML, framework CI/CD, Dataiku, fiabilite scalabilite tracabilite." data-en="Cycle de vie ML, framework CI/CD, Dataiku, fiabilite scalabilite tracabilite.">Cycle de vie ML, framework CI/CD, Dataiku, fiabilite scalabilite tracabilite.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-avance.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="dbt avance : macros, packages, snapshots" data-en="dbt avance : macros, packages, snapshots">dbt avance : macros, packages, snapshots</h2>
-<p class="card-desc" data-fr="Macros Jinja avancees, dbt-utils, snapshots SCD2, hooks, exposures." data-en="Macros Jinja avancees, dbt-utils, snapshots SCD2, hooks, exposures.">Macros Jinja avancees, dbt-utils, snapshots SCD2, hooks, exposures.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-sql-avance.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="SQL avance : window functions, CTEs recursives" data-en="SQL avance : window functions, CTEs recursives">SQL avance : window functions, CTEs recursives</h2>
-<p class="card-desc" data-fr="Window functions avancees, CTEs recursives, EXPLAIN, Materialized Views, JSON." data-en="Window functions avancees, CTEs recursives, EXPLAIN, Materialized Views, JSON.">Window functions avancees, CTEs recursives, EXPLAIN, Materialized Views, JSON.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-spark-avance.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Spark avance : Delta Lake, Streaming, AQE" data-en="Spark avance : Delta Lake, Streaming, AQE">Spark avance : Delta Lake, Streaming, AQE</h2>
-<p class="card-desc" data-fr="Structured Streaming, Delta Lake, AQE, Spark on K8s, Unity Catalog." data-en="Structured Streaming, Delta Lake, AQE, Spark on K8s, Unity Catalog.">Structured Streaming, Delta Lake, AQE, Spark on K8s, Unity Catalog.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-snowflake-avance.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Snowflake avance : Streams, Tasks, Dynamic Tables" data-en="Snowflake avance : Streams, Tasks, Dynamic Tables">Snowflake avance : Streams, Tasks, Dynamic Tables</h2>
-<p class="card-desc" data-fr="Streams CDC, Tasks, Dynamic Tables, Zero-Copy Cloning, Snowpark Python." data-en="Streams CDC, Tasks, Dynamic Tables, Zero-Copy Cloning, Snowpark Python.">Streams CDC, Tasks, Dynamic Tables, Zero-Copy Cloning, Snowpark Python.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-bigquery-avance.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="BigQuery avance : partitionnement, couts, ML" data-en="BigQuery avance : partitionnement, couts, ML">BigQuery avance : partitionnement, couts, ML</h2>
-<p class="card-desc" data-fr="Partitionnement, clustering, INFORMATION_SCHEMA, BigQuery ML, Omni." data-en="Partitionnement, clustering, INFORMATION_SCHEMA, BigQuery ML, Omni.">Partitionnement, clustering, INFORMATION_SCHEMA, BigQuery ML, Omni.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-kafka.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Apache Kafka : topics, consumers, Schema Registry" data-en="Apache Kafka : topics, consumers, Schema Registry">Apache Kafka : topics, consumers, Schema Registry</h2>
-<p class="card-desc" data-fr="Topics, partitions, consumer groups, Kafka Streams, outbox pattern." data-en="Topics, partitions, consumer groups, Kafka Streams, outbox pattern.">Topics, partitions, consumer groups, Kafka Streams, outbox pattern.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-fastapi-data.html" class="card" data-roles='["ds","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="FastAPI pour la data : APIs de scoring ML" data-en="FastAPI pour la data : APIs de scoring ML">FastAPI pour la data : APIs de scoring ML</h2>
-<p class="card-desc" data-fr="FastAPI ML, Pydantic, async, securite, tests, Docker Gunicorn." data-en="FastAPI ML, Pydantic, async, securite, tests, Docker Gunicorn.">FastAPI ML, Pydantic, async, securite, tests, Docker Gunicorn.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-delta-lake-iceberg.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Delta Lake vs Iceberg vs Hudi : choix du table format" data-en="Delta Lake vs Iceberg vs Hudi : choix du table format">Delta Lake vs Iceberg vs Hudi : choix du table format</h2>
-<p class="card-desc" data-fr="ACID, time travel, schema evolution, partition evolution, choix selon l ecosysteme." data-en="ACID, time travel, schema evolution, partition evolution, choix selon l ecosysteme.">ACID, time travel, schema evolution, partition evolution, choix selon l ecosysteme.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-databricks.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Databricks : Unity Catalog, DLT, MLflow, Jobs" data-en="Databricks : Unity Catalog, DLT, MLflow, Jobs">Databricks : Unity Catalog, DLT, MLflow, Jobs</h2>
-<p class="card-desc" data-fr="Unity Catalog, Delta Live Tables, MLflow integre, Photon, Serverless." data-en="Unity Catalog, Delta Live Tables, MLflow integre, Photon, Serverless.">Unity Catalog, Delta Live Tables, MLflow integre, Photon, Serverless.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-terraform-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Terraform pour la data : IaC, modules, state" data-en="Terraform pour la data : IaC, modules, state">Terraform pour la data : IaC, modules, state</h2>
-<p class="card-desc" data-fr="Modules GCP/AWS, remote backend, CI/CD Terraform, import de ressources." data-en="Modules GCP/AWS, remote backend, CI/CD Terraform, import de ressources.">Modules GCP/AWS, remote backend, CI/CD Terraform, import de ressources.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-github-actions-data.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="GitHub Actions : CI/CD pour projets data" data-en="GitHub Actions : CI/CD pour projets data">GitHub Actions : CI/CD pour projets data</h2>
-<p class="card-desc" data-fr="Slim CI dbt, tests automatises, Docker push, secrets OIDC, matrix strategy." data-en="Slim CI dbt, tests automatises, Docker push, secrets OIDC, matrix strategy.">Slim CI dbt, tests automatises, Docker push, secrets OIDC, matrix strategy.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-polars-avance.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Polars avance : API lazy, expressions, joins" data-en="Polars avance : API lazy, expressions, joins">Polars avance : API lazy, expressions, joins</h2>
-<p class="card-desc" data-fr="API Lazy, scan_parquet, expressions Polars, semi/anti join, zero-copy Arrow." data-en="API Lazy, scan_parquet, expressions Polars, semi/anti join, zero-copy Arrow.">API Lazy, scan_parquet, expressions Polars, semi/anti join, zero-copy Arrow.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-great-expectations.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Great Expectations : tester la qualite des donnees" data-en="Great Expectations : tester la qualite des donnees">Great Expectations : tester la qualite des donnees</h2>
-<p class="card-desc" data-fr="Suites d expectations, checkpoints, alertes Slack, integration Airflow et dbt." data-en="Suites d expectations, checkpoints, alertes Slack, integration Airflow et dbt.">Suites d expectations, checkpoints, alertes Slack, integration Airflow et dbt.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-feature-engineering-ml.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Feature engineering ML : creer de bonnes features" data-en="Feature engineering ML : creer de bonnes features">Feature engineering ML : creer de bonnes features</h2>
-<p class="card-desc" data-fr="Encodage, valeurs manquantes, features temporelles, scaling, selection, leakage." data-en="Encodage, valeurs manquantes, features temporelles, scaling, selection, leakage.">Encodage, valeurs manquantes, features temporelles, scaling, selection, leakage.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-langchain-llm.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="LangChain : agents, chains, LangGraph, LangSmith" data-en="LangChain : agents, chains, LangGraph, LangSmith">LangChain : agents, chains, LangGraph, LangSmith</h2>
-<p class="card-desc" data-fr="LCEL, agents avec tools, memory, LangGraph workflows, observabilite LangSmith." data-en="LCEL, agents avec tools, memory, LangGraph workflows, observabilite LangSmith.">LCEL, agents avec tools, memory, LangGraph workflows, observabilite LangSmith.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-docker-compose-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Docker et Docker Compose pour la data" data-en="Docker et Docker Compose pour la data">Docker et Docker Compose pour la data</h2>
-<p class="card-desc" data-fr="Dockerfile optimise, stack data locale, networking, multi-stage, registry CI." data-en="Dockerfile optimise, stack data locale, networking, multi-stage, registry CI.">Dockerfile optimise, stack data locale, networking, multi-stage, registry CI.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-salaires-data-france-2025.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Salaires data en France 2025 : grilles et negociation" data-en="Salaires data en France 2025 : grilles et negociation">Salaires data en France 2025 : grilles et negociation</h2>
-<p class="card-desc" data-fr="Grilles Data Engineer, Analyst, Scientist, Analytics Engineer, conseils negociation." data-en="Grilles Data Engineer, Analyst, Scientist, Analytics Engineer, conseils negociation.">Grilles Data Engineer, Analyst, Scientist, Analytics Engineer, conseils negociation.</p>
-<div class="card-meta"><span data-fr="5 min de lecture" data-en="5 min read">5 min de lecture</span></div>
-</a>
-<a href="test-technique-red-flags-entretien.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Red flags en entretien data : signaux d alerte" data-en="Red flags en entretien data : signaux d alerte">Red flags en entretien data : signaux d alerte</h2>
-<p class="card-desc" data-fr="Red flags techniques, posture, soft skills, questions revelrices, GO/NO-GO." data-en="Red flags techniques, posture, soft skills, questions revelrices, GO/NO-GO.">Red flags techniques, posture, soft skills, questions revelrices, GO/NO-GO.</p>
-<div class="card-meta"><span data-fr="5 min de lecture" data-en="5 min read">5 min de lecture</span></div>
-</a>
-<a href="test-technique-entretien-analytics-engineer.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Test technique complet Analytics Engineer" data-en="Test technique complet Analytics Engineer">Test technique complet Analytics Engineer</h2>
-<p class="card-desc" data-fr="SQL, dbt, modelisation dimensionnelle, Python, questions de contexte business." data-en="SQL, dbt, modelisation dimensionnelle, Python, questions de contexte business.">SQL, dbt, modelisation dimensionnelle, Python, questions de contexte business.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-entretien-data-scientist.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Test technique complet Data Scientist" data-en="Test technique complet Data Scientist">Test technique complet Data Scientist</h2>
-<p class="card-desc" data-fr="Statistiques, ML supervise, evaluation rigoureuse, cas metier, deploiement." data-en="Statistiques, ML supervise, evaluation rigoureuse, cas metier, deploiement.">Statistiques, ML supervise, evaluation rigoureuse, cas metier, deploiement.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-stack-data-2025.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Stack data moderne 2025 : quelle architecture choisir" data-en="Stack data moderne 2025 : quelle architecture choisir">Stack data moderne 2025 : quelle architecture choisir</h2>
-<p class="card-desc" data-fr="Modern Data Stack, Lakehouse, Data Mesh — comparaison et choix selon le contexte." data-en="Modern Data Stack, Lakehouse, Data Mesh — comparaison et choix selon le contexte.">Modern Data Stack, Lakehouse, Data Mesh — comparaison et choix selon le contexte.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-data-contract.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Data Contracts : implementer avec dbt et YAML" data-en="Data Contracts : implementer avec dbt et YAML">Data Contracts : implementer avec dbt et YAML</h2>
-<p class="card-desc" data-fr="Schema versioning, SLA, implementation dbt-contracts, breaking changes." data-en="Schema versioning, SLA, implementation dbt-contracts, breaking changes.">Schema versioning, SLA, implementation dbt-contracts, breaking changes.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-airbyte-fivetran.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Airbyte vs Fivetran : connecteurs ELT et ingestion" data-en="Airbyte vs Fivetran : connecteurs ELT et ingestion">Airbyte vs Fivetran : connecteurs ELT et ingestion</h2>
-<p class="card-desc" data-fr="ELT vs ETL, Fivetran HVR, Airbyte CDK, connecteurs custom, CDC log-based." data-en="ELT vs ETL, Fivetran HVR, Airbyte CDK, connecteurs custom, CDC log-based.">ELT vs ETL, Fivetran HVR, Airbyte CDK, connecteurs custom, CDC log-based.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-prefect-orchestration.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Prefect : orchestration moderne vs Airflow" data-en="Prefect : orchestration moderne vs Airflow">Prefect : orchestration moderne vs Airflow</h2>
-<p class="card-desc" data-fr="Flows, tasks, deployments, work pools, Airflow vs Prefect vs Dagster." data-en="Flows, tasks, deployments, work pools, Airflow vs Prefect vs Dagster.">Flows, tasks, deployments, work pools, Airflow vs Prefect vs Dagster.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-looker-lookml.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Looker avance : LookML, PDTs, deploiement Git" data-en="Looker avance : LookML, PDTs, deploiement Git">Looker avance : LookML, PDTs, deploiement Git</h2>
-<p class="card-desc" data-fr="Modele semantique LookML, explores, PDTs, aggregate awareness, Git workflow." data-en="Modele semantique LookML, explores, PDTs, aggregate awareness, Git workflow.">Modele semantique LookML, explores, PDTs, aggregate awareness, Git workflow.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
+<div class="bh">
+  <div class="be">Ressources recrutement data</div>
+  <h1>Guides techniques data</h1>
+  <p class="bs">105 guides pour évaluer les compétences réelles en entretien — SQL, dbt, Spark, architecture, ML et bien plus.</p>
+</div>
 
-<a href="test-technique-nlp-embeddings.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="NLP et embeddings : tokenisation, BERT, fine-tuning" data-en="NLP et embeddings : tokenisation, BERT, fine-tuning">NLP et embeddings : tokenisation, BERT, fine-tuning</h2>
-<p class="card-desc" data-fr="Tokenisation BPE, sentence transformers, BERT, fine-tuning LoRA, ONNX." data-en="Tokenisation BPE, sentence transformers, BERT, fine-tuning LoRA, ONNX.">Tokenisation BPE, sentence transformers, BERT, fine-tuning LoRA, ONNX.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-xgboost-random-forest.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="XGBoost et Random Forest : hyperparametres, SHAP" data-en="XGBoost et Random Forest : hyperparametres, SHAP">XGBoost et Random Forest : hyperparametres, SHAP</h2>
-<p class="card-desc" data-fr="Bagging vs boosting, XGBoost tuning, feature importance SHAP, LightGBM." data-en="Bagging vs boosting, XGBoost tuning, feature importance SHAP, LightGBM.">Bagging vs boosting, XGBoost tuning, feature importance SHAP, LightGBM.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-azure-data-factory.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Azure Data Factory : pipelines, triggers, DataFlow" data-en="Azure Data Factory : pipelines, triggers, DataFlow">Azure Data Factory : pipelines, triggers, DataFlow</h2>
-<p class="card-desc" data-fr="ADF architecture, linked services, triggers, Mapping Data Flow, Synapse vs Fabric." data-en="ADF architecture, linked services, triggers, Mapping Data Flow, Synapse vs Fabric.">ADF architecture, linked services, triggers, Mapping Data Flow, Synapse vs Fabric.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-regression-logistique.html" class="card" data-roles='["ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Regression logistique : fondations stats pour DS" data-en="Regression logistique : fondations stats pour DS">Regression logistique : fondations stats pour DS</h2>
-<p class="card-desc" data-fr="Sigmoid, odds ratios, regularisation L1/L2, hypotheses, multiclasse." data-en="Sigmoid, odds ratios, regularisation L1/L2, hypotheses, multiclasse.">Sigmoid, odds ratios, regularisation L1/L2, hypotheses, multiclasse.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-structurer-entretien-technique.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Structurer un entretien technique data : guide recruteur" data-en="Structurer un entretien technique data : guide recruteur">Structurer un entretien technique data : guide recruteur</h2>
-<p class="card-desc" data-fr="4 phases, preparation, technique sans pieger, comportemental, grille GO/NO-GO." data-en="4 phases, preparation, technique sans pieger, comportemental, grille GO/NO-GO.">4 phases, preparation, technique sans pieger, comportemental, grille GO/NO-GO.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-onboarding-data-engineer.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Onboarding Data Engineer : les 90 premiers jours" data-en="Onboarding Data Engineer : les 90 premiers jours">Onboarding Data Engineer : les 90 premiers jours</h2>
-<p class="card-desc" data-fr="Plan 30-60-90 jours, cartographier l architecture, documentation, erreurs classiques." data-en="Plan 30-60-90 jours, cartographier l architecture, documentation, erreurs classiques.">Plan 30-60-90 jours, cartographier l architecture, documentation, erreurs classiques.</p>
-<div class="card-meta"><span data-fr="5 min de lecture" data-en="5 min read">5 min de lecture</span></div>
-</a>
-<a href="test-technique-portfolio-github-data.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Evaluer un portfolio GitHub data : ce qu on regarde" data-en="Evaluer un portfolio GitHub data : ce qu on regarde">Evaluer un portfolio GitHub data : ce qu on regarde</h2>
-<p class="card-desc" data-fr="README, structure, code, tests, commits, types de projets revelateurs." data-en="README, structure, code, tests, commits, types de projets revelateurs.">README, structure, code, tests, commits, types de projets revelateurs.</p>
-<div class="card-meta"><span data-fr="5 min de lecture" data-en="5 min read">5 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-snowflake-stack.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Stack dbt + Snowflake : architecture complete production" data-en="Stack dbt + Snowflake : architecture complete production">Stack dbt + Snowflake : architecture complete production</h2>
-<p class="card-desc" data-fr="Organisation modeles, incremental, slim CI, couts, governance, documentation." data-en="Organisation modeles, incremental, slim CI, couts, governance, documentation.">Organisation modeles, incremental, slim CI, couts, governance, documentation.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-pandas-profiling-qualite.html" class="card" data-roles='["da","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="pandas profiling et diagnostic qualite des donnees" data-en="pandas profiling et diagnostic qualite des donnees">pandas profiling et diagnostic qualite des donnees</h2>
-<p class="card-desc" data-fr="YData Profiling, MCAR/MAR/MNAR, outliers, correlations, rapport actionnable." data-en="YData Profiling, MCAR/MAR/MNAR, outliers, correlations, rapport actionnable.">YData Profiling, MCAR/MAR/MNAR, outliers, correlations, rapport actionnable.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-openlineage-data-lineage.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Data lineage : OpenLineage, DataHub, column-level" data-en="Data lineage : OpenLineage, DataHub, column-level">Data lineage : OpenLineage, DataHub, column-level</h2>
-<p class="card-desc" data-fr="OpenLineage standard, DataHub, dbt lineage, column-level lineage, impact analysis." data-en="OpenLineage standard, DataHub, dbt lineage, column-level lineage, impact analysis.">OpenLineage standard, DataHub, dbt lineage, column-level lineage, impact analysis.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-docker-kubernetes-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Docker et Kubernetes avance : Helm, GitOps, ArgoCD" data-en="Docker et Kubernetes avance : Helm, GitOps, ArgoCD">Docker et Kubernetes avance : Helm, GitOps, ArgoCD</h2>
-<p class="card-desc" data-fr="Helm charts, StatefulSets, secrets management, GitOps ArgoCD, KubernetesExecutor." data-en="Helm charts, StatefulSets, secrets management, GitOps ArgoCD, KubernetesExecutor.">Helm charts, StatefulSets, secrets management, GitOps ArgoCD, KubernetesExecutor.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-tests-donnees-pytest.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Tester ses pipelines data avec pytest" data-en="Tester ses pipelines data avec pytest">Tester ses pipelines data avec pytest</h2>
-<p class="card-desc" data-fr="Fixtures, mocks, tests SQL avec DuckDB, singular tests dbt, tests integration." data-en="Fixtures, mocks, tests SQL avec DuckDB, singular tests dbt, tests integration.">Fixtures, mocks, tests SQL avec DuckDB, singular tests dbt, tests integration.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-azure-synapse.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Azure Synapse : SQL pools, Spark, Data Lake" data-en="Azure Synapse : SQL pools, Spark, Data Lake">Azure Synapse : SQL pools, Spark, Data Lake</h2>
-<p class="card-desc" data-fr="Dedicated vs Serverless SQL Pool, Spark Pool, ADLS, Synapse vs Databricks." data-en="Dedicated vs Serverless SQL Pool, Spark Pool, ADLS, Synapse vs Databricks.">Dedicated vs Serverless SQL Pool, Spark Pool, ADLS, Synapse vs Databricks.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-gcp-data-stack.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="GCP stack data : BigQuery, Dataflow, Pub/Sub, Vertex AI" data-en="GCP stack data : BigQuery, Dataflow, Pub/Sub, Vertex AI">GCP stack data : BigQuery, Dataflow, Pub/Sub, Vertex AI</h2>
-<p class="card-desc" data-fr="Architecture GCP, Dataflow Apache Beam, Pub/Sub, Cloud Composer, Vertex AI." data-en="Architecture GCP, Dataflow Apache Beam, Pub/Sub, Cloud Composer, Vertex AI.">Architecture GCP, Dataflow Apache Beam, Pub/Sub, Cloud Composer, Vertex AI.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-recrutement-data-guide-complet.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Guide complet recrutement data 2025" data-en="Guide complet recrutement data 2025">Guide complet recrutement data 2025</h2>
-<p class="card-desc" data-fr="Offre attractive, sourcing, analyse CV, processus, decision, negociation." data-en="Offre attractive, sourcing, analyse CV, processus, decision, negociation.">Offre attractive, sourcing, analyse CV, processus, decision, negociation.</p>
-<div class="card-meta"><span data-fr="8 min de lecture" data-en="8 min read">8 min de lecture</span></div>
-</a>
-<a href="test-technique-data-quality-monitoring.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Monitoring qualite donnees en production" data-en="Monitoring qualite donnees en production">Monitoring qualite donnees en production</h2>
-<p class="card-desc" data-fr="Alertes fraicheur, detection anomalies, changements schema, Elementary vs Monte Carlo." data-en="Alertes fraicheur, detection anomalies, changements schema, Elementary vs Monte Carlo.">Alertes fraicheur, detection anomalies, changements schema, Elementary vs Monte Carlo.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-incremental.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="dbt modeles incrementaux : strategies et optimisation" data-en="dbt modeles incrementaux : strategies et optimisation">dbt modeles incrementaux : strategies et optimisation</h2>
-<p class="card-desc" data-fr="Append, merge, delete+insert, late-arriving data, full refresh, Snowflake." data-en="Append, merge, delete+insert, late-arriving data, full refresh, Snowflake.">Append, merge, delete+insert, late-arriving data, full refresh, Snowflake.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-spark-streaming.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Spark Structured Streaming : watermarks, triggers, sinks" data-en="Spark Structured Streaming : watermarks, triggers, sinks">Spark Structured Streaming : watermarks, triggers, sinks</h2>
-<p class="card-desc" data-fr="Event time, watermarks, triggers, output modes, Kafka + Spark + Delta." data-en="Event time, watermarks, triggers, output modes, Kafka + Spark + Delta.">Event time, watermarks, triggers, output modes, Kafka + Spark + Delta.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-data-lakehouse-architecture.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Architecture Lakehouse : medallion, compaction, catalog" data-en="Architecture Lakehouse : medallion, compaction, catalog">Architecture Lakehouse : medallion, compaction, catalog</h2>
-<p class="card-desc" data-fr="Bronze/Silver/Gold, choix table format, small files, vacuum, securite par zone." data-en="Bronze/Silver/Gold, choix table format, small files, vacuum, securite par zone.">Bronze/Silver/Gold, choix table format, small files, vacuum, securite par zone.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-pyspark-optimisation.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="PySpark optimisation : partitions, broadcast, Spark UI" data-en="PySpark optimisation : partitions, broadcast, Spark UI">PySpark optimisation : partitions, broadcast, Spark UI</h2>
-<p class="card-desc" data-fr="Shuffle, broadcast joins, caching, Pandas UDFs, Spark UI diagnostic." data-en="Shuffle, broadcast joins, caching, Pandas UDFs, Spark UI diagnostic.">Shuffle, broadcast joins, caching, Pandas UDFs, Spark UI diagnostic.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-sql-analytique-avance.html" class="card" data-roles='["da","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="SQL analytique expert : sessions, funnel, RFM, attribution" data-en="SQL analytique expert : sessions, funnel, RFM, attribution">SQL analytique expert : sessions, funnel, RFM, attribution</h2>
-<p class="card-desc" data-fr="Sessionisation, funnel analysis, scoring RFM, intervalles, attribution multi-touch." data-en="Sessionisation, funnel analysis, scoring RFM, intervalles, attribution multi-touch.">Sessionisation, funnel analysis, scoring RFM, intervalles, attribution multi-touch.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-cost-optimization-cloud.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="FinOps data : reduire les couts cloud" data-en="FinOps data : reduire les couts cloud">FinOps data : reduire les couts cloud</h2>
-<p class="card-desc" data-fr="Optimiser Snowflake, BigQuery, Databricks, S3, monitoring, culture FinOps." data-en="Optimiser Snowflake, BigQuery, Databricks, S3, monitoring, culture FinOps.">Optimiser Snowflake, BigQuery, Databricks, S3, monitoring, culture FinOps.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-api-rest-data.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="API REST pour la data : concevoir et consommer" data-en="API REST pour la data : concevoir et consommer">API REST pour la data : concevoir et consommer</h2>
-<p class="card-desc" data-fr="REST principes, auth, pagination cursor, versioning, retry backoff." data-en="REST principes, auth, pagination cursor, versioning, retry backoff.">REST principes, auth, pagination cursor, versioning, retry backoff.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-gouvernance-equipe-data.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Gouvernance equipe data : standards, review, culture" data-en="Gouvernance equipe data : standards, review, culture">Gouvernance equipe data : standards, review, culture</h2>
-<p class="card-desc" data-fr="Standards de code, code review, definition metriques, documentation, dette technique." data-en="Standards de code, code review, definition metriques, documentation, dette technique.">Standards de code, code review, definition metriques, documentation, dette technique.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-python-async-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Python async pour la data : asyncio, httpx, ingestion" data-en="Python async pour la data : asyncio, httpx, ingestion">Python async pour la data : asyncio, httpx, ingestion</h2>
-<p class="card-desc" data-fr="asyncio, coroutines, httpx async, Semaphore, TaskGroup, pipeline ingestion." data-en="asyncio, coroutines, httpx async, Semaphore, TaskGroup, pipeline ingestion.">asyncio, coroutines, httpx async, Semaphore, TaskGroup, pipeline ingestion.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-security-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Securite des donnees : chiffrement, secrets, RBAC" data-en="Securite des donnees : chiffrement, secrets, RBAC">Securite des donnees : chiffrement, secrets, RBAC</h2>
-<p class="card-desc" data-fr="Chiffrement at-rest/in-transit, Secret Manager, RBAC, anonymisation, audit logs." data-en="Chiffrement at-rest/in-transit, Secret Manager, RBAC, anonymisation, audit logs.">Chiffrement at-rest/in-transit, Secret Manager, RBAC, anonymisation, audit logs.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-tests-ab-data.html" class="card" data-roles='["ds","da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="A/B testing rigoureux : statistiques pour les decisions" data-en="A/B testing rigoureux : statistiques pour les decisions">A/B testing rigoureux : statistiques pour les decisions</h2>
-<p class="card-desc" data-fr="Puissance, erreurs type I/II, test t/z/chi2, peeking problem, interpretation." data-en="Puissance, erreurs type I/II, test t/z/chi2, peeking problem, interpretation.">Puissance, erreurs type I/II, test t/z/chi2, peeking problem, interpretation.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-testing-avance.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="dbt testing avance : singular tests, macros de test" data-en="dbt testing avance : singular tests, macros de test">dbt testing avance : singular tests, macros de test</h2>
-<p class="card-desc" data-fr="Tests generiques avances, singular tests, macros custom, coverage, CI optimise." data-en="Tests generiques avances, singular tests, macros custom, coverage, CI optimise.">Tests generiques avances, singular tests, macros custom, coverage, CI optimise.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-snowflake-performance.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Snowflake performance : Query Profile, clustering avance" data-en="Snowflake performance : Query Profile, clustering avance">Snowflake performance : Query Profile, clustering avance</h2>
-<p class="card-desc" data-fr="Query Profile, clustering efficacite, Materialized Views, SOS, QAS, multi-cluster." data-en="Query Profile, clustering efficacite, Materialized Views, SOS, QAS, multi-cluster.">Query Profile, clustering efficacite, Materialized Views, SOS, QAS, multi-cluster.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-machine-learning-production.html" class="card" data-roles='["ds","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="ML en production : packaging, serving, monitoring" data-en="ML en production : packaging, serving, monitoring">ML en production : packaging, serving, monitoring</h2>
-<p class="card-desc" data-fr="Pipeline sklearn, serving BentoML/FastAPI, monitoring drift, canary, retraining." data-en="Pipeline sklearn, serving BentoML/FastAPI, monitoring drift, canary, retraining.">Pipeline sklearn, serving BentoML/FastAPI, monitoring drift, canary, retraining.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-snapshots-scd.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="dbt snapshots et SCD : historiser les changements" data-en="dbt snapshots et SCD : historiser les changements">dbt snapshots et SCD : historiser les changements</h2>
-<p class="card-desc" data-fr="SCD 1/2/3, snapshots dbt, strategies timestamp vs check, suppressions." data-en="SCD 1/2/3, snapshots dbt, strategies timestamp vs check, suppressions.">SCD 1/2/3, snapshots dbt, strategies timestamp vs check, suppressions.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-neo4j-graph-data.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Bases de donnees graphe : Neo4j, Cypher, recommandations" data-en="Bases de donnees graphe : Neo4j, Cypher, recommandations">Bases de donnees graphe : Neo4j, Cypher, recommandations</h2>
-<p class="card-desc" data-fr="Modelisation en graphe, Cypher, traversees, recommandations, detection fraude." data-en="Modelisation en graphe, Cypher, traversees, recommandations, detection fraude.">Modelisation en graphe, Cypher, traversees, recommandations, detection fraude.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-time-series-data.html" class="card" data-roles='["ds","da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Series temporelles : ARIMA, Prophet, anomaly detection" data-en="Series temporelles : ARIMA, Prophet, anomaly detection">Series temporelles : ARIMA, Prophet, anomaly detection</h2>
-<p class="card-desc" data-fr="Decomposition, stationnarite, ARIMA, Prophet, detection anomalies, features ML." data-en="Decomposition, stationnarite, ARIMA, Prophet, detection anomalies, features ML.">Decomposition, stationnarite, ARIMA, Prophet, detection anomalies, features ML.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-apache-flink.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Apache Flink : stream processing avance" data-en="Apache Flink : stream processing avance">Apache Flink : stream processing avance</h2>
-<p class="card-desc" data-fr="Event time, watermarks, stateful processing, checkpointing, Flink SQL." data-en="Event time, watermarks, stateful processing, checkpointing, Flink SQL.">Event time, watermarks, stateful processing, checkpointing, Flink SQL.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-data-pipeline-testing.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Tester les pipelines data de bout en bout" data-en="Tester les pipelines data de bout en bout">Tester les pipelines data de bout en bout</h2>
-<p class="card-desc" data-fr="Pyramide de tests, tests integration, DAGs Airflow, contract testing, chaos." data-en="Pyramide de tests, tests integration, DAGs Airflow, contract testing, chaos.">Pyramide de tests, tests integration, DAGs Airflow, contract testing, chaos.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
+<div class="fb">
+  <button class="ft on" onclick="filter(this,'all')">Tous (105)</button>
+  <button class="ft" onclick="filter(this,'Data Engineer')">Data Engineer (52)</button>
+  <button class="ft" onclick="filter(this,'Analytics Engineer')">Analytics Engineer (27)</button>
+  <button class="ft" onclick="filter(this,'Data Scientist')">Data Scientist (15)</button>
+  <button class="ft" onclick="filter(this,'Data Lead')">Data Lead (6)</button>
+  <button class="ft" onclick="filter(this,'Recruteurs')">Recruteurs (5)</button>
+</div>
+<p class="cn" id="cnt">105 articles</p>
 
-<a href="test-technique-hadoop-hive-legacy.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Hadoop et Hive : maitriser l heritage data" data-en="Hadoop et Hive : maitriser l heritage data">Hadoop et Hive : maitriser l heritage data</h2>
-<p class="card-desc" data-fr="HDFS, MapReduce vs Spark, HiveQL, partitionnement, migration vers le cloud." data-en="HDFS, MapReduce vs Spark, HiveQL, partitionnement, migration vers le cloud.">HDFS, MapReduce vs Spark, HiveQL, partitionnement, migration vers le cloud.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-mlflow-avance.html" class="card" data-roles='["ds","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ds">Data Scientist</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="MLflow avance : Projects, Registry, serving" data-en="MLflow avance : Projects, Registry, serving">MLflow avance : Projects, Registry, serving</h2>
-<p class="card-desc" data-fr="MLflow Projects, tracking avance, Model Registry workflow, serving, CI/CD ML." data-en="MLflow Projects, tracking avance, Model Registry workflow, serving, CI/CD ML.">MLflow Projects, tracking avance, Model Registry workflow, serving, CI/CD ML.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-data-catalog-implementation.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Data catalog : DataHub, OpenMetadata, adoption" data-en="Data catalog : DataHub, OpenMetadata, adoption">Data catalog : DataHub, OpenMetadata, adoption</h2>
-<p class="card-desc" data-fr="Choix catalog, DataHub architecture, ingestion automatique, lineage, adoption." data-en="Choix catalog, DataHub architecture, ingestion automatique, lineage, adoption.">Choix catalog, DataHub architecture, ingestion automatique, lineage, adoption.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-dbt-macros-jinja.html" class="card" data-roles='["ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="dbt macros et Jinja avance : SQL dynamique" data-en="dbt macros et Jinja avance : SQL dynamique">dbt macros et Jinja avance : SQL dynamique</h2>
-<p class="card-desc" data-fr="run_query(), generate_schema_name, dispatch, packages internes, graph metadata." data-en="run_query(), generate_schema_name, dispatch, packages internes, graph metadata.">run_query(), generate_schema_name, dispatch, packages internes, graph metadata.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-interview-preparation-data.html" class="card" data-roles='["da","de","ds","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-da&quot;>Data Analyst</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-da">Data Analyst</span> <span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Preparer son entretien technique data : guide candidat" data-en="Preparer son entretien technique data : guide candidat">Preparer son entretien technique data : guide candidat</h2>
-<p class="card-desc" data-fr="Ce qu on evalue, ce qu il faut reviser, s entrainer, posture, questions a poser." data-en="Ce qu on evalue, ce qu il faut reviser, s entrainer, posture, questions a poser.">Ce qu on evalue, ce qu il faut reviser, s entrainer, posture, questions a poser.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-python-decorators-data.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Python decorateurs pour la data : retry, cache, logging" data-en="Python decorateurs pour la data : retry, cache, logging">Python decorateurs pour la data : retry, cache, logging</h2>
-<p class="card-desc" data-fr="Decorateurs parametres, retry backoff, cache TTL, logging automatique, composition." data-en="Decorateurs parametres, retry backoff, cache TTL, logging automatique, composition.">Decorateurs parametres, retry backoff, cache TTL, logging automatique, composition.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-data-warehouse-design.html" class="card" data-roles='["ae","de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Conception data warehouse : modelisation avancee" data-en="Conception data warehouse : modelisation avancee">Conception data warehouse : modelisation avancee</h2>
-<p class="card-desc" data-fr="Factless facts, bridge tables, junk dimensions, role-playing, mini-dimensions." data-en="Factless facts, bridge tables, junk dimensions, role-playing, mini-dimensions.">Factless facts, bridge tables, junk dimensions, role-playing, mini-dimensions.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-duckdb-analytique.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="DuckDB : SQL analytique in-process pour la data" data-en="DuckDB : SQL analytique in-process pour la data">DuckDB : SQL analytique in-process pour la data</h2>
-<p class="card-desc" data-fr="PIVOT/UNPIVOT, ASOF JOIN, Parquet direct, integration pandas, S3." data-en="PIVOT/UNPIVOT, ASOF JOIN, Parquet direct, integration pandas, S3.">PIVOT/UNPIVOT, ASOF JOIN, Parquet direct, integration pandas, S3.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-iceberg-avance.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Apache Iceberg avance : catalog REST, CoW vs MoR" data-en="Apache Iceberg avance : catalog REST, CoW vs MoR">Apache Iceberg avance : catalog REST, CoW vs MoR</h2>
-<p class="card-desc" data-fr="Catalog REST, partition evolution, time travel avance, compaction, multi-engine." data-en="Catalog REST, partition evolution, time travel avance, compaction, multi-engine.">Catalog REST, partition evolution, time travel avance, compaction, multi-engine.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
-<a href="test-technique-rust-data-python.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Rust pour la data : PyO3, Polars, performance" data-en="Rust pour la data : PyO3, Polars, performance">Rust pour la data : PyO3, Polars, performance</h2>
-<p class="card-desc" data-fr="Pourquoi Rust en data, PyO3 extensions Python, Polars internals, alternatives." data-en="Pourquoi Rust en data, PyO3 extensions Python, Polars internals, alternatives.">Pourquoi Rust en data, PyO3 extensions Python, Polars internals, alternatives.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-cloud-native-data.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Architecture cloud-native data : managed vs self-hosted" data-en="Architecture cloud-native data : managed vs self-hosted">Architecture cloud-native data : managed vs self-hosted</h2>
-<p class="card-desc" data-fr="Managed vs self-hosted, serverless data, vendor lock-in, multi-cloud, couts." data-en="Managed vs self-hosted, serverless data, vendor lock-in, multi-cloud, couts.">Managed vs self-hosted, serverless data, vendor lock-in, multi-cloud, couts.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-databricks-workflows.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Databricks Workflows : Asset Bundles, CI/CD" data-en="Databricks Workflows : Asset Bundles, CI/CD">Databricks Workflows : Asset Bundles, CI/CD</h2>
-<p class="card-desc" data-fr="Jobs complexes, Git integration, Asset Bundles, CI/CD GitHub Actions, couts." data-en="Jobs complexes, Git integration, Asset Bundles, CI/CD GitHub Actions, couts.">Jobs complexes, Git integration, Asset Bundles, CI/CD GitHub Actions, couts.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-trino-presto.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Trino : SQL federe sur sources multiples" data-en="Trino : SQL federe sur sources multiples">Trino : SQL federe sur sources multiples</h2>
-<p class="card-desc" data-fr="Architecture coordinator/workers, connecteurs, federation, EXPLAIN, vs Spark." data-en="Architecture coordinator/workers, connecteurs, federation, EXPLAIN, vs Spark.">Architecture coordinator/workers, connecteurs, federation, EXPLAIN, vs Spark.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-data-quality-great-expectations-avance.html" class="card" data-roles='["de","ae"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span></div>
-<h2 class="card-title" data-fr="Great Expectations avance : profiling, CI/CD bloquant" data-en="Great Expectations avance : profiling, CI/CD bloquant">Great Expectations avance : profiling, CI/CD bloquant</h2>
-<p class="card-desc" data-fr="Profiling automatique, expectations statistiques, custom expectations, CI bloquant." data-en="Profiling automatique, expectations statistiques, custom expectations, CI bloquant.">Profiling automatique, expectations statistiques, custom expectations, CI bloquant.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-aws-data-stack.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="AWS stack data : S3, Glue, Athena, Redshift, Lake Formation" data-en="AWS stack data : S3, Glue, Athena, Redshift, Lake Formation">AWS stack data : S3, Glue, Athena, Redshift, Lake Formation</h2>
-<p class="card-desc" data-fr="Architecture AWS, S3 avance, Glue ETL, Athena serverless, Lake Formation RBAC." data-en="Architecture AWS, S3 avance, Glue ETL, Athena serverless, Lake Formation RBAC.">Architecture AWS, S3 avance, Glue ETL, Athena serverless, Lake Formation RBAC.</p>
-<div class="card-meta"><span data-fr="7 min de lecture" data-en="7 min read">7 min de lecture</span></div>
-</a>
+<div class="grid" id="grid">
 
-<a href="test-technique-python-testing-avance.html" class="card" data-roles='["de"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span>"><span class="rp rp-de">Data Engineer</span></div>
-<h2 class="card-title" data-fr="Python testing avance : Hypothesis, mutation testing" data-en="Python testing avance : Hypothesis, mutation testing">Python testing avance : Hypothesis, mutation testing</h2>
-<p class="card-desc" data-fr="Property-based testing Hypothesis, mutmut, parametrize, benchmarks, coverage." data-en="Property-based testing Hypothesis, mutmut, parametrize, benchmarks, coverage.">Property-based testing Hypothesis, mutmut, parametrize, benchmarks, coverage.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-data-product-management.html" class="card" data-roles='["de","ae","ds","da"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ae&quot;>Analytics Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span> <span class=&quot;rp rp-da&quot;>Data Analyst</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ae">Analytics Engineer</span> <span class="rp rp-ds">Data Scientist</span> <span class="rp rp-da">Data Analyst</span></div>
-<h2 class="card-title" data-fr="Data product management : roadmap, OKR, impact" data-en="Data product management : roadmap, OKR, impact">Data product management : roadmap, OKR, impact</h2>
-<p class="card-desc" data-fr="Product thinking data, data product, roadmap, OKR, mesurer l impact." data-en="Product thinking data, data product, roadmap, OKR, mesurer l impact.">Product thinking data, data product, roadmap, OKR, mesurer l impact.</p>
-<div class="card-meta"><span data-fr="6 min de lecture" data-en="6 min read">6 min de lecture</span></div>
-</a>
-<a href="test-technique-synthetic-data.html" class="card" data-roles='["de","ds"]'>
-<div class="card-roles" data-fr="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>" data-en="<span class=&quot;rp rp-de&quot;>Data Engineer</span> <span class=&quot;rp rp-ds&quot;>Data Scientist</span>"><span class="rp rp-de">Data Engineer</span> <span class="rp rp-ds">Data Scientist</span></div>
-<h2 class="card-title" data-fr="Donnees synthetiques : Faker, SDV, Gretel" data-en="Donnees synthetiques : Faker, SDV, Gretel">Donnees synthetiques : Faker, SDV, Gretel</h2>
-<p class="card-desc" data-fr="Generation donnees test, distributions statistiques, privacy, evaluation qualite." data-en="Generation donnees test, distributions statistiques, privacy, evaluation qualite.">Generation donnees test, distributions statistiques, privacy, evaluation qualite.</p>
-<div class="card-meta"><span data-fr="5 min de lecture" data-en="5 min read">5 min de lecture</span></div>
-</a>
-</div></div>
-<footer><div class="fi"><div class="fl"><a href="../how.html" data-fr="Comment ca marche" data-en="How it works">Comment ca marche</a><a href="../about.html" data-fr="A propos" data-en="About">A propos</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
+    <a href="test-technique-airbyte-fivetran.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Airbyte et Fivetran : connecteurs ELT et ingestion</h2>
+      <p class="cdesc">L ingestion est souvent le premier maillon de la stack data. En entretien, on évalue la capacité à choisir entre Fivetran et Airby…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-airflow-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Airflow avancé : DAGs, XCom, TaskFlow, architecture</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-airflow.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Airflow : ce qu'on evalue en entretien Data Engineer</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-apache-flink.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Apache Flink : stream processing avancé</h2>
+      <p class="cdesc">Flink est la référence pour le stream processing à faible latence. En entretien Senior, on évalue la compréhension de l event time…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-api-rest-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique API REST pour la data : concevoir et consommer des APIs</h2>
+      <p class="cdesc">Les APIs REST sont partout dans les pipelines data : ingestion de sources externes, exposition de features ML, interfaces avec les…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-aws-data-stack.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique AWS stack data : S3, Glue, Athena, EMR, Redshift</h2>
+      <p class="cdesc">AWS est le cloud dominant pour la data. En entretien, on évalue la capacité à choisir les bons services AWS selon le cas d usage e…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-aws-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique AWS pour la Data : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-azure-data-factory.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Azure Data Factory : pipelines, triggers, DataFlow</h2>
+      <p class="cdesc">Azure Data Factory est l orchestrateur ETL de référence dans l écosystème Microsoft. En entretien, on évalue la capacité à concevo…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-azure-synapse.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Azure Synapse Analytics : SQL pools, Spark, intégration</h2>
+      <p class="cdesc">Azure Synapse Analytics unifie SQL analytique et Spark dans une même plateforme. En entretien, on évalue la capacité à choisir le …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-bigquery-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique BigQuery avance : partitionnement, INFORMATION_SCHEMA, couts</h2>
+      <p class="cdesc">BigQuery facture a la requete selon les octets lus. Un Data Engineer Senior s...</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-bigquery.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique BigQuery : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-cicd-power-bi.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique CI/CD Power BI : deployment pipelines et automatisation</h2>
+      <p class="cdesc">Power BI va bien au-dela du rapport statique. En entretien Senior, on evalue la capacite a deployer de maniere reproducible, a ver…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-cost-optimization-cloud.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique optimisation des coûts cloud data : FinOps pour la data</h2>
+      <p class="cdesc">Les coûts cloud data peuvent exploser sans contrôle. En entretien Senior et Lead, on évalue la capacité à architecturer pour la pe…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-catalog-implementation.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique implémentation d un data catalog : DataHub, OpenMetadata</h2>
+      <p class="cdesc">Déployer un data catalog est un projet qui dure 6 mois si mal planifié. En entretien, on évalue la capacité à choisir le bon outil…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-contract.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Data Contracts : implémenter avec dbt et OpenAPI</h2>
+      <p class="cdesc">Les data contracts formalisent les engagements entre producteurs et consommateurs de données. En 2025, c est un sujet d entretien …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-gouvernance.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Test technique Data Gouvernance : catalogue, lineage, qualité, RGPD</h2>
+      <p class="cdesc">La gouvernance des données est devenue un enjeu critique. En entretien Analytics Engineer ou Data Architect, on évalue la capacité…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-lakehouse-architecture.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Test technique architecture Lakehouse : Delta, Iceberg, Hudi en production</h2>
+      <p class="cdesc">Le Lakehouse est l architecture data dominante en 2025. En entretien Architecture ou Lead, on évalue la capacité à concevoir une a…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-mesh.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Test technique Data Mesh : domaines, data products, gouvernance fédérée</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-pipeline-testing.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique : tester les pipelines data de bout en bout</h2>
+      <p class="cdesc">Tester des fonctions Python est relativement simple. Tester un pipeline data complet qui orchestre Airflow, dbt et BigQuery est un…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-product-management.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Test technique data product management : définir et gérer des data products</h2>
+      <p class="cdesc">Gérer une équipe data comme une équipe produit change radicalement la façon dont les projets sont priorisés et mesurés. En entreti…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-quality-monitoring.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique monitoring de la qualité des données en production</h2>
+      <p class="cdesc">La qualité des données en production se dégrade silencieusement. En entretien Senior, on évalue la capacité à mettre en place un m…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-data-warehouse-design.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Test technique conception de data warehouse : modélisation avancée</h2>
+      <p class="cdesc">Concevoir un data warehouse robuste va au-delà du schéma en étoile basique. En entretien Data Architect ou Analytics Engineer Seni…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-databricks-workflows.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Databricks Workflows : orchestration et MLOps</h2>
+      <p class="cdesc">Databricks Workflows est l orchestrateur natif de Databricks. En entretien, on évalue la capacité à l utiliser efficacement pour o…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-databricks.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Databricks : Unity Catalog, Jobs, MLflow, Lakehouse</h2>
+      <p class="cdesc">Databricks est la plateforme lakehouse de reference. En entretien, on evalue la maitrise de Unity Catalog pour la gouvernance, des…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dataiku.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Dataiku : ce qu'on evalue en entretien Data Scientist</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dax-power-bi.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">DAX avancé Power BI : les formules qu'on teste en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-avance.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt avance : macros, packages, snapshots, analyses</h2>
+      <p class="cdesc">Au-dela des modeles de base, un Analytics Engineer Senior maitrise les macros, les packages communautaires, les snapshots pour le …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-incremental.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt modèles incrémentaux : stratégies et optimisation</h2>
+      <p class="cdesc">Les modèles incrémentaux dbt sont le levier le plus puissant pour réduire les coûts et le temps de traitement. Mal configurés, ils…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-macros-jinja.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt macros et Jinja avancé : générer du SQL dynamiquement</h2>
+      <p class="cdesc">Les macros dbt permettent de générer du SQL dynamiquement et de créer des abstractions réutilisables. En entretien Expert, on éval…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-snapshots-scd.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt snapshots et SCD : historiser les changements</h2>
+      <p class="cdesc">Historiser les changements de données (Slowly Changing Dimensions) est un sujet classique en entretien. dbt snapshots offrent une …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-snowflake-stack.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Stack dbt + Snowflake : architecture complète en production</h2>
+      <p class="cdesc">dbt et Snowflake forment la stack analytique la plus répandue en 2025. En entretien Senior, on évalue la capacité à architecturer …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt-testing-avance.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt testing avancé : singular tests, macros de test, coverage</h2>
+      <p class="cdesc">Les tests dbt vont bien au-delà de not_null et unique. En entretien Senior, on évalue la capacité à écrire des tests sophistiqués …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-dbt.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique dbt : ce qu'on evalue en entretien Analytics Engineer</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-delta-lake-iceberg.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Delta Lake vs Apache Iceberg : le choix du table format</h2>
+      <p class="cdesc">Delta Lake, Iceberg et Hudi sont les trois table formats open source qui apportent ACID au data lake. En 2025, ce choix architectu…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-docker-compose-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Docker et Docker Compose pour la data : stacks locales</h2>
+      <p class="cdesc">Docker est le pre-requis pour tout Data Engineer moderne. En entretien, on va au-dela du simple docker run — on evalue la capacite…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-docker-kubernetes-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Docker et Kubernetes avancé pour la data</h2>
+      <p class="cdesc">Au-delà des bases Kubernetes, les Data Engineers déployant Airflow, Spark ou des APIs ML en production ont besoin de Helm, des Sta…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-docker.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Docker : ce qu'on evalue en entretien Data Engineer</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-duckdb-analytique.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique DuckDB : SQL analytique in-process pour la data</h2>
+      <p class="cdesc">DuckDB est devenu l outil de référence pour l analyse locale sur des fichiers Parquet ou des DataFrames pandas. En entretien, on é…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-entretien-analytics-engineer.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique complet Analytics Engineer : SQL, dbt, modélisation</h2>
+      <p class="cdesc">L Analytics Engineer est le profil le plus demandé en data en 2025. Voici le test technique complet qu on mène chez Data Builder p…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-entretien-data-scientist.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique complet Data Scientist : stats, ML, production</h2>
+      <p class="cdesc">Le Data Scientist est souvent le profil le plus difficile à évaluer correctement. Voici la structure complète d un test technique …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-event-driven-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique architecture event-driven pour la data</h2>
+      <p class="cdesc">L architecture event-driven est devenue centrale dans les systèmes data modernes. En entretien Architect, on évalue la capacité à …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-feature-engineering-ml.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique feature engineering ML : creer de bonnes features</h2>
+      <p class="cdesc">Le feature engineering est souvent ce qui differentie un bon modele d un excellent modele. En entretien, on evalue la capacite a c…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-gcp-data-stack.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique GCP stack data : BigQuery, Dataflow, Pub/Sub, Vertex AI</h2>
+      <p class="cdesc">Google Cloud Platform est la stack data cloud la plus cohérente. En entretien, on évalue la capacité à choisir et intégrer les bon…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-git-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Git avancé : rebase, hooks, pre-commit, gitflow</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-git.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Git : ce qu'on evalue en entretien data</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-github-actions-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique GitHub Actions pour la data : CI/CD pipelines data</h2>
+      <p class="cdesc">GitHub Actions est devenu le standard CI/CD pour les projets data. En entretien Senior, on evalue la capacite a automatiser le cyc…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-iceberg-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Apache Iceberg avancé : catalog, time travel, merge-on-read</h2>
+      <p class="cdesc">Iceberg est devenu le standard ouvert pour les tables lakehouse. En entretien Expert, on évalue la maîtrise des fonctionnalités av…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-kafka.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Apache Kafka : topics, partitions, consumers, Kafka Streams</h2>
+      <p class="cdesc">Kafka est le bus de donnees de reference pour l architecture event-driven. En entretien, on evalue la capacite a concevoir des pip…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-kubernetes-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-langchain-llm.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique LangChain pour les Data Engineers : agents, chains, tools</h2>
+      <p class="cdesc">LangChain est le framework de reference pour construire des applications avec des LLMs. En entretien, on evalue la capacite a arch…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-linux-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-looker-lookml.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Looker avancé : LookML, explores, PDTs, déploiement</h2>
+      <p class="cdesc">Looker est l outil BI le plus technique du marché. Sa valeur vient du LookML, le langage de modélisation sémantique. En entretien,…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-looker.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Looker / LookML : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-machine-learning-production.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique ML en production : packaging, serving, monitoring</h2>
+      <p class="cdesc">Entraîner un modèle est facile. Le maintenir en production pendant 2 ans sans régression est difficile. En entretien ML Engineer, …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-metabase-self-service-bi.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique BI self-service : Metabase, Streamlit, Redash</h2>
+      <p class="cdesc">Metabase, Streamlit et Redash repondent a un besoin croissant : des dashboards rapides a deployer, sans passer par un Data Analyst…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-mlflow-avance.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique MLflow avancé : projets, recipes, Model Registry, serving</h2>
+      <p class="cdesc">MLflow est bien plus qu un simple outil de tracking. En entretien ML Engineer Senior, on évalue la maîtrise de MLflow Projects pou…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-mlops-cas-concret.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">MLOps en pratique : REX LVMH, Dataiku, CI/CD et monitoring modeles</h2>
+      <p class="cdesc">8 modeles sur 10 qui passent la phase pilote ne survivent pas un an en production. Ce REX concret montre pourquoi et comment le ML…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-mlops.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-nlp-embeddings.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique NLP et embeddings : tokenisation, fine-tuning, RAG</h2>
+      <p class="cdesc">Le NLP a été transformé par les transformers. En entretien Data Scientist, on évalue la compréhension des embeddings, la capacité …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-openlineage-data-lineage.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique data lineage : OpenLineage, DataHub et traçabilité</h2>
+      <p class="cdesc">Le data lineage permet de savoir d où vient une donnée et où elle va. En 2025, c est un sujet Senior qui différencie les profils a…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-pandas-profiling-qualite.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique pandas profiling et diagnostic qualité des données</h2>
+      <p class="cdesc">Le diagnostic de qualité des données est systématiquement la première étape d un projet data. En entretien, on évalue la rigueur d…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-power-apps-data.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Power Apps : ce qu'on évalue pour un profil data</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-power-apps.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Power Apps : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-power-bi-bonnes-pratiques.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Power BI bonnes pratiques : rapport, modèle, performance</h2>
+      <p class="cdesc">Savoir créer un graphique dans Power BI ne suffit pas. En entretien Senior, on évalue la rigueur dans la construction du rapport :…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-power-bi-vs-tableau-vs-looker.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Power BI vs Tableau vs Looker : quel outil pour quel profil ?</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-power-bi.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Power BI : ce qu'on evalue vraiment</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-prefect-orchestration.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Prefect : orchestration moderne vs Airflow</h2>
+      <p class="cdesc">Prefect est une alternative moderne à Airflow avec une meilleure developer experience. En entretien, on évalue la capacité à chois…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-pyspark-optimisation.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique PySpark optimisation : partitions, caching, broadcast joins</h2>
+      <p class="cdesc">Écrire du PySpark qui fonctionne est facile. Écrire du PySpark qui est rapide en production demande de maîtriser les partitions, l…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-python-async-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Python async pour la data : asyncio, httpx, ingestion parallèle</h2>
+      <p class="cdesc">L async Python permet de multiplier par 10 à 100 la vitesse d ingestion d APIs. En entretien Senior, on évalue la maîtrise d async…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-python-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Python data : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-python-decorators-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Python décorateurs pour la data : caching, retry, logging</h2>
+      <p class="cdesc">Les décorateurs Python permettent d ajouter des comportements transversaux aux fonctions de pipeline sans les polluer. En entretie…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-python-pandas-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Python data avancé : pandas, DuckDB, Polars, optimisation</h2>
+      <p class="cdesc">Au-delà des bases de pandas, un Data Engineer Senior maîtrise la vectorisation, la gestion mémoire, et sait quand remplacer pandas…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-python-testing-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Python testing avancé : property-based testing, mutation testing</h2>
+      <p class="cdesc">Les tests classiques vérifient des exemples. Le property-based testing vérifie des propriétés sur des milliers d exemples générés.</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-questions-comportementales-data.html" class="card" data-tag="Recruteurs">
+      <span class="ctag" style="color:#065f46;background:#d1fae5">Recruteurs</span>
+      <h2 class="ctitle">Questions comportementales en entretien data : STAR, situations difficiles</h2>
+      <p class="cdesc">Les compétences techniques ne suffisent pas. En entretien data, les questions comportementales révèlent la maturité, la posture et…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-rag-infrastructure.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique RAG : architecture, embeddings, bases vectorielles</h2>
+      <p class="cdesc">Le RAG est le pattern dominant pour deployer des LLMs sur des donnees internes. En entretien, on evalue la capacite a choisir la b…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-recrutement-data-guide-complet.html" class="card" data-tag="Recruteurs">
+      <span class="ctag" style="color:#065f46;background:#d1fae5">Recruteurs</span>
+      <h2 class="ctitle">Guide complet du recrutement data en 2025 : de l offre à l intégration</h2>
+      <p class="cdesc">Recruter un Data Engineer ou Data Scientist est différent d un recrutement classique. Ce guide couvre toutes les étapes du process…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-red-flags-entretien.html" class="card" data-tag="Recruteurs">
+      <span class="ctag" style="color:#065f46;background:#d1fae5">Recruteurs</span>
+      <h2 class="ctitle">Red flags en entretien technique data : signaux d alerte pour les recruteurs</h2>
+      <p class="cdesc">Au-dela des competences techniques, un entretien revele des signaux subtils sur la posture, la rigueur et la capacite a travailler…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-regression-logistique.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique régression logistique : fondations statistiques pour Data Scientist</h2>
+      <p class="cdesc">La régression logistique est souvent le premier algorithme demandé en entretien. Mais la maîtriser vraiment — coefficients, régula…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-salaires-data-france-2025.html" class="card" data-tag="Recruteurs">
+      <span class="ctag" style="color:#065f46;background:#d1fae5">Recruteurs</span>
+      <h2 class="ctitle">Salaires data en France 2025 : grilles, negociation et benchmarks</h2>
+      <p class="cdesc">Connaitre les salaires du marche est indispensable pour recruter et negocier. Voici les fourchettes constatees en 2025 en France, …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-scraping-automatisation-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Scraping et automatisation Python avancee : Playwright, Scrapy, grande echelle</h2>
+      <p class="cdesc">Le scraping va au-dela de BeautifulSoup sur un site statique. En entretien Data Engineer Senior, on evalue la capacite a gerer les…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-scraping-python.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique web scraping Python : BeautifulSoup, Selenium, Scrapy, éthique</h2>
+      <p class="cdesc">Le web scraping est une compétence Data Engineer courante pour collecter des données non disponibles via API. En entretien, on éva…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-security-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique sécurité des données : chiffrement, accès, RGPD technique</h2>
+      <p class="cdesc">La sécurité des données est une responsabilité du Data Engineer, pas seulement du RSSI. En entretien, on évalue la capacité à conc…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-snowflake-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Snowflake avance : Streams, Tasks, Dynamic Tables</h2>
+      <p class="cdesc">Snowflake n est pas juste un data warehouse SQL. En entretien Senior, on eval...</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-snowflake-performance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Snowflake performance : query profiling, clustering, materialized views</h2>
+      <p class="cdesc">Au-delà des bases Snowflake, l optimisation des performances nécessite de maîtriser le Query Profile, le clustering intelligent et…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-snowflake.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Snowflake : ce qu'on evalue en entretien</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-spark-avance.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Spark avance : Structured Streaming, Delta Lake, optimisation</h2>
+      <p class="cdesc">Au-dela des DataFrames de base, un Data Engineer Spark Senior maitrise le streaming, Delta Lake et l optimisation fine des jobs. C…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-spark-streaming.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Spark Structured Streaming : watermarks, triggers, sinks</h2>
+      <p class="cdesc">Spark Structured Streaming est la solution de streaming de référence dans l écosystème Spark. En entretien, on évalue la maîtrise …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-spark.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Spark : ce qu'on evalue en entretien Data Engineer</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-sql-analytique-avance.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique SQL analytique avancé : patterns experts pour Data Analyst</h2>
+      <p class="cdesc">Au-delà des window functions classiques, certains patterns SQL analytiques différencient vraiment les profils experts. En entretie…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-sql-avance.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique SQL avance : window functions, CTEs recursives, optimisation</h2>
+      <p class="cdesc">Tout le monde sait faire un SELECT avec JOIN. Ce qu on evalue en entretien Senior, c est la maitrise des window functions, l ecrit…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-sql.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique SQL : ce qu'on evalue vraiment en entretien data</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-stack-data-2025.html" class="card" data-tag="Data Lead">
+      <span class="ctag" style="color:#4c1d95;background:#f5f0ff">Data Lead</span>
+      <h2 class="ctitle">Stack data moderne 2025 : quelle architecture choisir ?</h2>
+      <p class="cdesc">Modern Data Stack, Lakehouse, Data Mesh — le marché propose de nombreuses architectures. En entretien Lead ou Architect, on évalue…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-structurer-entretien-technique.html" class="card" data-tag="Recruteurs">
+      <span class="ctag" style="color:#065f46;background:#d1fae5">Recruteurs</span>
+      <h2 class="ctitle">Comment structurer un entretien technique data : guide recruteur</h2>
+      <p class="cdesc">Un entretien mal structuré évalue les candidats de manière incohérente et rate les bons profils. Voici comment structurer un entre…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-synthetic-data.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique données synthétiques : générer des données de test réalistes</h2>
+      <p class="cdesc">Les données synthétiques permettent de tester les pipelines et entraîner des modèles sans exposer de données réelles. En entretien…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-tableau-avance.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Tableau avancé : LOD, calculs de table, Tableau Prep</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-tableau-server-client.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Tableau Server Client : automatisation Python de Tableau Cloud</h2>
+      <p class="cdesc">Tableau Server Client (TSC) est la bibliotheque Python officielle pour automatiser l administration de Tableau Server ou Tableau C…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-tableau.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Tableau : ce qu'on evalue en entretien Data Analyst</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-terraform-data.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Terraform pour la data : IaC, modules, state, CI/CD</h2>
+      <p class="cdesc">Terraform est devenu incontournable pour les Data Engineers qui provisionnent des ressources cloud. En entretien, on evalue la cap…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-tests-ab-data.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique A/B testing rigoureux : statistiques pour les décisions data</h2>
+      <p class="cdesc">Les A/B tests mal conduits mènent à de mauvaises décisions business. En entretien Senior, on évalue la rigueur statistique : puiss…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-tests-donnees-pytest.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique : tester ses pipelines data avec pytest</h2>
+      <p class="cdesc">Un pipeline data sans tests est une bombe à retardement. En entretien Senior, on évalue la capacité à écrire des tests automatisés…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-time-series-data.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique séries temporelles : analyse, prédiction, anomaly detection</h2>
+      <p class="cdesc">Les données temporelles ont des propriétés spécifiques (autocorrélation, saisonnalité, trend) qui nécessitent des méthodes dédiées…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-trino-presto.html" class="card" data-tag="Data Engineer">
+      <span class="ctag" style="color:#374151;background:#f3f4f6">Data Engineer</span>
+      <h2 class="ctitle">Test technique Trino : SQL fédéré sur sources multiples</h2>
+      <p class="cdesc">Trino (ex-Presto) est le moteur SQL de référence pour interroger plusieurs sources de données depuis une seule requête. En entreti…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-ux-dashboards.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique UX design pour dashboards : discovery, wireframes, bonnes pratiques</h2>
+      <p class="cdesc"></p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-web-analytics-ga4.html" class="card" data-tag="Analytics Engineer">
+      <span class="ctag" style="color:#1e40af;background:#dbeafe">Analytics Engineer</span>
+      <h2 class="ctitle">Test technique Web Analytics : GA4, Tag Management, server-side tracking</h2>
+      <p class="cdesc">Le web analytics est un metier a part dans la data. GA4 et le tracking server-side ont transforme les pratiques depuis 2023. En en…</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+    <a href="test-technique-xgboost-random-forest.html" class="card" data-tag="Data Scientist">
+      <span class="ctag" style="color:#7c3aed;background:#ede9fe">Data Scientist</span>
+      <h2 class="ctitle">Test technique XGBoost et Random Forest : entretien Data Scientist</h2>
+      <p class="cdesc">XGBoost et Random Forest sont les algorithmes les plus utilisés en data science tabulaire. En entretien, on va au-delà de l usage …</p>
+      <span class="clink">Lire l'article →</span>
+    </a>
+</div>
+
+<footer>
+  <div class="fi">
+    <div class="fl">
+      <a href="../how.html">Comment ça marche</a>
+      <a href="../about.html">À propos</a>
+      <a href="index.html">Blog</a>
+      <a href="../cgu.html">CGU</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+    </div>
+    <div class="fc">© 2025 Data Builder</div>
+  </div>
+</footer>
+
 <script>
-let currentFilter='all';
-const CARDS=document.querySelectorAll('.card');
-
-function filterCards(role){
-  currentFilter=role;
-  document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('active',b.dataset.filter===role));
-  let visible=0;
-  CARDS.forEach(c=>{
-    const roles=JSON.parse(c.dataset.roles||'[]');
-    const show=role==='all'||roles.includes(role);
-    c.classList.toggle('hidden',!show);
-    if(show) visible++;
+function filter(btn, tag) {
+  document.querySelectorAll('.ft').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const cards = document.querySelectorAll('.card');
+  let n = 0;
+  cards.forEach(c => {
+    const show = tag === 'all' || c.dataset.tag === tag;
+    c.style.display = show ? 'flex' : 'none';
+    if (show) n++;
   });
-  const count=document.getElementById('count');
-  if(count){
-    count.textContent=role==='all'
-      ? ''
-      : (document.documentElement.dataset.lang==='en'
-          ? visible+' articles'
-          : visible+' articles');
-  }
+  document.getElementById('cnt').textContent = n + ' article' + (n > 1 ? 's' : '');
 }
-
-function setLang(l){
-  document.documentElement.dataset.lang=l;
-  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
-  document.getElementById('btn-en').classList.toggle('on',l==='en');
-  document.querySelectorAll('[data-fr]').forEach(el=>{const t=el.dataset[l];if(t)el.innerHTML=t;});
-  const filters_fr=[
-    ['all','Tous les articles'],['da','Data Analyst'],['de','Data Engineer'],
-    ['ds','Data Scientist'],['ae','Analytics Engineer']
-  ];
-  const filters_en=[
-    ['all','All articles'],['da','Data Analyst'],['de','Data Engineer'],
-    ['ds','Data Scientist'],['ae','Analytics Engineer']
-  ];
-  const fdata=l==='fr'?filters_fr:filters_en;
-  document.getElementById('filter-bar').innerHTML=fdata.map(([f,label])=>
-    `<button class="fb${f===currentFilter?' active':''}" data-filter="${f}" onclick="filterCards('${f}')">${label}</button>`
-  ).join('');
-  filterCards(currentFilter);
-  localStorage.setItem('db_lang',l);
-}
-
-(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');}());
 </script>
 </body>
 </html>

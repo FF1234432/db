@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>MLOps en pratique : REX LVMH, Dataiku, CI/CD et monitoring modeles</span></div>
@@ -49,8 +49,40 @@
          - Optimisation du stockage (zones)
                 |
          Visualisation (5%) :
-         - Dashboard de suivi dans Dataiku</code></div><ul><li><strong>Experiment Tracking</strong> — historique des runs avec parametres, performances, volume sur dataset de validation</li><li><strong>Model Store</strong> — modeles valides historiques avec leurs metriques et seuils utilises</li><li><strong>Scenario</strong> — equivalent d un DAG Airflow dans Dataiku, avec triggers, reporters et etapes</li></ul><h2 id='fiabilite'><span class='sn'>5</span>60% du temps : le refactoring est roi</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans un projet MLOps, combien de temps passez-vous a la modelisation vs au pipeline et au refactoring ?</p></div><ul><li><strong>60% refactoring</strong> — optimisation du code pour la performance et la maintenabilite : passer des Visual Recipes Dataiku a SQL, puis a des SQL Pipelines natifs</li><li><strong>30% monitoring</strong> — mettre en place tous les checks : qualite des donnees, performance du modele, distribution des outputs</li><li><strong>5% visualisation</strong> — dashboard de suivi pour les stakeholders</li><li><strong>5% orchestration</strong> — configurer les triggers et les reporters</li><li><strong>Conclusion</strong> — un MLOps 80% de machine learning et 20% d ingenierie est deja un projet en difficulte</li></ul><h2 id='portfolio'><span class='sn'>6</span>Types de modeles en production chez LVMH</h2><ul><li><strong>Client Development</strong> — targeting des clients selon leur comportement (repeaters, one-timers)</li><li><strong>Product Recommendation</strong> — recommandation de produits croisee entre les maisons du groupe</li><li><strong>Sales Forecast</strong> — prevision des ventes par maison, zone, canal</li><li><strong>Efficiency Models</strong> — optimisation des stocks, reduction des invendus</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A deploye un modele, connait MLflow, fait des checks basiques</td><td>A deploye en production, surveille la performance, reconnait les causes d obsolescence</td><td>Pense que deployer = mettre le notebook en prod</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Framework MLOps complet, monitoring derive, CI/CD ML, Dataiku ou MLflow avance</td><td>A mis en place un monitoring complet, a configure un retraining automatique</td><td>N a pas de monitoring sur ses modeles en production</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture MLOps organisation, gouvernance des modeles, choix de plateformes</td><td>A defini le framework MLOps de son organisation, a choisi et deploye la plateforme</td><td>Ne peut pas expliquer pourquoi ses modeles meurent en production</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist ou ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+         - Dashboard de suivi dans Dataiku</code></div><ul><li><strong>Experiment Tracking</strong> — historique des runs avec parametres, performances, volume sur dataset de validation</li><li><strong>Model Store</strong> — modeles valides historiques avec leurs metriques et seuils utilises</li><li><strong>Scenario</strong> — equivalent d un DAG Airflow dans Dataiku, avec triggers, reporters et etapes</li></ul><h2 id='fiabilite'><span class='sn'>5</span>60% du temps : le refactoring est roi</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans un projet MLOps, combien de temps passez-vous a la modelisation vs au pipeline et au refactoring ?</p></div><ul><li><strong>60% refactoring</strong> — optimisation du code pour la performance et la maintenabilite : passer des Visual Recipes Dataiku a SQL, puis a des SQL Pipelines natifs</li><li><strong>30% monitoring</strong> — mettre en place tous les checks : qualite des donnees, performance du modele, distribution des outputs</li><li><strong>5% visualisation</strong> — dashboard de suivi pour les stakeholders</li><li><strong>5% orchestration</strong> — configurer les triggers et les reporters</li><li><strong>Conclusion</strong> — un MLOps 80% de machine learning et 20% d ingenierie est deja un projet en difficulte</li></ul><h2 id='portfolio'><span class='sn'>6</span>Types de modeles en production chez LVMH</h2><ul><li><strong>Client Development</strong> — targeting des clients selon leur comportement (repeaters, one-timers)</li><li><strong>Product Recommendation</strong> — recommandation de produits croisee entre les maisons du groupe</li><li><strong>Sales Forecast</strong> — prevision des ventes par maison, zone, canal</li><li><strong>Efficiency Models</strong> — optimisation des stocks, reduction des invendus</li></ul><div class='cb'><code>from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+import mlflow
+
+class MLOpsPipeline:
+    def train_and_log(self, X_train, y_train, X_val, y_val):
+        with mlflow.start_run() as run:
+            mlflow.sklearn.autolog()
+            model = XGBClassifier(n_estimators=300, max_depth=6)
+            model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+            mlflow.log_metric('auc', roc_auc_score(y_val, model.predict_proba(X_val)[:,1]))
+            return run.info.run_id
+    
+    def check_drift(self, reference, production):
+        report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
+        report.run(reference_data=reference, current_data=production)
+        result = report.as_dict()
+        if result['metrics'][0]['result']['dataset_drift']:
+            self.trigger_retraining()
+        return result
+    
+    def trigger_retraining(self):
+        requests.post(f'{AIRFLOW_URL}/api/v1/dags/retrain_churn/dagRuns',
+                     json={'conf': {'triggered_by': 'drift_detection'}},
+                     auth=('airflow', AIRFLOW_PASSWORD))</code></div>
+<ul>
+<li><strong>Retraining triggers</strong> - drift detecte (Evidently), degradation metrique (AUC -5%), schedule calendaire (mensuel), ou volume seuil (100k nouveaux exemples)</li>
+<li><strong>Champion/Challenger pattern</strong> - le nouveau modele route 10% du trafic. Si Challenger surperforme apres N jours, promotion automatique</li>
+<li><strong>Feature Store</strong> - Feast, Databricks Feature Store, Vertex. Centralise les features entre training et serving. Elimine le training/serving skew</li>
+<li><strong>Model cards</strong> - documenter les performances par segment (age, region, produit). Obligatoire pour les modeles a impact reglementaire</li>
+<li><strong>Rollback immediat</strong> - le Model Registry MLflow permet de revenir en 1 commande a la version precedente. Tester le rollback regulierement en staging</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A deploye un modele, connait MLflow, fait des checks basiques</td><td>A deploye en production, surveille la performance, reconnait les causes d obsolescence</td><td>Pense que deployer = mettre le notebook en prod</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Framework MLOps complet, monitoring derive, CI/CD ML, Dataiku ou MLflow avance</td><td>A mis en place un monitoring complet, a configure un retraining automatique</td><td>N a pas de monitoring sur ses modeles en production</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture MLOps organisation, gouvernance des modeles, choix de plateformes</td><td>A defini le framework MLOps de son organisation, a choisi et deploye la plateforme</td><td>Ne peut pas expliquer pourquoi ses modeles meurent en production</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ou ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

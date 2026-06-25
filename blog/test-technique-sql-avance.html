@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique SQL avance : window functions, CTEs recursives, optimisation</span></div>
@@ -126,8 +126,37 @@ WHERE event_properties->>'event_name' = 'purchase';
 SELECT user_id, item
 FROM events,
 JSONB_ARRAY_ELEMENTS_TEXT(event_properties->'items') AS item
-WHERE event_type = 'cart_add';</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>JOINs, GROUP BY, sous-requetes, CTEs simples</td><td>Ecrit des CTEs lisibles, sait quand utiliser HAVING vs WHERE</td><td>Confond WHERE et HAVING, ne sait pas ce qu est une CTE</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Window functions, QUALIFY, pivots, agregations conditionnelles</td><td>Ecrit une analyse de cohorte avec ROW_NUMBER, utilise LAG/LEAD</td><td>Ne connait pas les window functions, ne sait pas faire un PIVOT</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CTEs recursives, EXPLAIN ANALYZE, Materialized Views, JSON</td><td>A debug une requete lente avec EXPLAIN, a ecrit une CTE recursive</td><td>Ne sait pas lire un plan EXPLAIN, n a jamais utilise de Materialized View</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+WHERE event_type = 'cart_add';</code></div><div class='cb'><code>-- Analyse de cohortes de retention mensuelle
+WITH cohorts AS (
+    SELECT customer_id, DATE_TRUNC('month', first_order_date) AS cohort_month
+    FROM dim_customers
+),
+retention AS (
+    SELECT c.cohort_month,
+        DATEDIFF('month', c.cohort_month, DATE_TRUNC('month', o.order_date)) AS month_n,
+        COUNT(DISTINCT o.customer_id) AS active_customers
+    FROM cohorts c JOIN fct_orders o ON c.customer_id = o.customer_id
+    GROUP BY 1, 2
+),
+sizes AS (SELECT cohort_month, COUNT(*) AS cohort_size FROM cohorts GROUP BY 1)
+SELECT r.cohort_month, r.month_n,
+    ROUND(r.active_customers * 100.0 / s.cohort_size, 1) AS retention_pct
+FROM retention r JOIN sizes s USING (cohort_month)
+ORDER BY cohort_month, month_n;
+
+-- Mediane et percentiles
+SELECT region,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount) AS mediane,
+    PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY amount) AS p90
+FROM fct_orders GROUP BY region;</code></div>
+<ul>
+<li><strong>Analyse de cohortes</strong> - technique fondamentale pour mesurer la retention par periode d acquisition. Double CTE : cohorts (premier achat) + retention (activite par mois)</li>
+<li><strong>QUALIFY</strong> - filtre sur window functions (Snowflake, BigQuery, DuckDB). Evite un CTE supplementaire apres RANK() ou ROW_NUMBER()</li>
+<li><strong>LATERAL JOIN</strong> - joindre avec une fonction table-valued. Exemple : exploser un tableau JSON colonne par colonne</li>
+<li><strong>Recursive CTEs</strong> - parcourir des structures hierarchiques (organigramme, categories imbriquees) en SQL pur</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>JOINs, GROUP BY, sous-requetes, CTEs simples</td><td>Ecrit des CTEs lisibles, sait quand utiliser HAVING vs WHERE</td><td>Confond WHERE et HAVING, ne sait pas ce qu est une CTE</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Window functions, QUALIFY, pivots, agregations conditionnelles</td><td>Ecrit une analyse de cohorte avec ROW_NUMBER, utilise LAG/LEAD</td><td>Ne connait pas les window functions, ne sait pas faire un PIVOT</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CTEs recursives, EXPLAIN ANALYZE, Materialized Views, JSON</td><td>A debug une requete lente avec EXPLAIN, a ecrit une CTE recursive</td><td>Ne sait pas lire un plan EXPLAIN, n a jamais utilise de Materialized View</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

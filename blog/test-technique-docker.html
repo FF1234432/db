@@ -70,7 +70,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <div class="nr">
   <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
   <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
-  <a href="../contact.html" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
 <div class="aw">
@@ -96,7 +96,7 @@ CMD ["python", "pipeline.py"]</code></div><ul><li><strong>Multi-stage builds</st
     depends_on: [postgres]
 volumes:
   postgres_data:</code></div><h2 id="ci"><span class="sn">5</span>Docker en CI/CD et production</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Comment integrez-vous Docker dans votre pipeline CI/CD ?</p></div><ul><li><strong>Build et push dans GitHub Actions</strong> vers un registre</li><li><strong>Tags semantiques</strong> : v1.2.3 plutot que latest en prod</li><li><strong>Scan de vulnerabilites</strong> : Trivy dans la CI</li><li><strong>Kubernetes</strong> — quand passer de Compose a K8s ?</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>docker pull/run/ps/logs, images de base</td><td>Comprend image vs container, utilise .dockerignore</td><td>Ne sait pas ce qu'est un layer</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Dockerfile optimise, volumes, Docker Compose</td><td>A ecrit un Dockerfile multi-stage, Compose pour Airflow</td><td>Ne sait pas pourquoi l'ordre des instructions compte</td></tr><tr><td><span class="bd bs">Senior</span></td><td>CI/CD Docker, registres prives, securite</td><td>Build+push+deploy dans une CI</td><td>N'a jamais pousse vers un registre prive</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture containers, Kubernetes, standards securite</td><td>A defini les standards d'images pour l'equipe</td><td>Ne peut pas expliquer Compose vs Kubernetes</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+<div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
 <div class="fl">

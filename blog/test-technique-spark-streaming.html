@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Spark Structured Streaming : watermarks, triggers, sinks</span></div>
@@ -98,8 +98,42 @@ df_parsed.writeStream\
     .format('delta')\
     .outputMode('append')\
     .option('checkpointLocation', '/checkpoints/orders')\
-    .start('/data/delta/orders')</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>readStream/writeStream, triggers, output modes</td><td>A écrit un job Spark Streaming basique, comprend les 3 output modes</td><td>Ne sait pas la différence entre batch et streaming Spark</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Watermarks, Kafka intégration, checkpointing, optimisation</td><td>A configuré des watermarks, a fait tourner Kafka → Spark → Delta en production</td><td>Ne sait pas ce qu est un watermark</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Spark Streaming ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+    .start('/data/delta/orders')</code></div>
+<div class='cb'><code>from pyspark.sql.functions import window, col, from_json, sum as sum_
+from pyspark.sql.types import StructType, StringType, FloatType
+
+# Schema du message Kafka
+order_schema = StructType()     .add("order_id", StringType())     .add("amount", FloatType())     .add("customer_id", StringType())
+
+# Lire depuis Kafka
+df_raw = spark.readStream.format("kafka")     .option("kafka.bootstrap.servers", "kafka:9092")     .option("subscribe", "orders")     .option("startingOffsets", "latest")     .load()
+
+# Parser JSON + watermark + agrégation
+df_orders = df_raw.select(
+    from_json(col("value").cast("string"), order_schema).alias("d"),
+    col("timestamp").alias("event_time")
+).select("d.*", "event_time")
+
+result = df_orders     .withWatermark("event_time", "10 minutes")     .groupBy(window("event_time", "5 minutes"), "customer_id")     .agg(sum_("amount").alias("total_5min"))
+
+# Écrire dans Delta Lake avec checkpointing
+result.writeStream     .format("delta")     .outputMode("append")     .option("checkpointLocation", "/checkpoints/orders_agg")     .option("mergeSchema", "true")     .start("/data/delta/orders_agg")</code></div>
+<ul>
+<li><strong>Checkpoint obligatoire</strong> — <code>checkpointLocation</code> permet la reprise après panne. Sans checkpoint, le job repart de zéro et peut perdre ou dupliquer des données</li>
+<li><strong>foreachBatch</strong> — écrire dans des destinations non-supportées nativement (Elasticsearch, PostgreSQL) en traitant chaque micro-batch comme un DataFrame statique</li>
+<li><strong>Exactly-once avec Delta</strong> — Delta Lake + Spark Structured Streaming = garantie exactly-once grâce à l'écriture idempotente et au commit log</li>
+<li><strong>Monitoring</strong> — <code>query.lastProgress</code> retourne les métriques du dernier batch (inputRowsPerSecond, processedRowsPerSecond, durationMs). Exporter vers Prometheus/Grafana</li>
+<li><strong>Continuous processing</strong> — latence sub-milliseconde (expérimental). Trigger <code>continuous='1 second'</code>. Ne supporte qu'un sous-ensemble de transformations</li>
+</ul>
+<ul>
+<li><strong>Checkpoint obligatoire</strong> - checkpointLocation permet la reprise apres panne. Sans checkpoint, le job repart de zero et peut dupliquer des donnees</li>
+<li><strong>foreachBatch</strong> - ecrire dans des destinations non-supportees (Elasticsearch, PostgreSQL) en traitant chaque micro-batch comme un DataFrame statique</li>
+<li><strong>Exactly-once avec Delta</strong> - Delta Lake + Spark Structured Streaming = exactly-once grace a l ecriture idempotente et au commit log</li>
+<li><strong>Monitoring</strong> - query.lastProgress retourne les metriques du dernier batch (inputRowsPerSecond, processedRowsPerSecond, durationMs)</li>
+<li><strong>Watermark et late data</strong> - withWatermark('event_time', '10 minutes') : tolerer les messages arrives avec jusqu a 10 minutes de retard. Au-dela, ignores</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>readStream/writeStream, triggers, output modes</td><td>A écrit un job Spark Streaming basique, comprend les 3 output modes</td><td>Ne sait pas la différence entre batch et streaming Spark</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Watermarks, Kafka intégration, checkpointing, optimisation</td><td>A configuré des watermarks, a fait tourner Kafka → Spark → Delta en production</td><td>Ne sait pas ce qu est un watermark</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Spark Streaming ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

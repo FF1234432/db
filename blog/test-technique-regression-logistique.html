@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique régression logistique : fondations statistiques pour Data Scientist</span></div>
@@ -57,8 +57,45 @@ model_l2 = LogisticRegression(penalty='l2', C=0.1, solver='lbfgs')
 model_l1 = LogisticRegression(penalty='l1', C=0.1, solver='liblinear')
 
 # ElasticNet : combinaison L1 + L2
-model_en = LogisticRegression(penalty='elasticnet', l1_ratio=0.5, solver='saga')</code></div><ul><li><strong>L1</strong> — sélection de features naturelle (coefficients → 0). Utile avec beaucoup de features non pertinentes</li><li><strong>L2</strong> — réduit mais ne supprime pas. Préférer si toutes les features sont potentiellement utiles</li><li><strong>Tuning de C</strong> — utiliser GridSearchCV ou cross_val_score</li></ul><h2 id='hypo'><span class='sn'>5</span>Hypothèses et limites</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les hypothèses de la régression logistique ? Quand échouent-elles ?</p></div><ul><li><strong>Linéarité des log-odds</strong> — relation linéaire entre les features et le log-odds. Vérifier avec des partial dependence plots</li><li><strong>Indépendance des observations</strong> — pas de structure temporelle ou spatiale non capturée</li><li><strong>Pas de multicolinéarité forte</strong> — deux features très corrélées rendent les coefficients instables</li><li><strong>Quand elle échoue</strong> — relations non linéaires (préférer XGBoost), très grande dimensionnalité, interactions complexes</li><li><strong>Calibration</strong> — les probabilités de la régression logistique sont bien calibrées contrairement à celles de Random Forest</li></ul><h2 id='multiclass'><span class='sn'>6</span>Extension multiclasse</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment la régression logistique gère-t-elle plusieurs classes ?</p></div><ul><li><strong>One-vs-Rest (OvR)</strong> — un classifieur binaire par classe. Classe i vs toutes les autres. Simple mais peut avoir des régions non couvertes</li><li><strong>Multinomial (Softmax)</strong> — un seul modèle qui optimise la log-vraisemblance multinomiale. Plus cohérent, solver='lbfgs' ou 'sag'</li><li><strong>sklearn</strong> — multi_class='auto' choisit multinomial si solver compatible, sinon OvR</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Comprend la sigmoïde, train/predict/proba, métriques</td><td>Explique pourquoi on utilise sigmoïde, sait interpréter predict_proba</td><td>Pense que la régression logistique est toujours linéaire</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Odds ratios, L1/L2, C parameter, hypothèses</td><td>Interprète les odds ratios, sait tuner C, connaît L1 vs L2</td><td>Ne sait pas ce qu est un odds ratio</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Calibration, diagnostics de multicolinéarité, GLMs</td><td>Vérifie la calibration, sait quand la régression logistique est meilleure qu XGBoost</td><td>Utilise toujours XGBoost sans justifier</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+model_en = LogisticRegression(penalty='elasticnet', l1_ratio=0.5, solver='saga')</code></div><ul><li><strong>L1</strong> — sélection de features naturelle (coefficients → 0). Utile avec beaucoup de features non pertinentes</li><li><strong>L2</strong> — réduit mais ne supprime pas. Préférer si toutes les features sont potentiellement utiles</li><li><strong>Tuning de C</strong> — utiliser GridSearchCV ou cross_val_score</li></ul><h2 id='hypo'><span class='sn'>5</span>Hypothèses et limites</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles sont les hypothèses de la régression logistique ? Quand échouent-elles ?</p></div><ul><li><strong>Linéarité des log-odds</strong> — relation linéaire entre les features et le log-odds. Vérifier avec des partial dependence plots</li><li><strong>Indépendance des observations</strong> — pas de structure temporelle ou spatiale non capturée</li><li><strong>Pas de multicolinéarité forte</strong> — deux features très corrélées rendent les coefficients instables</li><li><strong>Quand elle échoue</strong> — relations non linéaires (préférer XGBoost), très grande dimensionnalité, interactions complexes</li><li><strong>Calibration</strong> — les probabilités de la régression logistique sont bien calibrées contrairement à celles de Random Forest</li></ul><h2 id='multiclass'><span class='sn'>6</span>Extension multiclasse</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment la régression logistique gère-t-elle plusieurs classes ?</p></div><ul><li><strong>One-vs-Rest (OvR)</strong> — un classifieur binaire par classe. Classe i vs toutes les autres. Simple mais peut avoir des régions non couvertes</li><li><strong>Multinomial (Softmax)</strong> — un seul modèle qui optimise la log-vraisemblance multinomiale. Plus cohérent, solver='lbfgs' ou 'sag'</li><li><strong>sklearn</strong> — multi_class='auto' choisit multinomial si solver compatible, sinon OvR</li></ul>
+<div class='cb'><code>from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+import numpy as np
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', LogisticRegression(
+        C=0.1,
+        class_weight='balanced',
+        max_iter=1000,
+        solver='lbfgs'
+    ))
+])
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_validate(pipeline, X, y, cv=cv,
+    scoring=['roc_auc', 'precision', 'recall', 'f1'])
+print(f"AUC: {scores['test_roc_auc'].mean():.3f} +/- {scores['test_roc_auc'].std():.3f}")
+
+# Odds ratios pour l interpretabilite
+pipeline.fit(X_train, y_train)
+import pandas as pd
+odds = pd.DataFrame({
+    'feature': X.columns,
+    'odds_ratio': np.exp(pipeline.named_steps['model'].coef_[0])
+}).sort_values('odds_ratio', ascending=False)
+print(odds.head(10))</code></div>
+<ul>
+<li><strong>Regularisation L1 vs L2</strong> - L2 (Ridge, defaut) : penalise les grands coefficients, garde toutes les features. L1 (Lasso) : coefficients a zero = selection automatique de features</li>
+<li><strong>Desequilibre de classes</strong> - class_weight="balanced" ajuste le poids. Alternative : ajuster le threshold de decision plutot que le defaut 0.5</li>
+<li><strong>Metriques selon le contexte</strong> - AUC-ROC : ranking general. Precision-Recall : quand faux positifs coutent cher. F1 : equilibre. Accuracy : inutile sur classes desequilibrees</li>
+<li><strong>Odds ratios</strong> - interpretabilite cle. OR=2.5 = probabilite de l evenement multipliee par 2.5 quand la feature augmente d une unite</li>
+<li><strong>Calibration</strong> - verifier que P(y=1|score=0.7) ≈ 70% (Platt scaling ou isotonic regression). Critique pour le scoring de credit ou pricing</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Comprend la sigmoïde, train/predict/proba, métriques</td><td>Explique pourquoi on utilise sigmoïde, sait interpréter predict_proba</td><td>Pense que la régression logistique est toujours linéaire</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Odds ratios, L1/L2, C parameter, hypothèses</td><td>Interprète les odds ratios, sait tuner C, connaît L1 vs L2</td><td>Ne sait pas ce qu est un odds ratio</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Calibration, diagnostics de multicolinéarité, GLMs</td><td>Vérifie la calibration, sait quand la régression logistique est meilleure qu XGBoost</td><td>Utilise toujours XGBoost sans justifier</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

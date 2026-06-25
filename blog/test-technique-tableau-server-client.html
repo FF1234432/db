@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Tableau Server Client : automatisation Python de Tableau Cloud</span></div>
@@ -107,8 +107,46 @@ with server.auth.sign_in(auth):
                 if group.name == 'All Users':
                     for cap, mode in rule.capabilities.items():
                         if mode == 'Allow':
-                            print(f'[ALERTE] {wb.name} accessible a tous ({cap})')</code></div><ul><li><strong>RLS via USERNAME()</strong> — fonction Tableau qui retourne l email de l utilisateur connecte, utilisee pour filtrer les donnees par user dans la datasource</li><li><strong>Permissions granulaires</strong> — Read, Write, Filter, ViewUnderlyingData, ChangePermissions — attribuees par user ou par groupe</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A utilise TSC pour les operations courantes (download, upload, users)</td><td>A deploye un workbook via TSC, a ajoute des users en masse</td><td>Fait tout a la main dans l interface Tableau</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline deploiement STAGE-PROD automatise, refresh orchestre, audit securite</td><td>A integre TSC dans un pipeline Airflow/GitHub Actions, a fait un audit de permissions</td><td>Ne sait pas declencher un refresh via API</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un profil BI Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+                            print(f'[ALERTE] {wb.name} accessible a tous ({cap})')</code></div><ul><li><strong>RLS via USERNAME()</strong> — fonction Tableau qui retourne l email de l utilisateur connecte, utilisee pour filtrer les donnees par user dans la datasource</li><li><strong>Permissions granulaires</strong> — Read, Write, Filter, ViewUnderlyingData, ChangePermissions — attribuees par user ou par groupe</li></ul><div class='cb'><code>import tableauserverclient as TSC
+
+server = TSC.Server('https://tableau.company.com', use_server_version=True)
+auth = TSC.PersonalAccessTokenAuth('token_name', 'token_value', site_id='MySite')
+
+with server.auth.sign_in(auth):
+    all_wbs, page_info = server.workbooks.get()
+    print(f'{page_info.total_available} workbooks')
+    
+    # Publier un workbook
+    wb_item = TSC.WorkbookItem(project_id='proj-id', name='Sales Dashboard')
+    published = server.workbooks.publish('dashboard.twbx', wb_item,
+                                          TSC.Server.PublishMode.Overwrite)
+    # Declencher un refresh datasource
+    ds_item = server.datasources.get_by_id('ds-123')
+    job = server.datasources.refresh(ds_item)
+    job = server.jobs.wait_for_job(job)
+    print(f'Job status: {job.status}')
+    
+    # Gestion des permissions programmatique
+    permissions = TSC.PermissionsRule(TSC.GroupItem(group_id='grp-1'),
+        capabilities={TSC.Permission.Capability.View: TSC.Permission.Mode.Allow})
+    server.workbooks.add_permissions(published, [permissions])</code></div>
+<ul>
+<li><strong>Personal Access Token</strong> - PAT recommande pour les scripts automatises. Les credentials username/password seront deprecies. Creer un PAT dans les settings Tableau Server</li>
+<li><strong>REST API vs TSC</strong> - Tableau Server Client est le wrapper Python officiel de l API REST. Prefer TSC pour les scripts Python, l API REST directe pour les integrations non-Python</li>
+<li><strong>Permissions via API</strong> - creer des groupes, assigner des permissions sur des projets/workbooks programmatiquement. Indispensable pour le provisioning automatique</li>
+<li><strong>Webhooks Tableau</strong> - declencher des actions externes (Slack, CI/CD) quand un workbook est mis a jour ou un extract refresh echoue</li>
+<li><strong>Metadata API (GraphQL)</strong> - requeter le lineage et les metadonnees. Quels workbooks utilisent cette datasource ? Quelles tables sont impactees par une source ?</li>
+<li><strong>Tableau Bridge</strong> - connecter Tableau Cloud a des sources on-premise (SQL Server, Oracle) via un agent installe sur un serveur Windows interne</li>
+</ul>
+<ul>
+<li><strong>Personal Access Token</strong> - PAT recommande pour les scripts automatises. Les credentials username/password seront deprecies dans les futures versions</li>
+<li><strong>Metadata API (GraphQL)</strong> - requeter le lineage et les metadonnees. Quels workbooks utilisent cette datasource ? Quelles tables sont impactees ?</li>
+<li><strong>Webhooks Tableau</strong> - declencher des actions externes (Slack, CI/CD) quand un workbook est mis a jour ou un extract refresh echoue</li>
+<li><strong>Tableau Bridge</strong> - connecter Tableau Cloud a des sources de donnees on-premise (SQL Server, Oracle). Agent installe sur un serveur Windows interne</li>
+<li><strong>Gestion des permissions via API</strong> - creer des groupes, assigner des permissions sur des projets/workbooks programmatiquement. Provisioning automatique</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A utilise TSC pour les operations courantes (download, upload, users)</td><td>A deploye un workbook via TSC, a ajoute des users en masse</td><td>Fait tout a la main dans l interface Tableau</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline deploiement STAGE-PROD automatise, refresh orchestre, audit securite</td><td>A integre TSC dans un pipeline Airflow/GitHub Actions, a fait un audit de permissions</td><td>Ne sait pas declencher un refresh via API</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un profil BI Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

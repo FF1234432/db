@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique MLflow avancé : projets, recipes, Model Registry, serving</span></div>
@@ -139,8 +139,53 @@ import requests
 response = requests.post(
     'http://localhost:5000/invocations',
     json={'dataframe_records': X_test.to_dict('records')}
-)</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD avec MLflow : automatiser les promotions</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous MLflow dans un pipeline CI/CD pour le ML ?</p></div><ul><li><strong>CI sur PR</strong> — lancer l entrainement sur un sample, vérifier que les métriques sont au-dessus du baseline</li><li><strong>Comparaison automatique</strong> — comparer le nouveau modèle avec le modèle en Production. Promouvoir seulement si meilleur</li><li><strong>GitHub Actions</strong> — workflow qui déclenche l entrainement, enregistre dans MLflow, promeut si métriques OK</li><li><strong>Model approval gate</strong> — certains modèles critiques nécessitent une validation humaine avant la promotion Production</li></ul><h2 id='databricks'><span class='sn'>6</span>MLflow sur Databricks : différences</h2><div class='sq'><div class='sl'>Question discriminante</div><p>En quoi MLflow Managed sur Databricks diffère-t-il du MLflow open source ?</p></div><ul><li><strong>Tracking server centralisé</strong> — pas de configuration, intégré au workspace Databricks</li><li><strong>Unity Catalog integration</strong> — dans Databricks 13+, le Model Registry est dans Unity Catalog. Lineage, accès RBAC</li><li><strong>Auto logging</strong> — mlflow.autolog() capture automatiquement sklearn, XGBoost, PyTorch, LightGBM</li><li><strong>Feature Store</strong> — intégration native entre les features Databricks Feature Store et les modèles MLflow</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tracking complet, Model Registry, serving basique</td><td>Loggue paramètres + métriques + artefacts, a promu un modèle via Registry</td><td>Ne loggue que les métriques sans les paramètres ni les artefacts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>MLflow Projects, serving production, CI/CD ML, custom PythonModel</td><td>A écrit un MLproject, serve un modèle custom en production, a un CI/CD ML</td><td>Ne sait pas ce qu est MLflow Projects</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+)</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD avec MLflow : automatiser les promotions</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment intégrez-vous MLflow dans un pipeline CI/CD pour le ML ?</p></div><ul><li><strong>CI sur PR</strong> — lancer l entrainement sur un sample, vérifier que les métriques sont au-dessus du baseline</li><li><strong>Comparaison automatique</strong> — comparer le nouveau modèle avec le modèle en Production. Promouvoir seulement si meilleur</li><li><strong>GitHub Actions</strong> — workflow qui déclenche l entrainement, enregistre dans MLflow, promeut si métriques OK</li><li><strong>Model approval gate</strong> — certains modèles critiques nécessitent une validation humaine avant la promotion Production</li></ul><h2 id='databricks'><span class='sn'>6</span>MLflow sur Databricks : différences</h2><div class='sq'><div class='sl'>Question discriminante</div><p>En quoi MLflow Managed sur Databricks diffère-t-il du MLflow open source ?</p></div><ul><li><strong>Tracking server centralisé</strong> — pas de configuration, intégré au workspace Databricks</li><li><strong>Unity Catalog integration</strong> — dans Databricks 13+, le Model Registry est dans Unity Catalog. Lineage, accès RBAC</li><li><strong>Auto logging</strong> — mlflow.autolog() capture automatiquement sklearn, XGBoost, PyTorch, LightGBM</li><li><strong>Feature Store</strong> — intégration native entre les features Databricks Feature Store et les modèles MLflow</li></ul>
+<div class='cb'><code>import mlflow, mlflow.sklearn
+from mlflow.tracking import MlflowClient
+
+# Autolog : MLflow capture tout automatiquement
+mlflow.sklearn.autolog()  # params, métriques, modèle, feature importance
+
+with mlflow.start_run(run_name="xgboost_churn_v3") as run:
+    model = XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.03)
+    model.fit(X_train, y_train)
+    
+    # Métriques custom
+    mlflow.log_metrics({
+        "auc_roc": roc_auc_score(y_test, model.predict_proba(X_test)[:,1]),
+        "precision_at_k": precision_at_k(y_test, model, k=100)
+    })
+    mlflow.log_artifact("shap_summary.png")
+    mlflow.set_tags({"team": "risk", "dataset_version": "2025-Q1"})
+
+# Sélectionner et promouvoir le meilleur run
+client = MlflowClient()
+best = client.search_runs(
+    experiment_ids=["1"],
+    order_by=["metrics.auc_roc DESC"]
+)[0]
+
+mv = mlflow.register_model(f"runs:/{best.info.run_id}/model", "churn_model")
+client.transition_model_version_stage("churn_model", mv.version, "Production")
+
+# Servir le modèle
+# mlflow models serve -m models:/churn_model/Production -p 5000</code></div>
+<ul>
+<li><strong>MLflow vs W&B</strong> — MLflow : open source, intégré Databricks, self-hostable. Weights & Biases : meilleure UX deep learning, collaboration, sweeps hyperparamètres, payant</li>
+<li><strong>Model Registry</strong> — versionner les modèles avec transitions (None → Staging → Production → Archived). Rollback en 1 ligne si régression en prod</li>
+<li><strong>MLflow Projects</strong> — packager le code d'entraînement (MLproject file + conda.yaml). Reproductibilité totale : <code>mlflow run . -P learning_rate=0.01</code></li>
+<li><strong>MLflow Serving</strong> — endpoint REST simple pour du scoring. Pour la prod haute dispo : deployer le modèle MLflow dans Docker, Kubernetes ou Databricks Model Serving</li>
+<li><strong>Experiment tracking best practices</strong> — un run = un entraînement. Toujours logger les hyperparamètres, métriques train/val/test, version du dataset, artefacts (SHAP plots, confusion matrix)</li>
+</ul>
+<ul>
+<li><strong>MLflow vs W&B</strong> - MLflow : open source, integre Databricks, self-hostable. Weights & Biases : meilleure UX deep learning, sweeps hyperparametres, payant</li>
+<li><strong>Model Registry</strong> - versionner les modeles avec transitions (None -> Staging -> Production -> Archived). Rollback en 1 ligne si regression en prod</li>
+<li><strong>MLflow Projects</strong> - packager le code d entrainement (MLproject file). Reproductibilite totale : mlflow run . -P learning_rate=0.01</li>
+<li><strong>MLflow Serving</strong> - endpoint REST simple pour le scoring. Pour la prod haute dispo : deployer le modele dans Docker, Kubernetes ou Databricks Model Serving</li>
+<li><strong>Experiment tracking best practices</strong> - un run = un entrainement. Toujours logger les hyperparametres, metriques train/val/test, version du dataset, artefacts (SHAP plots)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tracking complet, Model Registry, serving basique</td><td>Loggue paramètres + métriques + artefacts, a promu un modèle via Registry</td><td>Ne loggue que les métriques sans les paramètres ni les artefacts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>MLflow Projects, serving production, CI/CD ML, custom PythonModel</td><td>A écrit un MLproject, serve un modèle custom en production, a un CI/CD ML</td><td>Ne sait pas ce qu est MLflow Projects</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

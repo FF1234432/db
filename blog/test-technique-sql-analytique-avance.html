@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique SQL analytique avancé : patterns experts pour Data Analyst</span></div>
@@ -170,8 +170,45 @@ SELECT
     SUM(IF(quarter = 'Q3', revenue, 0)) AS Q3,
     SUM(IF(quarter = 'Q4', revenue, 0)) AS Q4
 FROM sales_data
-GROUP BY region;</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Window functions, funnel basique, RFM</td><td>Écrit un funnel en SQL, calcule un RFM avec NTILE</td><td>Ne sait pas écrire un funnel sans GROUP BY séparé</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Sessionisation, attribution, intervals/gaps</td><td>Implémente la sessionisation avec LAG, fait de l attribution multi-touch</td><td>Ne sait pas créer des sessions en SQL</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+GROUP BY region;</code></div>
+<div class='cb'><code>-- Taux de retention par cohorte
+WITH cohorts AS (
+    SELECT customer_id, DATE_TRUNC('month', first_order_date) AS cohort_month
+    FROM dim_customers
+),
+retention AS (
+    SELECT c.cohort_month,
+        DATEDIFF('month', c.cohort_month, DATE_TRUNC('month', o.order_date)) AS month_n,
+        COUNT(DISTINCT o.customer_id) AS actifs
+    FROM cohorts c JOIN fct_orders o ON c.customer_id = o.customer_id
+    GROUP BY 1, 2
+),
+sizes AS (SELECT cohort_month, COUNT(*) AS cohort_size FROM cohorts GROUP BY 1)
+SELECT r.cohort_month, r.month_n,
+    ROUND(r.actifs * 100.0 / s.cohort_size, 1) AS retention_pct
+FROM retention r JOIN sizes s USING (cohort_month)
+ORDER BY cohort_month, month_n;
+
+-- Mediane avec PERCENTILE_CONT
+SELECT region,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount) AS mediane,
+    PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY amount) AS p90
+FROM fct_orders GROUP BY region;
+
+-- QUALIFY pour filtrer sur window functions
+SELECT order_id, customer_id, amount,
+    RANK() OVER (PARTITION BY customer_id ORDER BY amount DESC) AS rnk
+FROM fct_orders
+QUALIFY rnk = 1;  -- top commande par client (Snowflake/BigQuery)</code></div>
+<ul>
+<li><strong>Analyse de cohortes</strong> - technique fondamentale pour mesurer la retention, le LTV et l impact des changements produit par periode d acquisition</li>
+<li><strong>QUALIFY</strong> - filtre sur window functions (Snowflake, BigQuery, DuckDB). Remplace un CTE supplementaire pour filtrer apres RANK() ou ROW_NUMBER()</li>
+<li><strong>LATERAL JOIN</strong> - PostgreSQL/BigQuery : joindre avec une fonction table-valued. Exemple : exploser un tableau JSON colonne par colonne</li>
+<li><strong>Recursive CTEs</strong> - parcourir des structures hierarchiques (organigramme, categories imbriquees) en SQL pur sans code imperatif</li>
+<li><strong>PIVOT / UNPIVOT</strong> - transformer des lignes en colonnes. Natif dans Snowflake, simule avec MAX(CASE WHEN...) dans BigQuery</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Window functions, funnel basique, RFM</td><td>Écrit un funnel en SQL, calcule un RFM avec NTILE</td><td>Ne sait pas écrire un funnel sans GROUP BY séparé</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Sessionisation, attribution, intervals/gaps</td><td>Implémente la sessionisation avec LAG, fait de l attribution multi-touch</td><td>Ne sait pas créer des sessions en SQL</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

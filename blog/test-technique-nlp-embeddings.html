@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique NLP et embeddings : tokenisation, fine-tuning, RAG</span></div>
@@ -106,8 +106,32 @@ def classify_ticket(text: str):
     return {
         'category': result[0]['label'],
         'confidence': round(result[0]['score'], 4)
-    }</code></div><ul><li><strong>Quantization</strong> — réduire le modèle de float32 vers int8. 4x moins de mémoire, 2-3x plus rapide, légère perte de qualité</li><li><strong>ONNX Runtime</strong> — convertir le modèle pour l inférence optimisée. Indépendant de PyTorch</li></ul><h2 id='eval'><span class='sn'>6</span>Évaluer les modèles NLP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles métriques utilisez-vous pour évaluer un modèle de classification de texte multiclasse ?</p></div><ul><li><strong>F1 macro</strong> — moyenne des F1 par classe. Donne le même poids à chaque classe, même les petites</li><li><strong>F1 weighted</strong> — moyenne pondérée par la fréquence. Plus représentative si les classes sont déséquilibrées</li><li><strong>Cohen s Kappa</strong> — mesure l accord en tenant compte du hasard. Utile pour comparer plusieurs annotateurs</li><li><strong>BLEU/ROUGE</strong> — pour la génération de texte (résumé, traduction). BLEU mesure les n-grammes communs entre texte généré et référence</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tokenisation, sentence transformers, classification basique</td><td>A utilisé sentence-transformers pour du RAG, sait ce qu est BPE</td><td>Ne sait pas ce qu est un embedding</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Fine-tuning BERT/CamemBERT, LoRA, déploiement ONNX</td><td>A fine-tuné un modèle sur données métier, a déployé en production</td><td>N a jamais fine-tuné, ne sait pas ce qu est LoRA</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist NLP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+    }</code></div><ul><li><strong>Quantization</strong> — réduire le modèle de float32 vers int8. 4x moins de mémoire, 2-3x plus rapide, légère perte de qualité</li><li><strong>ONNX Runtime</strong> — convertir le modèle pour l inférence optimisée. Indépendant de PyTorch</li></ul><h2 id='eval'><span class='sn'>6</span>Évaluer les modèles NLP</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quelles métriques utilisez-vous pour évaluer un modèle de classification de texte multiclasse ?</p></div><ul><li><strong>F1 macro</strong> — moyenne des F1 par classe. Donne le même poids à chaque classe, même les petites</li><li><strong>F1 weighted</strong> — moyenne pondérée par la fréquence. Plus représentative si les classes sont déséquilibrées</li><li><strong>Cohen s Kappa</strong> — mesure l accord en tenant compte du hasard. Utile pour comparer plusieurs annotateurs</li><li><strong>BLEU/ROUGE</strong> — pour la génération de texte (résumé, traduction). BLEU mesure les n-grammes communs entre texte généré et référence</li></ul><div class='cb'><code>from sentence_transformers import SentenceTransformer
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Embeddings multilingues
+model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+texts = ['Retard de livraison', 'Mon colis n est pas arrive', 'Remboursement commande']
+embeddings = model.encode(texts)  # shape: (3, 384)
+
+# Similarite cosinus entre documents
+sim_matrix = cosine_similarity(embeddings)
+print(f'Sim(retard, colis): {sim_matrix[0,1]:.3f}')  # ~0.75 - semantiquement proches
+
+# Classification par similarite avec classes (zero-shot)
+classes = ['probleme livraison', 'probleme paiement', 'retour produit']
+class_embeddings = model.encode(classes)
+
+def classify(text, classes, class_embeddings):
+    text_emb = model.encode([text])
+    sims = cosine_similarity(text_emb, class_embeddings)[0]
+    return classes[np.argmax(sims)]
+
+print(classify('mon paquet est perdu', classes, class_embeddings))</code></div><ul><li><strong>Sentence transformers vs word2vec</strong> - word2vec : embedding au niveau mot, context-free. Sentence transformers : embedding de la phrase entiere, context-aware (BERT-based)</li><li><strong>Modeles multilingues</strong> - paraphrase-multilingual-MiniLM-L12-v2 : 50 langues, rapide. multilingual-e5-large : meilleure qualite mais plus lent. BGE-M3 : tres performant, multilingue</li><li><strong>Dimension des vecteurs</strong> - MiniLM : 384 dimensions. BGE-large : 1024 dimensions. Plus de dimensions = plus precise mais plus de memoire et calcul</li><li><strong>Fine-tuning</strong> - adapter un modele pre-entraine sur un domaine specifique (e-commerce, medical, juridique) avec des paires de phrases similaires/dissimilaires</li><li><strong>BM25 vs embeddings</strong> - BM25 : matching lexical exact, rapide, interpretable. Embeddings : comprehension semantique, gere les synonymes et paraphrases. Hybrid = meilleur des deux</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tokenisation, sentence transformers, classification basique</td><td>A utilisé sentence-transformers pour du RAG, sait ce qu est BPE</td><td>Ne sait pas ce qu est un embedding</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Fine-tuning BERT/CamemBERT, LoRA, déploiement ONNX</td><td>A fine-tuné un modèle sur données métier, a déployé en production</td><td>N a jamais fine-tuné, ne sait pas ce qu est LoRA</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist NLP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

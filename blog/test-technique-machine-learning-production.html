@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique ML en production : packaging, serving, monitoring</span></div>
@@ -102,8 +102,46 @@ def check_and_retrain():
         trigger_retraining()
 
 # PSI = Population Stability Index
-# Mesure le drift de distribution d une feature</code></div><h2 id='registry'><span class='sn'>6</span>Model Registry : gouvernance des modèles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous les versions de modèles et les promotions Staging → Production ?</p></div><ul><li><strong>MLflow Model Registry</strong> — versionner, tagger (Staging/Production/Archived), stocker les métadonnées</li><li><strong>Process de promotion</strong> — modèle validé sur données de test → Staging → tests d intégration → Production</li><li><strong>Model card</strong> — documentation du modèle : données d entrainement, performances, limitations, biais connus</li><li><strong>Lineage</strong> — tracer les données d entrainement, le code, les hyperparamètres qui ont produit ce modèle</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Pipeline sklearn, FastAPI serving, MLflow Registry</td><td>A déployé un modèle en API FastAPI, utilise MLflow Registry</td><td>Déploie un notebook en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Monitoring drift, canary deployment, retraining auto</td><td>A mis en place le monitoring de drift, a fait du canary deployment</td><td>N a pas de monitoring sur ses modèles en production</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un ML Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Mesure le drift de distribution d une feature</code></div><h2 id='registry'><span class='sn'>6</span>Model Registry : gouvernance des modèles</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment gérez-vous les versions de modèles et les promotions Staging → Production ?</p></div><ul><li><strong>MLflow Model Registry</strong> — versionner, tagger (Staging/Production/Archived), stocker les métadonnées</li><li><strong>Process de promotion</strong> — modèle validé sur données de test → Staging → tests d intégration → Production</li><li><strong>Model card</strong> — documentation du modèle : données d entrainement, performances, limitations, biais connus</li><li><strong>Lineage</strong> — tracer les données d entrainement, le code, les hyperparamètres qui ont produit ce modèle</li></ul>
+<div class='cb'><code>import great_expectations as gx
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+
+# 1. Validation des données entrantes
+context = gx.get_context()
+suite = context.add_expectation_suite("ml_input_validation")
+expectations = [
+    gx.expectations.ExpectColumnValuesToNotBeNull(column="feature_age"),
+    gx.expectations.ExpectColumnValuesToBeBetween(column="amount", min_value=0, max_value=1e6),
+    gx.expectations.ExpectColumnDistinctValuesToBeInSet(
+        column="status", value_set=["active", "inactive", "pending"]
+    )
+]
+
+# 2. Monitoring du drift en production
+report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
+report.run(reference_data=train_data, current_data=production_data_last_7d)
+
+drift_results = report.as_dict()
+if drift_results["metrics"][0]["result"]["dataset_drift"]:
+    trigger_retraining_pipeline()
+    alert_slack(f"Data drift détecté ! Score: {drift_results['metrics'][0]['result']['drift_share']:.2%}")</code></div>
+<ul>
+<li><strong>Data drift vs concept drift</strong> — data drift : les features changent de distribution. Concept drift : la relation entre features et target change. Les deux nécessitent un retraining</li>
+<li><strong>Shadow mode</strong> — déployer le nouveau modèle en parallèle de l'ancien, logger ses prédictions sans les appliquer. Comparer sur des données réelles avant le basculement</li>
+<li><strong>Canary deployment</strong> — router 5-10% du trafic vers le nouveau modèle. Surveiller les métriques avant d'élargir. Rollback immédiat si régression</li>
+<li><strong>Feature Store</strong> — centraliser les features ML (Feast, Databricks Feature Store). Évite la duplication entre entraînement et inférence (training/serving skew)</li>
+<li><strong>A/B test modèle</strong> — mesurer l'impact business (conversion, rétention) pas seulement la métrique ML (AUC). Un modèle avec meilleur AUC peut performer moins bien en prod</li>
+</ul>
+<ul>
+<li><strong>Data drift vs concept drift</strong> - data drift : les features changent de distribution. Concept drift : la relation entre features et target change. Les deux necessitent un retraining</li>
+<li><strong>Shadow mode</strong> - deployer le nouveau modele en parallele de l ancien, logger ses predictions sans les appliquer. Comparer sur donnees reelles avant le basculement</li>
+<li><strong>Canary deployment</strong> - router 5-10% du trafic vers le nouveau modele. Surveiller les metriques avant d elargir. Rollback immediat si regression</li>
+<li><strong>Feature Store</strong> - centraliser les features ML (Feast, Databricks Feature Store). Evite la duplication entre entrainement et inference (training/serving skew)</li>
+<li><strong>A/B test modele</strong> - mesurer l impact business (conversion, retention) pas seulement la metrique ML (AUC). Un modele avec meilleur AUC peut performer moins bien en prod</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Pipeline sklearn, FastAPI serving, MLflow Registry</td><td>A déployé un modèle en API FastAPI, utilise MLflow Registry</td><td>Déploie un notebook en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Monitoring drift, canary deployment, retraining auto</td><td>A mis en place le monitoring de drift, a fait du canary deployment</td><td>N a pas de monitoring sur ses modèles en production</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un ML Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>
