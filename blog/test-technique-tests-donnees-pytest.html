@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique : tester ses pipelines data avec pytest</span></div>
@@ -128,8 +128,46 @@ def test_revenue_aggregation():
 -- tests/orders_no_negative_amount.sql
 SELECT order_id, amount
 FROM {{ ref('fct_orders') }}
-WHERE amount < 0</code></div><h2 id='integration'><span class='sn'>6</span>Tests d intégration end-to-end</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous un pipeline entier de l ingestion à la transformation ?</p></div><ul><li><strong>Test d intégration</strong> — tester le pipeline complet sur un échantillon réel de données</li><li><strong>Environnement de test</strong> — base de données dédiée aux tests (SQLite in-memory, Snowflake sandbox, BigQuery dataset de test)</li><li><strong>Données de test</strong> — jeu minimal mais représentatif : cas normaux + cas limites + données corrompues</li><li><strong>Assertion sur les outputs</strong> — vérifier que le schéma est correct, les agrégations cohérentes, les clés uniques</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tests unitaires pytest, fixtures, mocks basiques</td><td>A écrit des tests pour ses fonctions de transformation, utilise des fixtures</td><td>N a aucun test dans ses projets</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests SQL avec DuckDB, tests d intégration, CI automatisée</td><td>Teste ses transformations SQL avec DuckDB, a une CI qui lance les tests</td><td>Pense que les tests dbt YAML suffisent pour tout</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+WHERE amount < 0</code></div><h2 id='integration'><span class='sn'>6</span>Tests d intégration end-to-end</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment testez-vous un pipeline entier de l ingestion à la transformation ?</p></div><ul><li><strong>Test d intégration</strong> — tester le pipeline complet sur un échantillon réel de données</li><li><strong>Environnement de test</strong> — base de données dédiée aux tests (SQLite in-memory, Snowflake sandbox, BigQuery dataset de test)</li><li><strong>Données de test</strong> — jeu minimal mais représentatif : cas normaux + cas limites + données corrompues</li><li><strong>Assertion sur les outputs</strong> — vérifier que le schéma est correct, les agrégations cohérentes, les clés uniques</li></ul>
+<div class='cb'><code>import pytest
+import pandas as pd
+from pandera import DataFrameSchema, Column, Check
+
+# Pandera : schema validation pour DataFrames
+orders_schema = DataFrameSchema({
+    "order_id": Column(str, nullable=False, unique=True),
+    "amount": Column(float, checks=[Check.greater_than(0), Check.less_than(1_000_000)]),
+    "status": Column(str, checks=Check.isin(["pending", "completed", "cancelled"])),
+    "order_date": Column("datetime64[ns]", nullable=False)
+})
+
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({
+        "order_id": ["ORD-001", "ORD-002"],
+        "amount": [100.0, 250.0],
+        "status": ["completed", "pending"],
+        "order_date": pd.to_datetime(["2025-01-01", "2025-01-02"])
+    })
+
+def test_transform_schema(sample_df):
+    result = transform_orders(sample_df)
+    orders_schema.validate(result)
+
+@pytest.mark.parametrize("amount,valid", [
+    (100.0, True), (-50.0, False), (0.0, False), (1e7, False)
+])
+def test_amount_validation(amount, valid):
+    assert validate_amount(amount) == valid</code></div>
+<ul>
+<li><strong>Pandera</strong> - validation de schema pour DataFrames pandas/polars. Definir le schema comme code, valider a l entree/sortie des fonctions de transformation</li>
+<li><strong>pytest fixtures scope</strong> - scope="function" (defaut) : recree a chaque test. scope="session" : partage toute la session. Utiliser session pour les connexions DB couteuses</li>
+<li><strong>conftest.py</strong> - fixtures partagees entre plusieurs fichiers de tests. DRY : DataFrames de test definis une seule fois</li>
+<li><strong>Mocking</strong> - unittest.mock.patch pour remplacer les appels DB, API ou fichiers. Isoler la logique de transformation des dependances externes</li>
+<li><strong>Coverage</strong> - pytest --cov=src --cov-report=html. Viser 80% sur la logique metier. Les tests d integration couvrent ce que les unitaires ne peuvent pas</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tests unitaires pytest, fixtures, mocks basiques</td><td>A écrit des tests pour ses fonctions de transformation, utilise des fixtures</td><td>N a aucun test dans ses projets</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests SQL avec DuckDB, tests d intégration, CI automatisée</td><td>Teste ses transformations SQL avec DuckDB, a une CI qui lance les tests</td><td>Pense que les tests dbt YAML suffisent pour tout</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

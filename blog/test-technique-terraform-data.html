@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Terraform pour la data : IaC, modules, state, CI/CD</span></div>
@@ -128,8 +128,48 @@ import {
 }
 
 # terraform plan -generate-config-out=generated.tf
-# Genere automatiquement le code Terraform pour les ressources importees</code></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Syntaxe HCL, plan/apply, ressources basiques</td><td>Cree un bucket GCS et un dataset BigQuery, sait faire un plan</td><td>Ne sait pas ce qu est le state Terraform</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Modules, remote backend, variables et outputs</td><td>A cree un module reutilisable, configure un remote backend GCS/S3</td><td>Stocke le state en local, ne sait pas creer un module</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CI/CD, import, workspaces, gestion des secrets</td><td>A integre Terraform dans GitHub Actions, a fait un terraform import</td><td>Ne sait pas ce qu est le state locking</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer cloud ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+# Genere automatiquement le code Terraform pour les ressources importees</code></div><div class='cb'><code>module "analytics_dataset" {
+  source     = "./modules/bigquery_dataset"
+  dataset_id = "analytics_prod"
+  project_id = var.project_id
+  location   = "EU"
+  access_roles = [
+    { role = "READER", email = "analysts@company.com" }
+  ]
+}
+
+terraform {
+  backend "gcs" {
+    bucket = "mon-projet-tfstate"
+    prefix = "terraform/data-platform"
+  }
+  required_providers {
+    google = { source = "hashicorp/google", version = "~> 5.0" }
+  }
+}
+
+# Import de ressources existantes
+# terraform import google_bigquery_dataset.analytics projects/mon-projet/datasets/analytics
+
+# Workspaces pour les environnements
+# terraform workspace new staging
+# terraform workspace select production</code></div>
+<ul>
+<li><strong>Remote backend obligatoire</strong> - GCS, S3, Terraform Cloud. Jamais .tfstate en local en equipe : risque de conflits et perte d etat</li>
+<li><strong>State locking</strong> - GCS et S3 verrouillent le state pendant apply. Empeche deux apply simultanes qui corrompraient l etat</li>
+<li><strong>Import de ressources</strong> - prendre le controle de ressources creees manuellement. terraform import + generer le code avec -generate-config-out</li>
+<li><strong>Workspaces</strong> - gerer plusieurs environnements (dev/staging/prod) avec le meme code. Variables differentes par workspace</li>
+<li><strong>CI/CD Terraform</strong> - plan automatique sur PR (commenter le plan dans GitHub), apply uniquement sur merge main. Secrets AWS/GCP dans GitHub Actions</li>
+</ul>
+<ul>
+<li><strong>Remote backend obligatoire</strong> - GCS, S3, ou Terraform Cloud. Jamais .tfstate en local en equipe : risque de conflits et perte d etat</li>
+<li><strong>State locking</strong> - GCS et S3 verrouillent le state pendant apply. Empeche deux apply simultanes qui corrompraient l etat</li>
+<li><strong>Import de ressources</strong> - terraform import pour prendre le controle de ressources creees manuellement. Generer le code avec -generate-config-out</li>
+<li><strong>Workspaces</strong> - gerer plusieurs environnements (dev/staging/prod) avec le meme code. Variables differentes par workspace</li>
+<li><strong>CI/CD Terraform</strong> - plan automatique sur PR, apply uniquement sur merge main. Secrets AWS/GCP dans GitHub Actions, jamais dans le code</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Syntaxe HCL, plan/apply, ressources basiques</td><td>Cree un bucket GCS et un dataset BigQuery, sait faire un plan</td><td>Ne sait pas ce qu est le state Terraform</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Modules, remote backend, variables et outputs</td><td>A cree un module reutilisable, configure un remote backend GCS/S3</td><td>Stocke le state en local, ne sait pas creer un module</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CI/CD, import, workspaces, gestion des secrets</td><td>A integre Terraform dans GitHub Actions, a fait un terraform import</td><td>Ne sait pas ce qu est le state locking</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer cloud ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

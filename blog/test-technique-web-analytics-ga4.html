@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Web Analytics : GA4, Tag Management, server-side tracking</span></div>
@@ -44,8 +44,61 @@ dataLayer.push({
       quantity: 3
     }]
   }
-});</code></div><h2 id='serverside'><span class='sn'>3</span>Tracking server-side : pourquoi et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les avantages du tracking server-side par rapport au client-side ? Quels sont ses inconvenients ?</p></div><ul><li><strong>Avantages</strong> — contourne les bloqueurs de publicite et les ITP (Intelligent Tracking Prevention), ameliore les performances (moins de JS cote client), meilleure confidentialite (filtrer les donnees sensibles avant envoi), first-party data</li><li><strong>Architecture</strong> — GTM Server Container (SGTM) deploye sur App Engine / Cloud Run. Le client envoie vers SGTM, SGTM redistribue vers GA4, Meta, Criteo, etc.</li><li><strong>Inconvenients</strong> — cout d infrastructure, complexity accrue, necessite des competences techniques plus avancees</li></ul><h2 id='events'><span class='sn'>4</span>Evenements GA4 : standard vs custom</h2><ul><li><strong>Evenements auto-collectes</strong> — page_view, session_start, first_visit (collectes automatiquement)</li><li><strong>Evenements recommandes</strong> — purchase, add_to_cart, begin_checkout, login (nommage GA4 standard a respecter)</li><li><strong>Evenements custom</strong> — tout ce qui est specifique a votre business. Limites : 500 types d evenements, 25 parametres par evenement</li><li><strong>Parametres d evenement</strong> — donnees contextuelles associees a l evenement (product_id, category, user_segment). Certains doivent etre marques comme 'custom dimensions'</li></ul><h2 id='qualite'><span class='sn'>5</span>Data quality : verifier que votre tracking est fiable</h2><ul><li><strong>GA4 DebugView</strong> — voir les evenements en temps reel depuis votre session de navigation</li><li><strong>BigQuery export</strong> — requeter les evenements bruts pour verifier l absence de doublons, valider les transactions</li><li><strong>Monitoring automatise</strong> — Looker Studio de surveillance, alertes sur les ecarts de volume</li><li><strong>Recette de tracking</strong> — plan de recette formel avant toute mise en production d un nouveau tag</li></ul><h2 id='cro'><span class='sn'>6</span>CRO et A/B testing</h2><ul><li><strong>CRO</strong> — Conversion Rate Optimisation : identifier et supprimer les frictions dans le parcours utilisateur</li><li><strong>Methode Double Diamond</strong> — decouvrir (analytics + UX research) → definir (hypotheses) → developper (variations) → livrer (A/B test)</li><li><strong>Significativite statistique</strong> — 95% minimum, volume suffisant (plusieurs centaines de conversions par variante)</li><li><strong>Outils</strong> — AB Tasty, VWO, Google Optimize (arrete), Kameleoon. Analyse dans GA4 ou BigQuery</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>GA4 basique, GTM pour les tags standards, events recommandes</td><td>Sait creer un tag GA4 dans GTM, comprend le DataLayer</td><td>Ne sait pas ce qu est le DataLayer</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>e-commerce GA4, DataLayer avance, BigQuery export, recette tracking</td><td>A implemente le e-commerce GA4 complet, a fait une recette de tracking</td><td>N a jamais utilise l export BigQuery de GA4</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tracking server-side SGTM, architecture cross-channel, CRO</td><td>A deploye un SGTM, a concu un plan de tagging pour une refonte</td><td>Ne sait pas expliquer le server-side tracking</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Digital Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+});</code></div><h2 id='serverside'><span class='sn'>3</span>Tracking server-side : pourquoi et comment</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les avantages du tracking server-side par rapport au client-side ? Quels sont ses inconvenients ?</p></div><ul><li><strong>Avantages</strong> — contourne les bloqueurs de publicite et les ITP (Intelligent Tracking Prevention), ameliore les performances (moins de JS cote client), meilleure confidentialite (filtrer les donnees sensibles avant envoi), first-party data</li><li><strong>Architecture</strong> — GTM Server Container (SGTM) deploye sur App Engine / Cloud Run. Le client envoie vers SGTM, SGTM redistribue vers GA4, Meta, Criteo, etc.</li><li><strong>Inconvenients</strong> — cout d infrastructure, complexity accrue, necessite des competences techniques plus avancees</li></ul><h2 id='events'><span class='sn'>4</span>Evenements GA4 : standard vs custom</h2><ul><li><strong>Evenements auto-collectes</strong> — page_view, session_start, first_visit (collectes automatiquement)</li><li><strong>Evenements recommandes</strong> — purchase, add_to_cart, begin_checkout, login (nommage GA4 standard a respecter)</li><li><strong>Evenements custom</strong> — tout ce qui est specifique a votre business. Limites : 500 types d evenements, 25 parametres par evenement</li><li><strong>Parametres d evenement</strong> — donnees contextuelles associees a l evenement (product_id, category, user_segment). Certains doivent etre marques comme 'custom dimensions'</li></ul><h2 id='qualite'><span class='sn'>5</span>Data quality : verifier que votre tracking est fiable</h2><ul><li><strong>GA4 DebugView</strong> — voir les evenements en temps reel depuis votre session de navigation</li><li><strong>BigQuery export</strong> — requeter les evenements bruts pour verifier l absence de doublons, valider les transactions</li><li><strong>Monitoring automatise</strong> — Looker Studio de surveillance, alertes sur les ecarts de volume</li><li><strong>Recette de tracking</strong> — plan de recette formel avant toute mise en production d un nouveau tag</li></ul><h2 id='cro'><span class='sn'>6</span>CRO et A/B testing</h2><ul><li><strong>CRO</strong> — Conversion Rate Optimisation : identifier et supprimer les frictions dans le parcours utilisateur</li><li><strong>Methode Double Diamond</strong> — decouvrir (analytics + UX research) → definir (hypotheses) → developper (variations) → livrer (A/B test)</li><li><strong>Significativite statistique</strong> — 95% minimum, volume suffisant (plusieurs centaines de conversions par variante)</li><li><strong>Outils</strong> — AB Tasty, VWO, Google Optimize (arrete), Kameleoon. Analyse dans GA4 ou BigQuery</li></ul><div class='cb'><code>// DataLayer e-commerce GA4
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({
+  event: 'purchase',
+  ecommerce: {
+    transaction_id: 'T_12345',
+    value: 89.90,
+    currency: 'EUR',
+    items: [{
+      item_id: 'SKU_001',
+      item_name: 'T-shirt bleu',
+      price: 29.90,
+      quantity: 3,
+      item_category: 'Vetements'
+    }]
+  }
+});
+
+// Validation GA4 DebugView en JavaScript
+console.log(window.dataLayer);
+// Ou dans Chrome DevTools : Network > filter 'collect' pour voir les hits GA4</code></div><ul><li><strong>Server-side GTM (SGTM)</strong> - deployer un container GTM sur Cloud Run ou App Engine. Les hits passent par votre serveur avant d aller vers GA4, Meta, etc. Contourne les bloqueurs, ameliore la confidentialite</li><li><strong>Consent Mode v2</strong> - obligatoire en Europe depuis mars 2024. Modeler le comportement des tags selon le consentement cookie. Conversion modeling pour recuperer les donnees perdues</li><li><strong>BigQuery export GA4</strong> - gratuit depuis GA4. Requeter les evenements bruts pour valider les transactions, detecter les doublons, construire des entonnoirs custom</li><li><strong>Recette de tracking</strong> - plan de recette formel avant chaque mise en production d un nouveau tag. Verifier sur staging avec DebugView avant de publier en prod</li></ul>
+<div class='cb'><code>// DataLayer e-commerce GA4
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({
+  event: 'purchase',
+  ecommerce: {
+    transaction_id: 'T_12345',
+    value: 89.90,
+    currency: 'EUR',
+    items: [{
+      item_id: 'SKU_001',
+      item_name: 'T-shirt bleu',
+      price: 29.90,
+      quantity: 3
+    }]
+  }
+});
+
+// Requete BigQuery sur les donnees GA4 brutes
+SELECT
+    event_name,
+    COUNT(*) AS event_count,
+    COUNT(DISTINCT user_pseudo_id) AS unique_users
+FROM `mon-projet.analytics_123.events_*`
+WHERE _TABLE_SUFFIX BETWEEN '20250101' AND '20250131'
+  AND event_name IN ('purchase', 'add_to_cart', 'begin_checkout')
+GROUP BY 1 ORDER BY 2 DESC;</code></div>
+<ul>
+<li><strong>Server-side GTM (sGTM)</strong> - deployer un container GTM sur Cloud Run. Les hits passent par votre serveur. Contourne les bloqueurs, ameliore la confidentialite</li>
+<li><strong>Consent Mode v2</strong> - obligatoire en Europe depuis mars 2024. Modeler le comportement des tags selon le consentement. Conversion modeling pour recuperer les donnees perdues</li>
+<li><strong>BigQuery export GA4</strong> - gratuit depuis GA4. Requeter les evenements bruts pour valider les transactions, detecter les doublons, construire des entonnoirs custom</li>
+<li><strong>Recette de tracking</strong> - plan de recette formel avant chaque mise en production. Verifier sur staging avec DebugView avant de publier en prod</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>GA4 basique, GTM pour les tags standards, events recommandes</td><td>Sait creer un tag GA4 dans GTM, comprend le DataLayer</td><td>Ne sait pas ce qu est le DataLayer</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>e-commerce GA4, DataLayer avance, BigQuery export, recette tracking</td><td>A implemente le e-commerce GA4 complet, a fait une recette de tracking</td><td>N a jamais utilise l export BigQuery de GA4</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tracking server-side SGTM, architecture cross-channel, CRO</td><td>A deploye un SGTM, a concu un plan de tagging pour une refonte</td><td>Ne sait pas expliquer le server-side tracking</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Digital Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

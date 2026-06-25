@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique Trino : SQL fédéré sur sources multiples</span></div>
@@ -29,50 +29,141 @@
 <li><a href="#vs_spark">Trino vs Spark SQL</a></li>
 <li><a href="#usecases">Cas d usage</a></li>
 <li><a href="#nv">Grille</a></li></ol></div>
-<div class="ab"><h2 id='archi'><span class='sn'>1</span>Architecture Trino : coordinator et workers</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment est architecturé Trino ? Quelle est la différence avec Spark ?</p></div><ul><li><strong>Coordinator</strong> — parse et planifie les requêtes, distribue le travail aux workers</li><li><strong>Workers</strong> — exécutent les fragments de requête, communiquent directement entre eux (pas via le coordinator)</li><li><strong>Pull model</strong> — les workers tirent les données des connecteurs à la demande (vs Spark qui charge tout en mémoire)</li><li><strong>Pas de stockage</strong> — Trino ne stocke rien. Tout est lu depuis les connecteurs à la requête</li><li><strong>vs Spark</strong> — Trino : latence faible, SQL interactif. Spark : traitement batch massif, ML, streaming</li></ul><h2 id='connectors'><span class='sn'>2</span>Connecteurs : la richesse de Trino</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels connecteurs Trino supportez-vous dans votre stack ?</p></div><div class='cb'><code>## Configuration d un catalog Trino (catalog/hive.properties)
-connector.name=hive
-hive.metastore.uri=thrift://hive-metastore:9083
-hive.s3.aws-access-key=...
-hive.s3.aws-secret-key=...
+<div class="ab">
+<h2 id='archi'><span class='sn'>1</span>Architecture Trino : coordinator et workers</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment est architecturé Trino ? En quoi diffère-t-il de Spark sur ce point ?</p></div>
+<ul>
+<li><strong>Coordinator</strong> — parse et optimise les requêtes SQL (query planner), génère un plan d'exécution distribué, distribue les fragments aux workers</li>
+<li><strong>Workers</strong> — exécutent les fragments de requête, communiquent directement entre eux (pas via le coordinator). Échange de données en mémoire via pipeline</li>
+<li><strong>Pull model</strong> — les workers tirent les données des connecteurs à la demande, sans charger tout en mémoire d'abord</li>
+<li><strong>Pas de stockage</strong> — Trino ne stocke rien. Tout est lu depuis les connecteurs à chaque requête. C'est un moteur de requête, pas un stockage</li>
+<li><strong>vs Spark</strong> — Trino : latence faible (&lt;1s possible), SQL interactif, query federation native. Spark : batch massif, ML, streaming, Python-first</li>
+</ul>
+<div class='cb'><code># Déploiement Trino minimal (docker-compose)
+version: '3'
+services:
+  trino-coordinator:
+    image: trinodb/trino:latest
+    ports: ["8080:8080"]
+    volumes:
+      - ./etc/coordinator:/etc/trino
+    environment:
+      - TRINO_NODE_TYPE=coordinator
 
-## catalog/iceberg.properties
+  trino-worker:
+    image: trinodb/trino:latest
+    volumes:
+      - ./etc/worker:/etc/trino
+    depends_on: [trino-coordinator]
+    deploy:
+      replicas: 3</code></div>
+
+<h2 id='connectors'><span class='sn'>2</span>Connecteurs : la richesse de Trino</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quels connecteurs Trino supportez-vous ? Comment les configurez-vous ?</p></div>
+<div class='cb'><code>## etc/catalog/iceberg.properties
 connector.name=iceberg
 hive.metastore.uri=thrift://hive-metastore:9083
 
-## catalog/postgres.properties
+## etc/catalog/postgres.properties  
 connector.name=postgresql
 connection-url=jdbc:postgresql://postgres:5432/analytics
-connection-user=trino
+connection-user=trino_user
 connection-password=${ENV:POSTGRES_PASSWORD}
 
-## catalog/bigquery.properties
-connector.name=bigquery
-bigquery.project-id=mon-projet
-bigquery.credentials-file=/etc/trino/bq-key.json
+## etc/catalog/kafka.properties
+connector.name=kafka
+kafka.nodes=kafka1:9092,kafka2:9092
+kafka.table-description-dir=/etc/trino/kafka
 
-## Requête fédérée : join entre Hive et PostgreSQL
-SELECT h.order_id, p.customer_email
-FROM hive.analytics.orders h
-JOIN postgresql.crm.customers p ON h.customer_id = p.id;</code></div><h2 id='federation'><span class='sn'>3</span>Query Federation : les pièges</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les pièges de performance dans une requête Trino qui joint plusieurs sources ?</p></div><ul><li><strong>Pas de pushdown cross-sources</strong> — Trino ne peut pas pousser un filtre de la table PostgreSQL vers la table Hive</li><li><strong>Broadcast la petite table</strong> — quand on joint une grande table et une petite, Trino broadcaste automatiquement la petite. Mais si les deux sont grandes, shuffle coûteux</li><li><strong>Statistics</strong> — analyser les tables régulièrement (ANALYZE TABLE) pour que le planner choisisse le bon plan</li><li><strong>Materialized views</strong> — pré-matérialiser les jointures coûteuses inter-sources dans une table Iceberg</li></ul><h2 id='optim'><span class='sn'>4</span>Optimisation des requêtes Trino</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment optimisez-vous une requête Trino lente ?</p></div><div class='cb'><code>-- 1. Expliquer le plan d exécution
+## etc/catalog/bigquery.properties
+connector.name=bigquery
+bigquery.project-id=mon-projet-gcp
+
+-- Requête fédérée : join entre Iceberg (S3) et PostgreSQL (OLTP)
+SELECT i.order_id, i.amount, p.customer_email, p.segment
+FROM iceberg.analytics.fct_orders i
+JOIN postgresql.crm.customers p ON i.customer_id = p.id
+WHERE i.order_date >= DATE '2025-01-01'
+  AND p.country = 'FR';</code></div>
+<ul>
+<li><strong>Connecteurs disponibles</strong> — Hive, Iceberg, Delta Lake, PostgreSQL, MySQL, Kafka, MongoDB, Elasticsearch, BigQuery, Redshift, S3 (Hive connector)</li>
+<li><strong>Catalog = connecteur configuré</strong> — chaque catalog mappe vers une source. Notation : catalog.schema.table</li>
+<li><strong>Predicate pushdown</strong> — Trino pousse les filtres aux connecteurs qui le supportent (PostgreSQL, MySQL). Réduit les données transférées</li>
+</ul>
+
+<h2 id='federation'><span class='sn'>3</span>Query Federation : les pièges de performance</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les pièges de performance dans une requête Trino qui joint plusieurs sources ?</p></div>
+<ul>
+<li><strong>Pas de pushdown cross-sources</strong> — un filtre sur la table PostgreSQL ne peut pas être poussé vers la table Iceberg. Trino doit rapatrier les données des deux côtés</li>
+<li><strong>Broadcast join automatique</strong> — Trino broadcaste automatiquement la petite table. Si les deux sont grandes : shuffle massif et lent</li>
+<li><strong>Matérialiser les jointures coûteuses</strong> — pré-joindre les sources inter-catalogs dans une table Iceberg. Requêter la table pré-jointe</li>
+<li><strong>ANALYZE régulier</strong> — les statistiques de table (row count, NDV par colonne) guident le query planner. Sans statistiques, le planner choisit mal</li>
+<li><strong>Limiter les colonnes transférées</strong> — ne SELECT que les colonnes nécessaires. Trino ne facture pas à l'octet mais le réseau est le goulot d'étranglement</li>
+</ul>
+
+<h2 id='optim'><span class='sn'>4</span>Optimisation des requêtes Trino</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Comment optimisez-vous une requête Trino lente ? Quels outils utilisez-vous ?</p></div>
+<div class='cb'><code>-- 1. EXPLAIN ANALYZE : voir le plan réel d'exécution avec statistiques
 EXPLAIN ANALYZE
 SELECT region, SUM(amount)
 FROM iceberg.analytics.orders
 WHERE order_date >= DATE '2025-01-01'
 GROUP BY region;
+-- Chercher : partition pruning, broadcast vs hash join, spill to disk
 
--- 2. Forcer le broadcast join
-SELECT /*+ BROADCAST(dim) */ f.*, dim.name
-FROM fact_table f
-JOIN dim_table dim ON f.id = dim.id;
+-- 2. Forcer le broadcast join (quand Trino choisit mal)
+SELECT /*+ BROADCAST(dim) */ f.*, dim.category_name
+FROM iceberg.analytics.fct_orders f
+JOIN iceberg.analytics.dim_categories dim ON f.category_id = dim.id;
 
--- 3. Vérifier le pruning de partitions
--- Dans l EXPLAIN : 'Partition Pruning' doit apparaître
--- Si Trino scanne toutes les partitions -> filtre sur mauvaise colonne
-
--- 4. Statistiques à jour
+-- 3. Mettre à jour les statistiques
 ANALYZE iceberg.analytics.orders;
-ANALYZE iceberg.analytics.orders WITH(columns = ARRAY['region', 'order_date']);</code></div><h2 id='vs_spark'><span class='sn'>5</span>Trino vs Spark SQL : quand utiliser quoi</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les critères de choix entre Trino et Spark SQL ?</p></div><table class='lt'><thead><tr><th>Critère</th><th>Trino</th><th>Spark SQL</th></tr></thead><tbody><tr><td>Latence</td><td>< 1s possible</td><td>Quelques secondes minimum</td></tr><tr><td>Query federation</td><td>Natif</td><td>Limité</td></tr><tr><td>Très gros volumes</td><td>Possible mais Spark meilleur</td><td>Excellent</td></tr><tr><td>Streaming</td><td>Non</td><td>Oui</td></tr><tr><td>ML</td><td>Non</td><td>Oui</td></tr><tr><td>Cas typique</td><td>BI interactive, exploration, federation</td><td>ETL batch, ML, streaming</td></tr></tbody></table><h2 id='usecases'><span class='sn'>6</span>Cas d usage Trino en production</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels contextes déployez-vous Trino ?</p></div><ul><li><strong>Remplacement de Hive</strong> — Trino est 10-100x plus rapide que Hive pour les requêtes ad-hoc sur HDFS/S3</li><li><strong>Query layer unifié</strong> — une seule interface SQL pour PostgreSQL, S3/Iceberg, Kafka, MongoDB</li><li><strong>Starburst Galaxy</strong> — version cloud managée de Trino. Pour les équipes sans Ops</li><li><strong>Amazon Athena</strong> — basé sur Trino (anciennement Presto). Serverless, payer par octet scanné</li><li><strong>Migration Hadoop</strong> — remplacer Hive par Trino est souvent la première étape de la migration vers le cloud</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Architecture Trino, connecteurs, requêtes inter-sources</td><td>A écrit des requêtes fédérées Trino, comprend coordinator/workers</td><td>Ne sait pas ce qu est Trino</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Optimisation, statistics, broadcast hints, choix Trino vs Spark</td><td>A optimisé des requêtes Trino avec EXPLAIN ANALYZE, justifie Trino vs Spark</td><td>Ne sait pas expliquer pourquoi une requête fédérée est lente</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Engineer Trino ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+
+-- 4. Éviter les fonctions sur les colonnes partitionnées
+-- MAL : WHERE YEAR(order_date) = 2025 (pas de pruning)
+-- BIEN : WHERE order_date >= DATE '2025-01-01' (pruning actif)
+
+-- 5. Requêtes via l'interface Web (port 8080)
+-- Query details, stage timing, operator stats</code></div>
+
+<h2 id='vs_spark'><span class='sn'>5</span>Trino vs Spark SQL : quand utiliser quoi</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Quels sont les critères de décision entre Trino et Spark SQL ?</p></div>
+<table class='lt'><thead><tr><th>Critère</th><th>Trino</th><th>Spark SQL</th></tr></thead>
+<tbody>
+<tr><td>Latence</td><td>&lt;1s possible</td><td>Plusieurs secondes minimum</td></tr>
+<tr><td>Query federation</td><td>Natif (multi-sources)</td><td>Limité, complexe</td></tr>
+<tr><td>Très gros volumes batch</td><td>Possible mais sous-optimal</td><td>Excellent</td></tr>
+<tr><td>Streaming</td><td>Non</td><td>Oui (Structured Streaming)</td></tr>
+<tr><td>ML / Python</td><td>Non</td><td>Oui (MLlib, PySpark)</td></tr>
+<tr><td>Mémoire</td><td>En-mémoire uniquement (spill possible)</td><td>Spill to disk nativement</td></tr>
+<tr><td>Cas typique</td><td>BI interactive, exploration, federation multi-sources</td><td>ETL batch, ML, Streaming</td></tr>
+</tbody></table>
+
+<h2 id='usecases'><span class='sn'>6</span>Cas d'usage Trino en production</h2>
+<div class='sq'><div class='sl'>Question discriminante</div><p>Dans quels contextes concrètement déployez-vous Trino ?</p></div>
+<ul>
+<li><strong>Remplacement de Hive</strong> — Trino est 10-100x plus rapide que Hive pour les requêtes ad-hoc sur S3/HDFS. Migration souvent la première étape vers le cloud</li>
+<li><strong>Query layer unifié</strong> — une seule interface SQL pour PostgreSQL, S3/Iceberg, MongoDB, Kafka. Les data analysts font leurs joins cross-sources en SQL standard</li>
+<li><strong>Amazon Athena</strong> — basé sur Trino (ex-Presto). Serverless, payer par TB scanné. Idéal pour les organisations AWS sans envie de gérer Trino</li>
+<li><strong>Starburst Galaxy</strong> — version managée cloud de Trino. Pour les équipes sans Ops data</li>
+<li><strong>Data mesh layer</strong> — Trino comme couche de virtualisation qui expose des données de domaines différents sans les centraliser physiquement</li>
+</ul>
+
+<ul>
+<li><strong>Amazon Athena</strong> - base sur Trino (ex-Presto). Serverless, payer par TB scanne. Ideal pour les organisations AWS sans envie de gerer un cluster Trino</li>
+<li><strong>Starburst Galaxy</strong> - version managee cloud de Trino. Pour les equipes sans Ops data qui veulent la federation multi-sources</li>
+<li><strong>Data mesh layer</strong> - Trino comme couche de virtualisation qui expose des donnees de domaines differents sans les centraliser physiquement</li>
+<li><strong>ANALYZE pour les stats</strong> - les statistiques de table (row count, NDV par colonne) guident le query planner. Sans statistiques, le planner choisit mal les strategies de join</li>
+<li><strong>Remplacement Hive</strong> - Trino est 10-100x plus rapide que Hive pour les requetes ad-hoc sur S3/HDFS. Migration souvent la premiere etape vers le cloud</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2>
+<table class='lt'><thead><tr><th>Niveau</th><th>Maîtrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmé</span></td><td>Architecture coordinator/workers, connecteurs, requêtes inter-sources</td><td>A écrit des requêtes fédérées Trino, comprend le pull model et le catalog system</td><td>Confond Trino et Spark, ne sait pas ce qu'est un catalog Trino</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Optimisation, statistics, broadcast hints, architecture Trino vs Spark</td><td>Utilise EXPLAIN ANALYZE, matérialise les jointures coûteuses, justifie Trino vs Spark selon le cas</td><td>Ne sait pas pourquoi une jointure cross-sources est lente dans Trino</td></tr>
+</tbody></table>
+</div>
+<div class="cb2"><h3>Vous recrutez un Data Engineer Trino ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

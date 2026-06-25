@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique XGBoost et Random Forest : entretien Data Scientist</span></div>
@@ -105,8 +105,40 @@ plt.plot(train_sizes, train_scores.mean(axis=1), label='Train')
 plt.plot(train_sizes, val_scores.mean(axis=1), label='Validation')
 plt.xlabel('Taille du training set')
 plt.ylabel('AUC')
-plt.legend()</code></div><h2 id='lgbm'><span class='sn'>6</span>LightGBM vs XGBoost : quand choisir</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas préférez-vous LightGBM à XGBoost ?</p></div><table class='lt'><thead><tr><th></th><th>XGBoost</th><th>LightGBM</th></tr></thead><tbody><tr><td>Vitesse</td><td>Modérée</td><td>2-10x plus rapide</td></tr><tr><td>Mémoire</td><td>Élevée</td><td>Réduite (histogrammes)</td></tr><tr><td>Catégorielles</td><td>Besoin d encoding</td><td>Support natif</td></tr><tr><td>Gros volumes</td><td>Lent</td><td>Excellent</td></tr><tr><td>Petits datasets</td><td>Bon</td><td>Peut overfitter plus facilement</td></tr></tbody></table><ul><li><strong>LightGBM</strong> — croissance par feuille (leaf-wise) au lieu de par niveau (level-wise). Plus précis mais plus susceptible d overfitter sur petits datasets</li><li><strong>Catégorielles natives</strong> — LightGBM encode les catégorielles en interne, pas besoin d OHE</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>sklearn RandomForest, XGBoost basique, train/test split</td><td>Sait entraîner un RF et un XGBoost, connaît l OOB score</td><td>Utilise l accuracy sans vérifier l équilibre des classes</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Hyperparamètres XGBoost, early stopping, SHAP</td><td>Utilise early stopping, tuning avec RandomizedSearchCV, SHAP pour l explication</td><td>Ne sait pas ce qu est l early stopping</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Learning curves, LightGBM, SHAP interactions, production</td><td>Diagnostique l overfitting avec learning curves, compare XGBoost vs LightGBM</td><td>Ne sait pas expliquer la différence entre bagging et boosting</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+plt.legend()</code></div><h2 id='lgbm'><span class='sn'>6</span>LightGBM vs XGBoost : quand choisir</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Dans quel cas préférez-vous LightGBM à XGBoost ?</p></div><table class='lt'><thead><tr><th></th><th>XGBoost</th><th>LightGBM</th></tr></thead><tbody><tr><td>Vitesse</td><td>Modérée</td><td>2-10x plus rapide</td></tr><tr><td>Mémoire</td><td>Élevée</td><td>Réduite (histogrammes)</td></tr><tr><td>Catégorielles</td><td>Besoin d encoding</td><td>Support natif</td></tr><tr><td>Gros volumes</td><td>Lent</td><td>Excellent</td></tr><tr><td>Petits datasets</td><td>Bon</td><td>Peut overfitter plus facilement</td></tr></tbody></table><ul><li><strong>LightGBM</strong> — croissance par feuille (leaf-wise) au lieu de par niveau (level-wise). Plus précis mais plus susceptible d overfitter sur petits datasets</li><li><strong>Catégorielles natives</strong> — LightGBM encode les catégorielles en interne, pas besoin d OHE</li></ul><div class='cb'><code>import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+import optuna
+
+# XGBoost avec early stopping
+xgb_model = xgb.XGBClassifier(
+    n_estimators=1000,
+    early_stopping_rounds=50,
+    eval_metric='auc',
+    learning_rate=0.05,
+    max_depth=6,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    scale_pos_weight=10,  # desequilibre classes
+    tree_method='hist'    # plus rapide, comparable GPU
+)
+xgb_model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=50)
+
+# Optuna pour l hyperparameter tuning
+def objective(trial):
+    params = {
+        'max_depth': trial.suggest_int('max_depth', 3, 10),
+        'learning_rate': trial.suggest_float('lr', 0.01, 0.3, log=True),
+        'n_estimators': trial.suggest_int('n_est', 100, 1000),
+    }
+    model = xgb.XGBClassifier(**params)
+    model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+    return roc_auc_score(y_val, model.predict_proba(X_val)[:,1])
+
+study = optuna.create_study(direction='maximize')
+study.optimize(objective, n_trials=50)</code></div><ul><li><strong>XGBoost vs Random Forest</strong> - RF : parallel, pas de risque d overfitting, robuste. XGBoost : boosting sequentiel, souvent plus performant mais necessite un tuning soigneux</li><li><strong>Early stopping</strong> - arreter l entrainement XGBoost quand la metrique de validation ne s ameliore plus. Evite l overfitting et reduit le temps d entrainement</li><li><strong>SHAP pour l interpretabilite</strong> - shap.TreeExplainer(model) : decompose chaque prediction en contributions par feature. Standard pour expliquer les decisions en production</li><li><strong>Optuna vs GridSearchCV</strong> - Optuna (Bayesian optimization) : 10-50x plus efficace que GridSearch pour trouver les bons hyperparametres. Aussi plus rapide que RandomSearch</li><li><strong>Feature importance</strong> - gain (XGBoost) mesure la reduction d impurete ponderee. Peut etre biaise vers les features a haute cardinalite. Prefer SHAP pour une importance causale</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>sklearn RandomForest, XGBoost basique, train/test split</td><td>Sait entraîner un RF et un XGBoost, connaît l OOB score</td><td>Utilise l accuracy sans vérifier l équilibre des classes</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Hyperparamètres XGBoost, early stopping, SHAP</td><td>Utilise early stopping, tuning avec RandomizedSearchCV, SHAP pour l explication</td><td>Ne sait pas ce qu est l early stopping</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Learning curves, LightGBM, SHAP interactions, production</td><td>Diagnostique l overfitting avec learning curves, compare XGBoost vs LightGBM</td><td>Ne sait pas expliquer la différence entre bagging et boosting</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>

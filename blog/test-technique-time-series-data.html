@@ -14,7 +14,7 @@
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
 <div class="nm"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a></div>
-<div class="nr"><a href="../contact.html" class="bn">Tester gratuitement</a></div>
+<div class="nr"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Tester gratuitement</a></div>
 </nav>
 <div class="aw">
 <div class="bc"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Test technique séries temporelles : analyse, prédiction, anomaly detection</span></div>
@@ -120,8 +120,51 @@ anomalies_prophet = df_prophet[df_prophet['residual'].abs() > threshold]
 # Méthode 3 : Isolation Forest multivarié
 features = df[['revenue', 'volume', 'avg_basket']].values
 iso = IsolationForest(contamination=0.02, random_state=42)
-df['anomaly'] = iso.fit_predict(features)  # -1 = anomalie</code></div><h2 id='features'><span class='sn'>6</span>Features temporelles pour les modèles ML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment encodez-vous le temps pour des modèles ML non-séries-temporelles ?</p></div><ul><li><strong>Lag features</strong> — valeur à t-1, t-7, t-30 (hier, semaine passée, mois passé)</li><li><strong>Rolling statistics</strong> — moyenne glissante, écart-type glissant, min/max sur N jours</li><li><strong>Encodage cyclique</strong> — sin/cos pour le mois, le jour de la semaine (évite la discontinuité 12→1)</li><li><strong>Features calendaires</strong> — is_weekend, is_holiday, day_of_week, quarter, is_month_end</li><li><strong>Différences</strong> — croissance vs période précédente (revenue_t / revenue_t-1 - 1)</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Décomposition, stationnarité, Prophet basique</td><td>Teste la stationnarité avant ARIMA, a utilisé Prophet</td><td>Applique KFold aléatoire à une série temporelle</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>ARIMA tuning, détection d anomalies, features temporelles pour ML</td><td>Choisit entre ARIMA et Prophet selon le contexte, détecte les anomalies</td><td>Ne sait pas ce qu est la stationnarité</td></tr></tbody></table></div>
-<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="../contact.html" class="bw">Tester gratuitement</a><a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
+df['anomaly'] = iso.fit_predict(features)  # -1 = anomalie</code></div><h2 id='features'><span class='sn'>6</span>Features temporelles pour les modèles ML</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Comment encodez-vous le temps pour des modèles ML non-séries-temporelles ?</p></div><ul><li><strong>Lag features</strong> — valeur à t-1, t-7, t-30 (hier, semaine passée, mois passé)</li><li><strong>Rolling statistics</strong> — moyenne glissante, écart-type glissant, min/max sur N jours</li><li><strong>Encodage cyclique</strong> — sin/cos pour le mois, le jour de la semaine (évite la discontinuité 12→1)</li><li><strong>Features calendaires</strong> — is_weekend, is_holiday, day_of_week, quarter, is_month_end</li><li><strong>Différences</strong> — croissance vs période précédente (revenue_t / revenue_t-1 - 1)</li></ul>
+<div class='cb'><code>import pandas as pd
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from prophet import Prophet
+from sklearn.metrics import mean_absolute_percentage_error
+
+# ARIMA/SARIMA pour les séries saisonnières
+model_sarima = SARIMAX(train, order=(1,1,1), seasonal_order=(1,1,1,7))  # saisonnalité hebdomadaire
+results = model_sarima.fit()
+forecast = results.forecast(steps=30)
+
+# Prophet : simple, robuste aux données manquantes
+df_prophet = train.reset_index().rename(columns={"date": "ds", "sales": "y"})
+m = Prophet(seasonality_mode="multiplicative", weekly_seasonality=True, yearly_seasonality=True)
+m.add_country_holidays(country_name="FR")
+m.fit(df_prophet)
+
+future = m.make_future_dataframe(periods=30)
+forecast = m.predict(future)
+
+# Évaluation
+mape = mean_absolute_percentage_error(test, forecast[-len(test):])
+print(f"MAPE: {mape:.2%}")
+
+# Détection d'anomalies sur séries temporelles
+from pyod.models.iforest import IForest
+detector = IForest(contamination=0.01)
+detector.fit(X_train_features)
+anomalies = detector.predict(X_test_features)  # 1 = anomalie</code></div>
+<ul>
+<li><strong>Stationnarité</strong> — ARIMA nécessite une série stationnaire. Test ADF (Augmented Dickey-Fuller) pour vérifier. Différenciation (d=1 ou d=2) pour la rendre stationnaire</li>
+<li><strong>Prophet</strong> — Facebook Prophet : décomposition trend + seasonality + holidays. Robuste aux données manquantes et aux outliers. Idéal pour les équipes non-statisticiennes</li>
+<li><strong>Cross-validation temporelle</strong> — ne jamais mélanger le passé et le futur dans le split train/test. Utiliser TimeSeriesSplit de sklearn ou la CV walk-forward</li>
+<li><strong>Features lag</strong> — les features lag (ventes J-7, J-14, J-28) sont souvent les plus prédictives. Ajouter des rolling mean et std sur différentes fenêtres</li>
+<li><strong>MAPE vs MAE</strong> — MAPE en % (facile à expliquer business). MAE en unités absolues (plus robuste aux séries proches de 0). Utiliser les deux selon le contexte</li>
+</ul>
+<ul>
+<li><strong>Stationnarite</strong> - ARIMA necessite une serie stationnaire. Test ADF (Augmented Dickey-Fuller) pour verifier. Diferenciation (d=1 ou d=2) pour la rendre stationnaire</li>
+<li><strong>Prophet</strong> - Facebook Prophet : decomposition trend + seasonality + holidays. Robuste aux donnees manquantes et outliers. Ideal pour les equipes non-statisticiennes</li>
+<li><strong>Cross-validation temporelle</strong> - ne jamais melanger le passe et le futur dans le split train/test. Utiliser TimeSeriesSplit de sklearn ou la CV walk-forward</li>
+<li><strong>Features lag</strong> - les features lag (ventes J-7, J-14, J-28) sont souvent les plus predictives. Ajouter des rolling mean et std sur differentes fenetres</li>
+<li><strong>MAPE vs MAE</strong> - MAPE en % (facile a expliquer business). MAE en unites absolues (plus robuste aux series proches de 0). Utiliser les deux selon le contexte</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Décomposition, stationnarité, Prophet basique</td><td>Teste la stationnarité avant ARIMA, a utilisé Prophet</td><td>Applique KFold aléatoire à une série temporelle</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>ARIMA tuning, détection d anomalies, features temporelles pour ML</td><td>Choisit entre ARIMA et Prophet selon le contexte, détecte les anomalies</td><td>Ne sait pas ce qu est la stationnarité</td></tr></tbody></table></div>
+<div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
 </body>
