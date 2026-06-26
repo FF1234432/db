@@ -238,6 +238,7 @@ def test_with_mocker(mocker):
     mock_conn.return_value.execute.return_value.fetchdf.return_value = pd.DataFrame({'id': [1]})
     result = load_from_db('SELECT * FROM orders')
     assert len(result) == 1</code></div><h2 id='sql'><span class='sn'>4</span>Testing SQL transformations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test a dbt or SQL transformation?</p></div></div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
