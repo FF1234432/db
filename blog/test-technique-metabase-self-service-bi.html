@@ -275,17 +275,10 @@ st.plotly_chart(fig, use_container_width=True)</code></div>
 </div>
 <div class="fc">© 2025 Data Builder</div>
 </div></footer>
-<script>
-function setLang(l){
-  document.documentElement.dataset.lang=l;
-  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
-  document.getElementById('btn-en').classList.toggle('on',l==='en');
-  localStorage.setItem('db_lang',l);
-}
-(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
-</script>
+
 <script>
 function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique BI self-service : Metabase, Streamlit, Redash":"Self-service BI technical test: Metabase, Streamlit, Redash";document.title=(l==="fr"?"Test technique outils BI self-service : Metabase, Streamlit, Redash":"Technical test self-service BI tools: Metabase, Streamlit, Redash")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Metabase, Streamlit, Redash \u2014 quand utiliser ces outils vs Power BI ou Tableau ? Ce qu on evalue en entretien Analytics Engineer ou Data Analyst.":"Metabase, Streamlit, Redash \u2014 when to use these tools vs Power BI or Tableau? What we evaluate in Analytics Engineer or Data Analyst interviews.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"Metabase, Streamlit et Redash repondent a un besoin croissant : des dashboards rapides a deployer, sans passer par un Data Analyst pour chaque requete. Savoir positionner ces outils \u2014 et en assurer la gouvernance \u2014 est un vrai differenciateur en entretien.":"Metabase, Streamlit and Redash address a growing need: dashboards that are quick to deploy, without going through a Data Analyst for every query. Knowing how to position these tools \u2014 and ensure their governance \u2014 is a real differentiator in interviews.";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
 try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
-</script></body>
+</script>
+</body>
 </html>

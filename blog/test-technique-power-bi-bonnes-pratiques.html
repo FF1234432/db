@@ -160,17 +160,10 @@
 </div>
 <div class="fc">© 2025 Data Builder</div>
 </div></footer>
-<script>
-function setLang(l){
-  document.documentElement.dataset.lang=l;
-  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
-  document.getElementById('btn-en').classList.toggle('on',l==='en');
-  localStorage.setItem('db_lang',l);
-}
-(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
-</script>
+
 <script>
 function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique Power BI bonnes pratiques : rapport, mod\u00e8le, performance":"Power BI Technical Test Best Practices: Report, Model, Performance";document.title=(l==="fr"?"Test technique Power BI bonnes pratiques : rapport, mod\u00e8le, performance":"Power BI Technical Test Best Practices: Report, Model, Performance")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Structure de rapport, bonnes pratiques de mod\u00e9lisation, optimisation des performances, signets, RLS \u2014 ce qu'on \u00e9value dans un entretien Power BI Senior.":"Report structure, modeling best practices, performance optimization, bookmarks, RLS \u2014 what's assessed in a Senior Power BI interview.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"Savoir cr\u00e9er un graphique dans Power BI ne suffit pas. En entretien Senior, on \u00e9value la rigueur dans la construction du rapport : structure des pages, gestion des interactions, optimisation des performances et gouvernance.":"Knowing how to create a chart in Power BI isn't enough. In Senior interviews, what's assessed is the rigor in building the report: page structure, interaction management, performance optimization and governance.";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
 try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
-</script></body>
+</script>
+</body>
 </html>

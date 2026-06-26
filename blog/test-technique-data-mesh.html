@@ -23,8 +23,6 @@
   <a href="index.html">Blog</a>
 </div>
 <div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
-  <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
-  <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
@@ -174,6 +172,7 @@
 </div>
 <div class="fc">© 2025 Data Builder</div>
 </div></footer>
+
 <script>
 function setLang(l){
   document.documentElement.dataset.lang=l;
@@ -184,28 +183,5 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-<script>
-var _L='fr';
-function setLang(l){
-  _L=l;
-  document.getElementById('btn-fr').classList.toggle('active',l==='fr');
-  document.getElementById('btn-en').classList.toggle('active',l==='en');
-  document.getElementById('body-fr').style.display=l==='fr'?'':'none';
-  document.getElementById('body-en').style.display=l==='en'?'':'none';
-  var h=document.querySelector('.ah');if(h)h.textContent=l==='fr'?"Test technique Data Mesh : domaines, data products, gouvernance f\u00e9d\u00e9r\u00e9e":"Data Mesh technical interview: domains, data products, federated governance";
-  document.title=(l==='fr'?"Test technique Data Mesh : domaines, data products, gouvernance f\u00e9d\u00e9r\u00e9e":"Data Mesh technical interview: domains, data products, federated governance")+' — Data Builder';
-  var dm=document.querySelector('meta[name=description]');
-  if(dm)dm.content=l==='fr'?"Domaines data, data products, self-service infrastructure, gouvernance f\u00e9d\u00e9r\u00e9e \u2014 ce qu'on \u00e9value pour un Data Engineer ou Data Architect sur Data Mesh.":"Data domains, data products, self-service infrastructure, federated governance \u2014 what we assess for a Data Engineer or Data Architect on Data Mesh.";
-  var ai=document.querySelector('.ai p')||document.querySelector('.ai');
-  if(ai)ai.textContent=l==='fr'?"":"";
-  document.querySelectorAll('[data-i18n]').forEach(function(el){
-    var nav={fr:{how:'Comment ça marche',about:'À propos',blog:'Blog',cta:'Tester gratuitement'},
-             en:{how:'How it works',about:'About',blog:'Blog',cta:'Try for free'}};
-    var k=el.dataset.i18n.replace('nav-','');
-    if(nav[l]&&nav[l][k])el.textContent=nav[l][k];
-  });
-  try{localStorage.setItem('db_lang',l)}catch(e){}
-}
-try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
-</script></body>
+</body>
 </html>

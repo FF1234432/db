@@ -200,18 +200,10 @@ with mlflow.start_run(run_name="RF_v2_features_v3"):
 </div>
 <div class="fc">© 2025 Data Builder</div>
 </div></footer>
-<script>
-function setLang(l){
-  document.documentElement.dataset.lang=l;
-  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
-  document.getElementById('btn-en').classList.toggle('on',l==='en');
-  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
-  localStorage.setItem('db_lang',l);
-}
-(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
-</script>
+
 <script>
 function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique MLOps : CI/CD pour le ML, MLflow, d\u00e9ploiement de mod\u00e8les":"MLOps technical interview: CI/CD for ML, MLflow, model deployment";document.title=(l==="fr"?"Test technique MLOps : CI/CD pour le ML, MLflow, d\u00e9ploiement de mod\u00e8les":"MLOps technical interview: CI/CD for ML, MLflow, model deployment")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Feature store, MLflow, CI/CD ML, d\u00e9ploiement de mod\u00e8les en production, monitoring de drift \u2014 ce qu'on \u00e9value dans un entretien MLOps pour Data Scientist ou ML Engineer.":"Feature store, MLflow, CI/CD ML, deploying models to production, drift monitoring \u2014 what's assessed in an MLOps interview for Data Scientist or ML Engineer.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
 try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
-</script></body>
+</script>
+</body>
 </html>

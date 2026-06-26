@@ -208,18 +208,10 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 </div>
 <div class="fc">© 2025 Data Builder</div>
 </div></footer>
-<script>
-function setLang(l){
-  document.documentElement.dataset.lang=l;
-  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
-  document.getElementById('btn-en').classList.toggle('on',l==='en');
-  document.querySelectorAll('[data-fr]').forEach(e=>{const t=e.dataset[l];if(t)e.innerHTML=t;});
-  localStorage.setItem('db_lang',l);
-}
-(function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
-</script>
+
 <script>
 function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Power BI vs Tableau vs Looker : quel outil pour quel profil ?":"Power BI vs Tableau vs Looker: which tool for which profile?";document.title=(l==="fr"?"Power BI vs Tableau vs Looker : quel outil pour quel profil ?":"Power BI vs Tableau vs Looker: which tool for which profile?")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Comparaison approfondie Power BI, Tableau et Looker : connectivit\u00e9, mod\u00e9lisation, DAX vs LookML, performance, co\u00fbt et gouvernance.":"In-depth comparison of Power BI, Tableau and Looker: connectivity, modeling, DAX vs LookML, performance, cost and governance.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
 try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
-</script></body>
+</script>
+</body>
 </html>
