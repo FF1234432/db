@@ -180,6 +180,7 @@ spark.conf.set('spark.sql.adaptive.skewJoin.enabled', 'true')
 # Pour le skew : diviser automatiquement les partitions desequilibrees
 spark.conf.set('spark.sql.adaptive.skewJoin.skewedPartitionFactor', '5')
 spark.conf.set('spark.sql.adaptive.skewJoin.skewedPartitionThresholdInBytes', '256m')</code></div><ul><li><strong>AQE</strong> — re-optimizes the query plan at runtime based on actual statistics</li><li><strong>Skew join</strong> — automatically splits oversized partitions to rebalance the workload</li><li><strong>Partition coalescing</strong> — merges small partitions after a shuffle to avoid task overhead</li></ul></div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Spark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

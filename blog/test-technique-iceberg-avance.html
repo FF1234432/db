@@ -221,6 +221,7 @@ CALL prod.system.rollback_to_timestamp(
     'analytics.orders',
     TIMESTAMP '2025-01-14 12:00:00'
 );</code></div><h2 id='cow_mor'><span class='sn'>4</span>Copy-on-Write vs Merge-on-Read</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between CoW and MoR? When do you choose one over the other?</p></div><table class='lt'><thead><tr><th></th><th>Copy-on-Write (CoW)</th><th>Merge-on-Read (MoR)</th></tr></thead><tbody><tr><td><strong>Write</strong></td><td>Rewriting of impacted files</td><td>Writing into delta files (positional deletes)</td></tr><tr><td><strong>Read</strong></td><td>Direct read, clean files</td><td>Merge at read time (data files + deletes)</td></tr></tbody></table></div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Iceberg Expert ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

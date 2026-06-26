@@ -125,6 +125,7 @@ model_l1 = LogisticRegression(penalty='l1', C=0.1, solver='liblinear')
 
 # ElasticNet : combinaison L1 + L2
 model_en = LogisticRegression(penalty='elasticnet', l1_ratio=0.5, solver='saga')</code></div><ul><li><strong>L1</strong> — natural feature selection (coefficients → 0). Useful with many irrelevant features</li><li><strong>L2</strong> — reduces but does not eliminate. Prefer when all features are potentially useful</li><li><strong>Tuning C</strong> — use GridSearchCV or cross_val_score</li></ul></div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

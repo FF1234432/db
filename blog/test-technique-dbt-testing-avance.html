@@ -229,6 +229,8 @@ models:
           hours: 6
           config:
             severity: error</code></div><h2 id='coverage'><span class='sn'>4</span>Test coverage strategy</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you assess whether your dbt project is sufficiently tested?</p></div><ul><li><strong>Minimal coverage</strong> — 100% of PKs tested with unique + not_null. 100% of FKs with relationships</li><li><strong>Critical columns</strong> — all columns used in business KPIs have at least 1 test</li><li><strong>Coverage script</strong> — query INFORMATION_SCHEMA to identify columns without tests</li><li><strong>dbt-coverage</strong> — package that generates a documentation + test coverage report per model</li><li><strong>Pre-commit hook</strong> — block the commit if a new model does not have at least not_null on its PK</li></ul><h2 id='ci'><span class='sn'>5</span>Tests in CI: speed and reliability</h2><div class='sq'><di</div>
+</div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

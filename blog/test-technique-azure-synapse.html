@@ -151,6 +151,8 @@ FROM
         BULK 'https://monstorage.dfs.core.windows.net/datalake/delta/orders',
         FORMAT = 'DELTA'
     ) AS delta_orders;</code></div><h2 id='spark'><span class='sn'>4</span>Spark Pool: transformations and ML</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases do you use the Spark Pool rather than the SQL Pool in Synapse?</p></div><ul><li><strong>Complex transformations</strong> — Python/Scala logic not expressible in SQL, unstructured data manipulation</li><li><strong>ML with MLflow</strong> — Synapse Spark natively integrates MLflow for experiment tracking</li><li><strong>Delta Lake</strong> — read and write Delta tables in ADLS from Spark</li><li><strong>Shared notebooks</strong> — Spark notebooks in Synapse Studio, collaborative with Git</li><li><strong>Auto-pause</strong> — the Spark Pool suspends after X minutes of inactivity. Less costly than the Dedicated Pool</li></ul><h2 id='lake'><span class='sn'>5</span>Azure Data Lake Storage Gen2 integration</h2><div class='s</div>
+</div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Azure ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

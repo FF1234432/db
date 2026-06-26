@@ -219,6 +219,7 @@ from pyspark.sql.functions import col
 @dlt.table(comment="Commandes brutes depuis S3")
 def raw_orders():
     return spark.readStream.format("cloudFiles")         .option("cloudFiles.format", "json")    </code></div></div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>

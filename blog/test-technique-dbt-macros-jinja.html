@@ -255,6 +255,7 @@ GROUP BY 1
 {% macro bigquery__date_diff(date1, date2, unit='day') -%}
     DATE_DIFF({{ date2 }}, {{ date1 }}, {{ unit }})
 {%- endmacro %}</code></div><h2 id='packages'><span class='sn'>5</span>Creating an internal dbt package</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why and how do you create an internal dbt package for your organization?</p></div><ul><li><strong>Why</strong> — centralize shared macros across multiple dbt projects, avoid copy-pasting</li><li><strong>Structure</strong> — a separate Git repo with macros/, models/ (if applicable), packages.yml</li><li><strong>Installation</strong> — in the consuming projects' packages.yml: git: https://github.com/org/dbt-utils-internal</li><li><strong>Versioning</strong> — use Git tags for versions. Each project pins its version</li><li><strong>Co</div>
+</div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt Expert ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi"><div class="fl"><a href="../how.html">Comment ca marche</a><a href="../about.html">A propos</a><a href="index.html">Blog</a><a href="../cgu.html">CGU</a><a href="mailto:contact@databuilder.io">contact@databuilder.io</a></div><div class="fc">© 2025 Data Builder</div></div></footer>
