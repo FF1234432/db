@@ -33,7 +33,7 @@ footer{border-top:1px solid #eee;padding:40px;text-align:center;font-size:13px;c
 footer a{color:#999;margin:0 12px}
 footer a:hover{color:#111}
 @media(max-width:600px){nav{padding:0 20px}.nm{display:none}.hero{padding:40px 20px 32px}.grid{grid-template-columns:1fr}.card{padding:22px}}
-</style>
+</style><style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style>
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -44,7 +44,7 @@ footer a:hover{color:#111}
     <a href="/about">À propos</a>
     <a href="/blog" style="color:#4c1d95;font-weight:600">Blog</a>
   </div>
-  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Prendre RDV</a>
+  <div class="lang-sw"><button id="btn-fr" class="lb on" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div><a href="https://calendly.com/data-builder/30min" target="_blank" class="bn">Prendre RDV</a>
 </nav>
 
 <div class="hero">
@@ -590,5 +590,17 @@ footer a:hover{color:#111}
   <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
   <br/><br/>© 2025 Data Builder
 </footer>
-</body>
+<script>
+function setLang(l){
+  document.getElementById('btn-fr').classList.toggle('on',l==='fr');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var n={fr:{how:'Comment ça marche',about:'À propos',blog:'Blog',cta:'Prendre RDV'},
+           en:{how:'How it works',about:'About',blog:'Blog',cta:'Book a call'}};
+    var k=el.dataset.i18n.replace('nav-','');if(n[l]&&n[l][k])el.textContent=n[l][k];
+  });
+  try{localStorage.setItem('db_lang',l)}catch(e){}
+}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script></body>
 </html>
