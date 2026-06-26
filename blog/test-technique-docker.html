@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -73,7 +73,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Docker" data-en="Docker technical interview">Test technique Docker</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique Docker : ce qu'on evalue en entretien Data Engineer" data-en="Docker technical interview: what we really assess in data hiring">Test technique Docker : ce qu'on evalue en entretien Data Engineer</h1>
@@ -96,6 +96,29 @@ CMD ["python", "pipeline.py"]</code></div><ul><li><strong>Multi-stage builds</st
     depends_on: [postgres]
 volumes:
   postgres_data:</code></div><h2 id="ci"><span class="sn">5</span>Docker en CI/CD et production</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Comment integrez-vous Docker dans votre pipeline CI/CD ?</p></div><ul><li><strong>Build et push dans GitHub Actions</strong> vers un registre</li><li><strong>Tags semantiques</strong> : v1.2.3 plutot que latest en prod</li><li><strong>Scan de vulnerabilites</strong> : Trivy dans la CI</li><li><strong>Kubernetes</strong> — quand passer de Compose a K8s ?</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>docker pull/run/ps/logs, images de base</td><td>Comprend image vs container, utilise .dockerignore</td><td>Ne sait pas ce qu'est un layer</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Dockerfile optimise, volumes, Docker Compose</td><td>A ecrit un Dockerfile multi-stage, Compose pour Airflow</td><td>Ne sait pas pourquoi l'ordre des instructions compte</td></tr><tr><td><span class="bd bs">Senior</span></td><td>CI/CD Docker, registres prives, securite</td><td>Build+push+deploy dans une CI</td><td>N'a jamais pousse vers un registre prive</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture containers, Kubernetes, standards securite</td><td>A defini les standards d'images pour l'equipe</td><td>Ne peut pas expliquer Compose vs Kubernetes</td></tr></tbody></table></div>
+</div>
+<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Docker" data-en="Docker technical interview">Docker technical interview</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Test technique Docker : ce qu'on evalue en entretien Data Engineer" data-en="Docker technical interview: what we really assess in data hiring">Docker technical interview: what we really assess in data hiring</h1>
+<p class="ai" data-fr="Docker est incontournable pour les Data Engineers. Airflow, pipelines, environnements reproductibles — voici comment evaluer ce que cela signifie." data-en="Docker is essential for Data Engineers. Airflow, pipelines, reproducible environments — here is how to assess what that really means.">Docker is essential for Data Engineers. Airflow, pipelines, reproducible environments — here is how to assess what that really means.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="7 min de lecture" data-en="7 min read">7 min read</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#im">Images and containers</a></li><li><a href="#df">Dockerfile</a></li><li><a href="#vl">Volumes</a></li><li><a href="#cp">Docker Compose</a></li><li><a href="#ci">CI/CD</a></li><li><a href="#nv">Scoring grid</a></li></ol></div>
+<div class="ab" id="ab"><p>Docker is essential for Data Engineers. Airflow runs on Docker, pipelines are containerized. Here is how to assess what that really means in practice.</p><h2 id="im"><span class="sn">1</span>Images and containers</h2><div class="sq"><div class="sl">Key question</div><p>What is the difference between a Docker image and a container? And between an image and a Dockerfile?</p></div><p>Image = immutable template (like a class in OOP). Container = running instance. Dockerfile = recipe for building an image.</p><ul><li><strong>docker pull/run/ps/logs/exec</strong> — basic commands</li><li><strong>Layers</strong> — each instruction creates a cached layer</li><li><strong>Docker Hub vs private registries</strong>: ECR, GCR, GitHub Container Registry</li></ul><h2 id="df"><span class="sn">2</span>Dockerfile: building your images</h2><div class="sq"><div class="sl">Key question</div><p>Why does the order of instructions in a Dockerfile matter?</p></div><div class="cb"><code>FROM python:3.11-slim
+WORKDIR /app
+# Dependencies: stable cache, placed first
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+# Code: cache invalidated often, placed last
+COPY . .
+CMD ["python", "pipeline.py"]</code></div><ul><li><strong>Multi-stage builds</strong> — lighter images</li><li><strong>.dockerignore</strong> — exclude unnecessary files</li></ul><h2 id="vl"><span class="sn">3</span>Volumes and networks</h2><div class="sq"><div class="sl">Key question</div><p>How do you persist data generated by a container after it stops?</p></div><ul><li><strong>Named volumes</strong> — managed by Docker, independent of the container lifecycle</li><li><strong>Communication between containers</strong> — by service name on a shared network</li></ul><h2 id="cp"><span class="sn">4</span>Docker Compose: local orchestration</h2><div class="sq"><div class="sl">Key question</div><p>Example of a docker-compose.yml for a data project.</p></div><div class="cb"><code>services:
+  postgres:
+    image: postgres:15
+    volumes: [postgres_data:/var/lib/postgresql/data]
+  dbt:
+    build: .
+    depends_on: [postgres]
+volumes:
+  postgres_data:</code></div><h2 id="ci"><span class="sn">5</span>Docker in CI/CD and production</h2><div class="sq"><div class="sl">Key question</div></div></div></div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -144,5 +167,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique Docker : ce qu'on evalue en entretien Data Engineer":"Docker Technical Interview: What We Assess in Data Engineer Hiring";document.title=(l==="fr"?"Test technique Docker : ce qu'on evalue en entretien Data Engineer":"Docker Technical Interview: What We Assess in Data Engineer Hiring")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Les 5 dimensions d'un entretien Docker : images, Dockerfile, volumes, Compose, CI/CD.":"The 5 dimensions of a Docker interview: images, Dockerfile, volumes, Compose, CI/CD.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>

@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -88,7 +88,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <li><a href="#gouv">Gouvernance et pieges</a></li>
 <li><a href="#nv">Grille par niveau</a></li>
 </ol></div>
-<div class="ab">
+<div id="body-fr"><div class="ab">
 
 <p>Les outils BI self-service permettent aux equipes metier d'explorer les donnees sans solliciter un Data Analyst a chaque requete. En entretien, on evalue la capacite a choisir le bon outil selon le contexte — et a mettre en place la gouvernance qui evite le chaos.</p>
 
@@ -196,6 +196,73 @@ st.plotly_chart(fig, use_container_width=True)</code></div>
 </tbody></table>
 
 </div>
+</div>
+<div id="body-en" style="display:none"><div class="ab">
+
+<p>Self-service BI tools allow business teams to explore data without requesting a Data Analyst for every query. In interviews, we assess the ability to choose the right tool based on context — and to implement the governance that prevents chaos.</p>
+
+<h2 id="metabase"><span class="sn">1</span>Metabase: the most accessible SQL self-service</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between visual questions and native SQL questions in Metabase? Why not give native SQL access to all users?</p></div>
+<ul>
+<li><strong>Question Builder (visual)</strong> — SQL-free interface: the user selects a table, filters, and groupings. Suitable for non-technical profiles</li>
+<li><strong>Native SQL questions</strong> — direct SQL in Metabase. Powerful but should be restricted: unoptimized queries can saturate the database</li>
+<li><strong>Models</strong> — SQL queries pre-written by the data team, exposed as virtual tables for business users</li>
+<li><strong>Supported connections</strong> — PostgreSQL, MySQL, BigQuery, Snowflake, Redshift, MongoDB, DuckDB, SQLite and more</li>
+<li><strong>Automatic exploration</strong> — Metabase generates automatic explorations for each table (distributions, trends, null values)</li>
+</ul>
+<div class="cl"><p><strong>Best practice:</strong> do not give native SQL access to everyone. Create Models to expose pre-optimized views. Point to a read replica, never the transactional production database.</p></div>
+
+<h2 id="streamlit"><span class="sn">2</span>Streamlit: interactive Python dashboards</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>In what case would you choose Streamlit over Metabase? What is the st.cache_data function and why is it critical?</p></div>
+<div class="cb"><code>import streamlit as st
+import pandas as pd
+import plotly.express as px
+from sqlalchemy import create_engine
+
+# Cache critique : evite de recharger les donnees a chaque interaction
+@st.cache_data(ttl=3600)
+def load_data(start_date, end_date):
+    engine = create_engine("postgresql://...")
+    query = f"""
+        SELECT region, month, SUM(revenue) as revenue
+        FROM sales
+        WHERE date BETWEEN '{start_date}' AND '{end_date}'
+        GROUP BY region, month
+    """
+    return pd.read_sql(query, engine)
+
+st.title("Dashboard Ventes")
+
+# Filtres interactifs dans la sidebar
+with st.sidebar:
+    regions = st.multiselect("Regions", ['FR','DE','UK','ES'])
+    date_range = st.date_input("Periode", value=(start, end))
+
+df = load_data(*date_range)
+if regions:
+    df = df[df['region'].isin(regions)]
+
+# KPIs en colonnes
+c1, c2, c3 = st.columns(3)
+c1.metric("CA Total", f"{df.revenue.sum():,.0f} EUR", delta="+8.3%")
+c2.metric("Regions actives", df.region.nunique())
+c3.metric("Meilleur mois", df.groupby('month').revenue.sum().idxmax())
+
+# Graphique interactif
+fig = px.bar(df.groupby('region').revenue.sum().reset_index(),
+             x='region', y='revenue')
+st.plotly_chart(fig, use_container_width=True)</code></div>
+<ul>
+<li><strong>st.cache_data</strong> — caches the function result. Without it, the SQL query re-executes on every user interaction</li>
+<li><strong>Advantages</strong> — full Python, custom logic (ML, complex calculations), full control over UX</li>
+<li><strong>Ideal for</strong> — ML dashboards (real-time predictions), internal tools with specific business logic, rapid prototypes</li>
+<li><strong>Deployment</strong> — Streamlit Cloud, Docker on GKE/ECS, or on VM with nginx</li>
+</ul>
+
+<h2 id="redash"><span class="sn">3</span>Redash: collaborative SQL to dashboard</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the value of Redash compared to manual SQL exports to Excel?</p></div>
+<ul>
+<li><strong>Shared queries</strong> — </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Analyst ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -217,5 +284,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique BI self-service : Metabase, Streamlit, Redash":"Self-service BI technical test: Metabase, Streamlit, Redash";document.title=(l==="fr"?"Test technique outils BI self-service : Metabase, Streamlit, Redash":"Technical test self-service BI tools: Metabase, Streamlit, Redash")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Metabase, Streamlit, Redash \u2014 quand utiliser ces outils vs Power BI ou Tableau ? Ce qu on evalue en entretien Analytics Engineer ou Data Analyst.":"Metabase, Streamlit, Redash \u2014 when to use these tools vs Power BI or Tableau? What we evaluate in Analytics Engineer or Data Analyst interviews.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"Metabase, Streamlit et Redash repondent a un besoin croissant : des dashboards rapides a deployer, sans passer par un Data Analyst pour chaque requete. Savoir positionner ces outils \u2014 et en assurer la gouvernance \u2014 est un vrai differenciateur en entretien.":"Metabase, Streamlit and Redash address a growing need: dashboards that are quick to deploy, without going through a Data Analyst for every query. Knowing how to position these tools \u2014 and ensure their governance \u2014 is a real differentiator in interviews.";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>

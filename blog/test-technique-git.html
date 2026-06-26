@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -73,7 +73,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Git" data-en="Git technical interview">Test technique Git</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique Git : ce qu'on evalue en entretien data" data-en="Git technical interview: what we really assess in data hiring">Test technique Git : ce qu'on evalue en entretien data</h1>
@@ -89,6 +89,22 @@ SELECT id, nom FROM commandes
 =======
 SELECT id, nom, date FROM commandes
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/ajout-date</code></div><div class="cl"><p><strong>Signal d'alerte :</strong> un profil qui "recrée le fichier depuis zero" face a un conflit n'est pas pret pour un environnement collaboratif.</p></div><h2 id="av"><span class="sn">4</span>Rebase et reset</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Difference entre git merge et git rebase ? Quand choisissez-vous l'un ou l'autre ?</p></div><ul><li><strong>Merge</strong> — cree un commit de fusion, historique fidele</li><li><strong>Rebase</strong> — reecrit l'historique, dangereux sur branche partagee</li><li><strong>git reset --soft vs --hard</strong> — garder ou effacer les modifications</li><li><strong>git revert</strong> — preferable a reset quand le commit est deja pushe</li><li><strong>git stash</strong> — mettre de cote sans committer</li></ul><h2 id="wf"><span class="sn">5</span>Workflow data : dbt, CI/CD</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment organisez-vous vos branches sur un projet dbt en equipe ? Comment les tests s'integrent dans votre CI ?</p></div><ul><li><strong>GitHub Actions pour dbt</strong> — lancer dbt build sur chaque PR</li><li><strong>Secrets et credentials</strong> — jamais dans le code, GitHub Secrets</li><li><strong>Gitflow vs trunk-based</strong> — quelle strategie pour un projet data ?</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>add, commit, push, pull, clone, .gitignore</td><td>Commits descriptifs, comprend le staging area</td><td>Ne sait pas ce qu'est une branche</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Branches, PRs, resolution de conflits, stash</td><td>Workflow branch/PR structure, resout les conflits</td><td>Travaille uniquement sur main</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Rebase, reset, cherry-pick, CI/CD</td><td>Explique merge vs rebase, a configure une CI dbt</td><td>Ne connait pas git revert</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Standards Git equipe, branch protection, code review</td><td>A mis en place conventions de commits et templates PR</td><td>Ne peut pas expliquer pourquoi rebase est dangereux</td></tr></tbody></table></div>
+</div>
+<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Git" data-en="Git technical interview">Git technical interview</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Test technique Git : ce qu'on evalue en entretien data" data-en="Git technical interview: what we really assess in data hiring">Git technical interview: what we really assess in data hiring</h1>
+<p class="ai" data-fr="Git est incontournable pour tout profil data en equipe. Entre utiliser Git et maitriser la collaboration, l'ecart est considerable." data-en="Git is essential for any data professional in a team. Between using Git and mastering collaboration, the gap is considerable.">Git is essential for any data professional in a team. Between using Git and mastering collaboration, the gap is considerable.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="7 min de lecture" data-en="7 min read">7 min read</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#bs">Basics</a></li><li><a href="#br">Branches and PRs</a></li><li><a href="#cf">Conflicts</a></li><li><a href="#av">Rebase and reset</a></li><li><a href="#wf">Data workflow</a></li><li><a href="#nv">Scorecard</a></li></ol></div>
+<div class="ab" id="ab"><p>Git is essential for any data professional in a team. "Using Git" can mean many things — here is how to calibrate the actual level.</p><h2 id="bs"><span class="sn">1</span>The basics</h2><div class="sq"><div class="sl">Key question</div><p>Difference between git add, git commit and git push? What is the staging area for?</p></div><p>A senior profile explains all three zones: working directory, staging area, repository. They spontaneously mention the benefit of the staging area for choosing precisely what gets committed.</p><ul><li><strong>.gitignore</strong> — credentials, .env, large CSV files</li><li><strong>Commit messages</strong> — "fix" and "update" signal a lack of maturity</li><li><strong>git pull vs git fetch</strong> — fetch without merging, pull retrieves and merges</li></ul><h2 id="br"><span class="sn">2</span>Branches and pull requests</h2><div class="sq"><div class="sl">Key question</div><p>Describe your workflow from branch creation to merging into main.</p></div><div class="cb"><code>git checkout -b feature/ajout-modele-commandes
+git add models/commandes.sql
+git commit -m "feat: ajouter modele commandes"
+git push origin feature/ajout-modele-commandes
+# Puis ouvrir une Pull Request sur GitHub</code></div><ul><li><strong>Naming conventions</strong>: feature/, fix/, chore/</li><li><strong>Branch protection rules</strong> — mandatory on production repos</li></ul><h2 id="cf"><span class="sn">3</span>Conflicts</h2><div class="sq"><div class="sl">Key question</div><p>You run git pull and Git reports a conflict. What do you do?</p></div><div class="cb"><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+SELECT id, nom FROM commandes
+=======
+SELECT id, nom, date FROM commandes
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/ajout-date</code></div><div class="cl"><p><strong>Warning sign:</strong> a candidate who "recreates the file from scratch" when faced with a conflict is not ready for a collaborative environment.</p></div><h2 id="av"><span class="sn">4</span>Rebase and reset</h2><div class="sq"><div class="sl">Senior key question</div><p>Difference between git merge and git rebase? When do you choose one over the other?</p></div><ul><li><strong>Merge</strong> — creates a merge commit, faithful history</li><li><strong>Rebase</strong> — rewrites history, dangerous on a shared branch</li><li><stro</div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -126,5 +142,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique Git : ce qu'on evalue en entretien data":"Git technical interview: what we assess in data hiring";document.title=(l==="fr"?"Test technique Git : ce qu'on evalue en entretien data":"Git technical interview: what we assess in data hiring")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Les 5 dimensions d'un entretien Git : bases, branches, conflits, rebase, workflow data CI/CD.":"The 5 dimensions of a Git interview: basics, branches, conflicts, rebase, data CI/CD workflow.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>

@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -88,7 +88,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <li><a href="#profil">Profiling et diagnostic</a></li>
 <li><a href="#nv">Grille par niveau</a></li>
 </ol></div>
-<div class="ab">
+<div id="body-fr"><div class="ab">
 
 <p>Un Data Engineer qui utilise des boucles <code>iterrows()</code> sur des DataFrames pandas en production livre de la dette technique. Les pièges de performance, la vectorisation et la maîtrise de DuckDB ou Polars sont les vrais discriminants en entretien.</p>
 
@@ -278,6 +278,79 @@ report.to_file("report.html")</code></div>
 </tbody></table>
 
 </div>
+</div>
+<div id="body-en" style="display:none"><div class="ab">
+
+<p>A Data Engineer who uses <code>iterrows()</code> loops on pandas DataFrames in production is delivering technical debt. Performance pitfalls, vectorization, and mastery of DuckDB or Polars are the real differentiators in interviews.</p>
+
+<h2 id="pandas"><span class="sn">1</span>pandas: classic pitfalls</h2>
+<div class="sq"><div class="sl">Differentiating question</div><p>What is the difference between .loc, .iloc and .at? Why should you absolutely avoid iterrows() on a large DataFrame?</p></div>
+<div class="cb"><code># MAUVAIS : boucle Python sur un DataFrame (tres lent)
+for index, row in df.iterrows():
+    df.at[index, 'profit'] = row['revenue'] - row['cost']
+
+# BON : vectorisation directe
+df['profit'] = df['revenue'] - df['cost']
+
+# BON : np.where pour les conditions simples
+import numpy as np
+df['tier'] = np.where(df['amount'] > 1000, 'gold',
+             np.where(df['amount'] > 100, 'silver', 'bronze'))
+
+# Selection par label vs position
+df.loc[df['status'] == 'active', 'revenue']  # par label/condition
+df.iloc[0:10, 2:5]                           # par position entiere
+df.at[42, 'revenue']                         # acces scalaire rapide par label</code></div>
+<ul>
+<li><strong>iterrows()</strong> — iterates in pure Python: 100x to 1000x slower than vectorization. Never in production</li>
+<li><strong>Vectorization</strong> — operations on the entire column in one instruction (C compiled via NumPy)</li>
+<li><strong>apply()</strong> — more flexible than a vectorized operation, but slower. Last resort</li>
+<li><strong>SettingWithCopyWarning</strong> — always work on an explicit copy (.copy()) to avoid silent modifications</li>
+<li><strong>Perf rule</strong> — vectorization &gt; np.where &gt; pd.apply() &gt; itertuples() &gt; iterrows()</li>
+</ul>
+<div class="cl"><p><strong>Senior GO signal:</strong> the candidate spontaneously cites iterrows() as an anti-pattern, explains vectorization, and knows np.where.</p></div>
+
+<h2 id="dtypes"><span class="sn">2</span>Memory optimization: reducing DataFrame size</h2>
+<div class="sq"><div class="sl">Differentiating question</div><p>How do you reduce the memory consumption of a 3 GB pandas DataFrame?</p></div>
+<div class="cb"><code>import pandas as pd
+
+# Diagnostic memoire
+print(df.memory_usage(deep=True).sum() / 1024**2, "MB")
+
+# Reduction des types numeriques
+df['age']    = df['age'].astype('int8')      # int64 -> int8  : 8x moins
+df['score']  = df['score'].astype('float32') # float64 -> float32 : 2x moins
+df['status'] = df['status'].astype('category') # string -> category : -80%
+df['pays']   = df['pays'].astype('category')
+
+# Types specifies a l'import (optimal)
+df = pd.read_csv("data.csv", dtype={
+    'age': 'int8',
+    'status': 'category',
+    'amount': 'float32'
+})
+
+# Lecture par chunks pour les tres gros fichiers
+for chunk in pd.read_csv("big_file.csv", chunksize=100_000):
+    process(chunk)</code></div>
+<ul>
+<li><strong>int64 → int8/int16/int32</strong> — depending on the actual min/max values of the column</li>
+<li><strong>float64 → float32</strong> — reduced precision but acceptable for the majority of analyses</li>
+<li><strong>string → category</strong> — essential for low-cardinality columns (status, country, type). Can reduce memory by 80%</li>
+<li><strong>Chunk reading</strong> — processing files larger than RAM in successive chunks</li>
+</ul>
+
+<h2 id="vecto"><span class="sn">3</span>Vectorization and NumPy: why it's faster</h2>
+<div class="sq"><div class="sl">Differentiating question</div><p>Explain why a NumPy vectorized operation is 500x faster than an equivalent Python loop.</p></div>
+<div class="cb"><code>import numpy as np
+
+# Boucle Python : ~5 secondes sur 1M de lignes
+distances = []
+for i in range(len(df)):
+    d = np.sqrt(df['x'].iloc[i]**2 + df['y'].iloc[i]**2)
+    distances.append(d)
+
+# Vectorisation NumPy : ~10 milliseco</code></div></div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -299,5 +372,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique Python data avanc\u00e9 : pandas, DuckDB, Polars, optimisation":"Advanced Python data technical test: pandas, DuckDB, Polars, optimization";document.title=(l==="fr"?"Test technique Python data avanc\u00e9 : pandas, DuckDB, Polars, optimisation":"Advanced Python data technical test: pandas, DuckDB, Polars, optimization")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"pandas avanc\u00e9, DuckDB, Polars, vectorisation, optimisation m\u00e9moire \u2014 ce qu'on \u00e9value dans un entretien Python Data Engineer Senior.":"Advanced pandas, DuckDB, Polars, vectorization, memory optimization \u2014 what gets evaluated in a Senior Python Data Engineer interview.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"Au-del\u00e0 des bases de pandas, un Data Engineer Senior ma\u00eetrise la vectorisation, la gestion m\u00e9moire, et sait quand remplacer pandas par DuckDB ou Polars pour des performances 10x \u00e0 100x sup\u00e9rieures.":"Beyond pandas basics, a Senior Data Engineer masters vectorization, memory management, and knows when to replace pandas with DuckDB or Polars for 10x to 100x better performance.";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>

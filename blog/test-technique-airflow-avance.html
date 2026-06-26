@@ -58,7 +58,11 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -67,13 +71,13 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
   <a href="index.html">Blog</a>
 </div>
-<div class="nr">
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
   <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
   <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Airflow avancé" data-en="Advanced Airflow technical interview">Test technique Airflow avancé</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique Airflow avancé : DAGs, XCom, TaskFlow, architecture" data-en="Advanced Airflow technical interview: DAGs, XCom, TaskFlow, architecture">Test technique Airflow avancé : DAGs, XCom, TaskFlow, architecture</h1>
@@ -222,6 +226,95 @@ def ma_tache() -> int:
 <tr><td><span class="bd bl">Lead</span></td><td>Architecture cloud (MWAA/Composer), standards équipe, CI/CD DAGs</td><td>A migré vers MWAA ou Composer, a mis en place des tests automatisés sur les DAGs</td><td>Ne peut pas expliquer comment déployer Airflow en haute disponibilité</td></tr>
 </tbody></table>
 </div>
+</div>
+<div id="body-en" style="display:none"><div class="aw">
+<h2 id='taskflow'><span class='sn'>1</span>TaskFlow API and modern DAGs</h2>
+<div class='sq'><div class='sl'>Key question</div><p>What is the TaskFlow API? Why prefer it over classic operators?</p></div>
+<div class='cb'><code>from airflow.decorators import dag, task
+from datetime import datetime
+
+@dag(schedule='@daily', start_date=datetime(2025,1,1), catchup=False)
+def modern_pipeline():
+    @task()
+    def extract() -> list:
+        return requests.get('https://api.example.com/orders').json()
+
+    @task()
+    def transform(data: list) -> list:
+        return [d for d in data if d['amount'] > 0]
+
+    @task()
+    def load(data: list) -> int:
+        df = pd.DataFrame(data)
+        df.to_sql('orders', engine, if_exists='append', index=False)
+        return len(df)
+
+    raw = extract()
+    clean = transform(raw)
+    load(clean)
+
+pipeline = modern_pipeline()</code></div>
+<ul>
+<li><strong>TaskFlow API</strong> — Python decorators (@dag, @task) to define DAGs. XCom is automatic between tasks via return values</li>
+<li><strong>vs classic operators</strong> — TaskFlow: more readable, typed, testable. Classic operators: more verbose but still necessary for non-Python operators (BashOperator, KubernetesPodOperator)</li>
+<li><strong>Automatic XCom</strong> — the return value of a @task is automatically pushed to XCom. No xcom_push/xcom_pull needed</li>
+<li><strong>Type hints</strong> — strongly recommended. Airflow serializes/deserializes via XCom based on types</li>
+</ul>
+
+<h2 id='xcom'><span class='sn'>2</span>XCom: inter-task communication</h2>
+<div class='sq'><div class='sl'>Key question</div><p>What is XCom? What are its limitations in production?</p></div>
+<ul>
+<li><strong>XCom</strong> — key-value store in the Airflow DB for passing data between tasks. Persisted per DAG run</li>
+<li><strong>Size limit</strong> — by default, XCom is stored in the DB: 48KB in SQLite, ~1GB in Postgres but discouraged. Never pass DataFrames via XCom</li>
+<li><strong>Best practice</strong> — pass only references (S3 path, table name, record count) via XCom. Store actual data in S3/GCS</li>
+<li><strong>XCom Backend</strong> — Airflow 2.x allows customizing the XCom backend (S3, GCS) for large objects</li>
+<li><strong>Serialization</strong> — Airflow serializes XCom values as JSON. Custom objects require a custom serializer</li>
+</ul>
+
+<h2 id='trigger'><span class='sn'>3</span>Trigger rules and dependencies</h2>
+<div class='sq'><div class='sl'>Key question</div><p>What trigger rules do you know? When do you use them?</p></div>
+<ul>
+<li><strong>all_success</strong> — default. Task runs only if all upstream tasks succeeded</li>
+<li><strong>all_failed</strong> — for alerting or cleanup tasks that run only on failure</li>
+<li><strong>all_done</strong> — runs regardless of upstream status. For cleanup tasks that always run</li>
+<li><strong>one_success</strong> — runs as soon as one upstream task succeeds. For parallel pipelines with early convergence</li>
+<li><strong>none_failed_min_one_success</strong> — most flexible: runs if no failures and at least one success. For optional branches</li>
+</ul>
+
+<h2 id='pools'><span class='sn'>4</span>Pools, slots and concurrency</h2>
+<div class='sq'><div class='sl'>Key question</div><p>What is an Airflow pool? How do you avoid overloading an external API?</p></div>
+<ul>
+<li><strong>Pool</strong> — limits the number of tasks running simultaneously on a given resource. Each task consumes N slots from its pool</li>
+<li><strong>Use case</strong> — protect an external API: pool "api_externe" with 5 slots = max 5 simultaneous calls</li>
+<li><strong>Default pool</strong> — all tasks use the default pool (128 slots by default). Adjust based on your infrastructure</li>
+<li><strong>Priority weight</strong> — in case of slot competition, tasks with the highest priority_weight run first</li>
+<li><strong>Queues</strong> — with CeleryExecutor: route tasks to specialized workers (GPU, high-memory) via queues</li>
+</ul>
+<div class='cb'><code># Task assigned to a limited pool
+extract_task = PythonOperator(
+    task_id='extract_api',
+    python_callable=extract,
+    pool='external_api',  # max 5 simultaneous
+    pool_slots=1,
+    priority_weight=10
+)</code></div>
+
+<h2 id='executors'><span class='sn'>5</span>Executors: Local, Celery, Kubernetes</h2>
+<div class='sq'><div class='sl'>Key question</div><p>What is the difference between LocalExecutor, CeleryExecutor and KubernetesExecutor? When to use which?</p></div>
+<table class='lt'><thead><tr><th>Executor</th><th>Architecture</th><th>Use case</th><th>Limitations</th></tr></thead>
+<tbody>
+<tr><td>LocalExecutor</td><td>Multi-process on scheduler</td><td>Dev, small team, &lt;50 DAGs</td><td>Single machine, no isolation</td></tr>
+<tr><td>CeleryExecutor</td><td>Distributed workers + Redis/RabbitMQ</td><td>Medium-large production</td><td>Worker infrastructure to maintain</td></tr>
+<tr><td>KubernetesExecutor</td><td>Each task = ephemeral pod</td><td>K8s, isolation, autoscaling</td><td>Pod startup overhead (~30s)</td></tr>
+</tbody></table>
+
+<h2 id='nv'><span class='sn'>6</span>Level assessment grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Confirmed</span></td><td>TaskFlow API, XCom, trigger rules, pools</td><td>Writes DAGs with TaskFlow, explains XCom limitations, uses pools to protect APIs</td><td>Only knows classic PythonOperator, doesn't know trigger rules</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Executors, dynamic DAGs, performance, CI/CD</td><td>Justifies executor choice by context, has migrated DAGs, implements DAG testing</td><td>Can't explain the difference between CeleryExecutor and KubernetesExecutor</td></tr>
+</tbody></table>
+</div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Airflow ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -250,5 +343,24 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+var _L='fr';
+var _D={fr:{h:"Test technique Airflow avanc\u00e9 : DAGs, XCom, TaskFlow, architecture",d:"DAGs, op\u00e9rateurs, XCom, TaskFlow API, trigger rules, architecture Airflow \u2014 ce qu'on \u00e9value vraiment dans un entretien Data Engineer Airflow.",i:""},en:{h:"Advanced technical test Airflow: DAGs, XCom, TaskFlow, architecture",d:"DAGs, operators, XCom, TaskFlow API, trigger rules, Airflow architecture \u2014 what we really evaluate in a Senior Data Engineer Airflow interview.",i:"Airflow is the standard orchestrator for data pipelines. For Senior interviews, we go beyond basic DAG creation to assess production architecture, performance, and reliability."}};
+function setLang(l){
+  _L=l;
+  document.getElementById('btn-fr').classList.toggle('active',l==='fr');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('body-fr').style.display=l==='fr'?'':'none';
+  document.getElementById('body-en').style.display=l==='en'?'':'none';
+  var h=document.querySelector('.ah');if(h)h.textContent=_D[l].h;
+  document.title=_D[l].h+' — Data Builder';
+  var dm=document.querySelector('meta[name=description]');if(dm)dm.content=_D[l].d;
+  var ai=document.querySelector('.ai p');if(!ai)ai=document.querySelector('.ai');if(ai)ai.textContent=_D[l].i;
+  var nav={fr:{how:'Comment ça marche',about:'À propos',blog:'Blog',cta:'Tester gratuitement'},
+           en:{how:'How it works',about:'About',blog:'Blog',cta:'Try for free'}};
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n.replace('nav-','');if(nav[l]&&nav[l][k])el.textContent=nav[l][k];});
+  try{localStorage.setItem('db_lang',l)}catch(e){}
+}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script></body>
 </html>

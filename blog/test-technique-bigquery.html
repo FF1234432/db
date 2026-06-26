@@ -58,7 +58,11 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -67,13 +71,13 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
   <a href="index.html">Blog</a>
 </div>
-<div class="nr">
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
   <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
   <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique BigQuery" data-en="BigQuery technical interview">Test technique BigQuery</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique BigQuery : ce qu'on evalue en entretien" data-en="BigQuery technical interview: what we really assess">Test technique BigQuery : ce qu'on evalue en entretien</h1>
@@ -84,6 +88,17 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 SELECT user_id, event_date
 FROM events
 QUALIFY ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY event_date DESC) = 1</code></div><ul><li><strong>QUALIFY</strong> — filtrer sur window functions sans sous-requete</li><li><strong>STRUCT et ARRAY</strong> — types imbriques tres courants dans BQ</li><li><strong>UNNEST</strong> — aplatir les arrays en lignes</li></ul><h2 id="pt"><span class="sn">2</span>Partitionnement et clustering</h2><div class="sq"><div class="sl">Question discriminante</div><p>Difference entre partitionnement et clustering ? Quand utiliser l'un ou l'autre ?</p></div><p>Le partitionnement divise la table en segments (souvent par date). Le clustering trie les donnees dans chaque partition. Les deux sont complementaires.</p><ul><li><strong>Partition pruning</strong> — le filtre doit porter sur la colonne de partition</li><li><strong>Partition expiration</strong> — supprimer automatiquement les donnees anciennes</li></ul><h2 id="ct"><span class="sn">3</span>Gestion des couts</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment optimisez-vous les couts sur BigQuery ? Trois pratiques concretes.</p></div><ul><li><strong>Eviter SELECT *</strong> — le cout est proportionnel aux bytes scannes</li><li><strong>Materialized views</strong> — pre-calculer les requetes frequentes</li><li><strong>Cost controls</strong> — quotas par projet ou utilisateur</li></ul><div class="cl"><p><strong>Signal d'alerte :</strong> SELECT * sur une grande table non partitionnee est eliminatoire pour un profil Senior.</p></div><h2 id="pf"><span class="sn">4</span>Performance</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Une requete scanne 10 TB et prend 5 minutes. Comment l'analysez-vous ?</p></div><ul><li><strong>Query plan et execution details</strong> dans la console BQ</li><li><strong>Bytes processed</strong> — indicateur principal</li><li><strong>Broadcast des petites tables</strong></li></ul><h2 id="ar"><span class="sn">5</span>Architecture et ecosystem</h2><ul><li><strong>BigQuery ML</strong> — modeles ML directement en SQL</li><li><strong>BigQuery Omni</strong> — requeter des donnees sur AWS ou Azure</li><li><strong>Tables externes</strong> sur Google Cloud Storage</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>SQL BQ de base, lecture/ecriture de tables</td><td>Connait QUALIFY, evite SELECT *</td><td>Ne sait pas ce qu'est le partitionnement</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Partitionnement, clustering, STRUCT/ARRAY, couts</td><td>A partitionne une table, connait les bytes scannes</td><td>Ne sait pas pourquoi SELECT * est couteux</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Materialized views, BI Engine, query plan</td><td>A optimise une requete de 10x moins de bytes</td><td>N'a jamais lu un query plan BQ</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture data lakehouse, gouvernance</td><td>A defini la strategie de partitionnement organisation</td><td>Ne connait pas BigQuery Omni</td></tr></tbody></table></div>
+</div>
+<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique BigQuery" data-en="BigQuery technical interview">BigQuery technical interview</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Test technique BigQuery : ce qu'on evalue en entretien" data-en="BigQuery technical interview: what we really assess">BigQuery technical interview: what we really assess</h1>
+<p class="ai" data-fr="BigQuery est puissant — et couteux si mal utilise. Un SELECT * sur 10 TB peut couter 50 euros en un clic." data-en="BigQuery is powerful — and expensive if misused. A SELECT * on 10 TB can cost 50 euros in one click.">BigQuery is powerful — and expensive if misused. A SELECT * on 10 TB can cost 50 euros in one click.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="7 min de lecture" data-en="7 min read">7 min read</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#sq">SQL BigQuery</a></li><li><a href="#pt">Partitioning</a></li><li><a href="#ct">Costs</a></li><li><a href="#pf">Performance</a></li><li><a href="#ar">Architecture</a></li><li><a href="#nv">Level grid</a></li></ol></div>
+<div class="ab" id="ab"><p>BigQuery is powerful — and expensive if misused. A SELECT * on a 10 TB table can cost 50 euros in one click.</p><h2 id="sq"><span class="sn">1</span>SQL BigQuery: specific features</h2><div class="sq"><div class="sl">Key question</div><p>What are the main differences between BigQuery SQL and standard SQL?</p></div><div class="cb"><code>-- QUALIFY : alternative elegante aux sous-requetes
+SELECT user_id, event_date
+FROM events
+QUALIFY ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY event_date DESC) = 1</code></div><ul><li><strong>QUALIFY</strong> — filter on window functions without a subquery</li><li><strong>STRUCT and ARRAY</strong> — nested types very common in BQ</li><li><strong>UNNEST</strong> — flatten arrays into rows</li></ul><h2 id="pt"><span class="sn">2</span>Partitioning and clustering</h2><div class="sq"><div class="sl">Key question</div><p>What is the difference between partitioning and clustering? When should you use one or the other?</p></div><p>Partitioning splits the table into segments (often by date). Clustering sorts the data within each partition. Both are complementary.</p><ul><li><strong>Partition pruning</strong> — the filter must apply to the partition column</li><li><strong>Partition expiration</strong> — automatically delete old data</li></ul><h2 id="ct"><span class="sn">3</span>Cost management</h2><div class="sq"><div class="sl">Key question</div><p>How do you optimize costs on BigQuery? Give three concrete practices.</p></div><ul><li><strong>Avoid SELECT *</strong> — cost is proportional to bytes scanned</li><li><strong>Materialized views</strong> — pre-compute frequent queries</li><li><strong>Cost controls</strong> — quotas per project or user</li></ul><div class="cl"><p><strong>Warning signal:</strong> SELECT * on a large unpartitioned table is an eliminating factor for a Senior profile.</p></div><h2 id="pf"><span class="sn">4</span>Performance</h2><div class="sq"><div class="sl">Senior key question</div><p>A query scans 10 TB and takes 5 minutes. How do you analyze it?</p></div><ul><li><strong>Query plan and execution details</strong> in the BQ console</li><li><strong>Bytes processed</strong> — primary indicator</li><li><strong>Broadcasting small tables</strong></li></ul><h2 id="ar"><span class="sn">5</span>Architecture and ecosystem</h2><ul><li><strong>BigQuery ML</strong> — ML models directly in SQL</li><li><strong>BigQuery Omni</strong> — query data on AWS or Azure</li><li><strong>External tables</strong> on Google Cloud Storage</li></ul><h2 id="nv"><span class="sn">6</span>Level grid</h2><table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Basic BQ SQL, reading/writing tables</td><td>Knows QUALIFY, avoids SELECT *</td><td>Does not know what partitioning is</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Partitioning, clustering, STRUCT/ARRAY, costs</td><td>Has partitioned a table, knows about bytes scanned</td><td>Does not know why SELECT * is expensive</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Materialized views, BI Engine, query plan</td><td>Has optimized a query to scan 10x fewer bytes</td><td>Has never read a BQ query plan</td></tr><tr><td><span class="bd bl">Lead</span></td></tr></tbody></table></div></div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -112,5 +127,28 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+var _L='fr';
+function setLang(l){
+  _L=l;
+  document.getElementById('btn-fr').classList.toggle('active',l==='fr');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('body-fr').style.display=l==='fr'?'':'none';
+  document.getElementById('body-en').style.display=l==='en'?'':'none';
+  var h=document.querySelector('.ah');if(h)h.textContent=l==='fr'?"Test technique BigQuery : ce qu'on evalue en entretien":"BigQuery technical interview: what we really assess";
+  document.title=(l==='fr'?"Test technique BigQuery : ce qu'on evalue en entretien":"BigQuery technical interview: what we really assess")+' — Data Builder';
+  var dm=document.querySelector('meta[name=description]');
+  if(dm)dm.content=l==='fr'?"Les 5 dimensions d'un entretien BigQuery : SQL, partitionnement, couts, performance, architecture.":"The 5 dimensions of a BigQuery interview: SQL, partitioning, costs, performance, architecture.";
+  var ai=document.querySelector('.ai p')||document.querySelector('.ai');
+  if(ai)ai.textContent=l==='fr'?"":"";
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var nav={fr:{how:'Comment ça marche',about:'À propos',blog:'Blog',cta:'Tester gratuitement'},
+             en:{how:'How it works',about:'About',blog:'Blog',cta:'Try for free'}};
+    var k=el.dataset.i18n.replace('nav-','');
+    if(nav[l]&&nav[l][k])el.textContent=nav[l][k];
+  });
+  try{localStorage.setItem('db_lang',l)}catch(e){}
+}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script></body>
 </html>

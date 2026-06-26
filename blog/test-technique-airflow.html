@@ -58,7 +58,11 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -67,13 +71,13 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="../about.html" data-fr="A propos" data-en="About">A propos</a>
   <a href="index.html">Blog</a>
 </div>
-<div class="nr">
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
   <button class="lb on" id="btn-fr" onclick="setLang('fr')">FR</button>
   <button class="lb" id="btn-en" onclick="setLang('en')">EN</button>
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Airflow" data-en="Airflow technical interview">Test technique Airflow</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique Airflow : ce qu'on evalue en entretien Data Engineer" data-en="Airflow technical interview: what we really assess in data hiring">Test technique Airflow : ce qu'on evalue en entretien Data Engineer</h1>
@@ -83,6 +87,8 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <div class="ab" id="ab"><p>Airflow orchestre des milliers de pipelines data en production. Concevoir un DAG robuste n'est pas la meme chose que lire un DAG existant.</p><h2 id="dg"><span class="sn">1</span>Comprendre un DAG</h2><div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce qu'un DAG dans Airflow ? Pourquoi doit-il etre acyclique ?</p></div><div class="cb"><code>with DAG(dag_id="pipeline", schedule="0 6 * * *",
          start_date=datetime(2025,1,1), catchup=False) as dag:
     task_a >> task_b >> [task_c, task_d] >> task_e</code></div><ul><li><strong>start_date et catchup</strong> — comportement du backfill automatique</li><li><strong>DAG runs vs task instances</strong></li></ul><h2 id="op"><span class="sn">2</span>Operateurs et hooks</h2><div class="sq"><div class="sl">Question discriminante</div><p>Difference entre un operateur et un hook ?</p></div><ul><li><strong>PythonOperator / BashOperator</strong> — les plus courants</li><li><strong>Sensors</strong> — attendent une condition (fichier, table, temps)</li><li><strong>Providers</strong> — packages AWS, GCP, dbt, Spark</li></ul><h2 id="dp"><span class="sn">3</span>Dependances et scheduling</h2><div class="sq"><div class="sl">Question discriminante</div><p>Comment une tache attend-elle la completion d'un DAG externe ?</p></div><ul><li><strong>ExternalTaskSensor</strong> — poll regulier, consomme un slot</li><li><strong>TriggerDagRunOperator</strong> — plus efficace mais couplage fort</li><li><strong>XComs</strong> — passer des donnees entre taches</li></ul><h2 id="pr"><span class="sn">4</span>Production : retry et alertes</h2><div class="sq"><div class="sl">Question discriminante</div><p>Un DAG critique echoue a 3h du matin. Qu'avez-vous mis en place ?</p></div><ul><li><strong>on_failure_callback</strong> — alerte Slack ou PagerDuty</li><li><strong>SLA Miss</strong> — alerte si une tache depasse son temps maximum</li><li><strong>Pools et queues</strong> — limiter la concurrence</li></ul><h2 id="av"><span class="sn">5</span>TaskFlow API et Dynamic tasks</h2><div class="sq"><div class="sl">Question discriminante Senior</div><p>Qu'est-ce que la TaskFlow API ? En quoi simplifie-t-elle les DAGs ?</p></div><ul><li><strong>@task decorator</strong> — syntaxe Python native Airflow 2.0+</li><li><strong>Dynamic task mapping</strong> — taches dynamiques selon les donnees</li><li><strong>Dataset-driven scheduling</strong> — declencher quand un dataset change</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Lire un DAG, PythonOperator, scheduling cron</td><td>Comprend catchup et backfill</td><td>Confond DAG et task</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Sensors, XComs, Variables, retry, providers</td><td>A configure des alertes, ExternalTaskSensor</td><td>N'a jamais configure de retry</td></tr><tr><td><span class="bd bs">Senior</span></td><td>TaskFlow API, dynamic tasks, SLAs, monitoring</td><td>Monitoring complet en prod, SLAs configures</td><td>Ne connait pas la TaskFlow API</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture multi-DAGs, dataset scheduling</td><td>A defini les standards de DAGs equipe</td><td>Ne peut pas expliquer les compromis de couplage</td></tr></tbody></table></div>
+</div>
+<div id="body-en" style="display:none"><div class="aw"><h2 id='dag'><span class='sn'>1</span>DAG: structure and best practices</h2><div class='sq'><div class='sl'>Key question</div><p>What is a DAG in Airflow? What are the rules for writing a well-designed DAG?</p></div><ul><li><strong>DAG (Directed Acyclic Graph)</strong> - task graph with dependencies. No cycles allowed.</li><li><strong>No heavy code at parse time</strong> - imports, DB connections and API calls must be inside tasks, not at the DAG level.</li><li><strong>Idempotency</strong> - a task re-run on the same date must produce the same result. Never use datetime.now() in tasks, use context['ds']</li><li><strong>Atomic tasks</strong> - each task does one thing. No monolithic tasks that extract + transform + load in one step</li><li><strong>catchup=False</strong> - by default. If catchup=True and start_date=2020, Airflow will create thousands of backfill runs on first deploy</li></ul><h2 id='operators'><span class='sn'>2</span>Main operators</h2><div class='sq'><div class='sl'>Key question</div><p>What operators do you use most? What is the difference between PythonOperator and BashOperator?</p></div><ul><li><strong>PythonOperator</strong> - execute a Python function. The most common. With TaskFlow API, replaced by @task</li><li><strong>BashOperator</strong> - execute a bash command. For shell scripts, dbt commands, CLI tools</li><li><strong>KubernetesPodOperator</strong> - run a Docker container on Kubernetes. Perfect isolation, custom dependencies per task</li><li><strong>BranchPythonOperator</strong> - conditional branching: return the task_id to execute next</li><li><strong>Sensors</strong> - wait for an external condition (file in S3, REST API, time). Poke mode vs reschedule mode</li></ul><h2 id='deps'><span class='sn'>3</span>Dependencies and scheduling</h2><div class='sq'><div class='sl'>Key question</div><p>How do you manage dependencies between tasks and between DAGs?</p></div><ul><li><strong>ExternalTaskSensor</strong> - wait for a task in another DAG to succeed. Avoids tight coupling between DAGs</li><li><strong>TriggerDagRunOperator</strong> - explicitly trigger another DAG. More controllable than ExternalTaskSensor</li><li><strong>Datasets (Airflow 2.4+)</strong> - data-driven scheduling: a DAG triggers when a dataset is updated by another DAG</li></ul><h2 id='prod'><span class='sn'>4</span>Production and monitoring</h2><div class='sq'><div class='sl'>Key question</div><p>How do you manage Airflow in production? What monitoring do you put in place?</p></div><ul><li><strong>SLA Miss</strong> - alert if a task exceeds its expected duration. Configure sla= on each critical task</li><li><strong>Callbacks</strong> - on_failure_callback, on_retry_callback for Slack/PagerDuty alerts</li><li><strong>Zombie tasks</strong> - tasks stuck in running state without a heartbeat. The scheduler detects and restarts them</li><li><strong>DB cleanup</strong> - the Airflow DB grows indefinitely without maintenance. Run airflow db clean regularly</li><li><strong>Prometheus + Grafana</strong> - expose StatsD metrics: task duration, success/failure rate, scheduler lag</li></ul><h2 id='nv'><span class='sn'>5</span>Level assessment grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>DAG structure, basic operators, CRON scheduling</td><td>Writes a functional DAG with PythonOperator, knows catchup</td><td>Has never written a DAG, confuses Airflow and Cron</td></tr><tr><td><span class='bd bm'>Confirmed</span></td><td>TaskFlow API, XCom, Sensors, ExternalTaskSensor</td><td>Uses TaskFlow, manages inter-DAG dependencies, configures failure callbacks</td><td>Does not know what XCom is, has never used a Sensor</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Executors, performance, CI/CD, production monitoring</td><td>Has deployed Airflow in production, managed performance issues, implemented CI/CD on DAGs</td><td>Cannot explain the difference between CeleryExecutor and KubernetesExecutor</td></tr></tbody></table></div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -110,5 +116,24 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+var _L='fr';
+var _D={fr:{h:"Test technique Airflow : ce qu'on evalue en entretien Data Engineer",d:"Les 5 dimensions d'un entretien Airflow : DAGs, operateurs, dependances, production, TaskFlow API.",i:""},en:{h:"Technical test Airflow: what we evaluate in a Data Engineer interview",d:"The 5 dimensions of an Airflow interview: DAGs, operators, dependencies, production, TaskFlow API.",i:"Airflow is the most widely used orchestrator for data pipelines. In interviews, we assess 5 key dimensions from DAG design to production management."}};
+function setLang(l){
+  _L=l;
+  document.getElementById('btn-fr').classList.toggle('active',l==='fr');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('body-fr').style.display=l==='fr'?'':'none';
+  document.getElementById('body-en').style.display=l==='en'?'':'none';
+  var h=document.querySelector('.ah');if(h)h.textContent=_D[l].h;
+  document.title=_D[l].h+' — Data Builder';
+  var dm=document.querySelector('meta[name=description]');if(dm)dm.content=_D[l].d;
+  var ai=document.querySelector('.ai p');if(!ai)ai=document.querySelector('.ai');if(ai)ai.textContent=_D[l].i;
+  var nav={fr:{how:'Comment ça marche',about:'À propos',blog:'Blog',cta:'Tester gratuitement'},
+           en:{how:'How it works',about:'About',blog:'Blog',cta:'Try for free'}};
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n.replace('nav-','');if(nav[l]&&nav[l][k])el.textContent=nav[l][k];});
+  try{localStorage.setItem('db_lang',l)}catch(e){}
+}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script></body>
 </html>

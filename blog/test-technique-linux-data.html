@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
 </style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -73,7 +73,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Linux / Bash" data-en="Linux / Bash technical interview">Test technique Linux / Bash</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer" data-en="Linux / Bash technical interview: what we really assess in data hiring">Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer</h1>
@@ -91,6 +91,24 @@ if [ -f "$FILE" ]; then
 else
     echo "Fichier introuvable"; exit 1
 fi</code></div><ul><li><strong>Variables, if/elif/else, boucles for et while</strong></li><li><strong>Exit codes</strong> — 0 = succes, non-zero = erreur</li><li><strong>Cron jobs</strong> — crontab -e</li></ul><h2 id="en"><span class="sn">4</span>Environnement et PATH</h2><div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce que la variable PATH ? Que se passe-t-il si une commande n'est pas dans PATH ?</p></div><ul><li><strong>.bashrc vs .bash_profile</strong> — quand chaque fichier est execute</li><li><strong>export</strong> — rendre une variable disponible aux sous-processus</li></ul><h2 id="ps"><span class="sn">5</span>Processus et monitoring</h2><div class="sq"><div class="sl">Question discriminante</div><p>Un processus Airflow semble bloque. Quelles commandes utilisez-vous ?</p></div><ul><li><strong>ps aux, top, htop</strong> — lister et monitorer les processus</li><li><strong>kill -9 PID</strong> — tuer un processus recalcitrant</li><li><strong>nohup &amp;</strong> — lancer en arriere-plan</li><li><strong>df et du</strong> — espace disque</li></ul><h2 id="nv"><span class="sn">6</span>Grille par niveau</h2><table class="lt"><thead><tr><th>Niveau</th><th>Maitrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Navigation, ls/cd/pwd, grep, cp/mv/rm</td><td>Comprend les pipes, cherche dans les logs</td><td>Ne sait pas ce qu'est PATH</td></tr><tr><td><span class="bd bm">Confirme</span></td><td>Scripts bash, cron, chmod, variables env</td><td>A ecrit des scripts avec conditions et boucles</td><td>N'a jamais ecrit un script bash</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Processus, monitoring, redirections, nohup</td><td>Diagnostique un processus bloque</td><td>Ne sait pas tuer un processus</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Administration systeme, securite, standards equipe</td><td>A mis en place des scripts de monitoring</td><td>Ne peut pas expliquer chmod 755</td></tr></tbody></table></div>
+</div>
+<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Linux / Bash" data-en="Linux / Bash technical interview">Linux / Bash technical interview</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer" data-en="Linux / Bash technical interview: what we really assess in data hiring">Linux / Bash technical interview: what we really assess in data hiring</h1>
+<p class="ai" data-fr="Linux est l'environnement de production de la quasi-totalite des infrastructures data. Voici comment evaluer la maitrise reelle du terminal." data-en="Linux is the production environment of virtually all data infrastructure. Here is how to assess real terminal proficiency.">Linux is the production environment of virtually all data infrastructure. Here is how to assess real terminal proficiency.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="7 min de lecture" data-en="7 min read">7 min read</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#nv1">Navigation</a></li><li><a href="#fi">Files</a></li><li><a href="#sh">Bash Scripts</a></li><li><a href="#en">Environment</a></li><li><a href="#ps">Processes</a></li><li><a href="#nv">Scoring grid</a></li></ol></div>
+<div class="ab" id="ab"><p>Linux is the production environment of virtually all data infrastructure. A Data Engineer who does not master the terminal is blocked on production servers.</p><h2 id="nv1"><span class="sn">1</span>Navigation and directory tree</h2><div class="sq"><div class="sl">Key question</div><p>Explain the Linux directory tree. What do /etc, /var, /home and /tmp contain?</p></div><ul><li><strong>/etc</strong> — system configuration</li><li><strong>/var</strong> — variable data (logs, databases)</li><li><strong>/home</strong> — user directories</li><li><strong>/tmp</strong> — temporary files</li></ul><div class="cb"><code>find /var/log -name "*.log" -mtime -1
+ls -lah | sort -k5 -rh | head -10</code></div><h2 id="fi"><span class="sn">2</span>File manipulation</h2><div class="sq"><div class="sl">Key question</div><p>You need to find all ERROR lines in a 2 GB log file. What command do you use?</p></div><div class="cb"><code>grep "ERROR" /var/log/app.log | wc -l
+grep "ERROR" /var/log/app.log | sort | uniq -c | sort -rn | head -20
+tail -f /var/log/app.log | grep --line-buffered "CRITICAL"</code></div><ul><li><strong>cat, head, tail -f, less</strong> — reading files</li><li><strong>grep -E, grep -v</strong> — search with regex</li><li><strong>pipes (|)</strong> — chaining commands</li><li><strong>chmod and chown</strong> — permissions and ownership</li></ul><h2 id="sh"><span class="sn">3</span>Bash Scripts</h2><div class="sq"><div class="sl">Key question</div><p>Write a bash script that checks whether a file exists and moves it to an archive folder.</p></div><div class="cb"><code>#!/bin/bash
+FILE="/data/incoming/export.csv"
+if [ -f "$FILE" ]; then
+    DATE=$(date +%Y%m%d)
+    mv "$FILE" "/data/archive/export_$DATE.csv"
+else
+    echo "File not found"; exit 1
+fi</code></div><ul><li><strong>Variables, if/elif/else, for and while loops</strong></li><li><strong>Exit codes</strong> — 0 = success, non-zero = error</li><li><strong>Cron jobs</strong> — crontab -e</li></ul><h2 id="en"><span class="sn">4</span>Environment and PATH</h2><div class="sq"><div class="sl">Key question</div><p>What is the PATH variable? What happens if a command is not in PATH?</p></div><ul><li><strong>.bashrc</div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
@@ -134,5 +152,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer":"Linux / Bash technical interview: what we really assess in data hiring";document.title=(l==="fr"?"Test technique Linux / Bash : ce qu'on evalue en entretien Data Engineer":"Linux / Bash technical interview: what we assess in Data Engineer hiring")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Les 5 dimensions d'un entretien Linux pour la data : navigation, fichiers, bash, environnement, processus.":"The 5 dimensions of a Linux interview for data: navigation, files, bash, environment, processes.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>

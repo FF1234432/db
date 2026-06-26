@@ -56,7 +56,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .fl{display:flex;gap:20px}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
 .fc{font-size:12px;color:#d1d5db}
 @media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}</style>
-</head>
+<style>.lang-sw{display:flex;gap:4px;margin-right:12px}.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}</style></head>
 <body>
 <nav>
 <a href="../index.html" class="nl">Data <span>Builder</span></a>
@@ -71,7 +71,7 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
   <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
 </div>
 </nav>
-<div class="aw">
+<div id="body-fr"><div class="aw">
 <div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Accueil</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker : quel outil pour quel profil ?</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Guide recrutement data</div>
 <h1 class="ah" data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker : quel outil pour quel profil ?</h1>
@@ -166,7 +166,37 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <li><strong>Courbe d apprentissage</strong> - Power BI : moderee pour les utilisateurs Excel. Tableau : faible pour l exploration visuelle. Looker : elevee (LookML), necessite des Data Analysts techniques</li>
 <li><strong>Total Cost of Ownership</strong> - Metabase (open source) : bas. Power BI Pro : 10 EUR/user/mois. Tableau : 70-140 USD/user/mois. Looker : enterprise, negotie au volume</li>
 <li><strong>Integration BI + Data Stack</strong> - Power BI s integre nativement avec Azure/Fabric. Looker avec BigQuery/GCP. Tableau est agnostique</li>
-</ul><div class="cb2"><h3>Vous recrutez un profil BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
+</ul></div>
+<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker: which tool for which profile?</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker: which tool for which profile?</h1>
+<p class="ai" data-fr="Les trois outils dominent le marché BI. Mais choisir le bon outil — ou évaluer un candidat sur le bon outil — nécessite de comprendre leurs différences réelles : modélisation, langage de calcul, gouvernance et coût." data-en="These three tools dominate the BI market. But choosing the right tool — or assessing a candidate on the right tool — requires understanding their real differences: modeling, calculation language, governance and cost.">These three tools dominate the BI market. But choosing the right tool — or assessing a candidate on the right tool — requires understanding their real differences: modeling, calculation language, governance and cost.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min read</span><span>·</span><span>Data Analyst · Analytics Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#connect">Connectivity and data</a></li>
+<li><a href="#model">Modeling</a></li>
+<li><a href="#calcul">Calculations and performance</a></li>
+<li><a href="#viz">Visualization and design</a></li>
+<li><a href="#gouv">Collaboration and governance</a></li>
+<li><a href="#cout">Costs and licensing</a></li>
+<li><a href="#choix">Which tool to choose?</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Power BI, Tableau and Looker are the three BI market leaders according to Gartner. In interviews, the assessment covers not only technical mastery of the tool, but also the candidate's ability to position it in a given context: Microsoft ecosystem, Google Cloud stack, or the need for a centralized semantic layer.</p>
+
+<h2 id="connect"><span class="sn">1</span>Connectivity and data preparation</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>In which case would you choose a Live connection over an Extract in Tableau? And DirectQuery over Import in Power BI?</p></div>
+<table class="lt"><thead><tr><th></th><th>Power BI</th><th>Tableau</th><th>Looker</th></tr></thead><tbody>
+<tr><td><strong>Connection mode</strong></td><td>Import, DirectQuery, Dual</td><td>Live Connection, Extract (.hyper)</td><td>Live only (BigQuery/GCP)</td></tr>
+<tr><td><strong>Integrated preparation</strong></td><td>Power Query (M language)</td><td>Tableau Prep (separate tool)</td><td>LookML (separate tool)</td></tr>
+<tr><td><strong>Native integration</strong></td><td>Microsoft ecosystem (Azure, Excel, Teams)</td><td>Wide (Snowflake, BQ, Redshift, SAP...)</td><td>Google Cloud (native BigQuery)</td></tr>
+</tbody></table>
+<ul>
+<li><strong>Power BI Import</strong> — copies data into memory (VertiPaq), maximum performance, scheduled refresh</li>
+<li><strong>DirectQuery</strong> — queries the source in real time, no local copy, performance dependent on the source</li>
+<li><strong>Tableau Extract</strong> — compressed .hyper file, excellent performance, disconnected from the source</li>
+<li><strong>Looker Live</strong> — always connected, leverages BigQuery's power for large volumes</li>
+</ul>
+<div class="cl"><p><strong>Warning signal:</strong> a candidate who uses DirectQuery by default without justificatio</p></div></div></div>
+<div class="cb2"><h3>Vous recrutez un profil BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
 </div>
 <footer><div class="fi">
 <div class="fl">
@@ -188,5 +218,8 @@ function setLang(l){
 }
 (function(){const l=localStorage.getItem('db_lang')||'fr';if(l==='en')setLang('en');})();
 </script>
-</body>
+<script>
+function setLang(l){document.getElementById("btn-fr").classList.toggle("active",l==="fr");document.getElementById("btn-en").classList.toggle("active",l==="en");document.getElementById("body-fr").style.display=l==="fr"?"":"none";document.getElementById("body-en").style.display=l==="en"?"":"none";var h=document.querySelector(".ah");if(h)h.textContent=l==="fr"?"Power BI vs Tableau vs Looker : quel outil pour quel profil ?":"Power BI vs Tableau vs Looker: which tool for which profile?";document.title=(l==="fr"?"Power BI vs Tableau vs Looker : quel outil pour quel profil ?":"Power BI vs Tableau vs Looker: which tool for which profile?")+' — Data Builder';var dm=document.querySelector("meta[name=description]");if(dm)dm.content=l==="fr"?"Comparaison approfondie Power BI, Tableau et Looker : connectivit\u00e9, mod\u00e9lisation, DAX vs LookML, performance, co\u00fbt et gouvernance.":"In-depth comparison of Power BI, Tableau and Looker: connectivity, modeling, DAX vs LookML, performance, cost and governance.";var ai=document.querySelector(".ai p")||document.querySelector(".ai");if(ai)ai.textContent=l==="fr"?"":"";document.querySelectorAll("[data-i18n]").forEach(function(el){var n={fr:{how:"Comment ça marche",about:"À propos",blog:"Blog",cta:"Tester gratuitement"},en:{how:"How it works",about:"About",blog:"Blog",cta:"Try for free"}};var k=el.dataset.i18n.replace("nav-","");if(n[l]&&n[l][k])el.textContent=n[l][k];});try{localStorage.setItem("db_lang",l)}catch(e){}}
+try{var s=localStorage.getItem("db_lang");if(s&&s!=="fr")setLang(s);}catch(e){}
+</script></body>
 </html>
