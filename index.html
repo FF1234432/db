@@ -4,157 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Data Builder · Évaluation technique data externalisée</title>
-<meta name="description" content="Data Builder conduit les entretiens techniques data à votre place. 14 technos, 1h en live, rapport d'évaluation sous 24h."/>
+<meta name="description" content="Data Builder conduit les entretiens techniques data à votre place. 14 technos, 1h en live, rapport GO/NO-GO sous 48h."/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --p: #4c1d95;
-  --p-soft: #f5f0ff;
-  --p-border: #e8dff7;
-  --black: #0f0e0e;
-  --white: #fff;
-  --off: #f9f9fb;
-  --g100: #f3f4f6;
-  --g400: #9ca3af;
-  --g500: #6b7280;
-  --g600: #4b5563;
-  --border: #e5e7eb;
-  --r: 12px;
-  --max: 860px;
-}
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', -apple-system, sans-serif; background: var(--white); color: var(--black); -webkit-font-smoothing: antialiased; line-height: 1.6; }
-
-/* NAV */
-nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; padding: 0 32px; justify-content: space-between; }
-.nav-logo { font-size: 15px; font-weight: 700; text-decoration: none; color: var(--black); letter-spacing: -0.02em; }
-.nav-logo b { color: var(--p); }
-.nav-links { display: flex; gap: 24px; align-items: center; }
-.nav-links a { font-size: 13px; color: var(--g500); text-decoration: none; font-weight: 450; transition: color .15s; }
-.nav-links a:hover, .nav-links a.active { color: var(--black); }
-.nav-right { display: flex; align-items: center; gap: 8px; }
-.lang-btn { font-size: 12px; font-weight: 600; color: var(--g400); background: none; border: none; cursor: pointer; font-family: inherit; padding: 4px 8px; border-radius: 6px; transition: all .15s; }
-.lang-btn.active { color: var(--p); }
-.btn-nav { font-size: 13px; background: var(--p); color: #fff; padding: 7px 16px; border-radius: 99px; text-decoration: none; font-weight: 500; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s; }
-.btn-nav:hover { opacity: .85; }
-
-/* BUTTONS */
-.btn-p { background: var(--p); color: #fff; border: none; padding: 11px 24px; border-radius: 99px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; transition: opacity .15s; }
-.btn-p:hover { opacity: .85; }
-.btn-o { background: transparent; color: var(--black); border: 1px solid var(--border); padding: 11px 22px; border-radius: 99px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block; transition: border-color .15s; }
-.btn-o:hover { border-color: var(--p); }
-.btn-w { background: #fff; color: var(--p); border: none; padding: 12px 30px; border-radius: 99px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; }
-.btn-w:hover { opacity: .9; }
-.btn-book { background: var(--black); color: #fff; border: none; padding: 9px 20px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; transition: opacity .15s; text-decoration: none; display: inline-block; }
-.btn-book:hover { opacity: .8; }
-
-/* COOKIE */
-.cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; background: #1a1a1a; color: #e5e7eb; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; border-top: 1px solid #333; }
-.cookie-banner.hidden { display: none; }
-.cookie-text a { color: #c4b5fd; text-decoration: underline; }
-.cookie-actions { display: flex; gap: 8px; }
-.cookie-accept { background: var(--p); color: #fff; border: none; padding: 7px 16px; border-radius: 99px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; }
-.cookie-refuse { background: transparent; color: var(--g400); border: 1px solid #4b5563; padding: 7px 14px; border-radius: 99px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; }
-
-/* PAGE HERO (inner pages) */
-.page-hero { padding: 64px 32px 48px; max-width: var(--max); margin: 0 auto; border-bottom: 1px solid var(--border); }
-.page-hero h1 { font-size: clamp(24px,4vw,34px); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 12px; line-height: 1.15; }
-.page-hero p { font-size: 15px; color: var(--g500); max-width: 500px; line-height: 1.7; }
-.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--p); margin-bottom: 14px; }
-
-/* PAGE BODY */
-.page-body { padding: 52px 32px 80px; max-width: var(--max); margin: 0 auto; }
-.page-body h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; margin: 40px 0 12px; color: var(--black); }
-.page-body h2:first-child { margin-top: 0; }
-.page-body p { font-size: 14px; color: var(--g500); line-height: 1.75; margin-bottom: 14px; }
-.page-body ul { padding-left: 18px; margin-bottom: 14px; }
-.page-body ul li { font-size: 14px; color: var(--g500); line-height: 1.7; margin-bottom: 6px; }
-.page-body strong { color: var(--black); font-weight: 600; }
-
-/* STEPS */
-.steps-list { display: flex; flex-direction: column; margin-top: 24px; }
-.step-row { display: flex; gap: 18px; padding-bottom: 28px; }
-.step-row:last-child { padding-bottom: 0; }
-.step-left { display: flex; flex-direction: column; align-items: center; }
-.step-num-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--p); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.step-line { width: 1px; flex: 1; background: var(--p-border); margin-top: 6px; }
-.step-row:last-child .step-line { display: none; }
-.step-body { padding-top: 4px; flex: 1; }
-.step-title { font-size: 15px; font-weight: 600; color: var(--black); margin-bottom: 5px; }
-.step-desc { font-size: 13px; color: var(--g500); line-height: 1.65; }
-.step-badge { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; background: #d4f5e9; color: #0e7c5a; }
-
-/* HOW GRID */
-.how-grid { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
-.how-card { padding: 24px; background: var(--white); }
-.how-card:not(:last-child) { border-right: 1px solid var(--border); }
-.how-n { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--p); margin-bottom: 12px; }
-.how-t { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-.how-d { font-size: 13px; color: var(--g500); line-height: 1.6; }
-.how-badge { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 600; background: #d4f5e9; color: #0e7c5a; padding: 3px 10px; border-radius: 99px; }
-
-/* WHY */
-.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
-.why-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
-.why-t { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-.why-d { font-size: 13px; color: var(--g500); line-height: 1.55; }
-
-/* QUOTE */
-.quote-card { border-left: 3px solid var(--p-border); padding: 4px 0 4px 24px; }
-.qt { font-size: 16px; line-height: 1.65; font-style: italic; margin-bottom: 14px; }
-.qa { font-size: 13px; font-weight: 600; }
-.qr { font-size: 12px; color: var(--g400); margin-top: 2px; }
-
-/* CTA SECTION */
-.cta-section { background: var(--p); padding: 64px 32px; text-align: center; }
-.cta-section h2 { font-size: clamp(18px,3.5vw,28px); font-weight: 700; letter-spacing: -0.02em; color: #fff; margin-bottom: 8px; }
-.cta-section p { font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 24px; }
-.cta-note { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 10px; }
-
-/* CTA BOX (inner pages) */
-.cta-box { background: var(--p-soft); border: 1px solid var(--p-border); border-radius: var(--r); padding: 28px; margin-top: 44px; }
-.cta-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 7px; }
-.cta-box p { font-size: 13px; color: var(--g500); margin-bottom: 16px; }
-.cta-box-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-calendly { background: var(--p); color: #fff; padding: 10px 22px; border-radius: 99px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block; transition: opacity .15s; }
-.btn-calendly:hover { opacity: .85; }
-
-/* FOOTER */
-footer { border-top: 1px solid var(--border); padding: 24px 32px; }
-.footer-inner { max-width: var(--max); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
-.footer-links a { font-size: 13px; color: var(--g400); text-decoration: none; }
-.footer-links a:hover { color: var(--black); }
-.footer-copy { font-size: 12px; color: #d1d5db; }
-
-/* MODAL */
-.mo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
-.mo.on { display: flex; }
-.md { background: #fff; border-radius: var(--r); padding: 30px; max-width: 420px; width: 100%; }
-.md h3 { font-size: 17px; font-weight: 700; margin-bottom: 5px; }
-.md-sub { font-size: 13px; color: var(--g500); margin-bottom: 20px; }
-.fg { margin-bottom: 11px; }
-.fg label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px; color: var(--g600); }
-.fg input, .fg select, .fg textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--black); background: #fff; outline: none; transition: border-color .15s; }
-.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--p); }
-.fg textarea { resize: vertical; min-height: 68px; }
-.ma { display: flex; gap: 8px; margin-top: 16px; }
-.btn-cancel { flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: transparent; font-size: 13px; cursor: pointer; font-family: inherit; color: var(--g500); }
-.btn-sub { flex: 2; padding: 9px; background: var(--p); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
-
-@media (max-width: 680px) {
-  .nav-links { display: none; }
-  .how-grid, .why-grid { grid-template-columns: 1fr; }
-  .how-card:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
-}
-@media (max-width: 560px) {
-  nav { padding: 0 20px; }
-  .page-hero, .page-body { padding-left: 20px; padding-right: 20px; }
-}
-
-</style>
+<link rel="stylesheet" href="styles.css"/>
 <!-- GTM -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
 <script>
@@ -210,55 +63,16 @@ footer { border-top: 1px solid var(--border); padding: 24px 32px; }
   .panel-foot { flex-direction: column; align-items: flex-start; }
 }
 </style>
-
-<style>
-/* Inline fallback for chips */
-.eval{background:#f9f9fb;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:48px 32px}
-.eval-inner{max-width:860px;margin:0 auto}
-.eval-q{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;margin-bottom:20px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
-.chip{background:#fff;border:1px solid #e5e7eb;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:500;color:#4b5563;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
-.chip:hover{border-color:#4c1d95;color:#4c1d95}
-.chip.on{background:#4c1d95;border-color:#4c1d95;color:#fff}
-.panel{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 32px}
-.panel h3{font-size:17px;font-weight:700;color:#4c1d95;margin-bottom:14px}
-.panel ul{list-style:none;padding:0;margin:0}
-.panel li{padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:14px;color:#4b5563;line-height:1.5}
-.panel li:last-child{border-bottom:none}
-</style>
-<style>
-.chip { display: inline-flex; align-items: center; gap: 6px; }
-.chip::before { content: ''; display: inline-block; width: 16px; height: 16px; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
-[data-id="sql"]::before      { background-image: url('https://cdn.simpleicons.org/postgresql/336791'); }
-[data-id="powerbi"]::before  { background-image: url('https://cdn.simpleicons.org/powerbi/F2C811'); }
-[data-id="tableau"]::before  { background-image: url('https://cdn.simpleicons.org/tableau/E97627'); }
-[data-id="looker"]::before   { background-image: url('https://cdn.simpleicons.org/looker/4285F4'); }
-[data-id="python"]::before   { background-image: url('https://cdn.simpleicons.org/python/3776AB'); }
-[data-id="powerapps"]::before     { background-image: url('https://cdn.simpleicons.org/microsoftpowerapps/742774'); }
-[data-id="powerautomate"]::before { background-image: url('https://cdn.simpleicons.org/microsoftpowerautomate/0066FF'); }
-[data-id="spark"]::before    { background-image: url('https://cdn.simpleicons.org/apachespark/E25A1C'); }
-[data-id="airflow"]::before  { background-image: url('https://cdn.simpleicons.org/apacheairflow/017CEE'); }
-[data-id="dbt"]::before      { background-image: url('https://cdn.simpleicons.org/dbt/FF694A'); }
-[data-id="aws"]::before      { background-image: url('https://cdn.simpleicons.org/amazonaws/FF9900'); }
-[data-id="git"]::before      { background-image: url('https://cdn.simpleicons.org/git/F05032'); }
-[data-id="bigquery"]::before { background-image: url('https://cdn.simpleicons.org/googlebigquery/4285F4'); }
-[data-id="snowflake"]::before{ background-image: url('https://cdn.simpleicons.org/snowflake/29B5E8'); }
-</style>
-
-<style>
-.chip { display: inline-flex; align-items: center; gap: 7px; }
-.chip-logo { display: inline-block; vertical-align: middle; flex-shrink: 0; }
-</style>
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <nav>
-  <a href="index.html" class="nav-logo">Data <b>Builder</b></a>
+  <a href="/" class="nav-logo">Data <b>Builder</b></a>
   <div class="nav-links">
-    <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
-    <a href="about.html" data-i18n="nav-about">À propos</a>
-    <a href="blog/index.html" data-i18n="nav-blog">Blog</a>
+    <a href="/how" data-i18n="nav-how">Comment ça marche</a>
+    <a href="/about" data-i18n="nav-about">À propos</a>
+    <a href="/blog" data-i18n="nav-blog">Blog</a>
   </div>
   <div class="nav-right">
     <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
@@ -271,17 +85,17 @@ footer { border-top: 1px solid var(--border); padding: 24px 32px; }
 <section class="hero">
   <div>
     <div class="hero-eyebrow" data-i18n="hero-eyebrow">Évaluation technique data externalisée</div>
-    <h1 class="hero-h1" data-i18n="hero-h1">Vos candidats data évalués par de vrais experts.</h1>
-    <p class="hero-sub" data-i18n="hero-sub">Des praticiens data conduisent les entretiens techniques à votre place. Un rapport d'évaluation détaillé sous 24h.</p>
+    <h1 class="hero-h1" data-i18n="hero-h1">Nous évaluons ce que vos équipes RH ne peuvent pas évaluer.</h1>
+    <p class="hero-sub" data-i18n="hero-sub">Des praticiens data conduisent les entretiens techniques à votre place. Rapport GO&nbsp;/ NO-GO sous 48h.</p>
     <div class="hero-actions">
       <button class="btn-p" onclick="openModal()" data-i18n="hero-cta1">Tester gratuitement</button>
-      <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-o" data-i18n="hero-cta2">Prendre rendez-vous</a>
+      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-o" data-i18n="hero-cta2">Prendre rendez-vous</a>
     </div>
   </div>
   <div class="hero-right">
     <div class="stat"><div class="stat-n">1h</div><div class="stat-l" data-i18n="stat1">entretien live avec le candidat</div></div>
     <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-i18n="stat2">technos data couvertes</div></div>
-    <div class="stat"><div class="stat-n">24h</div><div class="stat-l" data-i18n="stat3">rapport d'évaluation sous 24h</div></div>
+    <div class="stat"><div class="stat-n">48h</div><div class="stat-l" data-i18n="stat3">rapport GO / NO-GO garanti</div></div>
     <div class="stat"><div class="stat-n">100%</div><div class="stat-l" data-i18n="stat4">adapté à votre contexte</div></div>
   </div>
 </section>
@@ -304,7 +118,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 32px; }
     <div class="how-grid">
       <div class="how-card"><div class="how-n">01</div><div class="how-t" data-i18n="how1t">Brief</div><div class="how-d" data-i18n="how1d">Vous décrivez le poste et le niveau attendu. On adapte la grille d'évaluation en conséquence.</div></div>
       <div class="how-card"><div class="how-n">02</div><div class="how-t" data-i18n="how2t">Entretien live</div><div class="how-d" data-i18n="how2d">Un expert data conduit l'entretien avec le candidat. 1h, en visio, sur les vraies technos du poste.</div></div>
-      <div class="how-card"><div class="how-n">03</div><div class="how-t" data-i18n="how3t">Rapport</div><div class="how-d" data-i18n="how3d">Scorecard par compétence, rapport d'évaluation détaillé, points forts et zones de risque.</div><div class="how-badge" data-i18n="how3badge">Sous 24h ouvrés</div></div>
+      <div class="how-card"><div class="how-n">03</div><div class="how-t" data-i18n="how3t">Rapport</div><div class="how-d" data-i18n="how3d">Scorecard par compétence, GO&nbsp;/ NO-GO motivé, points forts et zones de risque.</div><div class="how-badge" data-i18n="how3badge">Sous 48h ouvrés</div></div>
     </div>
   </div>
 </section>
@@ -345,9 +159,9 @@ footer { border-top: 1px solid var(--border); padding: 24px 32px; }
 <footer>
   <div class="footer-inner">
     <div class="footer-links">
-      <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
-      <a href="about.html" data-i18n="nav-about">À propos</a>
-      <a href="cgu.html">CGU</a>
+      <a href="/how" data-i18n="nav-how">Comment ça marche</a>
+      <a href="/about" data-i18n="nav-about">À propos</a>
+      <a href="/cgu">CGU</a>
       <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
     </div>
     <div class="footer-copy">© 2025 Data Builder</div>
@@ -385,7 +199,7 @@ footer { border-top: 1px solid var(--border); padding: 24px 32px; }
 
 <!-- COOKIE -->
 <div class="cookie-banner" id="cookie-banner">
-  <div class="cookie-text"><span data-i18n="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span> <a href="cgu.html" data-i18n="cookie-link">En savoir plus</a></div>
+  <div class="cookie-text"><span data-i18n="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span> <a href="/cgu" data-i18n="cookie-link">En savoir plus</a></div>
   <div class="cookie-actions">
     <button class="cookie-refuse" onclick="refuseCookies()" data-i18n="cookie-refuse">Refuser</button>
     <button class="cookie-accept" onclick="acceptCookies()" data-i18n="cookie-accept">Accepter</button>
@@ -398,17 +212,17 @@ const T = {
   fr: {
     'nav-how':'Comment ça marche','nav-about':'À propos','nav-blog':'Blog','nav-cta':'Prendre rendez-vous',
     'hero-eyebrow':'Évaluation technique data externalisée',
-    'hero-h1':'Vos candidats data évalués par de vrais experts.',
-    'hero-sub':'Des praticiens data conduisent les entretiens techniques à votre place. Rapport d\'évaluation détaillé sous 24h.',
+    'hero-h1':'Nous évaluons ce que vos équipes RH ne peuvent pas évaluer.',
+    'hero-sub':'Des praticiens data conduisent les entretiens techniques à votre place. Rapport GO\u00a0/ NO-GO sous 48h.',
     'hero-cta1':'Tester gratuitement','hero-cta2':'Prendre rendez-vous',
-    'stat1':'entretien live avec le candidat','stat2':'technos data couvertes','stat3':'rapport d\'évaluation sous 24h','stat4':'adapté à votre contexte',
+    'stat1':'entretien live avec le candidat','stat2':'technos data couvertes','stat3':'rapport GO / NO-GO garanti','stat4':'adapté à votre contexte',
     'eval-q':'SUR QUELLE TECHNOLOGIE RECRUTEZ-VOUS\u00a0?',
-    'eval-label':'Ce qu\'on évalue','eval-note':'',
+    'eval-label':'Ce qu\'on évalue','eval-note':'Le niveau est ajusté lors du brief avant chaque entretien',
     'eval-footer-prefix':'Vous recrutez sur','eval-footer-suffix':'\u00a0?','eval-book':'Réserver',
     'how-label':'Processus','how-title':'Trois étapes, zéro friction','how-sub':'Vos équipes n\'ont pas à se mobiliser. Elles reçoivent le rapport.',
     'how1t':'Brief','how1d':'Vous décrivez le poste et le niveau attendu. On adapte la grille en conséquence.',
     'how2t':'Entretien live','how2d':'Un expert data conduit l\'entretien avec le candidat. 1h, en visio, sur les vraies technos du poste.',
-    'how3t':'Rapport','how3d':'Scorecard par compétence, rapport d'évaluation détaillé, points forts identifiés et zones de risque.','how3badge':'Sous 24h ouvrés',
+    'how3t':'Rapport','how3d':'Scorecard par compétence, GO\u00a0/ NO-GO motivé, points forts et zones de risque.','how3badge':'Sous 48h ouvrés',
     'why-label':'Pourquoi Data Builder','why-title':'Ce que ça change concrètement',
     'why1t':'Vos équipes ne sont pas mobilisées','why1d':'Un entretien technique prend 2h à un senior data — préparation, passation, débriefing. On prend ça en charge.',
     'why2t':'Mêmes critères pour tous les candidats','why2d':'Une grille standardisée, appliquée par le même expert. Vous comparez objectivement.',
@@ -424,17 +238,17 @@ const T = {
   en: {
     'nav-how':'How it works','nav-about':'About','nav-blog':'Blog','nav-cta':'Book a call',
     'hero-eyebrow':'Outsourced data technical assessment',
-    'hero-h1':'Your data candidates assessed by real experts.',
-    'hero-sub':'Data practitioners conduct technical interviews on your behalf. Detailed assessment report within 24h.',
+    'hero-h1':'We assess what your HR teams can\'t assess.',
+    'hero-sub':'Data practitioners conduct technical interviews on your behalf. GO\u00a0/ NO-GO report within 48h.',
     'hero-cta1':'Try for free','hero-cta2':'Book a call',
-    'stat1':'live interview with the candidate','stat2':'technologies covered','stat3':'assessment report within 24h','stat4':'tailored to your context',
+    'stat1':'live interview with the candidate','stat2':'technologies covered','stat3':'GO / NO-GO report guaranteed','stat4':'tailored to your context',
     'eval-q':'WHICH TECHNOLOGY ARE YOU HIRING FOR?',
-    'eval-label':'What we assess','eval-note':'',
+    'eval-label':'What we assess','eval-note':'Level adjusted during the brief before each interview',
     'eval-footer-prefix':'Hiring for','eval-footer-suffix':'?','eval-book':'Book',
     'how-label':'Process','how-title':'Three steps, zero friction','how-sub':'Your teams don\'t need to be involved. They receive the report.',
     'how1t':'Brief','how1d':'You describe the role and expected level. We adapt the assessment framework accordingly.',
     'how2t':'Live interview','how2d':'A data expert conducts the technical interview with the candidate. 1h, remote, on the actual tech stack.',
-    'how3t':'Report','how3d':'Scorecard by skill, motivated recommendation, identified strengths and risk areas.','how3badge':'Within 48 business hours',
+    'how3t':'Report','how3d':'Scorecard by skill, reasoned GO\u00a0/ NO-GO, strengths and risk areas.','how3badge':'Within 48 business hours',
     'why-label':'Why Data Builder','why-title':'What actually changes',
     'why1t':'Your teams aren\'t pulled in','why1d':'A technical interview takes 2h from a senior data engineer — prep, interview, debrief. We handle all of it.',
     'why2t':'Same criteria for every candidate','why2d':'A standardised framework, applied by the same expert. You compare objectively.',
@@ -466,7 +280,7 @@ function setLang(l) {
 // ── TECHNO DATA ───────────────────────────────────────────────────────────────
 const DATA = {
   fr: [
-    { id:'sql', name:'SQL', skills:['Joins : INNER, LEFT, FULL, CROSS, SELF JOIN','CTEs et requêtes structurées','Agrégations simples et avancées : GROUPING SETS, FILTER','Window functions : SUM OVER, AVG OVER, partitionnement','RANK, DENSE_RANK, ROW_NUMBER — différences et cas d\'usage','PIVOT et UNPIVOT','LAG, COALESCE, CONCAT, gestion des dates'] },
+    { id:'sql', name:'SQL', skills:['Joins à la perfection — y compris CROSS JOIN & SELF JOIN','CTEs et requêtes structurées','Agrégations simples et avancées : GROUPING SETS, FILTER','Window functions : SUM OVER, AVG OVER, partitionnement','RANK, DENSE_RANK, ROW_NUMBER — différences et cas d\'usage','PIVOT et UNPIVOT','LAG, COALESCE, CONCAT, gestion des dates'] },
     { id:'powerbi', name:'Power BI', skills:['Modélisation en étoile : faits, dimensions, relations, cardinalité','DAX : CALCULATE, ALL, ALLEXCEPT, SUMX, RANKX','Time intelligence : YTD, MTD, SAMEPERIODLASTYEAR, N-1','Power Query (M) : transformations, jointures, pivot/unpivot','Row-Level Security et gestion des accès','Optimisation : DirectQuery vs Import, VertiPaq Analyzer'] },
     { id:'tableau', name:'Tableau', skills:['LOD Expressions : FIXED, INCLUDE, EXCLUDE','Calculs de table : running total, % du total, rank','Sets, groupes et paramètres pour les vues dynamiques','Blending vs Join vs Relationship : cas d\'usage','Optimisation : extraits Hyper, user filters','Tableau Prep pour la préparation des données'] },
     { id:'looker', name:'Looker', skills:['Structure LookML : views, dimensions, measures, explores','Types de dimensions et agrégations (count_distinct, sum, average)','Jointures dans un explore et fan-out problems','Derived Tables : SQL PDT et native PDT','Symmetrical aggregates pour éviter les doubles-comptages','Access grants et Row-Level Security'] },
@@ -508,14 +322,8 @@ function buildChips() {
   DATA[LANG].forEach(t => {
     const btn = document.createElement('button');
     btn.className = 'chip' + (ACTIVE === t.id ? ' on' : '');
+    btn.textContent = t.name;
     btn.dataset.id = t.id;
-    btn.innerHTML = '<img class="chip-logo" src="https://cdn.simpleicons.org/' + ({
-      sql:'postgresql/336791', powerbi:'powerbi/F2C811', tableau:'tableau/E97627',
-      looker:'looker/4285F4', python:'python/3776AB', powerapps:'microsoftpowerapps/742774',
-      powerautomate:'microsoftpowerautomate/0066FF', spark:'apachespark/E25A1C',
-      airflow:'apacheairflow/017CEE', dbt:'dbt/FF694A', aws:'amazonaws/FF9900',
-      git:'git/F05032', bigquery:'googlebigquery/4285F4', snowflake:'snowflake/29B5E8'
-    }[t.id] || t.id) + '" width="16" height="16" alt="" onerror="this.style.display='none'">' + t.name;
     btn.addEventListener('click', () => {
       ACTIVE = t.id;
       buildChips();
@@ -547,11 +355,9 @@ function renderPanel(id) {
 }
 
 // Init: SQL selected by default
-document.addEventListener('DOMContentLoaded', function() {
-  ACTIVE = 'sql';
-  buildChips();
-  renderPanel('sql');
-});
+ACTIVE = 'sql';
+buildChips();
+renderPanel('sql');
 
 // ── LANG ──────────────────────────────────────────────────────────────────────
 function setLang(l) {
