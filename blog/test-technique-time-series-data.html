@@ -165,7 +165,8 @@ anomalies = detector.predict(X_test_features)  # 1 = anomalie</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Décomposition, stationnarité, Prophet basique</td><td>Teste la stationnarité avant ARIMA, a utilisé Prophet</td><td>Applique KFold aléatoire à une série temporelle</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>ARIMA tuning, détection d anomalies, features temporelles pour ML</td><td>Choisit entre ARIMA et Prophet selon le contexte, détecte les anomalies</td><td>Ne sait pas ce qu est la stationnarité</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='decomp'><span class='sn'>1</span>Decomposition: trend, seasonality, residual</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 components of a time series? How do you extract them?</p></div><div class='cb'><code>from statsmodels.tsa.seasonal import seasonal_decompose
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='decomp'><span class='sn'>1</span>Decomposition: trend, seasonality, residual</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 components of a time series? How do you extract them?</p></div><div class='cb'><code>from statsmodels.tsa.seasonal import seasonal_decompose
 import pandas as pd
 
 df = pd.read_csv('sales.csv', parse_dates=['date'], index_col='date')
@@ -194,7 +195,7 @@ if p_value < 0.05:
     print('Stationary (rejects H0)')
 else:
     print('NOT stationary - differencing required')
-    df_diff = df['revenue'].diff().dropna()  # first-order differencing
+    df_diff = df['revenue'].diff().dropna()  # order-1 differencing
     result_diff = adfuller(df_diff)
     print(f'After differencing: p={result_diff[1]:.4f}')</code></div><ul><li><strong>Stationarity</strong> — mean, variance and autocorrelation are constant over time</li><li><strong>ARIMA requires</strong> — a stationary series. Differencing (d in ARIMA) makes the series stationary</li></ul><h2 id='arima'><span class='sn'>3</span>ARIMA: understanding the parameters</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What do the parameters p, d, q mean in ARIMA(p,d,q)?</p></div><div class='cb'><code>from statsmodels.tsa.arima.model import ARIMA
 from pmdarima import auto_arima
@@ -216,10 +217,10 @@ print(model_auto.summary())
 # Manual ARIMA
 model = ARIMA(df['revenue'], order=(2, 1, 1))
 fitted = model.fit()
-predictions = fitted.forecast(steps=12)  # next 12 steps</code></div><h2 id='prophet'><span class='sn'>4</span>Prophet: practical prediction</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Prophet often preferred over ARIMA for business time series?</p></div><div class='cb'><code>from prophet import Prophet
+predictions = fitted.forecast(steps=12)  # next 12 steps</code></div><h2 id='prophet'><span class='sn'>4</span>Prophet: practical forecasting</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Prophet often preferred over ARIMA for business time series?</p></div><div class='cb'><code>from prophet import Prophet
 import pandas as pd
 
-# Prophet format: 'ds' (date) and 'y' (value) columns
+# Prophet format: columns 'ds' (date) and 'y' (value)
 df_prophet = df.reset_index().rename(columns={'date': 'ds', 'revenue': 'y'})
 
 model = Prophet(
@@ -236,7 +237,71 @@ model.add_country_holidays(country_name='FR')
 # Add custom seasonality
 model.add_seasonality(name='quarterly', period=91.25, fourier_order=5)
 
-m</code></div></div>
+model.fit(df_prophet)
+future = model.make_future_dataframe(periods=52, freq='W')
+forecast = model.predict(future)</code></div><ul><li><strong>Prophet vs ARIMA</strong> — Prophet automatically handles public holidays, trend changes, and multiple seasonalities. More robust on business data</li><li><strong>Limitation</strong> — less effective on series with strong autocorrelation or complex structures</li></ul><h2 id='anomaly'><span class='sn'>5</span>Temporal anomaly detection</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you detect anomalies in a time series?</p></div><div class='cb'><code>import numpy as np
+from sklearn.ensemble import IsolationForest
+
+# Method 1: Z-score on the differenced series
+df['diff'] = df['revenue'].diff()
+df['z_score'] = (df['diff'] - df['diff'].mean()) / df['diff'].std()
+anomalies_z = df[df['z_score'].abs() > 3]
+
+# Method 2: Prophet residuals
+forecast = model.predict(df_prophet)
+df_prophet['yhat'] = forecast['yhat']
+df_prophet['residual'] = df_prophet['y'] - df_prophet['yhat']
+threshold = df_prophet['residual'].std() * 3
+anomalies_prophet = df_prophet[df_prophet['residual'].abs() > threshold]
+
+# Method 3: Multivariate Isolation Forest
+features = df[['revenue', 'volume', 'avg_basket']].values
+iso = IsolationForest(contamination=0.02, random_state=42)
+df['anomaly'] = iso.fit_predict(features)  # -1 = anomaly</code></div><h2 id='features'><span class='sn'>6</span>Temporal features for ML models</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you encode time for non-time-series ML models?</p></div><ul><li><strong>Lag features</strong> — value at t-1, t-7, t-30 (yesterday, last week, last month)</li><li><strong>Rolling statistics</strong> — rolling mean, rolling standard deviation, min/max over N days</li><li><strong>Cyclical encoding</strong> — sin/cos for month, day of week (avoids the 12→1 discontinuity)</li><li><strong>Calendar features</strong> — is_weekend, is_holiday, day_of_week, quarter, is_month_end</li><li><strong>Differences</strong> — growth vs previous period (revenue_t / revenue_t-1 - 1)</li></ul>
+<div class='cb'><code>import pandas as pd
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from prophet import Prophet
+from sklearn.metrics import mean_absolute_percentage_error
+
+# ARIMA/SARIMA for seasonal series
+model_sarima = SARIMAX(train, order=(1,1,1), seasonal_order=(1,1,1,7))  # weekly seasonality
+results = model_sarima.fit()
+forecast = results.forecast(steps=30)
+
+# Prophet: simple, robust to missing data
+df_prophet = train.reset_index().rename(columns={"date": "ds", "sales": "y"})
+m = Prophet(seasonality_mode="multiplicative", weekly_seasonality=True, yearly_seasonality=True)
+m.add_country_holidays(country_name="FR")
+m.fit(df_prophet)
+
+future = m.make_future_dataframe(periods=30)
+forecast = m.predict(future)
+
+# Evaluation
+mape = mean_absolute_percentage_error(test, forecast[-len(test):])
+print(f"MAPE: {mape:.2%}")
+
+# Anomaly detection on time series
+from pyod.models.iforest import IForest
+detector = IForest(contamination=0.01)
+detector.fit(X_train_features)
+anomalies = detector.predict(X_test_features)  # 1 = anomaly</code></div>
+<ul>
+<li><strong>Stationarity</strong> — ARIMA requires a stationary series. ADF (Augmented Dickey-Fuller) test to verify. Differencing (d=1 or d=2) to make it stationary</li>
+<li><strong>Prophet</strong> — Facebook Prophet: trend + seasonality + holidays decomposition. Robust to missing data and outliers. Ideal for non-statistician teams</li>
+<li><strong>Temporal cross-validation</strong> — never mix past and future in the train/test split. Use TimeSeriesSplit from sklearn or walk-forward CV</li>
+<li><strong>Lag features</strong> — lag features (sales D-7, D-14, D-28) are often the most predictive. Add rolling mean and std over different windows</li>
+<li><strong>MAPE vs MAE</strong> — MAPE in % (easy to explain to business). MAE in absolute units (more robust for series close to 0). Use both depending on context</li>
+</ul>
+<ul>
+<li><strong>Stationarity</strong> - ARIMA requires a stationary series. ADF (Augmented Dickey-Fuller) test to verify. Differencing (d=1 or d=2) to make it stationary</li>
+<li><strong>Prophet</strong> - Facebook Prophet: trend + seasonality + holidays decomposition. Robust to missing data and outliers. Ideal for non-statistician teams</li>
+<li><strong>Temporal cross-validation</strong> - never mix past and future in the train/test split. Use TimeSeriesSplit from sklearn or walk-forward CV</li>
+<li><strong>Lag features</strong> - lag features (sales D-7, D-14, D-28) are often the most predictive. Add rolling mean and std over different windows</li>
+<li><strong>MAPE vs MAE</strong> - MAPE in % (easy to explain to business). MAE in absolute units (more robust for series close to 0). Use both depending on context</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Decomposition, stationarity, basic Prophet</td><td>Tests stationarity before ARIMA, has used Prophet</td><td>Applies random KFold to a time series</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>ARIMA tuning, anomaly detection, temporal features for ML</td><td>Chooses between ARIMA and Prophet based on context, detects anomalies</td><td>Does not know what stationarity is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

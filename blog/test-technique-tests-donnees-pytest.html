@@ -168,11 +168,12 @@ def test_amount_validation(amount, valid):
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tests unitaires pytest, fixtures, mocks basiques</td><td>A écrit des tests pour ses fonctions de transformation, utilise des fixtures</td><td>N a aucun test dans ses projets</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Tests SQL avec DuckDB, tests d intégration, CI automatisée</td><td>Teste ses transformations SQL avec DuckDB, a une CI qui lance les tests</td><td>Pense que les tests dbt YAML suffisent pour tout</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='pytest'><span class='sn'>1</span>pytest: the standard for testing data pipelines</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is pytest preferred over unittest for data pipelines?</p></div><div class='cb'><code>import pytest
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='pytest'><span class='sn'>1</span>pytest: the standard for testing data pipelines</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is pytest preferred over unittest for data pipelines?</p></div><div class='cb'><code>import pytest
 import pandas as pd
 from my_pipeline.transforms import calculate_revenue
 
-# Test unitaire simple
+# Simple unit test
 def test_calculate_revenue_basic():
     df = pd.DataFrame({
         'quantity': [1, 2, 3],
@@ -181,13 +182,13 @@ def test_calculate_revenue_basic():
     result = calculate_revenue(df)
     assert list(result['revenue']) == [10.0, 10.0, 24.0]
 
-# Test des cas limites
+# Edge case tests
 def test_calculate_revenue_zero_quantity():
     df = pd.DataFrame({'quantity': [0], 'unit_price': [10.0]})
     result = calculate_revenue(df)
     assert result['revenue'].iloc[0] == 0.0
 
-# Test des valeurs nulles
+# Null value tests
 def test_calculate_revenue_null_handling():
     df = pd.DataFrame({'quantity': [None, 1], 'unit_price': [10.0, 5.0]})
     result = calculate_revenue(df)
@@ -214,7 +215,7 @@ def test_db():
 
 def test_revenue_by_customer(sample_orders):
     result = compute_revenue(sample_orders)
-    assert result.loc[result['customer_id'] == 'C1', 'revenue'].iloc[0] == 100.0</code></div><ul><li><strong>scope</strong> — function (default), class, module, session. Session fixtures are only created once</li><li><strong>conftest.py</strong> — special pytest file where shared fixtures are declared across multiple test files</li></ul><h2 id='mocks'><span class='sn'>3</span>Mocking: isolating external dependencies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test code that calls a database or an external API?</p></div><div class='cb'><code>from unittest.mock import patch, MagicMock
+    assert result.loc[result['customer_id'] == 'C1', 'revenue'].iloc[0] == 100.0</code></div><ul><li><strong>scope</strong> — function (default), class, module, session. Session fixtures are created only once</li><li><strong>conftest.py</strong> — special pytest file where shared fixtures are declared across multiple test files</li></ul><h2 id='mocks'><span class='sn'>3</span>Mocking: isolating external dependencies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test code that calls a database or an external API?</p></div><div class='cb'><code>from unittest.mock import patch, MagicMock
 import pytest
 
 def test_extract_from_api():
@@ -237,7 +238,76 @@ def test_with_mocker(mocker):
     mock_conn = mocker.patch('my_pipeline.db.get_connection')
     mock_conn.return_value.execute.return_value.fetchdf.return_value = pd.DataFrame({'id': [1]})
     result = load_from_db('SELECT * FROM orders')
-    assert len(result) == 1</code></div><h2 id='sql'><span class='sn'>4</span>Testing SQL transformations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test a dbt or SQL transformation?</p></div></div>
+    assert len(result) == 1</code></div><h2 id='sql'><span class='sn'>4</span>Testing SQL transformations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test a dbt SQL transformation or a Snowflake view?</p></div><div class='cb'><code># Testing a SQL transformation with DuckDB (fast, in-memory)
+import duckdb
+import pytest
+
+def test_revenue_aggregation():
+    conn = duckdb.connect()
+    
+    # Create test data in memory
+    conn.execute("""
+        CREATE TABLE orders AS
+        SELECT * FROM (VALUES
+            ('O1', 'C1', 100.0, 'completed'),
+            ('O2', 'C1',  50.0, 'cancelled'),
+            ('O3', 'C2', 200.0, 'completed')
+        ) t(order_id, customer_id, amount, status)
+    """)
+    
+    # Test the transformation
+    result = conn.execute("""
+        SELECT customer_id, SUM(amount) as revenue
+        FROM orders
+        WHERE status = 'completed'
+        GROUP BY customer_id
+    """).fetchdf()
+    
+    assert result.loc[result['customer_id'] == 'C1', 'revenue'].iloc[0] == 100.0
+    assert result.loc[result['customer_id'] == 'C2', 'revenue'].iloc[0] == 200.0</code></div><h2 id='dbt'><span class='sn'>5</span>Advanced dbt tests with pytest-dbt</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you go beyond dbt YAML tests with pytest?</p></div><ul><li><strong>dbt YAML tests</strong> — not_null, unique, accepted_values: simple column-level tests</li><li><strong>Singular tests</strong> — SQL files in tests/ that return failing rows</li><li><strong>pytest-dbt</strong> — pytest plugin to run dbt tests within larger pytest suites</li><li><strong>Regression tests</strong> — compare outputs of a refactored model against the old one via dbt-audit-helper</li></ul><div class='cb'><code># Singular dbt test: test that must return no rows
+-- tests/orders_no_negative_amount.sql
+SELECT order_id, amount
+FROM {{ ref('fct_orders') }}
+WHERE amount < 0</code></div><h2 id='integration'><span class='sn'>6</span>End-to-end integration tests</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you test an entire pipeline from ingestion to transformation?</p></div><ul><li><strong>Integration test</strong> — test the full pipeline on a real data sample</li><li><strong>Test environment</strong> — dedicated test database (SQLite in-memory, Snowflake sandbox, BigQuery test dataset)</li><li><strong>Test data</strong> — minimal but representative set: normal cases + edge cases + corrupted data</li><li><strong>Output assertions</strong> — verify that the schema is correct, aggregations are consistent, keys are unique</li></ul>
+<div class='cb'><code>import pytest
+import pandas as pd
+from pandera import DataFrameSchema, Column, Check
+
+# Pandera: schema validation for DataFrames
+orders_schema = DataFrameSchema({
+    "order_id": Column(str, nullable=False, unique=True),
+    "amount": Column(float, checks=[Check.greater_than(0), Check.less_than(1_000_000)]),
+    "status": Column(str, checks=Check.isin(["pending", "completed", "cancelled"])),
+    "order_date": Column("datetime64[ns]", nullable=False)
+})
+
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({
+        "order_id": ["ORD-001", "ORD-002"],
+        "amount": [100.0, 250.0],
+        "status": ["completed", "pending"],
+        "order_date": pd.to_datetime(["2025-01-01", "2025-01-02"])
+    })
+
+def test_transform_schema(sample_df):
+    result = transform_orders(sample_df)
+    orders_schema.validate(result)
+
+@pytest.mark.parametrize("amount,valid", [
+    (100.0, True), (-50.0, False), (0.0, False), (1e7, False)
+])
+def test_amount_validation(amount, valid):
+    assert validate_amount(amount) == valid</code></div>
+<ul>
+<li><strong>Pandera</strong> - schema validation for pandas/polars DataFrames. Define the schema as code, validate at the input/output of transformation functions</li>
+<li><strong>pytest fixtures scope</strong> - scope="function" (default): recreated at each test. scope="session": shared across the entire session. Use session for expensive DB connections</li>
+<li><strong>conftest.py</strong> - fixtures shared across multiple test files. DRY: test DataFrames defined only once</li>
+<li><strong>Mocking</strong> - unittest.mock.patch to replace DB, API or file calls. Isolate transformation logic from external dependencies</li>
+<li><strong>Coverage</strong> - pytest --cov=src --cov-report=html. Aim for 80% on business logic. Integration tests cover what unit tests cannot</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>pytest unit tests, fixtures, basic mocks</td><td>Has written tests for transformation functions, uses fixtures</td><td>Has no tests in their projects</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>SQL tests with DuckDB, integration tests, automated CI</td><td>Tests SQL transformations with DuckDB, has a CI that runs the tests</td><td>Thinks dbt YAML tests are sufficient for everything</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

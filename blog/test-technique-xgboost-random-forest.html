@@ -139,47 +139,113 @@ study = optuna.create_study(direction='maximize')
 study.optimize(objective, n_trials=50)</code></div><ul><li><strong>XGBoost vs Random Forest</strong> - RF : parallel, pas de risque d overfitting, robuste. XGBoost : boosting sequentiel, souvent plus performant mais necessite un tuning soigneux</li><li><strong>Early stopping</strong> - arreter l entrainement XGBoost quand la metrique de validation ne s ameliore plus. Evite l overfitting et reduit le temps d entrainement</li><li><strong>SHAP pour l interpretabilite</strong> - shap.TreeExplainer(model) : decompose chaque prediction en contributions par feature. Standard pour expliquer les decisions en production</li><li><strong>Optuna vs GridSearchCV</strong> - Optuna (Bayesian optimization) : 10-50x plus efficace que GridSearch pour trouver les bons hyperparametres. Aussi plus rapide que RandomSearch</li><li><strong>Feature importance</strong> - gain (XGBoost) mesure la reduction d impurete ponderee. Peut etre biaise vers les features a haute cardinalite. Prefer SHAP pour une importance causale</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>sklearn RandomForest, XGBoost basique, train/test split</td><td>Sait entraîner un RF et un XGBoost, connaît l OOB score</td><td>Utilise l accuracy sans vérifier l équilibre des classes</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Hyperparamètres XGBoost, early stopping, SHAP</td><td>Utilise early stopping, tuning avec RandomizedSearchCV, SHAP pour l explication</td><td>Ne sait pas ce qu est l early stopping</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Learning curves, LightGBM, SHAP interactions, production</td><td>Diagnostique l overfitting avec learning curves, compare XGBoost vs LightGBM</td><td>Ne sait pas expliquer la différence entre bagging et boosting</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='rf'><span class='sn'>1</span>Random Forest: how it really works</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between bagging and boosting? Why is Random Forest robust to overfitting?</p></div><div class='cb'><code>from sklearn.ensemble import RandomForestClassifier
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='rf'><span class='sn'>1</span>Random Forest: how it really works</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between bagging and boosting? Why is Random Forest robust to overfitting?</p></div><div class='cb'><code>from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
 rf = RandomForestClassifier(
-    n_estimators=200,        # nombre d arbres (plus = mieux, mais rendements décroissants)
-    max_features='sqrt',     # features aléatoires par split (clé du RF)
-    max_depth=None,          # arbres profonds par défaut
-    min_samples_leaf=1,      # régularisation : augmenter si overfitting
-    oob_score=True,          # Out-Of-Bag : estimation gratuite de la généralisation
-    n_jobs=-1,               # utiliser tous les coeurs
+    n_estimators=200,        # number of trees (more = better, but diminishing returns)
+    max_features='sqrt',     # random features per split (key of RF)
+    max_depth=None,          # deep trees by default
+    min_samples_leaf=1,      # regularization: increase if overfitting
+    oob_score=True,          # Out-Of-Bag: free estimation of generalization
+    n_jobs=-1,               # use all cores
     random_state=42
 )
 
 rf.fit(X_train, y_train)
-print(f'OOB score: {rf.oob_score_:.3f}')  # pas besoin de CV séparée
+print(f'OOB score: {rf.oob_score_:.3f}')  # no need for separate CV
 
 # Cross-validation
 scores = cross_val_score(rf, X, y, cv=5, scoring='roc_auc')
-print(f'CV AUC: {scores.mean():.3f}')</code></div><ul><li><strong>Bagging</strong> — training N independent models on bootstrap samples and averaging. Reduces variance</li><li><strong>Boosting</strong> — training models sequentially, each model corrects the errors of the previous one. Reduces bias</li><li><strong>OOB Score</strong> — each tree is evaluated on data not seen during its training. Generalization estimate without CV</li></ul><h2 id='xgb'><span class='sn'>2</span>XGBoost: advanced gradient boosting</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does XGBoost improve upon classical gradient boosting?</p></div><div class='cb'><code>import xgboost as xgb
+print(f'CV AUC: {scores.mean():.3f}')</code></div><ul><li><strong>Bagging</strong> — train N independent models on bootstrap samples and average. Reduces variance</li><li><strong>Boosting</strong> — train models sequentially, each model corrects the errors of the previous one. Reduces bias</li><li><strong>OOB Score</strong> — each tree is evaluated on data not seen during its training. Generalization estimate without CV</li></ul><h2 id='xgb'><span class='sn'>2</span>XGBoost: advanced gradient boosting</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does XGBoost improve on classic gradient boosting?</p></div><div class='cb'><code>import xgboost as xgb
 from sklearn.model_selection import RandomizedSearchCV
 
-# Configuration typique de production
+# Typical production configuration
 model = xgb.XGBClassifier(
     n_estimators=500,
-    learning_rate=0.05,      # faible = moins d overfitting, besoin de plus d arbres
-    max_depth=6,             # profondeur (3-8 typique)
-    subsample=0.8,           # fraction des lignes par arbre
-    colsample_bytree=0.8,    # fraction des features par arbre
+    learning_rate=0.05,      # low = less overfitting, needs more trees
+    max_depth=6,             # depth (3-8 typical)
+    subsample=0.8,           # fraction of rows per tree
+    colsample_bytree=0.8,    # fraction of features per tree
     reg_alpha=0.1,           # L1 regularization
     reg_lambda=1.0,          # L2 regularization
-    early_stopping_rounds=50, # stop si pas d amélioration
+    early_stopping_rounds=50, # stop if no improvement
     eval_metric='auc',
     random_state=42
 )
 
-# Early stopping : éviter l overfitting automatiquement
+# Early stopping: avoid overfitting automatically
 model.fit(
     X_train, y_train,
     eval_set=[(X_val, y_val)],
     verbose=100
-)</code></div><ul><li><strong>L1/L2 regularization</strong> — native in XGBoost, not in classical gradient boosting</li><li><strong>Early stopping</strong> — stopping training when performance on the validation set no longer improves</li><li><strong>Null handling</strong> — XGBoost automatically learns the default direction for missing values</li></ul><h2 id='hyper'><span class='sn'>3</span>Critical hyperparameters: which one to adjust first</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which hyperparameters do you prioritize for XGBoost? In what order?</p></div><table class='lt'><thead><tr><th>Hyperparameter</th><th>Impact</th><th>Direction if overfitting</th></tr></thead><tbody><tr><td>n_estimators + learning_rate</td><td>Critical</td><td>Lower LR, increase n_estimators + early stopping</td></tr><tr><td>max_depth</td><td>High</td><td>Reduce (3-5 instead of 6-8)</td></tr><tr><td>subsample</td><td>Moderate</td><td>Reduce to 0.6-0.8</td></tr><tr><td>colsample_bytree</td><td>Moderate</td><td>Reduce to 0.6-0.8</td></tr><tr><td>min_child_weight</td><td>Moderate</td><td>Increase</td></tr><tr><td>reg_alpha / reg_lambda</td><td>Variable</td><td>Increase</td></tr></tbody></table><div class='cl'><p><strong>Recommended order:</strong> 1. Set n_estimators with early stopping. 2. Tune max_depth + min_child_weight. 3. Tune subsample + colsample_bytree. 4. Fine-tune LR.</p></div></div>
+)</code></div><ul><li><strong>L1/L2 Regularization</strong> — native in XGBoost, not in classic gradient boosting</li><li><strong>Early stopping</strong> — stop training when performance on the validation set no longer improves</li><li><strong>Null handling</strong> — XGBoost automatically learns the default direction for missing values</li></ul><h2 id='hyper'><span class='sn'>3</span>Critical hyperparameters: which one to tune first</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which hyperparameters do you tune first for XGBoost? In what order?</p></div><table class='lt'><thead><tr><th>Hyperparameter</th><th>Impact</th><th>Direction if overfitting</th></tr></thead><tbody><tr><td>n_estimators + learning_rate</td><td>Critical</td><td>Lower LR, increase n_estimators + early stopping</td></tr><tr><td>max_depth</td><td>High</td><td>Reduce (3-5 instead of 6-8)</td></tr><tr><td>subsample</td><td>Moderate</td><td>Reduce to 0.6-0.8</td></tr><tr><td>colsample_bytree</td><td>Moderate</td><td>Reduce to 0.6-0.8</td></tr><tr><td>min_child_weight</td><td>Moderate</td><td>Increase</td></tr><tr><td>reg_alpha / reg_lambda</td><td>Variable</td><td>Increase</td></tr></tbody></table><div class='cl'><p><strong>Recommended order:</strong> 1. Fix n_estimators with early stopping. 2. Tune max_depth + min_child_weight. 3. Tune subsample + colsample_bytree. 4. Fine-tune LR.</p></div><h2 id='shap'><span class='sn'>4</span>Feature importance: feature_importances_ vs SHAP</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do you prefer SHAP over native scikit-learn feature importances?</p></div><div class='cb'><code>import shap
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# Global feature importance
+shap.summary_plot(shap_values, X_test, max_display=15)
+
+# Individual explanation
+shap.waterfall_plot(shap.Explanation(
+    values=shap_values[0],
+    base_values=explainer.expected_value,
+    data=X_test.iloc[0],
+    feature_names=X_test.columns.tolist()
+))
+
+# Interaction between features
+shap.dependence_plot('age', shap_values, X_test,
+                     interaction_index='nb_achats')</code></div><ul><li><strong>feature_importances_ sklearn</strong> — based on impurity reduction. Biased toward high cardinality features and may ignore correlations</li><li><strong>SHAP</strong> — based on game theory (Shapley values). Consistent, global and local, unbiased</li><li><strong>SHAP Interaction</strong> — SHAP interaction values show how two features interact</li></ul><h2 id='overfit'><span class='sn'>5</span>Diagnosing and fixing overfitting</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you detect overfitting? What tools do you use?</p></div><div class='cb'><code>from sklearn.model_selection import learning_curve
+import matplotlib.pyplot as plt
+
+train_sizes, train_scores, val_scores = learning_curve(
+    model, X, y,
+    cv=5, scoring='roc_auc',
+    train_sizes=np.linspace(0.1, 1.0, 10),
+    n_jobs=-1
+)
+
+# Overfitting: train score >> val score
+# Underfitting: both scores are low
+# Good fit: train and val converge
+
+plt.plot(train_sizes, train_scores.mean(axis=1), label='Train')
+plt.plot(train_sizes, val_scores.mean(axis=1), label='Validation')
+plt.xlabel('Training set size')
+plt.ylabel('AUC')
+plt.legend()</code></div><h2 id='lgbm'><span class='sn'>6</span>LightGBM vs XGBoost: when to choose</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what case do you prefer LightGBM over XGBoost?</p></div><table class='lt'><thead><tr><th></th><th>XGBoost</th><th>LightGBM</th></tr></thead><tbody><tr><td>Speed</td><td>Moderate</td><td>2-10x faster</td></tr><tr><td>Memory</td><td>High</td><td>Reduced (histograms)</td></tr><tr><td>Categoricals</td><td>Requires encoding</td><td>Native support</td></tr><tr><td>Large volumes</td><td>Slow</td><td>Excellent</td></tr><tr><td>Small datasets</td><td>Good</td><td>Can overfit more easily</td></tr></tbody></table><ul><li><strong>LightGBM</strong> — leaf-wise growth instead of level-wise. More accurate but more prone to overfitting on small datasets</li><li><strong>Native categoricals</strong> — LightGBM encodes categoricals internally, no need for OHE</li></ul><div class='cb'><code>import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+import optuna
+
+# XGBoost with early stopping
+xgb_model = xgb.XGBClassifier(
+    n_estimators=1000,
+    early_stopping_rounds=50,
+    eval_metric='auc',
+    learning_rate=0.05,
+    max_depth=6,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    scale_pos_weight=10,  # class imbalance
+    tree_method='hist'    # faster, comparable GPU
+)
+xgb_model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=50)
+
+# Optuna for hyperparameter tuning
+def objective(trial):
+    params = {
+        'max_depth': trial.suggest_int('max_depth', 3, 10),
+        'learning_rate': trial.suggest_float('lr', 0.01, 0.3, log=True),
+        'n_estimators': trial.suggest_int('n_est', 100, 1000),
+    }
+    model = xgb.XGBClassifier(**params)
+    model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+    return roc_auc_score(y_val, model.predict_proba(X_val)[:,</code></div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
