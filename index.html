@@ -547,9 +547,11 @@ function renderPanel(id) {
 }
 
 // Init: SQL selected by default
-ACTIVE = 'sql';
-buildChips();
-renderPanel('sql');
+document.addEventListener('DOMContentLoaded', function() {
+  ACTIVE = 'sql';
+  buildChips();
+  renderPanel('sql');
+});
 
 // ── LANG ──────────────────────────────────────────────────────────────────────
 function setLang(l) {
