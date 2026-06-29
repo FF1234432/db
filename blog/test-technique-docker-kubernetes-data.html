@@ -142,14 +142,15 @@ spec:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Helm basique, déploiements K8s, secrets management</td><td>A déployé Airflow avec Helm, utilise External Secrets ou Workload Identity</td><td>Stocke des credentials dans les manifests K8s</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>StatefulSets, GitOps ArgoCD, KubernetesExecutor, monitoring</td><td>A mis en place GitOps avec ArgoCD, a déployé Airflow avec KubernetesExecutor</td><td>Ne sait pas ce qu est GitOps, ne connaît pas ArgoCD</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='helm'><span class='sn'>1</span>Helm: deploying complex applications</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is Helm? How do you use it to deploy Airflow on Kubernetes?</p></div><div class='cb'><code># Helm : gestionnaire de packages Kubernetes
-# Chart = package K8s réutilisable
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='helm'><span class='sn'>1</span>Helm: deploying complex applications</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is Helm? How do you use it to deploy Airflow on Kubernetes?</p></div><div class='cb'><code># Helm: Kubernetes package manager
+# Chart = reusable K8s package
 
-# Ajouter le repo Airflow
+# Add the Airflow repo
 helm repo add apache-airflow https://airflow.apache.org
 helm repo update
 
-# Installer Airflow avec des valeurs personnalisées
+# Install Airflow with custom values
 helm install airflow apache-airflow/airflow \
   --namespace airflow \
   --create-namespace \
@@ -169,8 +170,8 @@ dags:
   gitSync:
     enabled: true
     repo: https://github.com/org/dags-repo
-    branch: main</code></div><ul><li><strong>Helm Chart</strong> — set of parameterizable K8s manifests. Like an npm package for Kubernetes</li><li><strong>values.yaml</strong> — override the chart default values. Version in Git</li><li><strong>Helm upgrade</strong> — update a release. Helm rollback in case of issues</li></ul><h2 id='stateful'><span class='sn'>2</span>StatefulSets: workloads with persistent state</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use a StatefulSet rather than a Deployment in a data context?</p></div><div class='cb'><code># StatefulSet : pour les workloads qui ont besoin
-# d identité stable et de stockage persistant
+    branch: main</code></div><ul><li><strong>Helm Chart</strong> — set of parameterizable K8s manifests. Like an npm package for Kubernetes</li><li><strong>values.yaml</strong> — override the chart's default values. Version in Git</li><li><strong>Helm upgrade</strong> — update a release. Helm rollback in case of issues</li></ul><h2 id='stateful'><span class='sn'>2</span>StatefulSets: workloads with persistent state</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use a StatefulSet instead of a Deployment in a data context?</p></div><div class='cb'><code># StatefulSet: for workloads that need
+# stable identity and persistent storage
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -186,14 +187,14 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/kafka-data
-  volumeClaimTemplates:    # PVC créé automatiquement par pod
+  volumeClaimTemplates:    # PVC automatically created per pod
   - metadata:
       name: data
     spec:
       accessModes: [ReadWriteOnce]
       resources:
         requests:
-          storage: 50Gi</code></div><ul><li><strong>StatefulSet vs Deployment</strong> — Deployment: interchangeable pods. StatefulSet: pods with stable identity (kafka-0, kafka-1, kafka-2)</li><li><strong>Data use cases</strong> — Kafka, ZooKeeper, Elasticsearch, clustered databases</li><li><strong>PVC per pod</strong> — each pod has its own Persistent Volume Claim. Data persisted even if the pod is deleted</li></ul><h2 id='secrets'><span class='sn'>3</span>Secure secrets management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage credentials (API keys, passwords) in a Kubernetes cluster?</p></div><ul><li><strong>Native Kubernetes Secrets</strong> — base64 encoded, not encrypted. Insufficient for production</li><li><strong>External Secrets Operator</strong> — automatically synchronizes secrets from AWS Secrets Manager, GCP Secret Manager, Azure Key Vault to K8s</li><li><strong>Sealed Secrets (Bitnami)</strong> — encrypt K8s secrets to version them in Git securely</li><li><strong>Workload Identity</strong> — the pod authenticates directly on GCP/AWS without storing credentials. Best practice 2025</li><li><strong>Never</strong> — put secrets in Docker images or in plain text environment variables</li></ul><h2 id='gitops'><span class='sn'>4</span>GitOps with ArgoCD</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is GitOps? How does ArgoCD synchronize a Kubernetes cluster?</p></div><div class='cb'><code># Application ArgoCD
+          storage: 50Gi</code></div><ul><li><strong>StatefulSet vs Deployment</strong> — Deployment: interchangeable pods. StatefulSet: pods with stable identity (kafka-0, kafka-1, kafka-2)</li><li><strong>Data use cases</strong> — Kafka, ZooKeeper, Elasticsearch, clustered databases</li><li><strong>PVC per pod</strong> — each pod has its own Persistent Volume Claim. Data persisted even if the pod is deleted</li></ul><h2 id='secrets'><span class='sn'>3</span>Secure secrets management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage credentials (API keys, passwords) in a Kubernetes cluster?</p></div><ul><li><strong>Native Kubernetes Secrets</strong> — base64-encoded, not encrypted. Insufficient for production</li><li><strong>External Secrets Operator</strong> — automatically syncs secrets from AWS Secrets Manager, GCP Secret Manager, Azure Key Vault to K8s</li><li><strong>Sealed Secrets (Bitnami)</strong> — encrypt K8s secrets to version them in Git securely</li><li><strong>Workload Identity</strong> — the pod authenticates directly to GCP/AWS without storing credentials. Best practice 2025</li><li><strong>Never</strong> — put secrets in Docker images or in plaintext environment variables</li></ul><h2 id='gitops'><span class='sn'>4</span>GitOps with ArgoCD</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is GitOps? How does ArgoCD synchronize a Kubernetes cluster?</p></div><div class='cb'><code># ArgoCD Application
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -206,7 +207,39 @@ spec:
     targetRevision: main
     path: apps/airflow/prod
   destination:
-    server: https://kubernetes.</code></div></div>
+    server: https://kubernetes.default.svc
+    namespace: airflow
+  syncPolicy:
+    automated:
+      prune: true      # delete resources removed from the repo
+      selfHeal: true   # resync if someone manually modifies K8s</code></div><ul><li><strong>GitOps</strong> — Git is the source of truth for the cluster state. All changes go through a PR</li><li><strong>ArgoCD</strong> — detects divergences between Git and the cluster, synchronizes automatically</li><li><strong>Advantages</strong> — auditability (every change is a commit), simple rollback (revert the commit), consistency across environments</li></ul><h2 id='airflow'><span class='sn'>5</span>Airflow on Kubernetes: KubernetesExecutor</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between CeleryExecutor and KubernetesExecutor for Airflow?</p></div><table class='lt'><thead><tr><th></th><th>CeleryExecutor</th><th>KubernetesExecutor</th></tr></thead><tbody><tr><td>Workers</td><td>Permanent worker pool</td><td>One Pod per task (created/destroyed)</td></tr><tr><td>Isolation</td><td>Low (shared workers)</td><td>Maximum (dedicated pod)</td></tr><tr><td>Scalability</td><td>Fixed or Celery autoscaling</td><td>Automatic K8s</td></tr><tr><td>Cost</td><td>Workers always running</td><td>Pay only during execution</td></tr><tr><td>Complexity</td><td>Requires Redis/RabbitMQ</td><td>K8s native, simpler</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>6</span>Monitoring data workloads on K8s</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you monitor your data pipelines deployed on Kubernetes?</p></div><ul><li><strong>Prometheus + Grafana</strong> — CPU/RAM metrics per pod, alerts on OOM kills or crashloops</li><li><strong>Loki</strong> — log aggregation from all pods (Airflow, Spark, ML APIs). Full Grafana stack</li><li><strong>kube-state-metrics</strong> — metrics on the state of K8s resources (Deployments, StatefulSets, Jobs)</li><li><strong>Critical data alerts</strong> — pod in CrashLoopBackOff, Spark job OOMKilled, ML API latency above threshold, Kafka consumer lagging</li></ul><div class='cb'><code># K8s CronJob for data pipeline
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-etl
+  namespace: data-platform
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: data-pipeline-sa
+          containers:
+          - name: etl
+            image: europe-west1-docker.pkg.dev/projet/data/pipeline:1.2.3
+            env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            resources:
+              requests: {cpu: "500m", memory: "1Gi"}
+              limits: {cpu: "2", memory: "4Gi"}
+          restartPolicy: OnFailure
+          backoffLimit: 3</code></div><ul><li><strong>KubernetesExecutor Airflow</strong> - each Airflow task = ephemeral pod. Total isolation, automatic scaling, no permanent workers. Standard for prod K8s deployments</li><li><strong>Mandatory resource limits</strong> - without limits, a job can consume all the node's memory and kill other pods. Always define requests AND limits</li><li><strong>Workload Identity</strong> - bind K8s service account to a GCP/AWS service account. Zero credentials in pods, authentication via pod identity</li><li><strong>Horizontal Pod Autoscaling</strong> - for ML scoring APIs: scale based on CPU/memory or custom metrics (requests waiting in the queue)</li><li><strong>Spark on Kubernetes</strong> - spark-submit to K8s cluster. Executors are ephemeral pods. GKE Autopilot simplifies provisioning</li></ul><ul><li><strong>KubernetesExecutor Airflow</strong> - each Airflow task = ephemeral pod. Total isolation, automatic scaling, no permanent workers. Standard for prod K8s deployments</li><li><strong>Mandatory resource limits</strong> - without limits, a job can consume all the node's memory and kill other pods. Always define requests AND limits</li><li><strong>Workload Identity</strong> - bind K8s service account to a GCP/AWS service account. Zero credentials in pods, authentication via pod identity</li><li><strong>Horizontal Pod Autoscaling</strong> - for ML scoring APIs: scale based on CPU/memory or custom metrics (requests waiting in the queue)</li><li><strong>Spark on Kubernetes</strong> - spark-submit to K8s cluster. Executors are ephemeral pods. GKE Autopilot simplifies provisioning</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Basic Helm, K8s deployments, secrets management</td><td>Has deployed Airflow with Helm, uses External Secrets or Workload Identity</td><td>Stores credentials in K8s manifests</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>StatefulSets, GitOps ArgoCD, KubernetesExecutor, monitoring</td><td>Has set up GitOps with ArgoCD, has deployed Airflow with KubernetesExecutor</td><td>Does not know what GitOps is, unfamiliar with ArgoCD</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer K8s avancé ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

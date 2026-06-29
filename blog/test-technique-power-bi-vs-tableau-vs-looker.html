@@ -168,7 +168,8 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <li><strong>Integration BI + Data Stack</strong> - Power BI s integre nativement avec Azure/Fabric. Looker avec BigQuery/GCP. Tableau est agnostique</li>
 </ul></div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker: which tool for which profile?</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker: which tool for which profile?</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Power BI vs Tableau vs Looker : quel outil pour quel profil ?" data-en="Power BI vs Tableau vs Looker: which tool for which profile?">Power BI vs Tableau vs Looker: which tool for which profile?</h1>
 <p class="ai" data-fr="Les trois outils dominent le marché BI. Mais choisir le bon outil — ou évaluer un candidat sur le bon outil — nécessite de comprendre leurs différences réelles : modélisation, langage de calcul, gouvernance et coût." data-en="These three tools dominate the BI market. But choosing the right tool — or assessing a candidate on the right tool — requires understanding their real differences: modeling, calculation language, governance and cost.">These three tools dominate the BI market. But choosing the right tool — or assessing a candidate on the right tool — requires understanding their real differences: modeling, calculation language, governance and cost.</p>
@@ -181,22 +182,65 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <li><a href="#cout">Costs and licensing</a></li>
 <li><a href="#choix">Which tool to choose?</a></li></ol></div>
 <div class="ab" id="ab">
-<p>Power BI, Tableau and Looker are the three BI market leaders according to Gartner. In interviews, the assessment covers not only technical mastery of the tool, but also the candidate's ability to position it in a given context: Microsoft ecosystem, Google Cloud stack, or the need for a centralized semantic layer.</p>
+<p>Power BI, Tableau and Looker are the three BI market leaders according to Gartner. In interviews, we assess not only the candidate's technical mastery of the tool, but also their ability to position it in a given context: Microsoft ecosystem, Google Cloud stack, or need for a centralized semantic layer.</p>
 
 <h2 id="connect"><span class="sn">1</span>Connectivity and data preparation</h2>
-<div class="sq"><div class="sl">Discriminating question</div><p>In which case would you choose a Live connection over an Extract in Tableau? And DirectQuery over Import in Power BI?</p></div>
+<div class="sq"><div class="sl">Key question</div><p>In which case would you choose a Live connection over an Extract in Tableau? And DirectQuery over Import in Power BI?</p></div>
 <table class="lt"><thead><tr><th></th><th>Power BI</th><th>Tableau</th><th>Looker</th></tr></thead><tbody>
 <tr><td><strong>Connection mode</strong></td><td>Import, DirectQuery, Dual</td><td>Live Connection, Extract (.hyper)</td><td>Live only (BigQuery/GCP)</td></tr>
-<tr><td><strong>Integrated preparation</strong></td><td>Power Query (M language)</td><td>Tableau Prep (separate tool)</td><td>LookML (separate tool)</td></tr>
+<tr><td><strong>Built-in preparation</strong></td><td>Power Query (M language)</td><td>Tableau Prep (separate tool)</td><td>LookML (separate tool)</td></tr>
 <tr><td><strong>Native integration</strong></td><td>Microsoft ecosystem (Azure, Excel, Teams)</td><td>Wide (Snowflake, BQ, Redshift, SAP...)</td><td>Google Cloud (native BigQuery)</td></tr>
 </tbody></table>
 <ul>
 <li><strong>Power BI Import</strong> — copies data into memory (VertiPaq), maximum performance, scheduled refresh</li>
 <li><strong>DirectQuery</strong> — queries the source in real time, no local copy, performance dependent on the source</li>
 <li><strong>Tableau Extract</strong> — compressed .hyper file, excellent performance, disconnected from the source</li>
-<li><strong>Looker Live</strong> — always connected, leverages BigQuery's power for large volumes</li>
+<li><strong>Looker Live</strong> — always connected, leverages BigQuery power for large volumes</li>
 </ul>
-<div class="cl"><p><strong>Warning signal:</strong> a candidate who uses DirectQuery by default without justificatio</p></div></div></div>
+<div class="cl"><p><strong>Warning signal:</strong> a candidate who uses DirectQuery by default without justification (latency, volume, real time) has not optimized a Power BI report in production.</p></div>
+
+<h2 id="model"><span class="sn">2</span>Data modeling</h2>
+<div class="sq"><div class="sl">Key question</div><p>Why does Power BI handle star schema models better than Tableau or Looker Studio?</p></div>
+<ul>
+<li><strong>Power BI</strong> — dedicated Model view, relationships with cardinality, cross-filters, calculated columns, hierarchies. Natively supports star schema</li>
+<li><strong>Tableau</strong> — blends, joins and relationships, but less suited to complex multi-table models. No true star schema modeling</li>
+<li><strong>Looker/LookML</strong> — centralized semantic model in code (YAML-like), single source of truth for the entire organization. Ideal for large-scale governance</li>
+<li><strong>Looker Studio</strong> — direct connection without modeling, suited to simple reports on Google Analytics/BQ</li>
+</ul>
+
+<h2 id="calcul"><span class="sn">3</span>Calculations and performance</h2>
+<div class="sq"><div class="sl">Key question</div><p>What are the differences between DAX (Power BI), Tableau calculations and LookML? Which is the most accessible for a business user?</p></div>
+<table class="lt"><thead><tr><th></th><th>Power BI (DAX)</th><th>Tableau (Formulas)</th><th>Looker (LookML)</th></tr></thead><tbody>
+<tr><td><strong>Language</strong></td><td>DAX — Excel-like syntax, powerful</td><td>Tableau Formulas — more intuitive</td><td>LookML — SQL-like, accessible</td></tr>
+<tr><td><strong>Learning curve</strong></td><td>High (filter context)</td><td>Medium</td><td>Low (if SQL is known)</td></tr>
+<tr><td><strong>Engine</strong></td><td>VertiPaq — very performant on Import</td><td>Hyper — excellent on Extract</td><td>BigQuery — scalable on very large volumes</td></tr>
+<tr><td><strong>Optimization</strong></td><td>DAX Studio, Performance Analyzer</td><td>Performance Recorder</td><td>BigQuery Caching, PDT</td></tr>
+</tbody></table>
+
+<h2 id="viz"><span class="sn">4</span>Visualization and design</h2>
+<div class="sq"><div class="sl">Key question</div><p>In which case do you recommend Tableau for visualization over Power BI?</p></div>
+<ul>
+<li><strong>Power BI</strong> — large visual library, custom visuals marketplace, native mobile app, good Teams/SharePoint integration</li>
+<li><strong>Tableau</strong> — greater design flexibility, LOD for complex analyses, Tableau Public for public sharing, ideal for advanced analytical dashboards</li>
+<li><strong>Looker Studio</strong> — free, simple, integrated with Google Workspace, but limited visualizations and restricted customization</li>
+</ul>
+<div class="cl"><p><strong>Practical rule:</strong> Tableau for analytical flexibility and advanced design. Power BI for Microsoft integration and accessibility. Looker for centralized governance and Google Cloud stacks.</p></div>
+
+<h2 id="gouv"><span class="sn">5</span>Collaboration and governance</h2>
+<ul>
+<li><strong>Power BI</strong> — Power BI Service, workspaces, Row-Level Security, Dev/Test/Prod deployment pipelines, lineage, certified datasets</li>
+<li><strong>Tableau</strong> — Tableau Server/Cloud, granular permissions, certified sources, Tableau Server Client API for automation</li>
+<li><strong>Looker</strong> — centralized semantic model in Git (versioned LookML), real-time collaboration, advanced RBAC permissions</li>
+</ul>
+
+<h2 id="cout"><span class="sn">6</span>Costs and licensing (2025)</h2>
+<table class="lt"><thead><tr><th>Tool</th><th>Indicative price</th><th>Model</th></tr></thead><tbody>
+<tr><td>Power BI Pro</td><td>~$14/user/month</td><td>Per user, includes Service</td></tr>
+<tr><td>Power BI Premium</td><td>~$20/user/month or capacity</td><td>Frequent refresh, large volumes</td></tr>
+<tr><td>Tableau Creator</td><td>~$70/user/month</td><td>Desktop + Pr</td></tr>
+</tbody></table>
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un profil BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
 </div>

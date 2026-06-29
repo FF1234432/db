@@ -151,27 +151,28 @@ volumes:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Dockerfile basique, docker run, docker-compose up</td><td>Sait ecrire un Dockerfile Python, lance une stack avec Compose</td><td>Ne sait pas ce qu est un volume</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Multi-stage, healthchecks, networking Compose, .dockerignore</td><td>Utilise multi-stage, configure les healthchecks, sait pourquoi postgres:5432 marche entre services</td><td>Utilise :latest partout, ne connait pas les multi-stage builds</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Registry CI/CD, securite (non-root, secrets), migration K8s</td><td>A configure le push automatique en CI, utilise des users non-root, connait kompose</td><td>Pousse des images avec des credentials en dur dans le Dockerfile</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='dockerfile'><span class='sn'>1</span>Optimized Dockerfile for a data project</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the best practices for a Python data Dockerfile?</p></div><div class='cb'><code># Multi-stage build : image finale legere
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='dockerfile'><span class='sn'>1</span>Optimized Dockerfile for a data project</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the best practices for a Python data Dockerfile?</p></div><div class='cb'><code># Multi-stage build : lightweight final image
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
 COPY requirements.txt .
-# --no-cache-dir : reduit la taille de l image
+# --no-cache-dir : reduces image size
 RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Image finale : ne pas copier pip, seulement les packages installes
+# Final image : do not copy pip, only installed packages
 FROM python:3.11-slim
 WORKDIR /app
 
-# Copier seulement les packages installes
+# Copy only installed packages
 COPY --from=builder /root/.local /root/.local
 COPY . .
 
-# Pas de root en production
+# No root in production
 RUN useradd -m appuser
 USER appuser
 
-# Variables d environnement
+# Environment variables
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
 
@@ -213,7 +214,66 @@ services:
     command: ['dbt', 'run']
 
 volumes:
-  postgres_data:</code></div><h2 id='network'><span class='sn'>3</span>Networking: how services communicate</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does an Airflow service call a PostgreSQL service in Docker Compose?</p></div><ul><li><strong>Internal DNS</strong> — in Docker Compose, each service is reachable via its service name. Ex: postgres:5432 from airflow</li><li><strong>Exposed ports</strong> — ports: exposes on the host machine. Not necessary for inter-service communication</li><li><strong>healthcheck + depends_on</strong> — wait for the service to be truly ready before starting dependents</li><li><strong>Networks</strong> — isolate groups of services. By default, all services in a Compose share the same network</li></ul><h2 id='multistage'><span class='sn'>4</span>Multi-stage builds: optimizing size</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do we use multi-stage builds? What size reduction is typically achieved?</p></div><ul><li><strong>Problem</strong> — build tools (gcc, pip, headers) are not needed in production but increase image size</li><li><strong>Solution</strong> — build in a full image, copy only the final artifacts into a slim image</li><li><strong>Typical gains</strong> — Python image with numpy/pandas: 800MB → 200MB with multi-stage</li><li><strong>Layer caching</strong> — layers are cached. Copy requirements.txt before the code so rebuilds are fast</li></ul><h2 id='registry'></div>
+  postgres_data:</code></div><h2 id='network'><span class='sn'>3</span>Networking: how services communicate</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does an Airflow service call a PostgreSQL service in Docker Compose?</p></div><ul><li><strong>Internal DNS</strong> — in Docker Compose, each service is accessible via its service name. Ex: postgres:5432 from airflow</li><li><strong>Exposed ports</strong> — ports: exposes on the host machine. Not necessary for inter-service communication</li><li><strong>healthcheck + depends_on</strong> — wait for the service to be truly ready before starting dependencies</li><li><strong>Networks</strong> — isolate groups of services. By default, all services in a Compose are on the same network</li></ul><h2 id='multistage'><span class='sn'>4</span>Multi-stage builds: optimizing size</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do we use multi-stage builds? What size reduction is typically achieved?</p></div><ul><li><strong>Problem</strong> — build tools (gcc, pip, headers) are not needed in production but increase image size</li><li><strong>Solution</strong> — build in a full image, copy only the final artifacts into a slim image</li><li><strong>Typical gains</strong> — Python image with numpy/pandas: 800MB → 200MB with multi-stage</li><li><strong>Layer caching</strong> — layers are cached. Copy requirements.txt before the code so rebuilds are fast</li></ul><h2 id='registry'><span class='sn'>5</span>Registry and image CI/CD</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage Docker images in a team data project?</p></div><ul><li><strong>Registry</strong> — Google Artifact Registry, AWS ECR, Docker Hub (public). Never push directly to latest without a tag</li><li><strong>Tagging</strong> — tag with the commit SHA (image:sha-abc123) for traceability</li><li><strong>Build in CI</strong> — GitHub Actions or Cloud Build builds and pushes the image automatically</li><li><strong>.dockerignore</strong> — exclude .git, __pycache__, .env, data files. Reduces the build context</li></ul><h2 id='k8s'><span class='sn'>6</span>From Docker Compose to Kubernetes</h2><ul><li><strong>docker-compose.yml → Kubernetes manifests</strong> — one Compose service = one Deployment + K8s Service</li><li><strong>kompose convert</strong> — official tool to convert a docker-compose.yml into K8s manifests</li><li><strong>Docker Compose for local dev</strong> — K8s for production. Do not try to use K8s locally for day-to-day development</li><li><strong>Tilt / Skaffold</strong> — local development workflows that sync code with a K8s cluster</li></ul>
+<div class='cb'><code># docker-compose.yml complete local data stack
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: databuilder
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  airflow:
+    image: apache/airflow:2.8.0
+    depends_on:
+      postgres: {condition: service_healthy}
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@postgres/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    volumes:
+      - ./dags:/opt/airflow/dags
+    command: ["airflow", "standalone"]
+
+  dbt:
+    build: ./dbt
+    volumes:
+      - ./dbt:/dbt
+    depends_on: [postgres]
+    command: ["dbt", "run", "--profiles-dir", "/dbt"]
+
+volumes:
+  postgres_data:</code></div>
+<ul>
+<li><strong>Healthchecks</strong> — always define healthchecks on stateful services (Postgres, Kafka, Redis). <code>depends_on</code> without a condition only checks that the container starts, not that it is ready</li>
+<li><strong>Named volumes vs bind mounts</strong> — named volumes for persistent data (Postgres data). Bind mounts for source code (./dags:/opt/airflow/dags) to develop without rebuilding</li>
+<li><strong>.env files</strong> — store secrets in .env (never in docker-compose.yml). Add .env to .gitignore. Provide a .env.example with dummy values</li>
+<li><strong>Docker Compose profiles</strong> — <code>--profile monitoring</code> to start Prometheus + Grafana only in dev. Avoids overloading the base environment</li>
+<li><strong>Multi-stage builds</strong> — for Python images with heavy dependencies (PyTorch, Spark): build stage installs dependencies, runtime stage copies only what is needed. Reduces image size</li>
+</ul>
+<ul>
+<li><strong>Mandatory healthchecks</strong> - define healthchecks on stateful services (Postgres, Kafka, Redis). depends_on without a condition only checks that the container starts</li>
+<li><strong>Named volumes vs bind mounts</strong> - named volumes for persistent data (Postgres data). Bind mounts for source code (./dags:/opt/airflow/dags)</li>
+<li><strong>.env files</strong> - store secrets in .env (never in docker-compose.yml). Add .env to .gitignore. Provide a .env.example with dummy values</li>
+<li><strong>Docker Compose profiles</strong> - --profile monitoring to start Prometheus + Grafana only in dev. Avoids overloading the base environment</li>
+<li><strong>Multi-stage builds</strong> - build stage installs dependencies, runtime stage copies only what is needed. Reduces image size from 3GB to 500MB</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Basic Dockerfile, docker run, docker-compose up</td><td>Can write a Python Dockerfile, launches a stack with Compose</td><td>Does not know what a volume is</td></tr><tr><td><span class='bd bm'>Confirmed</span></td><td>Multi-stage, healthchecks, Compose networking, .dockerignore</td><td>Uses multi-stage, configures healthchecks, knows why postgres:5432 works between services</td><td>Uses :latest everywhere, does not know multi-stage builds</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Registry CI/CD, security (non-root, secrets), K8s migration</td><td>Has configured automatic push in CI, uses non-root users, knows kompose</td><td>Pushes images with hardcoded credentials in the Dockerfile</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

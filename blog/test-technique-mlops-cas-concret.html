@@ -83,27 +83,61 @@ class MLOpsPipeline:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A deploye un modele, connait MLflow, fait des checks basiques</td><td>A deploye en production, surveille la performance, reconnait les causes d obsolescence</td><td>Pense que deployer = mettre le notebook en prod</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Framework MLOps complet, monitoring derive, CI/CD ML, Dataiku ou MLflow avance</td><td>A mis en place un monitoring complet, a configure un retraining automatique</td><td>N a pas de monitoring sur ses modeles en production</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture MLOps organisation, gouvernance des modeles, choix de plateformes</td><td>A defini le framework MLOps de son organisation, a choisi et deploye la plateforme</td><td>Ne peut pas expliquer pourquoi ses modeles meurent en production</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>In a large group like LVMH, maintaining ML models in production across dozens of houses is as much an organisational challenge as a technical one. This guide starts from a concrete case.</p><h2 id='probleme'><span class='sn'>1</span>The problem: 8/10 models don't survive a year</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do the majority of deployed ML models not survive a year in production? What are the root causes?</p></div><ul><li><strong>No owner</strong> — nobody is designated to monitor and restart the pipeline when it fails</li><li><strong>Lack of understanding</strong> — new team members don't understand existing models, no documentation</li><li><strong>No delivery process</strong> — frequent errors in outputs, no automatic validation</li><li><strong>Rigidity in the face of change</strong> — the model doesn't adapt when data or business context changes</li></ul><h2 id='cycle'><span class='sn'>2</span>The 4 phases of the MLOps lifecycle</h2><table class='lt'><thead><tr><th>Phase</th><th>Activity</th><th>Output</th></tr></thead><tbody><tr><td><strong>1. Identification</strong></td><td>Clear definition of the business problem</td><td>Validated business case, defined KPIs</td></tr><tr><td><strong>2. Development</strong></td><td>Creation and training of the ML model</td><td>Model validated on test dataset</td></tr><tr><td><strong>3. Pilot phase</strong></td><td>Testing in real conditions, performance validation</td><td>Business validation, performance thresholds established</td></tr><tr><td><strong>4. Production</strong></td><td>Integration, continuous monitoring, improvement</td><td>Monitored model, retrained if drift detected</td></tr></tbody></table><h2 id='framework'><span class='sn'>3</span>The ML CI/CD framework: reliability, scalability, traceability</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What do you mean by CI/CD for ML? How is it different from classic software CI/CD?</p></div><ul><li><strong>Reliability</strong> — data monitoring (feature distribution), model performance monitoring, output monitoring, automatic retraining</li><li><strong>Scalability</strong> — reproducible orchestrated pipeline, technical and business documentation, fast onboarding for new members</li><li><strong>Traceability</strong> — storing historical outputs, logging runs, versioning models, enabling audit</li><li><strong>Difference from software CI/CD</strong> — in ML, testing model behaviour is probabilistic (not binary). A model can be correctly deployed but produce poor results if data has drifted</li></ul><h2 id='dataiku'><span class='sn'>4</span>MLOps with Dataiku: what the platform brings</h2><div class='cb'><code>Architecture MLOps LVMH avec Dataiku :
+<div id="body-en" style="display:none"><div class="ab">
+<p>In a large group like LVMH, maintaining ML models in production across dozens of houses is as much an organizational challenge as a technical one. This guide starts from a concrete case.</p><h2 id='probleme'><span class='sn'>1</span>The problem: 8/10 models don't survive one year</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do the majority of deployed ML models not survive one year in production? What are the root causes?</p></div><ul><li><strong>No owner</strong> — no one is designated to monitor and restart the pipeline when it fails</li><li><strong>Lack of understanding</strong> — new team members don't understand existing models, no documentation</li><li><strong>No delivery process</strong> — frequent errors in outputs, no automated validation</li><li><strong>Rigidity in the face of change</strong> — the model doesn't adapt when data or business context changes</li></ul><h2 id='cycle'><span class='sn'>2</span>The 4 phases of the MLOps lifecycle</h2><table class='lt'><thead><tr><th>Phase</th><th>Activity</th><th>Output</th></tr></thead><tbody><tr><td><strong>1. Identification</strong></td><td>Clear definition of the business problem</td><td>Validated business case, defined KPIs</td></tr><tr><td><strong>2. Development</strong></td><td>Creation and training of the ML model</td><td>Model validated on test dataset</td></tr><tr><td><strong>3. Pilot phase</strong></td><td>Testing under real conditions, performance validation</td><td>Business validation, established performance thresholds</td></tr><tr><td><strong>4. Production</strong></td><td>Integration, continuous monitoring, improvement</td><td>Monitored model, retrained if drift detected</td></tr></tbody></table><h2 id='framework'><span class='sn'>3</span>The CI/CD ML framework: reliability, scalability, traceability</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What do you mean by CI/CD for ML? How is it different from classic software CI/CD?</p></div><ul><li><strong>Reliability</strong> — data monitoring (feature distribution), model performance monitoring, output monitoring, automatic retraining</li><li><strong>Scalability</strong> — reproducible orchestrated pipeline, technical and business documentation, fast onboarding for new members</li><li><strong>Traceability</strong> — store historical outputs, log runs, version models, enable auditing</li><li><strong>Difference from software CI/CD</strong> — in ML, testing model behavior is probabilistic (not binary). A model can be correctly deployed but produce bad results if data has drifted</li></ul><h2 id='dataiku'><span class='sn'>4</span>MLOps with Dataiku: what the platform brings</h2><div class='cb'><code>MLOps Architecture LVMH with Dataiku:
 
-[Donnees] -> [Scenario Dataiku]
+[Data] -> [Dataiku Scenario]
                 |
-         Orchestration automatique :
-         - Trigger : temporel, changement dataset, manuel
-         - Reporter : Teams, email sur succes/echec
+         Automatic orchestration:
+         - Trigger: time-based, dataset change, manual
+         - Reporter: Teams, email on success/failure
                 |
-         Metrics & checks (30% du temps) :
+         Metrics & checks (30% of time):
          - Data quality (schema, distributions)
-         - Model performance en validation
-         - Model performance en production
-         - Distribution des outputs (avant/apres post-processing)
+         - Model performance in validation
+         - Model performance in production
+         - Output distribution (before/after post-processing)
                 |
-         Refactoring code (60% du temps) :
+         Code refactoring (60% of time):
          - Visual recipes -> SQL -> Python (performance)
-         - SQL Pipelines (traitement natif en base)
-         - Optimisation du stockage (zones)
+         - SQL Pipelines (native in-database processing)
+         - Storage optimization (zones)
                 |
-         Visualisation (5%) :
-         - Dashboard de suivi dans Dataiku</code></div><ul><li><strong>Experiment Tracking</strong> — run history with parameters, performance, and volume on validation dataset</li><li><strong>Model Store</strong> — historical validated models with their metrics and thresholds used</li><li><strong>Scenario</strong> — equi</div>
+         Visualization (5%):
+         - Monitoring dashboard in Dataiku</code></div><ul><li><strong>Experiment Tracking</strong> — run history with parameters, performance, volume on validation dataset</li><li><strong>Model Store</strong> — historical validated models with their metrics and thresholds used</li><li><strong>Scenario</strong> — equivalent of an Airflow DAG in Dataiku, with triggers, reporters and steps</li></ul><h2 id='fiabilite'><span class='sn'>5</span>60% of the time: refactoring is king</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In an MLOps project, how much time do you spend on modeling vs. pipeline and refactoring?</p></div><ul><li><strong>60% refactoring</strong> — code optimization for performance and maintainability: moving from Dataiku Visual Recipes to SQL, then to native SQL Pipelines</li><li><strong>30% monitoring</strong> — setting up all checks: data quality, model performance, output distribution</li><li><strong>5% visualization</strong> — monitoring dashboard for stakeholders</li><li><strong>5% orchestration</strong> — configuring triggers and reporters</li><li><strong>Conclusion</strong> — an MLOps project that is 80% machine learning and 20% engineering is already a project in trouble</li></ul><h2 id='portfolio'><span class='sn'>6</span>Types of models in production at LVMH</h2><ul><li><strong>Client Development</strong> — targeting clients based on their behavior (repeaters, one-timers)</li><li><strong>Product Recommendation</strong> — cross-product recommendation across the group's houses</li><li><strong>Sales Forecast</strong> — sales forecasting by house, zone, channel</li><li><strong>Efficiency Models</strong> — inventory optimization, reduction of unsold items</li></ul><div class='cb'><code>from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+import mlflow
+
+class MLOpsPipeline:
+    def train_and_log(self, X_train, y_train, X_val, y_val):
+        with mlflow.start_run() as run:
+            mlflow.sklearn.autolog()
+            model = XGBClassifier(n_estimators=300, max_depth=6)
+            model.fit(X_train, y_train, eval_set=[(X_val, y_val)])
+            mlflow.log_metric('auc', roc_auc_score(y_val, model.predict_proba(X_val)[:,1]))
+            return run.info.run_id
+    
+    def check_drift(self, reference, production):
+        report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
+        report.run(reference_data=reference, current_data=production)
+        result = report.as_dict()
+        if result['metrics'][0]['result']['dataset_drift']:
+            self.trigger_retraining()
+        return result
+    
+    def trigger_retraining(self):
+        requests.post(f'{AIRFLOW_URL}/api/v1/dags/retrain_churn/dagRuns',
+                     json={'conf': {'triggered_by': 'drift_detection'}},
+                     auth=('airflow', AIRFLOW_PASSWORD))</code></div>
+<ul>
+<li><strong>Retraining triggers</strong> - drift detected (Evidently), metric degradation (AUC -5%), calendar schedule (monthly), or volume threshold (100k new examples)</li>
+<li><strong>Champion/Challenger pattern</strong> - the new model routes 10% of traffic. If Challenger outperforms after N days, automatic promotion</li>
+<li><strong>Feature Store</strong> - Feast, Databricks Feature Store, Vertex. Centralizes features between training and serving. Eliminates training/serving skew</li>
+<li><strong>Model cards</strong> - document performance by segment (age, region, product). Mandatory for models with regulatory impact</li>
+<li><strong>Immediate rollback</strong> - the MLflow Model Registry allows reverting to the previous version in 1 command. Test rollback regularly in staging</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Has deployed a model, knows MLflow, does basic checks</td><td>Has deployed to production, monitors performance, recognizes causes of obsolescence</td><td>Thinks that deploying = putting the notebook in prod</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Complete MLOps framework, drift monitoring, CI/CD ML, Dataiku or advanced MLflow</td><td>Has set up complete monitoring, has configured automatic retraining</td><td>Has no monitoring on their models in production</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Organizational MLOps architecture, model governance, platform choices</td><td>Has defined the MLOps framework for their organization, has chosen and deployed the platform</td><td>Cannot explain why their models die in production</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ou ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

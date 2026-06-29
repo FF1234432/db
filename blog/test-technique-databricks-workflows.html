@@ -213,12 +213,12 @@ jobs:
 <div class='sq'><div class='sl'>Discriminating question</div><p>When do you choose Databricks Workflows over Airflow?</p></div>
 <ul>
 <li><strong>Databricks Workflows</strong> — native orchestrator built into the platform. Zero infrastructure to manage, monitoring in the Databricks UI, direct access to clusters</li>
-<li><strong>Advantages vs Airflow</strong> — no Python DAG to maintain, clusters shared between tasks, unified monitoring with notebooks, native retry with resumption from the failed task</li>
+<li><strong>Advantages vs Airflow</strong> — no Python DAG to maintain, clusters shared between tasks, unified monitoring with notebooks, native retry with resume from failed task</li>
 <li><strong>Limitations vs Airflow</strong> — fewer connectors (no provider ecosystem), difficult to orchestrate resources outside Databricks, less mature for complex pipelines</li>
-<li><strong>Practical rule</strong> — if 90% of your processing is in Databricks: Workflows. If you're orchestrating external services (Fivetran, dbt Cloud, APIs): Airflow or Prefect</li>
-<li><strong>Coexistence</strong> — many teams use Airflow for orchestration and trigger Databricks jobs via the DatabricksSubmitRunOperator</li>
+<li><strong>Practical rule</strong> — if 90% of your processing is in Databricks: Workflows. If you orchestrate external services (Fivetran, dbt Cloud, APIs): Airflow or Prefect</li>
+<li><strong>Coexistence</strong> — many teams use Airflow for orchestration and trigger Databricks jobs via the DatabricksSubmitRunOperator operator</li>
 </ul>
-<div class='cb'><code># Déclencher un job Databricks depuis Airflow
+<div class='cb'><code># Trigger a Databricks job from Airflow
 from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
 
 dbt_task = DatabricksSubmitRunOperator(
@@ -243,11 +243,11 @@ dbt_task = DatabricksSubmitRunOperator(
 <li><strong>dbt task</strong> — native integration with dbt Core or dbt Cloud. Runs dbt models on a Databricks cluster</li>
 <li><strong>SQL task</strong> — run SQL queries on a SQL Warehouse (serverless or classic)</li>
 <li><strong>Pipeline task</strong> — trigger a Delta Live Tables pipeline</li>
-<li><strong>Run-if conditions</strong> — ALL_SUCCESS (default), AT_LEAST_ONE_SUCCESS, NONE_FAILED, ALL_DONE, AT_LEAST_ONE_FAILED. Enables conditional branching</li>
+<li><strong>run-if conditions</strong> — ALL_SUCCESS (default), AT_LEAST_ONE_SUCCESS, NONE_FAILED, ALL_DONE, AT_LEAST_ONE_FAILED. Enables conditional branching</li>
 </ul>
-<div class='cb'><code"># Exemple de workflow JSON (config as code)
+<div class='cb'><code># Example workflow JSON (config as code)
 {
-  "name": "pipeline-data-quotidien",
+  "name": "daily-data-pipeline",
   "tasks": [
     {
       "task_key": "ingestion",
@@ -278,14 +278,110 @@ dbt_task = DatabricksSubmitRunOperator(
 <li><strong>Databricks Repos</strong> — clone a GitHub/GitLab/Bitbucket repo directly into Databricks. Manual or API-based synchronization</li>
 <li><strong>Branches per environment</strong> — main → production, develop → staging, feature/* → personal dev</li>
 <li><strong>Jobs point to branches</strong> — the prod job points to main, the staging job to develop. Promotion = PR merge</li>
-<li><strong>Mandatory code review</strong> — notebooks are Python files in the repo. Normal pull requests with code review</li>
+<li><strong>Mandatory code review</strong> — notebooks are Python files in the repo. Standard pull requests with code review</li>
 </ul>
-<div class='cb'><code># Mettre à jour un repo Databricks via API (depuis CI/CD)
+<div class='cb'><code># Update a Databricks repo via API (from CI/CD)
 import requests
 
 def update_databricks_repo(repo_id, branch):
     resp = requests.patch(
-        f"{DATABRICKS_HOST}/api/2.0/repos/{</code></div></div>
+        f"{DATABRICKS_HOST}/api/2.0/repos/{repo_id}",
+        headers={"Authorization": f"Bearer {TOKEN}"},
+        json={"branch": branch}
+    )
+    return resp.json()
+
+# In GitHub Actions: update repo → trigger job
+update_databricks_repo(PROD_REPO_ID, "main")
+trigger_job(PROD_JOB_ID)</code></div>
+
+<h2 id='bundles'><span class='sn'>4</span>Asset Bundles: IaC for Databricks</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>What are Databricks Asset Bundles? Why replace manual configurations?</p></div>
+<ul>
+<li><strong>DAB (Databricks Asset Bundles)</strong> — define jobs, DLT pipelines, permissions, clusters in versioned YAML in Git</li>
+<li><strong>Environments</strong> — dev/staging/prod with different variables (cluster size, credentials, targets) in the same file</li>
+<li><strong>Deploy via CLI</strong> — <code>databricks bundle deploy</code> synchronizes the configuration into the target environment</li>
+<li><strong>vs manual configuration</strong> — manual config in the UI is not versioned, not reproducible, not testable</li>
+</ul>
+<div class='cb'><code># databricks.yml - Asset Bundle
+bundle:
+  name: sales-pipeline
+
+variables:
+  cluster_size:
+    default: "Small"
+
+targets:
+  dev:
+    mode: development
+    variables:
+      cluster_size: "Small"
+  prod:
+    mode: production
+    variables:
+      cluster_size: "Large"
+
+resources:
+  jobs:
+    pipeline_quotidien:
+      name: "Daily Sales Pipeline"
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+      tasks:
+        - task_key: ingestion
+          notebook_task:
+            notebook_path: ./notebooks/ingestion.py</code></div>
+
+<h2 id='cicd'><span class='sn'>5</span>CI/CD with Databricks Asset Bundles</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you configure a CI/CD pipeline to deploy Databricks jobs?</p></div>
+<div class='cb'><code># .github/workflows/deploy.yml
+name: Deploy Databricks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+      
+      - name: Validate bundle (PR)
+        if: github.event_name == 'pull_request'
+        run: databricks bundle validate --target staging
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Deploy to production (main)
+        if: github.ref == 'refs/heads/main'
+        run: databricks bundle deploy --target prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_PROD_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_PROD_TOKEN }}</code></div>
+
+<h2 id='couts'><span class='sn'>6</span>Optimizing Workflow costs</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you reduce the costs of your Databricks jobs in production?</p></div>
+<ul>
+<li><strong>Job clusters vs All-purpose</strong> — always use job clusters for production. They shut down at the end of the job. All-purpose clusters remain active and incur continuous costs</li>
+<li><strong>Spot instances for workers</strong> — 50-80% savings. Configure an on-demand fallback if spot instances are unavailable</li>
+<li><strong>Photon Engine</strong> — enable Photon on SQL/DataFrame tasks. Up to 12x faster = fewer DBUs consumed</li>
+<li><strong>Serverless for SQL tasks</strong> — serverless SQL Warehouse: per-second billing, fast startup, zero management</li>
+<li><strong>Right-sized clusters</strong> — start small (2-4 workers) and measure. Many pipelines don't need 8 workers</li>
+</ul>
+
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Mid-level</span></td><td>Workflows jobs, task types, Git integration, job clusters</td><td>Has configured jobs with dependencies, uses job clusters, points to Git branches</td><td>Runs in production on all-purpose clusters, manual config in the UI</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Asset Bundles, CI/CD GitHub Actions, cost optimization, spot instances</td><td>Has set up a CI/CD pipeline with DAB, reduced costs via spot + Photon</td><td>Does not know what Asset Bundles are, no CI/CD on Databricks jobs</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

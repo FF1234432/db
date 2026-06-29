@@ -163,7 +163,8 @@ view: orders {
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>LookML basics, views/explores/models, dimensions/mesures</td><td>A créé un explore avec jointures, sait la différence dimension/mesure</td><td>N a fait que cliquer dans l UI Looker sans toucher au LookML</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PDTs, aggregate awareness, Git workflow, access filters</td><td>A créé des PDTs, gère le cache avec datagroups, travaille en branches Git</td><td>Ne sait pas ce qu est une PDT, n a jamais utilisé Git dans Looker</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='lookml'><span class='sn'>1</span>What is the LookML semantic model</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is the LookML semantic model Looker's primary value?</p></div><div class='cb'><code># view : définit les champs disponibles
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='lookml'><span class='sn'>1</span>What is the LookML Semantic Model</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is the LookML semantic model Looker's primary value?</p></div><div class='cb'><code># view : defines available fields
 view: orders {
   sql_table_name: analytics.fct_orders ;;
 
@@ -183,17 +184,17 @@ view: orders {
     type: sum
     sql: ${TABLE}.amount ;;
     value_format_name: eur
-    description: 'Revenu total HT'
+    description: 'Total revenue excl. tax'
   }
 
   measure: avg_basket {
     type: average
     sql: ${TABLE}.amount ;;
   }
-}</code></div><ul><li><strong>Single source of truth</strong> — the definition of 'revenue' is in the LookML, not in every dashboard</li><li><strong>Self-service</strong> — business teams explore data by combining dimensions and measures defined by the data team</li><li><strong>Separation</strong> — the data team maintains the model, business teams create their own explorations</li></ul><h2 id='explores'><span class='sn'>2</span>Explores and join management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you organize your explores to keep them performant?</p></div><div class='cb'><code># model : assemble les explores
+}</code></div><ul><li><strong>Single source of truth</strong> — the definition of 'revenue' lives in LookML, not in every dashboard</li><li><strong>Self-service</strong> — business teams explore data by combining dimensions and measures defined by the data team</li><li><strong>Separation of concerns</strong> — the data team maintains the model, business teams create their own explorations</li></ul><h2 id='explores'><span class='sn'>2</span>Explores and join management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you organize your explores to keep them performant?</p></div><div class='cb'><code># model : assembles explores
 explore: orders {
-  label: 'Commandes et revenus'
-  description: 'Analyse des commandes, clients et produits'
+  label: 'Orders and revenue'
+  description: 'Analysis of orders, customers and products'
 
   join: customers {
     type: left_outer
@@ -207,12 +208,12 @@ explore: orders {
     relationship: many_to_one
   }
 
-  # Restriction d accès selon le rôle
+  # Access restriction based on role
   access_filter: {
     field: customers.region
     user_attribute: user_region
   }
-}</code></div><ul><li><strong>Fanout problem</strong> — joining two fact tables in an explore can create duplicates. Always join through the dimension</li><li><strong>relationship</strong> — always define the cardinality (many_to_one, one_to_many). Looker optimizes the SQL query accordingly</li></ul><h2 id='pdt'><span class='sn'>3</span>Persistent Derived Tables: optimizing heavy computations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a PDT? In what cases do you use it?</p></div><div class='cb'><code># PDT : table précalculée stockée dans le warehouse
+}</code></div><ul><li><strong>Fanout problem</strong> — joining two fact tables in an explore can create duplicates. Always join through the dimension</li><li><strong>relationship</strong> — always define cardinality (many_to_one, one_to_many). Looker optimizes the SQL query accordingly</li></ul><h2 id='pdt'><span class='sn'>3</span>Persistent Derived Tables: optimizing heavy computations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a PDT? In what cases do you use it?</p></div><div class='cb'><code># PDT : pre-computed table stored in the warehouse
 view: revenue_by_cohort {
   derived_table: {
     sql:
@@ -223,20 +224,71 @@ view: revenue_by_cohort {
       FROM ${orders.SQL_TABLE_NAME}
       GROUP BY 1, 2 ;;
 
-    # Rebuild chaque nuit à 3h
+    # Rebuild every night at 3am
     persist_for: '24 hours'
-    # Ou via datagroup (déclenché par Airflow)
+    # Or via datagroup (triggered by Airflow)
     # datagroup_trigger: nightly_refresh
   }
-}</code></div><ul><li><strong>PDT</strong> — complex SQL query whose result is physically stored in the warehouse. Avoids recalculating on every query</li><li><strong>When to use</strong> — heavy aggregation calculations, cohorts, complex metrics consulted frequently</li><li><strong>Incremental PDT</strong> — only rebuilds new rows. Saves compute on large tables</li></ul><h2 id='dimensions'><span class='sn'>4</span>Advanced dimensions and measures</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you implement a 30-day retention metric in LookML?</p></div><div class='cb'><code>view: orders {
-  # Dimension de période relative
+}</code></div><ul><li><strong>PDT</strong> — complex SQL query whose result is physically stored in the warehouse. Avoids recomputing on every query</li><li><strong>When to use</strong> — heavy aggregation computations, cohorts, complex metrics queried frequently</li><li><strong>Incremental PDT</strong> — only rebuilds new rows. Saves compute on large tables</li></ul><h2 id='dimensions'><span class='sn'>4</span>Advanced dimensions and measures</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you implement a 30-day retention metric in LookML?</p></div><div class='cb'><code>view: orders {
+  # Relative period dimension
   dimension: days_since_last_order {
     type: number
     sql: DATE_DIFF(CURRENT_DATE, ${last_order_date}, DAY) ;;
   }
 
-  # Mesure conditionnelle : clients actifs dans les 30 derniers jours
-  measure: active_customers_30</code></div></div>
+  # Conditional measure : active customers in the last 30 days
+  measure: active_customers_30d {
+    type: count_distinct
+    sql: CASE WHEN ${days_since_last_order} <= 30
+              THEN ${customer_id} END ;;
+    drill_fields: [customer_id, last_order_date]
+  }
+
+  # Ratio measure
+  measure: retention_rate_30d {
+    type: number
+    sql: ${active_customers_30d} * 1.0 / NULLIF(${total_customers}, 0) ;;
+    value_format_name: percent_2
+  }
+}</code></div><h2 id='git'><span class='sn'>5</span>Git and deployment: LookML workflow</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage the lifecycle of a LookML project as a team?</p></div><ul><li><strong>Built-in Git</strong> — Looker is natively connected to Git (GitHub/GitLab). Every change is a commit</li><li><strong>Development branches</strong> — each developer works on their own branch. The Looker UI allows switching branches</li><li><strong>PR and review</strong> — code review on LookML changes before merging to main</li><li><strong>lookml-validator</strong> — CLI tool to validate LookML in CI/CD without the Looker UI</li><li><strong>Environments</strong> — point to different schemas (dev/prod) depending on the branch</li></ul><h2 id='perf'><span class='sn'>6</span>Looker performance and optimization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you optimize the performance of a slow Looker explore?</p></div><ul><li><strong>Aggregate Awareness</strong> — define rollup tables that Looker uses automatically when the query allows it</li><li><strong>Caching</strong> — configure datagroups to invalidate cache intelligently</li><li><strong>PDT for heavy computations</strong> — move complex calculations out of runtime</li><li><strong>Limit explores</strong> — an overly broad explore with 20 joined views will be slow. Create specialized explores per use case</li></ul><div class='cb'><code># LookML : semantic modeling
+# views/orders.view.lkml
+view: orders {
+  sql_table_name: analytics.fct_orders ;;
+  
+  dimension: order_id {
+    type: string
+    primary_key: yes
+    sql: ${TABLE}.order_id ;;
+  }
+  
+  dimension_group: order_date {
+    type: time
+    timeframes: [date, week, month, quarter, year]
+    sql: ${TABLE}.order_date ;;
+  }
+  
+  measure: total_revenue {
+    type: sum
+    sql: ${TABLE}.amount ;;
+    value_format_name: usd
+    drill_fields: [order_id, customer_id, order_date_date, amount]
+  }
+  
+  measure: average_order_value {
+    type: average
+    sql: ${TABLE}.amount ;;
+    value_format_name: usd
+  }
+  
+  # Derived table : SQL in LookML
+  derived_table: {
+    sql: SELECT customer_id, COUNT(*) as order_count, SUM(amount) as ltv
+         FROM analytics.fct_orders
+         GROUP BY customer_id ;;
+    persist_for: "24 hours"
+  }
+}</code></div><ul><li><strong>Explore = entry point</strong> — defines which views a user can join and how. A well-designed explore = one precise business question (orders with customers, events with sessions)</li><li><strong>PDT (Persistent Derived Tables)</strong> — materialize heavy SQL queries in Looker. CRON refresh or trigger-based. Performance gain for recurring analyses</li><li><strong>LookML vs dbt</strong> — both do modeling but at different levels. dbt: SQL transformations in the warehouse (source of truth). LookML: semantic layer for BI (metrics, labels, formatting)</li><li><strong>Git integration</strong> — all LookML is versioned in Git. Development on branches, review via Pull Request, deployment to production via merge</li><li><strong>Content Validator</strong> — Looker tool that detects broken Looks/Dashboards when a LookML field is renamed or deleted. Essential before every deployment</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>LookML basics, views/explores/models, dimensions/measures</td><td>Has created an explore with joins, knows the difference between dimension/measure</td><td>Has only clicked in the Looker UI without touching LookML</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PDTs, aggregate awareness, Git workflow, access filters</td><td>Has created PDTs, manages cache with datagroups, works on Git branches</td><td>Does not know what a PDT is, has never used Git in Looker</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer Looker ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

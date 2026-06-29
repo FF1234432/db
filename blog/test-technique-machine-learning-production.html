@@ -142,14 +142,15 @@ if drift_results["metrics"][0]["result"]["dataset_drift"]:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Pipeline sklearn, FastAPI serving, MLflow Registry</td><td>A déployé un modèle en API FastAPI, utilise MLflow Registry</td><td>Déploie un notebook en production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Monitoring drift, canary deployment, retraining auto</td><td>A mis en place le monitoring de drift, a fait du canary deployment</td><td>N a pas de monitoring sur ses modèles en production</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='packaging'><span class='sn'>1</span>Packaging a model for production</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you package a sklearn model so it is reproducible in production?</p></div><div class='cb'><code>import joblib
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='packaging'><span class='sn'>1</span>Packaging a model for production</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you package a sklearn model to make it reproducible in production?</p></div><div class='cb'><code>import joblib
 import json
 from datetime import datetime
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import GradientBoostingClassifier
 
-# Full pipeline: preprocessing included
+# Full pipeline : preprocessing included
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('model', GradientBoostingClassifier(n_estimators=100))
@@ -171,13 +172,13 @@ model_package = {
 }
 joblib.dump(model_package, 'model_v2.1.0.pkl')
 
-# Signature: validate inputs in production
+# Signature : validate inputs in production
 from mlflow.models import infer_signature
-signature = infer_signature(X_train, pipeline.predict_proba(X_train))</code></div><h2 id='serving'><span class='sn'>2</span>Model serving: options in 2025</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use FastAPI, BentoML, or Vertex AI Endpoints to serve a model?</p></div><table class='lt'><thead><tr><th>Option</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td>FastAPI custom</td><td>Full control, simple</td><td>Python teams, single model, custom logic</td></tr><tr><td>BentoML</td><td>ML abstraction, batching, adaptive batching</td><td>Multiple models, throughput optimization needs</td></tr><tr><td>MLflow Serving</td><td>Integrated with MLflow Registry</td><td>Databricks teams, deployment from Registry</td></tr><tr><td>Vertex AI Endpoints</td><td>Managed GCP, autoscaling</td><td>GCP stack, zero infra to manage</td></tr><tr><td>Seldon Core</td><td>K8s native, built-in A/B testing</td><td>Advanced K8s teams, multi-model</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>3</span>Monitoring predictions in production</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What metrics do you monitor on a classification model in production?</p></div><div class='cb'><code>import pandas as pd
+signature = infer_signature(X_train, pipeline.predict_proba(X_train))</code></div><h2 id='serving'><span class='sn'>2</span>Model serving : options in 2025</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use FastAPI, BentoML, or Vertex AI Endpoints to serve a model?</p></div><table class='lt'><thead><tr><th>Option</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td>FastAPI custom</td><td>Full control, simple</td><td>Python teams, single model, custom logic</td></tr><tr><td>BentoML</td><td>ML abstraction, batching, adaptive batching</td><td>Multiple models, throughput optimization needed</td></tr><tr><td>MLflow Serving</td><td>Integrated MLflow Registry</td><td>Databricks teams, deployment from Registry</td></tr><tr><td>Vertex AI Endpoints</td><td>Managed GCP, autoscaling</td><td>GCP stack, zero infra to manage</td></tr><tr><td>Seldon Core</td><td>K8s native, built-in A/B testing</td><td>Advanced K8s teams, multi-model</td></tr></tbody></table><h2 id='monitoring'><span class='sn'>3</span>Monitoring predictions in production</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which metrics do you monitor on a classification model in production?</p></div><div class='cb'><code>import pandas as pd
 from evidently.report import Report
 from evidently.metric_preset import ClassificationPreset, DataDriftPreset
 
-# Evidently report: data drift + performance
+# Evidently report : data drift + performance
 report = Report(metrics=[
     DataDriftPreset(),        # feature distributions
     ClassificationPreset()    # classification metrics
@@ -190,11 +191,71 @@ report.run(
 
 report.save_html('monitoring_report.html')
 
-# Key metrics to monitor:
+# Key metrics to monitor :
 # - Prediction score distribution (score drift)
 # - Input feature distribution (data drift)
 # - AUC/F1 on received labels (performance drift)
-# - Positive prediction rate (prediction drift)</code></div><h2 id='canary'><span class='sn'>4</span>Canary deployment and shadow mode</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between shadow mode and canary deployment for an ML model?</p></div><ul><li><strong>Shadow mode</strong> — the new model receives the same requests as the production model but its responses are not returned to users. Allows risk-free comparison</li><li><strong>Canary deployment</strong> — 5-10% of traffic is sent to the new model. Users actually receive its predictions. Allows measuring real impact</li><li><strong>Model A/B testing</strong> — canary variant with deterministic assignment (same user → same model) for consistent results</li><li><strong>Rollback</strong> — s</li></ul></div>
+# - Positive prediction rate (prediction drift)</code></div><h2 id='canary'><span class='sn'>4</span>Canary deployment and shadow mode</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between shadow mode and canary deployment for an ML model?</p></div><ul><li><strong>Shadow mode</strong> — the new model receives the same requests as the production model but its responses are not returned to users. Allows risk-free comparison</li><li><strong>Canary deployment</strong> — 5-10% of traffic is sent to the new model. Users actually receive its predictions. Allows measuring real impact</li><li><strong>Model A/B testing</strong> — canary variant with deterministic assignment (same user → same model) for consistent results</li><li><strong>Rollback</strong> — if metrics degrade, immediately switch 100% of traffic back to the old model</li></ul><h2 id='retraining'><span class='sn'>5</span>Automatic retraining : when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you decide that a model needs to be retrained? How do you automate this?</p></div><div class='cb'><code># Retraining trigger strategies
+
+# 1. Fixed schedule (simple)
+# Retrain every week, whether the model has degraded or not
+@weekly_task
+def scheduled_retraining():
+    train_and_evaluate()
+    if new_model_better_than_current():
+        deploy_new_model()
+
+# 2. Drift-based (intelligent)
+def check_and_retrain():
+    drift_score = compute_psi(training_data, recent_predictions)
+    if drift_score > 0.2:  # PSI > 0.2 = significant drift
+        trigger_retraining()
+    
+    auc_current = evaluate_on_labeled_data(recent_labeled)
+    if auc_current < baseline_auc * 0.95:  # degradation > 5%
+        trigger_retraining()
+
+# PSI = Population Stability Index
+# Measures the distribution drift of a feature</code></div><h2 id='registry'><span class='sn'>6</span>Model Registry : model governance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage model versions and Staging → Production promotions?</p></div><ul><li><strong>MLflow Model Registry</strong> — version, tag (Staging/Production/Archived), store metadata</li><li><strong>Promotion process</strong> — model validated on test data → Staging → integration tests → Production</li><li><strong>Model card</strong> — model documentation : training data, performance, limitations, known biases</li><li><strong>Lineage</strong> — trace the training data, code, and hyperparameters that produced this model</li></ul>
+<div class='cb'><code>import great_expectations as gx
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+
+# 1. Incoming data validation
+context = gx.get_context()
+suite = context.add_expectation_suite("ml_input_validation")
+expectations = [
+    gx.expectations.ExpectColumnValuesToNotBeNull(column="feature_age"),
+    gx.expectations.ExpectColumnValuesToBeBetween(column="amount", min_value=0, max_value=1e6),
+    gx.expectations.ExpectColumnDistinctValuesToBeInSet(
+        column="status", value_set=["active", "inactive", "pending"]
+    )
+]
+
+# 2. Drift monitoring in production
+report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
+report.run(reference_data=train_data, current_data=production_data_last_7d)
+
+drift_results = report.as_dict()
+if drift_results["metrics"][0]["result"]["dataset_drift"]:
+    trigger_retraining_pipeline()
+    alert_slack(f"Data drift detected! Score: {drift_results['metrics'][0]['result']['drift_share']:.2%}")</code></div>
+<ul>
+<li><strong>Data drift vs concept drift</strong> — data drift: features change distribution. Concept drift: the relationship between features and target changes. Both require retraining</li>
+<li><strong>Shadow mode</strong> — deploy the new model in parallel with the old one, log its predictions without applying them. Compare on real data before switching</li>
+<li><strong>Canary deployment</strong> — route 5-10% of traffic to the new model. Monitor metrics before expanding. Immediate rollback if regression</li>
+<li><strong>Feature Store</strong> — centralize ML features (Feast, Databricks Feature Store). Avoids duplication between training and inference (training/serving skew)</li>
+<li><strong>Model A/B test</strong> — measure business impact (conversion, retention) not just the ML metric (AUC). A model with better AUC can perform worse in production</li>
+</ul>
+<ul>
+<li><strong>Data drift vs concept drift</strong> - data drift: features change distribution. Concept drift: the relationship between features and target changes. Both require retraining</li>
+<li><strong>Shadow mode</strong> - deploy the new model in parallel with the old one, log its predictions without applying them. Compare on real data before switching</li>
+<li><strong>Canary deployment</strong> - route 5-10% of traffic to the new model. Monitor metrics before expanding. Immediate rollback if regression</li>
+<li><strong>Feature Store</strong> - centralize ML features (Feast, Databricks Feature Store). Avoids duplication between training and inference (training/serving skew)</li>
+<li><strong>Model A/B test</strong> - measure business impact (conversion, retention) not just the ML metric (AUC). A model with better AUC can perform worse in production</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>sklearn Pipeline, FastAPI serving, MLflow Registry</td><td>Has deployed a model as a FastAPI API, uses MLflow Registry</td><td>Deploys a notebook to production</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Drift monitoring, canary deployment, auto retraining</td><td>Has set up drift monitoring, has done canary deployment</td><td>Has no monitoring on production models</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un ML Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

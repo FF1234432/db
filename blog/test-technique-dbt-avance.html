@@ -155,7 +155,8 @@ SELECT * FROM {{ ref('project_a', 'dim_customers') }}
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Modeles SQL, tests generiques, ref() et source()</td><td>Structure un projet dbt, utilise not_null/unique, sait ce que fait ref()</td><td>Ne sait pas ce que fait ref() vs une jointure directe</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Macros, dbt-utils, snapshots, CI/CD slim</td><td>A ecrit une macro avec run_query, utilise dbt_utils.surrogate_key, a configure un snapshot</td><td>N a jamais utilise dbt_utils, ne sait pas ce qu est un snapshot</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Packages custom, hooks, exposures, column-level lineage, performance</td><td>A cree un package dbt interne, configure les hooks GRANT, documenté les exposures</td><td>Ne sait pas ce que sont les exposures, n a jamais optimise les performances dbt</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>dbt has become the standard for analytical transformation. But knowing SELECT is not enough for a Senior position — we evaluate mastery of macros, packages and the complete data lifecycle.</p><h2 id='macros'><span class='sn'>1</span>Advanced Jinja Macros</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a macro and a model? When do you write a macro rather than a model?</p></div><div class='cb'><code>-- macros/generate_date_spine.sql
+<div id="body-en" style="display:none"><div class="ab">
+<p>dbt has become the standard for analytical transformation. But knowing SELECT is not enough for a Senior position — we evaluate mastery of macros, packages and the complete data lifecycle.</p><h2 id='macros'><span class='sn'>1</span>Advanced Jinja Macros</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a macro and a model? When do you write a macro rather than a model?</p></div><div class='cb'><code>-- macros/generate_date_spine.sql
 {% macro generate_date_spine(start, end) %}
     {{ dbt_utils.date_spine(
         datepart='day',
@@ -174,7 +175,7 @@ SELECT * FROM {{ ref('project_a', 'dim_customers') }}
     {% endset %}
     {% set results = run_query(query) %}
     {{ return(results.columns[0].values()) }}
-{% endmacro %}</code></div><ul><li><strong>Macro</strong> — reusable Jinja function that generates SQL. No persisted data. Ideal for repetitive logic</li><li><strong>Model</strong> — table or view persisted in the data warehouse. Contains business logic</li><li><strong>run_query()</strong> — execute a SQL query within a macro to dynamically generate SQL</li></ul><h2 id='packages'><span class='sn'>2</span>dbt-utils and dbt-expectations Packages</h2><div class='cb'><code># packages.yml
+{% endmacro %}</code></div><ul><li><strong>Macro</strong> — reusable Jinja function that generates SQL. No persisted data. Ideal for repetitive logic</li><li><strong>Model</strong> — table or view persisted in the data warehouse. Contains business logic</li><li><strong>run_query()</strong> — execute a SQL query inside a macro to dynamically generate SQL</li></ul><h2 id='packages'><span class='sn'>2</span>dbt-utils and dbt-expectations Packages</h2><div class='cb'><code># packages.yml
 packages:
   - package: dbt-labs/dbt_utils
     version: ['>=1.0.0']
@@ -191,7 +192,7 @@ models:
               min_value: 0
               max_value: 100000
           - dbt_expectations.expect_column_proportion_of_unique_values_to_be_between:
-              min_value: 0.95</code></div><ul><li><strong>dbt_utils</strong> — utility functions: surrogate_key(), date_spine(), pivot(), star(), get_column_values()</li><li><strong>dbt_expectations</strong> — tests inspired by Great Expectations. Distribution comparisons, values between bounds, proportions</li><li><strong>dbt_audit_helper</strong> — compare two versions of a model to validate a refactoring</li></ul><h2 id='snapshots'><span class='sn'>3</span>Snapshots: implementing SCD2</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a dbt snapshot? How do you implement a type 2 SCD with dbt?</p></div><div class='cb'><code>-- snapshots/snap_customers.sql
+              min_value: 0.95</code></div><ul><li><strong>dbt_utils</strong> — utility functions: surrogate_key(), date_spine(), pivot(), star(), get_column_values()</li><li><strong>dbt_expectations</strong> — tests inspired by Great Expectations. Distribution comparisons, values within bounds, proportions</li><li><strong>dbt_audit_helper</strong> — compare two versions of a model to validate a refactoring</li></ul><h2 id='snapshots'><span class='sn'>3</span>Snapshots: implementing SCD2</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a dbt snapshot? How do you implement a Type 2 SCD with dbt?</p></div><div class='cb'><code>-- snapshots/snap_customers.sql
 {% snapshot snap_customers %}
     {{ config(
         target_schema='snapshots',
@@ -209,13 +210,74 @@ models:
 -- dbt_valid_from : validity start date
 -- dbt_valid_to   : end date (NULL = current version)</code></div><ul><li><strong>SCD2</strong> — preserve the history of changes. Each modification creates a new row with validity dates</li><li><strong>strategy=timestamp</strong> — detects changes via an updated_at column</li><li><strong>strategy=check</strong> — compares values from a list of columns to detect changes</li></ul><h2 id='analyses'><span class='sn'>4</span>Analyses, seeds and exposures</h2><ul><li><strong>Analyses</strong> — SQL files for ad-hoc exploration, not materialized as tables. Ideal for investigation queries</li><li><strong>Seeds</strong> — small CSV files loaded into the warehouse via dbt seed. Useful for reference tables (countries, categories, mappings)</li><li><strong>Exposures</strong> — document the consumers of dbt models (Tableau dashboards, Power BI, apps). Enables traceability in dbt docs</li></ul><h2 id='hooks'><span class='sn'>5</span>Hooks and operations</h2><div class='cb'><code># dbt_project.yml
 models:
-  mon_projet:
+  my_project:
     marts:
       +post-hook:
         - 'GRANT SELECT ON {{ this }} TO ROLE analyst_role'
         - '{{ log("Model " ~ this ~ " built", info=True) }}'
 
-# on-run-start et o</code></div></div>
+# on-run-start and on-run-end
+on-run-start:
+  - 'CREATE SCHEMA IF NOT EXISTS {{ target.schema }}'
+on-run-end:
+  - '{{ elementary.on_run_end() }}'  # monitoring package</code></div><h2 id='docs'><span class='sn'>6</span>Documentation and automatic lineage</h2><ul><li><strong>dbt docs generate</strong> — generates navigable documentation with the complete lineage from all sources to final models</li><li><strong>YAML descriptions</strong> — document each model and each column in schema.yml files</li><li><strong>dbt docs serve</strong> — local web interface to browse the documentation and the dependency graph</li><li><strong>Column-level lineage</strong> — with dbt 1.6+, lineage is tracked at the column level (which source column feeds which target column)</li></ul>
+<div class='cb'><code># Advanced dbt techniques
+
+# 1. Custom generic test (reusable)
+# tests/generic/test_not_negative.sql
+{% test not_negative(model, column_name) %}
+    SELECT {{ column_name }} FROM {{ model }}
+    WHERE {{ column_name }} < 0
+{% endtest %}
+
+# 2. Hooks for custom operations
+# dbt_project.yml
+models:
+  my_project:
+    marts:
+      +post-hook: "GRANT SELECT ON {{ this }} TO ROLE analyst_role"
+      +pre-hook: "DROP TABLE IF EXISTS {{ this }}_old"
+
+# 3. Selector yaml for fine-grained orchestration
+# selectors.yml  
+selectors:
+  - name: daily_pipeline
+    definition:
+      union:
+        - tag: daily
+        - method: path
+          value: models/marts/
+  - name: modified_and_downstream
+    definition:
+      method: state
+      value: modified+
+
+# 4. dbt Mesh: cross-project references
+# Reference a model from another dbt project
+SELECT * FROM {{ ref('project_a', 'dim_customers') }}
+
+# 5. Environment-based configs
+{% if target.name == 'prod' %}
+  {{ config(materialized='table', full_refresh=false) }}
+{% else %}
+  {{ config(materialized='view') }}
+{% endif %}</code></div>
+<ul>
+<li><strong>dbt Mesh</strong> — share dbt models between projects via cross-project refs. Ideal for large organizations with multiple independent dbt teams</li>
+<li><strong>Exposure tracking</strong> — document which dashboards consume which dbt models. Enables impact analysis: "if I change this model, which reports are affected?"</li>
+<li><strong>dbt Artifacts</strong> — manifest.json, catalog.json, run_results.json generated after each run. Usable for lineage (DataHub), CI/CD metrics, documentation</li>
+<li><strong>Slim CI</strong> — <code>dbt build --select state:modified+</code> only tests modified models and their descendants. Reduces CI time on PRs by 80%</li>
+<li><strong>Performance</strong> — <code>--threads 8</code> parallelizes independent models. On Snowflake/BigQuery, 8-16 threads is the sweet spot</li>
+</ul>
+<ul>
+<li><strong>dbt Mesh</strong> - share dbt models between projects via cross-project refs. Ideal for large organizations with multiple independent dbt teams</li>
+<li><strong>Exposure tracking</strong> - document which dashboards consume which dbt models. Impact analysis: if I change this model, which reports are affected?</li>
+<li><strong>Slim CI</strong> - dbt build --select state:modified+ only tests modified models and their descendants. Reduces CI time on PRs by 80%</li>
+<li><strong>Performance</strong> - --threads 8 parallelizes independent models. On Snowflake/BigQuery, 8-16 threads is the sweet spot</li>
+<li><strong>dbt Artifacts</strong> - manifest.json, catalog.json, run_results.json generated after each run. Usable for lineage (DataHub), CI/CD metrics, documentation</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>SQL models, generic tests, ref() and source()</td><td>Structures a dbt project, uses not_null/unique, knows what ref() does</td><td>Does not know what ref() does vs a direct join</td></tr><tr><td><span class='bd bm'>Mid-level</span></td><td>Macros, dbt-utils, snapshots, slim CI/CD</td><td>Has written a macro with run_query, uses dbt_utils.surrogate_key, has configured a snapshot</td><td>Has never used dbt_utils, does not know what a snapshot is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Custom packages, hooks, exposures, column-level lineage, performance</td><td>Has created an internal dbt package, configured GRANT hooks, documented exposures</td><td>Does not know what exposures are, has never optimized dbt performance</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

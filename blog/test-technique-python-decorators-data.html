@@ -253,15 +253,16 @@ def fetch_rate(currency: str) -> float:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Écrire un décorateur simple avec wraps, comprend l ordre</td><td>A écrit un décorateur retry ou cache, utilise functools.wraps</td><td>Ne sait pas ce qu est un décorateur</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Décorateurs paramétrés, composition, décorateurs de classe</td><td>Écrit des décorateurs paramétrés, gère l ordre de composition</td><td>N utilise jamais functools.wraps</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='bases'><span class='sn'>1</span>How decorators work</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a Python decorator? How does it work?</p></div><div class='cb'><code>import functools
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='bases'><span class='sn'>1</span>How decorators work</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a Python decorator? How does it work?</p></div><div class='cb'><code>import functools
 
-# Un décorateur est une fonction qui prend une fonction et retourne une fonction
+# A decorator is a function that takes a function and returns a function
 def mon_decorateur(func):
-    @functools.wraps(func)  # préserver le nom et la docstring
+    @functools.wraps(func)  # preserve the name and docstring
     def wrapper(*args, **kwargs):
-        print(f'Avant {func.__name__}')
+        print(f'Before {func.__name__}')
         result = func(*args, **kwargs)
-        print(f'Apres {func.__name__}')
+        print(f'After {func.__name__}')
         return result
     return wrapper
 
@@ -269,7 +270,7 @@ def mon_decorateur(func):
 def extract_data(source: str) -> list:
     return []
 
-# Equivalent à : extract_data = mon_decorateur(extract_data)</code></div><ul><li><strong>@functools.wraps</strong> — mandatory to preserve the name, docstring and signature of the decorated function</li><li><strong>*args, **kwargs</strong> — allows the wrapper to accept any arguments</li></ul><h2 id='retry'><span class='sn'>2</span>Retry decorator for network calls</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you write a retry decorator with exponential backoff?</p></div><div class='cb'><code>import functools
+# Equivalent to: extract_data = mon_decorateur(extract_data)</code></div><ul><li><strong>@functools.wraps</strong> — mandatory to preserve the name, docstring and signature of the decorated function</li><li><strong>*args, **kwargs</strong> — allows the wrapper to accept any arguments</li></ul><h2 id='retry'><span class='sn'>2</span>Retry decorator for network calls</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you write a retry decorator with exponential backoff?</p></div><div class='cb'><code>import functools
 import time
 import logging
 
@@ -305,7 +306,7 @@ def cache_with_ttl(ttl_seconds: int = 3600):
         cache = {}
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # Clé de cache basée sur les arguments
+            # Cache key based on arguments
             key = str(args) + str(sorted(kwargs.items()))
             now = time.time()
             if key in cache:
@@ -330,7 +331,153 @@ def pipeline_step(log_inputs=True, log_output_size=True):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             start = time.perf_counter()
-            logger = logging.getLogger(func</code></div></div>
+            logger = logging.getLogger(func.__module__)
+            
+            if log_inputs:
+                logger.info(f'START {func.__name__} | args={args[:2]} kwargs={list(kwargs.keys())}')
+            
+            try:
+                result = func(*args, **kwargs)
+                elapsed = time.perf_counter() - start
+                
+                size_info = ''
+                if log_output_size and hasattr(result, '__len__'):
+                    size_info = f' | output_size={len(result)}'
+                
+                logger.info(f'END {func.__name__} | elapsed={elapsed:.2f}s{size_info}')
+                return result
+            except Exception as e:
+                logger.error(f'FAILED {func.__name__} | elapsed={time.perf_counter()-start:.2f}s | error={e}')
+                raise
+        return wrapper
+    return decorator</code></div><h2 id='validate'><span class='sn'>5</span>Input validation with decorators</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you validate pipeline function parameters without polluting its code?</p></div><div class='cb'><code>import functools
+from datetime import date
+
+def validate_date_range(start_param='start_date', end_param='end_date', max_days=365):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            start = kwargs.get(start_param)
+            end = kwargs.get(end_param)
+            if start and end:
+                if start > end:
+                    raise ValueError(f'{start_param} must be <= {end_param}')
+                delta = (end - start).days
+                if delta > max_days:
+                    raise ValueError(f'Date range {delta} days exceeds max {max_days}')
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@validate_date_range(max_days=90)
+def extract_orders(start_date: date, end_date: date) -> list:
+    return query_orders(start_date, end_date)</code></div><h2 id='compose'><span class='sn'>6</span>Composing multiple decorators</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what order do multiple decorators apply? How do you compose them correctly?</p></div><div class='cb'><code>@retry(max_attempts=3)
+@cache_with_ttl(ttl_seconds=300)
+@pipeline_step()
+def fetch_and_cache(url: str) -> dict:
+    return requests.get(url).json()
+
+# Application order: bottom to top
+# fetch_and_cache = retry(cache_with_ttl(pipeline_step(func)))
+# Call: retry -> cache_with_ttl -> pipeline_step -> func
+
+# Rule: put retry on the outside (first layer)
+# so that retries benefit from the cache
+# If cache is on the outside, retries are not triggered
+# because the cache returns directly</code></div><ul><li><strong>Critical order</strong> — the outermost decorator executes first at call time</li><li><strong>Retry on the outside</strong> — retry must wrap the cache so that errors trigger retries</li></ul><div class='cb'><code>import functools, time, logging
+
+def retry(max_attempts=3, delay=1.0, exceptions=(Exception,)):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    if attempt == max_attempts - 1: raise
+                    time.sleep(delay * (2 ** attempt))
+        return wrapper
+    return decorator
+
+def timed_cache(seconds=300):
+    def decorator(func):
+        cache = {}
+        @functools.wraps(func)
+        def wrapper(*args):
+            import datetime
+            now = datetime.datetime.now()
+            if args in cache:
+                result, ts = cache[args]
+                if (now - ts).seconds < seconds:
+                    return result
+            result = func(*args)
+            cache[args] = (result, now)
+            return result
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2.0, exceptions=(ConnectionError,))
+@timed_cache(seconds=600)
+def fetch_data(url: str) -> dict:
+    return requests.get(url).json()</code></div>
+<ul>
+<li><strong>functools.wraps</strong> - preserves the name and docstring. Without wraps, func.__name__ returns wrapper instead of the real name</li>
+<li><strong>Decorators in production data</strong> - retry for unstable API calls, caching for frequent lookups, logging to trace calls</li>
+<li><strong>Decorator chaining</strong> - order matters: @retry @cache means retry(cache(func)). The decorator closest to def applies first</li>
+<li><strong>Class decorators</strong> - @dataclass, @property, @classmethod, @staticmethod are all native Python decorators. Same mechanism</li>
+<li><strong>Decorator with arguments</strong> - triple nesting: decorator_factory(args) returns decorator(func) which returns wrapper(*args). Standard pattern</li>
+</ul>
+<div class='cb'><code>import functools, time, logging
+from typing import Callable, Any
+
+def retry(max_attempts=3, delay=1.0, backoff=2.0, exceptions=(Exception,)):
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Any:
+            last_exc = None
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    last_exc = e
+                    if attempt < max_attempts - 1:
+                        wait = delay * (backoff ** attempt)
+                        logging.warning(f"{func.__name__} failed ({attempt+1}/{max_attempts}): retry in {wait:.1f}s")
+                        time.sleep(wait)
+            raise last_exc
+        return wrapper
+    return decorator
+
+def timed_cache(ttl_seconds=300):
+    def decorator(func):
+        cache = {}
+        @functools.wraps(func)
+        def wrapper(*args):
+            import time as t
+            now = t.monotonic()
+            if args in cache:
+                result, ts = cache[args]
+                if now - ts < ttl_seconds:
+                    return result
+            result = func(*args)
+            cache[args] = (result, now)
+            return result
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2.0, exceptions=(ConnectionError, TimeoutError))
+@timed_cache(ttl_seconds=600)
+def fetch_rate(currency: str) -> float:
+    return requests.get(f"https://api.rates.io/{currency}").json()['rate']</code></div>
+<ul>
+<li><strong>functools.wraps mandatory</strong> - preserves the name and docstring. Without wraps, func.__name__ returns 'wrapper' which breaks logs and debugging</li>
+<li><strong>Decorator stacking</strong> - order matters: @retry @cache means retry(cache(f)). The decorator closest to def applies first</li>
+<li><strong>Class decorators</strong> - @dataclass, @property, @classmethod, @staticmethod are all native Python decorators, same mechanism</li>
+<li><strong>Concrete data use cases</strong> - retry for unstable API calls, timed_cache for reference lookups, logging/timing for pipelines</li>
+<li><strong>Context manager vs decorator</strong> - a function that manages a resource (DB connection) = prefer context manager. A function that modifies behavior = decorator</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Write a simple decorator with wraps, understands the order</td><td>Has written a retry or cache decorator, uses functools.wraps</td><td>Does not know what a decorator is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Parameterized decorators, composition, class decorators</td><td>Writes parameterized decorators, manages composition order</td><td>N
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

@@ -182,39 +182,88 @@ SUM([Ventes]) - LOOKUP(SUM([Ventes]), -1)</code></div>
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Tableau avancé" data-en="Advanced Tableau technical interview">Advanced Tableau technical interview</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Tableau avancé" data-en="Advanced Tableau technical interview">Advanced Tableau technical interview</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Test technique Tableau avancé : LOD, calculs de table, Tableau Prep" data-en="Advanced Tableau technical interview: LOD, table calculations, Tableau Prep">Advanced Tableau technical interview: LOD, table calculations, Tableau Prep</h1>
 <p class="ai" data-fr="Les LOD expressions et les calculs de table sont les vrais discriminants en entretien Tableau. Un Data Analyst qui les maîtrise a construit des dashboards en production. Voici ce qu'on teste vraiment." data-en="LOD expressions and table calculations are the real differentiators in Tableau interviews. A Data Analyst who masters them has built production dashboards. Here's what we actually test.">LOD expressions and table calculations are the real differentiators in Tableau interviews. A Data Analyst who masters them has built production dashboards. Here's what we actually test.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min read</span><span>·</span><span>Data Analyst</span></div>
 <div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#lod">LOD expressions</a></li><li><a href="#tc">Table calculations</a></li><li><a href="#prep">Tableau Prep</a></li><li><a href="#dyn">Dynamic dashboards</a></li><li><a href="#perf">Performance Recorder</a></li><li><a href="#gouv">Tableau Server governance</a></li><li><a href="#nv">Level grid</a></li></ol></div>
 <div class="ab" id="ab">
-<p>Most Tableau candidates know how to make charts. What's assessed in interviews is the ability to answer complex analytical questions — those that require LOD, table calculations, and a genuine understanding of the data model.</p>
+<p>Most Tableau candidates know how to make charts. What we evaluate in interviews is the ability to answer complex analytical questions — those that require LOD, table calculations, and a true understanding of the data model.</p>
 
-<h2 id="lod"><span class="sn">1</span>LOD expressions: mastering the level of detail</h2>
-<div class="sq"><div class="sl">Key interview question</div><p>What is the difference between FIXED, INCLUDE and EXCLUDE? Give a concrete example of each.</p></div>
-<p>Level of Detail (LOD) expressions allow you to compute aggregations at a different granularity level than the view. It is the most commonly tested Tableau feature in Senior interviews.</p>
-<div class="cb"><code>// FIXED : calcul à un niveau fixe, indépendant du visuel
-// Ventes totales par client, quel que soit le filtre de date
-{ FIXED [Client] : SUM([Ventes]) }
+<h2 id="lod"><span class="sn">1</span>LOD expressions: mastered level of detail</h2>
+<div class="sq"><div class="sl">Key question</div><p>What is the difference between FIXED, INCLUDE and EXCLUDE? Give a concrete example for each.</p></div>
+<p>Level of Detail (LOD) expressions allow you to compute aggregations at a different granularity level than the visual. It is the most tested Tableau feature in Senior interviews.</p>
+<div class="cb"><code>// FIXED: calculation at a fixed level, independent of the visual
+// Total sales per customer, regardless of date filter
+{ FIXED [Customer] : SUM([Sales]) }
 
-// INCLUDE : ajoute une dimension au niveau de détail du visuel
-// Ventes moyennes par produit dans chaque région
-{ INCLUDE [Produit] : AVG([Ventes]) }
+// INCLUDE: adds a dimension to the visual's level of detail
+// Average sales per product within each region
+{ INCLUDE [Product] : AVG([Sales]) }
 
-// EXCLUDE : retire une dimension du niveau de détail du visuel
-// Total des ventes sans la granularité mensuelle (niveau annuel)
-{ EXCLUDE [Mois] : SUM([Ventes]) }</code></div>
+// EXCLUDE: removes a dimension from the visual's level of detail
+// Total sales without monthly granularity (annual level)
+{ EXCLUDE [Month] : SUM([Sales]) }</code></div>
 <ul>
-<li><strong>FIXED</strong> — the most commonly used, ignores dimension filters (but not context filters)</li>
-<li><strong>INCLUDE</strong> — drills down to a finer level than the view, then aggregates</li>
-<li><strong>EXCLUDE</strong> — rolls up to a coarser level than the view</li>
+<li><strong>FIXED</strong> — most commonly used, ignores dimension filters (but not context filters)</li>
+<li><strong>INCLUDE</strong> — drills down to a finer level than the visual, then aggregates</li>
+<li><strong>EXCLUDE</strong> — rolls up to a coarser level than the visual</li>
 <li><strong>Order of operations</strong> — FIXED executes before dimension filters, INCLUDE and EXCLUDE after</li>
 </ul>
-<div class="cl"><p><strong>Classic use case:</strong> "Compare a customer's sales to their region's average" → FIXED LOD on the region for the average, compared to the customer's sales in the view.</p></div>
+<div class="cl"><p><strong>Classic use case:</strong> "Compare a customer's sales to their region's average" → FIXED LOD on the region for the average, compared to the customer's sales in the visual.</p></div>
 
 <h2 id="tc"><span class="sn">2</span>Table calculations: partitioning and addressing</h2>
-<div class="sq"><div class="sl">Key interview question</div><p>What is</p></div></div>
+<div class="sq"><div class="sl">Key question</div><p>What are partitioning and addressing in a table calculation? How do you configure them?</p></div>
+<p>Table calculations (RUNNING_SUM, WINDOW_AVG, RANK, etc.) operate on data already aggregated in the visual. Their result depends on the partitioning and addressing configuration.</p>
+<div class="cb"><code>// Running total of sales
+RUNNING_SUM(SUM([Sales]))
+
+// Dynamic rank by region
+RANK(SUM([Sales]))
+
+// Percentage of total
+SUM([Sales]) / TOTAL(SUM([Sales]))
+
+// Difference from previous value (period over period)
+SUM([Sales]) - LOOKUP(SUM([Sales]), -1)</code></div>
+<ul>
+<li><strong>Partitioning</strong> — dimensions that define the "groups" within which the calculation resets</li>
+<li><strong>Addressing</strong> — dimensions that define the direction of the calculation (horizontal, vertical, specific)</li>
+<li><strong>WINDOW_SUM / WINDOW_AVG</strong> — calculations over a sliding window</li>
+<li><strong>INDEX() / SIZE()</strong> — position within the partition, size of the partition</li>
+</ul>
+<div class="cl"><p><strong>Classic pitfall:</strong> a "correct" table calculation on a chart becomes wrong as soon as you add or remove a dimension. Always check the partitioning configuration after modifying the visual.</p></div>
+
+<h2 id="prep"><span class="sn">3</span>Tableau Prep: data preparation</h2>
+<div class="sq"><div class="sl">Key question</div><p>In what cases do you use Tableau Prep rather than SQL or dbt to prepare your data?</p></div>
+<p>Tableau Prep is Tableau's visual data preparation tool. It is best suited for cases without a dedicated ETL infrastructure.</p>
+<ul>
+<li><strong>Flow-based interface</strong> — visual and interactive transformations, no code required</li>
+<li><strong>Multiple connections</strong> — Excel, CSV, SQL Server, Snowflake, BigQuery, Salesforce, etc.</li>
+<li><strong>Available operations</strong>: joins, unions, pivots, aggregations, field cleaning</li>
+<li><strong>Prep Conductor</strong> — automation and scheduling of flows on Tableau Server/Cloud</li>
+<li><strong>When to use it</strong> — rapid POC, teams without data engineers, multiple sources without ETL</li>
+<li><strong>When not to use it</strong> — complex logic, large volumes, versioning requirements (prefer SQL/dbt)</li>
+</ul>
+
+<h2 id="dyn"><span class="sn">4</span>Dynamic dashboards: parameters and visibility</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you create multiple views on a single page without multiplying worksheets?</p></div>
+<p>A well-designed dashboard allows the user to navigate between different views without leaving the page. The technique relies on parameters and conditional visibility of containers.</p>
+<ul>
+<li><strong>Parameters + boolean fields</strong> — create a text parameter (view names), a boolean calculated field per view, control container visibility</li>
+<li><strong>Floating containers</strong> — prefer floating tiles over fixed sections for more flexibility</li>
+<li><strong>Bookmarks</strong> — save filter states and navigate between them via buttons</li>
+<li><strong>Sheet actions</strong> — filter, highlight and URL actions for cross interactivity</li>
+<li><strong>Variable dimensions and KPIs</strong> — parameters that dynamically change the displayed measure or dimension</li>
+</ul>
+<div class="cl"><p><strong>Best practice:</strong> always use tiles/containers in floating mode rather than fixed sections. This makes rearranging easier and allows grouping multiple sheets into a single container.</p></div>
+
+<h2 id="perf"><span class="sn">5</span>Performance Recorder: diagnosing a slow dashboard</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you identify that a specific visual is slowing down your dashboard? What tool do you use
+</div>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst Tableau ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

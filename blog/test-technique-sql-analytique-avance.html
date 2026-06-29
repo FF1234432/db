@@ -209,7 +209,8 @@ QUALIFY rnk = 1;  -- top commande par client (Snowflake/BigQuery)</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Window functions, funnel basique, RFM</td><td>Écrit un funnel en SQL, calcule un RFM avec NTILE</td><td>Ne sait pas écrire un funnel sans GROUP BY séparé</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Sessionisation, attribution, intervals/gaps</td><td>Implémente la sessionisation avec LAG, fait de l attribution multi-touch</td><td>Ne sait pas créer des sessions en SQL</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='sessions'><span class='sn'>1</span>Sessionisation: grouping events into sessions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you define and calculate user sessions in SQL?</p></div><div class='cb'><code>-- Définir une session : séquence d événements
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='sessions'><span class='sn'>1</span>Sessionization: grouping events into sessions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you define and compute user sessions in SQL?</p></div><div class='cb'><code>-- Définir une session : séquence d événements
 -- avec moins de 30 minutes d inactivité entre chaque
 WITH events_with_gap AS (
     SELECT
@@ -237,7 +238,7 @@ SELECT
         ORDER BY event_time
         ROWS UNBOUNDED PRECEDING
     ) AS session_id
-FROM session_start;</code></div><h2 id='funnel'><span class='sn'>2</span>Funnel analysis: conversion rate by step</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you calculate a conversion funnel in SQL?</p></div><div class='cb'><code>-- Funnel : combien d utilisateurs passent chaque étape
+FROM session_start;</code></div><h2 id='funnel'><span class='sn'>2</span>Funnel analysis: conversion rate by step</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you compute a conversion funnel in SQL?</p></div><div class='cb'><code>-- Funnel : combien d utilisateurs passent chaque étape
 WITH user_steps AS (
     SELECT
         user_id,
@@ -256,7 +257,7 @@ SELECT
     COUNT(*) FILTER (WHERE step4 = 1) AS step4_users,
     ROUND(COUNT(*) FILTER (WHERE step2 = 1) * 100.0 /
           NULLIF(COUNT(*) FILTER (WHERE step1 = 1), 0), 1) AS step1_to_2_pct
-FROM user_steps;</code></div><h2 id='rfm'><span class='sn'>3</span>RFM scoring in SQL</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you calculate an RFM score (Recency, Frequency, Monetary) in SQL?</p></div><div class='cb'><code>-- RFM : segmenter les clients selon leurs achats
+FROM user_steps;</code></div><h2 id='rfm'><span class='sn'>3</span>RFM scoring in SQL</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you compute an RFM score (Recency, Frequency, Monetary) in SQL?</p></div><div class='cb'><code>-- RFM : segmenter les clients selon leurs achats
 WITH rfm_base AS (
     SELECT
         customer_id,
@@ -294,7 +295,101 @@ dates_with_next AS (
         active_date,
         LEAD(active_date) OVER (ORDER BY active_date) AS next_date,
         DATEDIFF('day', active_date,
-            LEAD(active_da</code></div></div>
+            LEAD(active_date) OVER (ORDER BY active_date)) AS gap_days
+    FROM daily_activity
+)
+SELECT
+    active_date AS gap_start,
+    next_date AS gap_end,
+    gap_days - 1 AS days_inactive
+FROM dates_with_next
+WHERE gap_days > 1  -- plus d 1 jour de gap
+ORDER BY gap_days DESC;</code></div><h2 id='attribution'><span class='sn'>5</span>Multi-touch attribution in SQL</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you distribute conversion credit across multiple marketing channels?</p></div><div class='cb'><code>-- Attribution linéaire : répartir également entre tous les touchpoints
+WITH touchpoints_before_conversion AS (
+    SELECT
+        user_id,
+        channel,
+        touch_date,
+        conversion_revenue,
+        COUNT(*) OVER (PARTITION BY user_id) AS total_touches
+    FROM marketing_touches
+    JOIN conversions USING (user_id)
+    WHERE touch_date <= conversion_date
+)
+SELECT
+    channel,
+    SUM(conversion_revenue / total_touches) AS attributed_revenue,
+    COUNT(*) AS nb_touchpoints
+FROM touchpoints_before_conversion
+GROUP BY channel
+ORDER BY attributed_revenue DESC;
+
+-- Attribution last-touch
+SELECT channel, SUM(conversion_revenue) AS attributed_revenue
+FROM (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY touch_date DESC) AS rn
+    FROM touchpoints_before_conversion
+)
+WHERE rn = 1
+GROUP BY channel;</code></div><h2 id='pivot'><span class='sn'>6</span>Dynamic pivot</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you create a dynamic pivot without knowing column values in advance?</p></div><div class='cb'><code>-- Snowflake : PIVOT dynamique
+SELECT *
+FROM (
+    SELECT region, quarter, revenue
+    FROM sales_data
+)
+PIVOT (
+    SUM(revenue)
+    FOR quarter IN ('Q1', 'Q2', 'Q3', 'Q4')
+) AS pivot_table;
+
+-- BigQuery : agrégation conditionnelle
+SELECT
+    region,
+    SUM(IF(quarter = 'Q1', revenue, 0)) AS Q1,
+    SUM(IF(quarter = 'Q2', revenue, 0)) AS Q2,
+    SUM(IF(quarter = 'Q3', revenue, 0)) AS Q3,
+    SUM(IF(quarter = 'Q4', revenue, 0)) AS Q4
+FROM sales_data
+GROUP BY region;</code></div>
+<div class='cb'><code>-- Taux de retention par cohorte
+WITH cohorts AS (
+    SELECT customer_id, DATE_TRUNC('month', first_order_date) AS cohort_month
+    FROM dim_customers
+),
+retention AS (
+    SELECT c.cohort_month,
+        DATEDIFF('month', c.cohort_month, DATE_TRUNC('month', o.order_date)) AS month_n,
+        COUNT(DISTINCT o.customer_id) AS actifs
+    FROM cohorts c JOIN fct_orders o ON c.customer_id = o.customer_id
+    GROUP BY 1, 2
+),
+sizes AS (SELECT cohort_month, COUNT(*) AS cohort_size FROM cohorts GROUP BY 1)
+SELECT r.cohort_month, r.month_n,
+    ROUND(r.actifs * 100.0 / s.cohort_size, 1) AS retention_pct
+FROM retention r JOIN sizes s USING (cohort_month)
+ORDER BY cohort_month, month_n;
+
+-- Mediane avec PERCENTILE_CONT
+SELECT region,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount) AS mediane,
+    PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY amount) AS p90
+FROM fct_orders GROUP BY region;
+
+-- QUALIFY pour filtrer sur window functions
+SELECT order_id, customer_id, amount,
+    RANK() OVER (PARTITION BY customer_id ORDER BY amount DESC) AS rnk
+FROM fct_orders
+QUALIFY rnk = 1;  -- top commande par client (Snowflake/BigQuery)</code></div>
+<ul>
+<li><strong>Cohort analysis</strong> - fundamental technique for measuring retention, LTV and the impact of product changes by acquisition period</li>
+<li><strong>QUALIFY</strong> - filter on window functions (Snowflake, BigQuery, DuckDB). Replaces an extra CTE to filter after RANK() or ROW_NUMBER()</li>
+<li><strong>LATERAL JOIN</strong> - PostgreSQL/BigQuery: join with a table-valued function. Example: explode a JSON array column by column</li>
+<li><strong>Recursive CTEs</strong> - traverse hierarchical structures (org charts, nested categories) in pure SQL without imperative code</li>
+<li><strong>PIVOT / UNPIVOT</strong> - transform rows into columns. Native in Snowflake, simulated with MAX(CASE WHEN...) in BigQuery</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>Window functions, basic funnel, RFM</td><td>Writes a funnel in SQL, computes an RFM with NTILE</td><td>Cannot write a funnel without a separate GROUP BY</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Sessionization, attribution, intervals/gaps</td><td>Implements sessionization with LAG, performs multi-touch attribution</td><td>Cannot create sessions in SQL</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

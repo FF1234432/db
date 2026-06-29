@@ -198,14 +198,13 @@ st.plotly_chart(fig, use_container_width=True)</code></div>
 </div>
 </div>
 <div id="body-en" style="display:none"><div class="ab">
+<p>Self-service BI tools allow business teams to explore data without requesting a Data Analyst for every query. In interviews, the ability to choose the right tool based on context is assessed — as well as the ability to implement governance that prevents chaos.</p>
 
-<p>Self-service BI tools allow business teams to explore data without requesting a Data Analyst for every query. In interviews, we assess the ability to choose the right tool based on context — and to implement the governance that prevents chaos.</p>
-
-<h2 id="metabase"><span class="sn">1</span>Metabase: the most accessible SQL self-service</h2>
+<h2 id="metabase"><span class="sn">1</span>Metabase: the most accessible self-service SQL tool</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between visual questions and native SQL questions in Metabase? Why not give native SQL access to all users?</p></div>
 <ul>
 <li><strong>Question Builder (visual)</strong> — SQL-free interface: the user selects a table, filters, and groupings. Suitable for non-technical profiles</li>
-<li><strong>Native SQL questions</strong> — direct SQL in Metabase. Powerful but should be restricted: unoptimized queries can saturate the database</li>
+<li><strong>Native SQL questions</strong> — Direct SQL in Metabase. Powerful but should be restricted: unoptimized queries can overload the database</li>
 <li><strong>Models</strong> — SQL queries pre-written by the data team, exposed as virtual tables for business users</li>
 <li><strong>Supported connections</strong> — PostgreSQL, MySQL, BigQuery, Snowflake, Redshift, MongoDB, DuckDB, SQLite and more</li>
 <li><strong>Automatic exploration</strong> — Metabase generates automatic explorations for each table (distributions, trends, null values)</li>
@@ -213,13 +212,13 @@ st.plotly_chart(fig, use_container_width=True)</code></div>
 <div class="cl"><p><strong>Best practice:</strong> do not give native SQL access to everyone. Create Models to expose pre-optimized views. Point to a read replica, never the transactional production database.</p></div>
 
 <h2 id="streamlit"><span class="sn">2</span>Streamlit: interactive Python dashboards</h2>
-<div class="sq"><div class="sl">Discriminating question</div><p>In what case would you choose Streamlit over Metabase? What is the st.cache_data function and why is it critical?</p></div>
+<div class="sq"><div class="sl">Discriminating question</div><p>In which case do you choose Streamlit over Metabase? What is the st.cache_data function and why is it critical?</p></div>
 <div class="cb"><code>import streamlit as st
 import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-# Cache critique : evite de recharger les donnees a chaque interaction
+# Critical cache: avoids reloading data on every interaction
 @st.cache_data(ttl=3600)
 def load_data(start_date, end_date):
     engine = create_engine("postgresql://...")
@@ -231,30 +230,30 @@ def load_data(start_date, end_date):
     """
     return pd.read_sql(query, engine)
 
-st.title("Dashboard Ventes")
+st.title("Sales Dashboard")
 
-# Filtres interactifs dans la sidebar
+# Interactive filters in the sidebar
 with st.sidebar:
     regions = st.multiselect("Regions", ['FR','DE','UK','ES'])
-    date_range = st.date_input("Periode", value=(start, end))
+    date_range = st.date_input("Period", value=(start, end))
 
 df = load_data(*date_range)
 if regions:
     df = df[df['region'].isin(regions)]
 
-# KPIs en colonnes
+# KPIs in columns
 c1, c2, c3 = st.columns(3)
-c1.metric("CA Total", f"{df.revenue.sum():,.0f} EUR", delta="+8.3%")
-c2.metric("Regions actives", df.region.nunique())
-c3.metric("Meilleur mois", df.groupby('month').revenue.sum().idxmax())
+c1.metric("Total Revenue", f"{df.revenue.sum():,.0f} EUR", delta="+8.3%")
+c2.metric("Active regions", df.region.nunique())
+c3.metric("Best month", df.groupby('month').revenue.sum().idxmax())
 
-# Graphique interactif
+# Interactive chart
 fig = px.bar(df.groupby('region').revenue.sum().reset_index(),
              x='region', y='revenue')
 st.plotly_chart(fig, use_container_width=True)</code></div>
 <ul>
 <li><strong>st.cache_data</strong> — caches the function result. Without it, the SQL query re-executes on every user interaction</li>
-<li><strong>Advantages</strong> — full Python, custom logic (ML, complex calculations), full control over UX</li>
+<li><strong>Advantages</strong> — full Python, custom logic (ML, complex calculations), total control over UX</li>
 <li><strong>Ideal for</strong> — ML dashboards (real-time predictions), internal tools with specific business logic, rapid prototypes</li>
 <li><strong>Deployment</strong> — Streamlit Cloud, Docker on GKE/ECS, or on VM with nginx</li>
 </ul>
@@ -262,7 +261,48 @@ st.plotly_chart(fig, use_container_width=True)</code></div>
 <h2 id="redash"><span class="sn">3</span>Redash: collaborative SQL to dashboard</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>What is the value of Redash compared to manual SQL exports to Excel?</p></div>
 <ul>
-<li><strong>Shared queries</strong> — </div>
+<li><strong>Shared queries</strong> — queries written by the data team are reusable and discoverable by the entire organization</li>
+<li><strong>Scheduling</strong> — automatic dashboard refresh at a defined frequency (every hour, every night)</li>
+<li><strong>Alerts</strong> — automatic notification when a metric exceeds a defined threshold</li>
+<li><strong>Parameters</strong> — users can filter dashboards via parameters without touching the SQL</li>
+<li><strong>Ideal for</strong> — technical teams who want to explore with SQL without deploying a heavy tool</li>
+</ul>
+
+<h2 id="compar"><span class="sn">4</span>Tool comparison</h2>
+<table class="lt"><thead><tr><th></th><th>Metabase</th><th>Streamlit</th><th>Redash</th><th>Power BI / Tableau</th></tr></thead><tbody>
+<tr><td><strong>Target</strong></td><td>Business users</td><td>Data Engineers/Scientists</td><td>SQL tech teams</td><td>Data Analysts / BI</td></tr>
+<tr><td><strong>Learning curve</strong></td><td>Very low</td><td>Medium (Python)</td><td>Low (SQL)</td><td>Medium to high</td></tr>
+<tr><td><strong>Custom</strong></td><td>Limited</td><td>Maximum</td><td>Moderate</td><td>High</td></tr>
+<tr><td><strong>Cost</strong></td><td>Free (OSS)</td><td>Free (OSS)</td><td>Free (OSS)</td><td>Per-user licenses</td></tr>
+<tr><td><strong>Self-service</strong></td><td>Excellent</td><td>No (code required)</td><td>Good (SQL required)</td><td>Good</td></tr>
+<tr><td><strong>Built-in ML</strong></td><td>No</td><td>Yes (native Python)</td><td>No</td><td>Partial</td></tr>
+</tbody></table>
+
+<h2 id="cas"><span class="sn">5</span>Which tool to choose based on context?</h2>
+<ul>
+<li><strong>Non-technical business teams who want to explore data</strong> → Metabase. Visual interface, no SQL required</li>
+<li><strong>ML dashboard with real-time predictions or custom logic</strong> → Streamlit. Native Python, complex business logic possible</li>
+<li><strong>Technical team that wants to share SQL queries</strong> → Redash. Collaborative SQL, simple scheduling</li>
+<li><strong>Corporate reporting with governance, RLS, deployment pipeline</strong> → Power BI or Tableau</li>
+<li><strong>Rapid prototype or POC</strong> → Metabase or Streamlit depending on whether the team uses SQL or Python</li>
+</ul>
+
+<h2 id="gouv"><span class="sn">6</span>Governance and pitfalls to avoid</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What are the risks of a Metabase deployment without governance? How do you avoid them?</p></div>
+<ul>
+<li><strong>Unoptimized queries on production</strong> — users can run SQL queries that overload the production database. Always point to a read replica or a data warehouse</li>
+<li><strong>Proliferation of obsolete dashboards</strong> — without naming conventions and archiving, Metabase quickly becomes a graveyard. Define a deprecation process</li>
+<li><strong>Misaligned metrics</strong> — if two dashboards calculate revenue differently, trust in the data collapses. Centralize definitions in Models</li>
+<li><strong>Silent breakages</strong> — if source tables change, Metabase dashboards can break without alerts. Implement quality tests (dbt tests)</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Using Metabase or Streamlit, connecting to a database</td><td>Has created a Metabase dashboard, knows how to connect a data source</td><td>Does not know any self-service tool, does not know when to use Metabase vs Power BI</td></tr>
+<tr><td><span class="bd bm">Mid-level</span></td><td>Metabase governance, Streamlit with cache, tool positioning</td><td>Has deployed Metabase in production with read replica and models, uses st.cache_data</td><td>Has deployed Metabase without read replica, gives native SQL access to everyone</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Complete self-service architecture, justified tool choice, monitoring</td><td>Has architected a self-service stack (Metabase + dbt + warehouse), justifies choices</td><td>Cannot explain when to use Metabase rather than Power BI</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Analyst ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

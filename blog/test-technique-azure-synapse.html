@@ -105,25 +105,26 @@ SELECT TOP 100 * FROM OPENROWSET(
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Serverless SQL Pool, Dedicated Pool basique, ADLS</td><td>A requêté des Parquet avec OPENROWSET, comprend les 3 pools</td><td>Ne sait pas la différence entre Serverless et Dedicated</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Distribution HASH, Spark Pool, Delta Lake, comparaison Synapse/Databricks</td><td>A optimisé un Dedicated Pool (distribution, statistics), justifie Synapse vs Databricks</td><td>Ne sait pas ce qu est la distribution HASH</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='archi'><span class='sn'>1</span>Synapse architecture: the 3 engines</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 compute engines in Azure Synapse? When do you use each one?</p></div><ul><li><strong>Dedicated SQL Pool</strong> — MPP (Massively Parallel Processing) data warehouse. Maximum performance for analytical SQL queries on large volumes. Billed hourly even when idle</li><li><strong>Serverless SQL Pool</strong> — ad-hoc SQL queries on files in Azure Data Lake (Parquet, CSV, JSON, Delta). Pay per query. Always available, zero infrastructure</li><li><strong>Spark Pool</strong> — managed Apache Spark cluster for data transformation, ML, and distributed processing</li></ul><h2 id='dedicated'><span class='sn'>2</span>Dedicated SQL Pool: MPP for BI</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you optimize the performance of a Dedicated SQL Pool?</p></div><div class='cb'><code>-- Distribution des tables : clé de performance critique
--- HASH : distribuer selon une colonne de jointure fréquente
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='archi'><span class='sn'>1</span>Synapse Architecture: the 3 engines</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 compute engines in Azure Synapse? When do you use each one?</p></div><ul><li><strong>Dedicated SQL Pool</strong> — MPP (Massively Parallel Processing) data warehouse. Maximum performance for analytical SQL queries on large volumes. Billed per hour even when idle</li><li><strong>Serverless SQL Pool</strong> — ad-hoc SQL queries on files in Azure Data Lake (Parquet, CSV, JSON, Delta). Pay per query. Always available, zero infrastructure</li><li><strong>Spark Pool</strong> — managed Apache Spark cluster for data transformation, ML, distributed processing</li></ul><h2 id='dedicated'><span class='sn'>2</span>Dedicated SQL Pool: MPP for BI</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you optimize the performance of a Dedicated SQL Pool?</p></div><div class='cb'><code>-- Table distribution: critical performance key
+-- HASH: distribute based on a frequent join column
 CREATE TABLE fct_orders
 WITH (
-    DISTRIBUTION = HASH(customer_id),  -- évite le data shuffle sur les jointures
-    CLUSTERED COLUMNSTORE INDEX        -- optimal pour les requêtes analytiques
+    DISTRIBUTION = HASH(customer_id),  -- avoids data shuffle on joins
+    CLUSTERED COLUMNSTORE INDEX        -- optimal for analytical queries
 )
 AS SELECT * FROM source_table;
 
--- ROUND_ROBIN : pour les tables de staging
+-- ROUND_ROBIN: for staging tables
 CREATE TABLE stg_orders_raw
 WITH (DISTRIBUTION = ROUND_ROBIN)
 AS SELECT * FROM ...
 
--- Statistics : mettre à jour après chargement
+-- Statistics: update after loading
 UPDATE STATISTICS fct_orders;
 
--- Pause automatique (économie de coûts)
-ALTER DATABASE mydw PAUSE;  -- via PowerShell ou ADF</code></div><ul><li><strong>HASH distribution</strong> — distribute large tables on the most frequently used join column to avoid data movement</li><li><strong>Columnstore Index</strong> — maximum compression and optimal performance for analytical queries</li><li><strong>Pause/Resume</strong> — pause the Dedicated Pool at night and on weekends. Saves 70% of costs</li></ul><h2 id='serverless'><span class='sn'>3</span>Serverless SQL Pool: querying the Data Lake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query Parquet files in ADLS with the Serverless SQL Pool?</p></div><div class='cb'><code>-- Requête directe sur des fichiers Parquet dans ADLS
+-- Automatic pause (cost savings)
+ALTER DATABASE mydw PAUSE;  -- via PowerShell or ADF</code></div><ul><li><strong>HASH Distribution</strong> — distribute large tables on the most frequent join column to avoid data movement</li><li><strong>Columnstore Index</strong> — maximum compression and optimal performance for analytical queries</li><li><strong>Pause/Resume</strong> — pause the Dedicated Pool at night and on weekends. Saves 70% of costs</li></ul><h2 id='serverless'><span class='sn'>3</span>Serverless SQL Pool: querying the Data Lake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query Parquet files in ADLS with the Serverless SQL Pool?</p></div><div class='cb'><code>-- Direct query on Parquet files in ADLS
 SELECT
     year,
     region,
@@ -136,7 +137,7 @@ FROM
 WHERE year = 2024
 GROUP BY year, region;
 
--- Créer une vue externe (évite de répéter OPENROWSET)
+-- Create an external view (avoids repeating OPENROWSET)
 CREATE OR ALTER VIEW vw_orders AS
 SELECT *
 FROM OPENROWSET(
@@ -144,13 +145,33 @@ FROM OPENROWSET(
     FORMAT = 'PARQUET'
 ) AS r;
 
--- Requête sur Delta Lake
+-- Query on Delta Lake
 SELECT TOP 100 *
 FROM
     OPENROWSET(
         BULK 'https://monstorage.dfs.core.windows.net/datalake/delta/orders',
         FORMAT = 'DELTA'
-    ) AS delta_orders;</code></div><h2 id='spark'><span class='sn'>4</span>Spark Pool: transformations and ML</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases do you use the Spark Pool rather than the SQL Pool in Synapse?</p></div><ul><li><strong>Complex transformations</strong> — Python/Scala logic not expressible in SQL, unstructured data manipulation</li><li><strong>ML with MLflow</strong> — Synapse Spark natively integrates MLflow for experiment tracking</li><li><strong>Delta Lake</strong> — read and write Delta tables in ADLS from Spark</li><li><strong>Shared notebooks</strong> — Spark notebooks in Synapse Studio, collaborative with Git</li><li><strong>Auto-pause</strong> — the Spark Pool suspends after X minutes of inactivity. Less costly than the Dedicated Pool</li></ul><h2 id='lake'><span class='sn'>5</span>Azure Data Lake Storage Gen2 integration</h2><div class='s</div>
+    ) AS delta_orders;</code></div><h2 id='spark'><span class='sn'>4</span>Spark Pool: transformations and ML</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what cases do you use the Spark Pool rather than the SQL Pool in Synapse?</p></div><ul><li><strong>Complex transformations</strong> — Python/Scala logic not expressible in SQL, unstructured data manipulation</li><li><strong>ML with MLflow</strong> — Synapse Spark natively integrates MLflow for experiment tracking</li><li><strong>Delta Lake</strong> — read and write Delta tables in ADLS from Spark</li><li><strong>Shared notebooks</strong> — Spark notebooks in Synapse Studio, collaborative with Git</li><li><strong>Auto-pause</strong> — the Spark Pool suspends after X minutes of inactivity. Less expensive than the Dedicated Pool</li></ul><h2 id='lake'><span class='sn'>5</span>Azure Data Lake Storage Gen2 Integration</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you organize your Data Lake in ADLS for use with Synapse?</p></div><ul><li><strong>Recommended zones</strong> — raw/ (raw data), curated/ (transformed data), enriched/ (ready for BI)</li><li><strong>Parquet or Delta format</strong> — Parquet for static data, Delta Lake for tables that evolve</li><li><strong>Linked Service</strong> — secure connection between Synapse and ADLS via Managed Identity (no account keys)</li><li><strong>Access Control</strong> — Azure RBAC + ADLS ACLs to control access by directory and by team</li></ul><h2 id='vs'><span class='sn'>6</span>Synapse vs Databricks vs Microsoft Fabric</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you position Synapse, Databricks, and Fabric?</p></div><table class='lt'><thead><tr><th></th><th>Azure Synapse</th><th>Databricks</th><th>Microsoft Fabric</th></tr></thead><tbody><tr><td>Analytical SQL</td><td>Excellent (native MPP)</td><td>Good (SQL Warehouse)</td><td>Excellent (OneLake)</td></tr><tr><td>Spark</td><td>Good</td><td>Excellent (optimized)</td><td>Good</td></tr><tr><td>ML/AI</td><td>Partial</td><td>Excellent (native MLflow)</td><td>Partial</td></tr><tr><td>Microsoft Integration</td><td>Native</td><td>Good</td><td>Native (Power BI)</td></tr><tr><td>2025 Trend</td><td>Mature, replaced by Fabric</td><td>Enterprise ML standard</td><td>New, Microsoft strategy</td></tr></tbody></table><div class='cb'><code>-- Synapse Serverless SQL Pool: query Parquet in ADLS Gen2 directly
+SELECT order_date, region, SUM(amount) as revenue
+FROM OPENROWSET(
+    BULK 'https://myadls.dfs.core.windows.net/lake/orders/year=*/month=*/*.parquet',
+    FORMAT = 'PARQUET'
+) WITH (order_date DATE, region VARCHAR(50), amount FLOAT) AS r
+WHERE order_date >= '2025-01-01'
+GROUP BY order_date, region;
+
+-- Create an External Table on the lake (persistent views)
+CREATE EXTERNAL TABLE orders_ext
+WITH (LOCATION = 'orders/', DATA_SOURCE = MyAdls, FILE_FORMAT = ParquetFmt)
+AS SELECT * FROM orders_staging;
+
+-- Synapse Link CosmosDB -> analytical queries without OLTP impact
+SELECT TOP 100 * FROM OPENROWSET(
+    PROVIDER = 'CosmosDB',
+    CONNECTION = 'Account=myaccount;Database=ecommerce',
+    OBJECT = 'orders',
+    SERVER_CREDENTIAL = 'CosmosDBCredential'
+) AS orders;</code></div><ul><li><strong>Serverless vs Dedicated Pool</strong> — Serverless: pay per TB scanned, ideal for ad-hoc exploration. Dedicated Pool: guaranteed performance, fixed monthly cost, for prod BI</li><li><strong>Synapse Link</strong> — zero-ETL replication from CosmosDB or Dataverse to Synapse. Analytics without impacting the OLTP source</li><li><strong>Integrated Spark Pool</strong> — managed Spark in Synapse. Shares tables with the SQL Pool via Delta/Parquet tables in the lake</li><li><strong>vs Databricks</strong> — Synapse: native Azure integration (ADF, Power BI), cheaper for small teams. Databricks: superior developer experience, native Delta Lake, MLflow</li><li><strong>Security</strong> — Row-Level Security and Dynamic Data Masking in Dedicated Pool. Managed Private Endpoints for secure connections without exposing data on the internet</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Serverless SQL Pool, basic Dedicated Pool, ADLS</td><td>Has queried Parquet files with OPENROWSET, understands the 3 pools</td><td>Does not know the difference between Serverless and Dedicated</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>HASH Distribution, Spark Pool, Delta Lake, Synapse/Databricks comparison</td><td>Has optimized a Dedicated Pool (distribution, statistics), justifies Synapse vs Databricks</td><td>Does not know what HASH distribution is</td></tr></tbody></table>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Azure ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>

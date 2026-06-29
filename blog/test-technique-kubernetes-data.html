@@ -207,7 +207,8 @@ resources:
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration" data-en="Kubernetes technical interview for data: pods, nodes, GKE, orchestration">Kubernetes technical interview for data: pods, nodes, GKE, orchestration</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration" data-en="Kubernetes technical interview for data: pods, nodes, GKE, orchestration">Kubernetes technical interview for data: pods, nodes, GKE, orchestration</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Test technique Kubernetes pour la data : pods, nodes, GKE, orchestration" data-en="Kubernetes technical interview for data: pods, nodes, GKE, orchestration">Kubernetes technical interview for data: pods, nodes, GKE, orchestration</h1>
 <p class="ai" data-fr="Kubernetes s'impose dans les équipes data pour orchestrer les pipelines, déployer des APIs ML et gérer les workloads Spark ou Airflow. Voici les concepts qu'on teste pour valider un Data Engineer sur K8s." data-en="Kubernetes is becoming essential in data teams to orchestrate pipelines, deploy ML APIs and manage Spark or Airflow workloads. Here are the concepts we test to validate a Data Engineer on K8s.">Kubernetes is becoming essential in data teams to orchestrate pipelines, deploy ML APIs and manage Spark or Airflow workloads. Here are the concepts we test to validate a Data Engineer on K8s.</p>
@@ -226,8 +227,8 @@ resources:
 <div class="sq"><div class="sl">Key question</div><p>What is the difference between a Pod, a Node and a Cluster? What happens if a Pod goes down?</p></div>
 <ul>
 <li><strong>Pod</strong> — basic Kubernetes unit. Contains one or more containers that share the network and storage. Ephemeral by nature</li>
-<li><strong>Node</strong> — virtual or physical machine that hosts Pods. Contains: Kubelet (communication with the control plane), Container Runtime (Docker/containerd), Kube-Proxy (network)</li>
-<li><strong>Cluster</strong> — a control plane and nodes combined. The control plane contains: kube-apiserver, etcd (state storage), kube-scheduler, kube-controller-manager</li>
+<li><strong>Node</strong> — virtual or physical machine that hosts Pods. Contains: Kubelet (communication with the control plane), Container Runtime (Docker/containerd), Kube-Proxy (networking)</li>
+<li><strong>Cluster</strong> — combination of a control plane and nodes. The control plane contains: kube-apiserver, etcd (state storage), kube-scheduler, kube-controller-manager</li>
 <li><strong>Deployment</strong> — describes the desired state (number of replicas, image). If a Pod goes down, the Deployment automatically recreates it</li>
 <li><strong>Service</strong> — stable abstraction to expose Pods (ClusterIP, NodePort, LoadBalancer)</li>
 </ul>
@@ -235,7 +236,86 @@ resources:
 
 <h2 id="archi"><span class="sn">2</span>Cluster architecture</h2>
 <div class="sq"><div class="sl">Key question</div><p>What is the role of etcd in a Kubernetes cluster? What happens if etcd becomes unavailable?</p></div>
-<div class="cb"><code># Déploiement minimal d'une AP</code></div></div>
+<div class="cb"><code># Minimal deployment of a data API in K8s
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-scoring-ml
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-scoring
+  template:
+    metadata:
+      labels:
+        app: api-scoring
+    spec:
+      containers:
+      - name: api
+        image: gcr.io/mon-projet/api-scoring:v1.2
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        env:
+        - name: MODEL_PATH
+          valueFrom:
+            secretKeyRef:
+              name: ml-secrets
+              key: model-gcs-path</code></div>
+<ul>
+<li><strong>etcd</strong> — key-value store for cluster state. If etcd is unavailable, the cluster can no longer be modified (but running workloads continue)</li>
+<li><strong>kube-scheduler</strong> — assigns Pods to Nodes based on available resources and constraints (affinity, taints/tolerations)</li>
+<li><strong>Namespaces</strong> — logical isolation within a cluster (dev, staging, prod)</li>
+<li><strong>ConfigMaps and Secrets</strong> — configuration and credentials injected into Pods (do not hard-code in the image)</li>
+</ul>
+
+<h2 id="gke"><span class="sn">3</span>GKE: Autopilot vs Standard</h2>
+<div class="sq"><div class="sl">Key question</div><p>In which cases would you choose GKE Autopilot over Standard?</p></div>
+<table class="lt"><thead><tr><th></th><th>GKE Autopilot</th><th>GKE Standard</th></tr></thead><tbody>
+<tr><td><strong>Node management</strong></td><td>Automatic (Google)</td><td>Manual</td></tr>
+<tr><td><strong>Billing</strong></td><td>Per Pod (requested resources)</td><td>Per Node (allocated resources)</td></tr>
+<tr><td><strong>Scaling</strong></td><td>Automatic and transparent</td><td>Manually configurable</td></tr>
+<tr><td><strong>Node OS</strong></td><td>Container-Optimized OS only</td><td>COS, Ubuntu, Windows Server</td></tr>
+<tr><td><strong>Default security</strong></td><td>Workload Identity, secure boot included</td><td>Configurable, more control</td></tr>
+<tr><td><strong>Ideal for</strong></td><td>Teams without specialized infra, variable workloads</td><td>Specialized workloads, advanced control</td></tr>
+</tbody></table>
+
+<h2 id="data"><span class="sn">4</span>Data use cases on Kubernetes</h2>
+<div class="sq"><div class="sl">Key question</div><p>How would you deploy Airflow on Kubernetes? Which executor would you use?</p></div>
+<ul>
+<li><strong>Airflow on K8s</strong> — KubernetesExecutor: one Pod per task, maximum isolation, automatic scaling. Deployment via official Helm chart</li>
+<li><strong>Spark on K8s</strong> — spark-submit in cluster mode, driver and executors in dedicated Pods, no need for YARN</li>
+<li><strong>ML APIs (FastAPI/Flask)</strong> — Deployment + Service + HorizontalPodAutoscaler for automatic scaling based on load</li>
+<li><strong>Batch jobs</strong> — K8s CronJob for simple scheduled pipelines without Airflow</li>
+<li><strong>MLflow / Ray</strong> — tracking or distributed compute servers deployed on GKE</li>
+</ul>
+
+<h2 id="deploy"><span class="sn">5</span>Deployment and configuration</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you handle zero-downtime updates (rolling update) and rollback in case of issues?</p></div>
+<div class="cb"><code># Automatic rolling update (default strategy)
+kubectl set image deployment/api-scoring api=gcr.io/mon-projet/api-scoring:v1.3
+
+# Check status
+kubectl rollout status deployment/api-scoring
+
+# Rollback to previous version
+kubectl rollout undo deployment/api-scoring
+
+# Helm: deployment and rollback
+helm upgrade api-scoring ./chart --set image.tag=v1.3
+helm rollback api-scoring 1  # revert to release 1
+
+# Resources requests/limits: mandatory on GKE Autopilot
+resources:
+  requests:
+    memory: "512Mi"
+    </code></div>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer cloud ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

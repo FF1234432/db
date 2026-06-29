@@ -147,7 +147,8 @@ with server.auth.sign_in(auth):
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>A utilise TSC pour les operations courantes (download, upload, users)</td><td>A deploye un workbook via TSC, a ajoute des users en masse</td><td>Fait tout a la main dans l interface Tableau</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline deploiement STAGE-PROD automatise, refresh orchestre, audit securite</td><td>A integre TSC dans un pipeline Airflow/GitHub Actions, a fait un audit de permissions</td><td>Ne sait pas declencher un refresh via API</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>Without TSC, adding 50 users to Tableau Server takes half a day. With TSC, it's a 20-line script in 30 seconds. In interviews, we look for profiles who automate repetitive tasks — not those who do everything manually.</p><h2 id='intro'><span class='sn'>1</span>Why Tableau Server Client?</h2><table class='lt'><thead><tr><th>Action</th><th>Without TSC</th><th>With TSC</th></tr></thead><tbody><tr><td>Add 50 users</td><td>50x copy-paste</td><td>1 script, 30 seconds</td></tr><tr><td>Deploy dashboard from STAGE to PROD</td><td>Manual download + re-upload</td><td>Automatic pipeline</td></tr><tr><td>Trigger a refresh after ETL</td><td>Wait for the Tableau scheduler</td><td>1 API call after the job</td></tr><tr><td>Audit access for all dashboards</td><td>Click through each workbook</td><td>CSV generated with 1 script</td></tr></tbody></table><h2 id='connexion'><span class='sn'>2</span>Server connection</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you connect to Tableau Cloud securely without exposing your credentials in the code?</p></div><div class='cb'><code>import tableauserverclient as TSC
+<div id="body-en" style="display:none"><div class="ab">
+<p>Without TSC, adding 50 users on Tableau Server takes half a day. With TSC, it's a 20-line script in 30 seconds. In interviews, we look for profiles that automate repetitive tasks — not those who do everything manually.</p><h2 id='intro'><span class='sn'>1</span>Why Tableau Server Client?</h2><table class='lt'><thead><tr><th>Action</th><th>Without TSC</th><th>With TSC</th></tr></thead><tbody><tr><td>Add 50 users</td><td>50x copy-paste</td><td>1 script, 30 seconds</td></tr><tr><td>Deploy dashboard STAGE to PROD</td><td>Manual download + re-upload</td><td>Automated pipeline</td></tr><tr><td>Trigger a refresh after ETL</td><td>Wait for Tableau scheduler</td><td>1 API call after the job</td></tr><tr><td>Audit access for all dashboards</td><td>Click through each workbook</td><td>CSV generated in 1 script</td></tr></tbody></table><h2 id='connexion'><span class='sn'>2</span>Server connection</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you connect to Tableau Cloud securely without exposing your credentials in the code?</p></div><div class='cb'><code>import tableauserverclient as TSC
 from dotenv import load_dotenv
 import os
 
@@ -165,7 +166,7 @@ with server.auth.sign_in(tableau_auth) as creds:
     # toutes les operations ici
     workbooks, pagination = server.workbooks.get()
     for wb in workbooks:
-        print(wb.name, wb.project_name)</code></div><ul><li><strong>Personal Access Token</strong> — never username/password in the code. PAT stored in .env or Secrets Manager</li><li><strong>Context manager</strong> — use <code>with server.auth.sign_in()</code> to handle automatic sign-out</li></ul><h2 id='contenu'><span class='sn'>3</span>Content management: automatic deployment</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you automate the deployment of a dashboard from STAGE to PROD?</p></div><div class='cb'><code>with server.auth.sign_in(auth):
+        print(wb.name, wb.project_name)</code></div><ul><li><strong>Personal Access Token</strong> — never username/password in the code. PAT stored in .env or Secrets Manager</li><li><strong>Context manager</strong> — use <code>with server.auth.sign_in()</code> to handle automatic disconnection</li></ul><h2 id='contenu'><span class='sn'>3</span>Content management: automated deployment</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you automate the deployment of a dashboard from STAGE to PROD?</p></div><div class='cb'><code>with server.auth.sign_in(auth):
     # 1. Trouver le workbook en STAGE
     req = TSC.RequestOptions()
     req.filter.add(TSC.Filter('name', TSC.RequestOptions.Operator.Equals, 'Mon Dashboard'))
@@ -197,7 +198,74 @@ with server.auth.sign_in(auth):
             # Ajouter au bon groupe
             group = get_group_by_name(server, row['equipe'])
             server.groups.add_user(group, created_user.id)
-            print(f'OK: {row["email"]} -> {row["equipe"]}')</code></div><h2 id='refresh'><span class='sn'>5</span>On-demand refresh and webhooks</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How would you automatically trigger a Tableau dashboard refresh after an Airflow pipeline completes?</p></div><div class='cb'><code># D</code></div></div>
+            print(f'OK: {row["email"]} -> {row["equipe"]}')</code></div><h2 id='refresh'><span class='sn'>5</span>On-demand refresh and webhooks</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How would you automatically trigger a Tableau dashboard refresh after an Airflow pipeline finishes?</p></div><div class='cb'><code># Dans votre DAG Airflow, apres le dernier job de transformation :
+from airflow.operators.python import PythonOperator
+import tableauserverclient as TSC
+
+def trigger_tableau_refresh(**kwargs):
+    with server.auth.sign_in(auth):
+        ds_item = get_datasource_by_name(server, 'DS_KPIs_Production')
+        job = server.datasources.refresh(ds_item)
+        # Attendre la fin du refresh
+        finished_job = server.jobs.wait_for_job(job)
+        if finished_job.finish_code != 0:
+            raise Exception(f'Refresh echoue : {finished_job.status}')
+
+refresh_tableau = PythonOperator(
+    task_id='refresh_tableau_dashboard',
+    python_callable=trigger_tableau_refresh
+)
+
+dbt_run >> refresh_tableau  # apres les transformations dbt</code></div><h2 id='securite'><span class='sn'>6</span>Security and automated audit</h2><div class='cb'><code># Audit : detecter les dashboards accessibles a Tous
+with server.auth.sign_in(auth):
+    for wb in TSC.Pager(server.workbooks):
+        perms = server.workbooks.populate_permissions(wb)
+        for rule in wb.permissions:
+            if rule.grantee.tag_name == 'group':
+                group = get_group_by_id(server, rule.grantee.id)
+                if group.name == 'All Users':
+                    for cap, mode in rule.capabilities.items():
+                        if mode == 'Allow':
+                            print(f'[ALERTE] {wb.name} accessible a tous ({cap})')</code></div><ul><li><strong>RLS via USERNAME()</strong> — Tableau function that returns the logged-in user's email, used to filter data per user in the datasource</li><li><strong>Granular permissions</strong> — Read, Write, Filter, ViewUnderlyingData, ChangePermissions — assigned by user or by group</li></ul><div class='cb'><code>import tableauserverclient as TSC
+
+server = TSC.Server('https://tableau.company.com', use_server_version=True)
+auth = TSC.PersonalAccessTokenAuth('token_name', 'token_value', site_id='MySite')
+
+with server.auth.sign_in(auth):
+    all_wbs, page_info = server.workbooks.get()
+    print(f'{page_info.total_available} workbooks')
+    
+    # Publier un workbook
+    wb_item = TSC.WorkbookItem(project_id='proj-id', name='Sales Dashboard')
+    published = server.workbooks.publish('dashboard.twbx', wb_item,
+                                          TSC.Server.PublishMode.Overwrite)
+    # Declencher un refresh datasource
+    ds_item = server.datasources.get_by_id('ds-123')
+    job = server.datasources.refresh(ds_item)
+    job = server.jobs.wait_for_job(job)
+    print(f'Job status: {job.status}')
+    
+    # Gestion des permissions programmatique
+    permissions = TSC.PermissionsRule(TSC.GroupItem(group_id='grp-1'),
+        capabilities={TSC.Permission.Capability.View: TSC.Permission.Mode.Allow})
+    server.workbooks.add_permissions(published, [permissions])</code></div>
+<ul>
+<li><strong>Personal Access Token</strong> - PAT recommended for automated scripts. Username/password credentials will be deprecated. Create a PAT in Tableau Server settings</li>
+<li><strong>REST API vs TSC</strong> - Tableau Server Client is the official Python wrapper for the REST API. Prefer TSC for Python scripts, the direct REST API for non-Python integrations</li>
+<li><strong>Permissions via API</strong> - create groups, assign permissions on projects/workbooks programmatically. Essential for automated provisioning</li>
+<li><strong>Tableau Webhooks</strong> - trigger external actions (Slack, CI/CD) when a workbook is updated or an extract refresh fails</li>
+<li><strong>Metadata API (GraphQL)</strong> - query lineage and metadata. Which workbooks use this datasource? Which tables are impacted by a source?</li>
+<li><strong>Tableau Bridge</strong> - connect Tableau Cloud to on-premise sources (SQL Server, Oracle) via an agent installed on an internal Windows server</li>
+</ul>
+<ul>
+<li><strong>Personal Access Token</strong> - PAT recommended for automated scripts. Username/password credentials will be deprecated in future versions</li>
+<li><strong>Metadata API (GraphQL)</strong> - query lineage and metadata. Which workbooks use this datasource? Which tables are impacted?</li>
+<li><strong>Tableau Webhooks</strong> - trigger external actions (Slack, CI/CD) when a workbook is updated or an extract refresh fails</li>
+<li><strong>Tableau Bridge</strong> - connect Tableau Cloud to on-premise data sources (SQL Server, Oracle). Agent installed on an internal Windows server</li>
+<li><strong>Permissions management via API</strong> - create groups, assign permissions on projects/workbooks programmatically. Automated provisioning</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Has used TSC for common operations (download, upload, users)</td><td>Has deployed a workbook via TSC, has added users in bulk</td><td>Does everything manually in the Tableau interface</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Automated STAGE-PROD deployment pipeline, orchestrated refresh, security audit</td><td>Has integrated TSC into an Airflow/GitHub Actions pipeline, has performed a permissions audit</td><td>Does not know how to trigger a refresh via API</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un profil BI Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

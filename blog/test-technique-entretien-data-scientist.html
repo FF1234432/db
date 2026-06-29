@@ -76,42 +76,54 @@ train_sizes, train_scores, val_scores = learning_curve(
 <li><strong>Production awareness</strong> - Comment geriez-vous le drift de modele en production ? Les profils sans experience prod ne savent pas repondre concretement</li>
 <li><strong>Communication</strong> - Expliquez votre dernier projet ML a un non-technique. Les meilleurs Data Scientists translatent les resultats en impact business chiffre</li>
 </ul></div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='profil'><span class='sn'>1</span>What We're Really Evaluating</h2><p>A Data Scientist who cannot deploy any model to production is a cost. A Data Scientist who deploys models without understanding the underlying statistics is a risk. We evaluate both dimensions.</p><ul><li><strong>Statistical foundations</strong> — distributions, hypothesis testing, confidence intervals</li><li><strong>Supervised ML</strong> — classification and regression, algorithm selection, hyperparameters</li><li><strong>Rigorous evaluation</strong> — metrics adapted to the problem, cross-validation, overfitting</li><li><strong>Deployment</strong> — packaging, API, monitoring</li></ul><h2 id='stats'><span class='sn'>2</span>Statistical Foundations: What We Test</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between precision and recall? In which case do you prioritize one over the other?</p></div><div class='cb'><code>from sklearn.metrics import classification_report, confusion_matrix
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='profil'><span class='sn'>1</span>What We Actually Evaluate</h2><p>A Data Scientist who cannot deploy any model to production is a cost. A Data Scientist who deploys models without understanding the underlying statistics is a risk. We evaluate both dimensions.</p><ul><li><strong>Stat foundations</strong> — distributions, hypothesis testing, confidence intervals</li><li><strong>Supervised ML</strong> — classification and regression, algorithm selection, hyperparameters</li><li><strong>Rigorous evaluation</strong> — problem-adapted metrics, cross-validation, overfitting</li><li><strong>Deployment</strong> — packaging, API, monitoring</li></ul><h2 id='stats'><span class='sn'>2</span>Statistical Foundations: What We Test</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between precision and recall? In which case do you favor one over the other?</p></div><div class='cb'><code>from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 
-# La matrice de confusion
-# TP = vrais positifs, FP = faux positifs
-# FN = faux négatifs, TN = vrais négatifs
+# The confusion matrix
+# TP = true positives, FP = false positives
+# FN = false negatives, TN = true negatives
 
-# Précision = TP / (TP + FP)
-# Question : parmi les positifs prédits, combien sont vrais ?
-# À maximiser quand les faux positifs sont coûteux
-# Ex : détection de spam (envoyer un vrai email en spam = grave)
+# Precision = TP / (TP + FP)
+# Question: among predicted positives, how many are true?
+# Maximize when false positives are costly
+# Ex: spam detection (sending a real email to spam = serious)
 
-# Rappel = TP / (TP + FN)
-# Question : parmi les vrais positifs, combien sont détectés ?
-# À maximiser quand les faux négatifs sont coûteux
-# Ex : détection de cancer (manquer un vrai cancer = grave)
+# Recall = TP / (TP + FN)
+# Question: among true positives, how many are detected?
+# Maximize when false negatives are costly
+# Ex: cancer detection (missing a real cancer = serious)
 
-# F1 = 2 * (Précision * Rappel) / (Précision + Rappel)
-# Compromis entre précision et rappel</code></div><ul><li><strong>Imbalanced classes</strong> — accuracy is misleading if 95% of examples are negative. Use F1, AUC-ROC, or PR-AUC</li><li><strong>Threshold</strong> — adjust the decision threshold based on the business cost of errors</li></ul><h2 id='ml'><span class='sn'>3</span>Machine Learning Assessment</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose between a Random Forest and XGBoost? And between either of those and logistic regression?</p></div><table class='lt'><thead><tr><th>Algorithm</th><th>Strengths</th><th>Weaknesses</th><th>When to use it</th></tr></thead><tbody><tr><td>Logistic Regression</td><td>Interpretable, fast, probabilistic foundation</td><td>Linear, low performance on complex data</td><td>Baseline, low-correlation features, need for explainability</td></tr><tr><td>Random Forest</td><td>Robust, minimal tuning, OOB error</td><td>Slow on large volumes, low interpretability</td><td>Tabular data, solid baseline</td></tr><tr><td>XGBoost / LightGBM</td><td>Maximum performance, handles nulls</td><td>Easy overfitting, complex tuning</td><td>Competitions, production, large volumes</td></tr><tr><td>Neural Networks</td><td>Images, text, time series</td><td>Data, compute, black box</td><td>Unstructured data, large volumes</td></tr></tbody></table><h2 id='eval'><span class='sn'>4</span>Rigorous Model Evaluation</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is data leakage in model evaluation? How do you avoid it?</p></div><div class='cb'><code>from sklearn.model_selection import cross_val_score, StratifiedKFold
+# F1 = 2 * (Precision * Recall) / (Precision + Recall)
+# Trade-off between precision and recall</code></div><ul><li><strong>Imbalanced classes</strong> — accuracy is misleading if 95% of examples are negative. Use F1, AUC-ROC, or PR-AUC</li><li><strong>Threshold</strong> — adjust the decision threshold based on the business cost of errors</li></ul><h2 id='ml'><span class='sn'>3</span>Machine Learning Test</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose between a Random Forest and XGBoost? And between either of those and logistic regression?</p></div><table class='lt'><thead><tr><th>Algorithm</th><th>Strengths</th><th>Weaknesses</th><th>When to use it</th></tr></thead><tbody><tr><td>Logistic Regression</td><td>Interpretable, fast, probabilistic foundation</td><td>Linear, poor performance on complex data</td><td>Baseline, low-correlation features, explainability needed</td></tr><tr><td>Random Forest</td><td>Robust, minimal tuning, OOB error</td><td>Slow on large volumes, low interpretability</td><td>Tabular data, solid baseline</td></tr><tr><td>XGBoost / LightGBM</td><td>Maximum performance, handles nulls</td><td>Easy overfitting, complex tuning</td><td>Competitions, production, large volumes</td></tr><tr><td>Neural Networks</td><td>Images, text, time series</td><td>Data, compute, black box</td><td>Unstructured data, large volumes</td></tr></tbody></table><h2 id='eval'><span class='sn'>4</span>Rigorous Model Evaluation</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is data leakage in model evaluation? How do you avoid it?</p></div><div class='cb'><code>from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
-# Pipeline : garantit que le prétraitement est fait
-# séparément sur chaque fold (pas de leakage)
+# Pipeline: ensures preprocessing is done
+# separately on each fold (no leakage)
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('model', LogisticRegression())
 ])
 
-# Stratified K-Fold : respecte la proportion de classes
+# Stratified K-Fold: preserves class proportions
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 scores = cross_val_score(pipeline, X, y, cv=cv, scoring='roc_auc')
 print(f'AUC: {scores.mean():.3f} (+/- {scores.std():.3f})')
 
-# Learning curve : détecter l overfitting</code></div></div>
+# Learning curve: detect overfitting
+from sklearn.model_selection import learning_curve
+train_sizes, train_scores, val_scores = learning_curve(
+    pipeline, X, y, cv=cv, scoring='roc_auc'
+)</code></div><ul><li><strong>Data leakage</strong> — fitting the scaler on the entire dataset before the split = the model sees information from the test set</li><li><strong>Solution</strong> — use a sklearn Pipeline that applies preprocessing within each fold</li><li><strong>Temporal leakage</strong> — for time series, never use a random KFold. Use TimeSeriesSplit</li></ul><h2 id='casmetier'><span class='sn'>5</span>Business Case: The Most Discriminating Part</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why are business cases more discriminating than algorithmic questions?</p></div><ul><li><strong>Format</strong> — 'you work for an e-commerce company. The conversion rate drops 15% this month. How do you analyze the problem?' Duration: 20-30 minutes</li><li><strong>What we evaluate</strong> — problem structuring before coding, metric selection, formulated hypotheses, consistency of the approach</li><li><strong>Senior signal</strong> — starts by defining metrics and hypotheses before opening a notebook. Asks questions about available data</li><li><strong>Junior signal</strong> — opens a notebook and starts coding without asking the right questions</li><li><strong>NO-GO</strong> — uses accuracy as the only metric on an imbalanced problem without mentioning it</li></ul><h2 id='deploy'><span class='sn'>6</span>Deployment Capability</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What questions do you ask to assess deployment capability?</p></div><ul><li><strong>'How do you package a sklearn model for production?'</strong> — expected answer: joblib/pickle + FastAPI + Docker</li><li><strong>'How do you detect that your model is degrading in production?'</strong> — expected answer: monitoring input distributions, tracking metrics on recently labeled data</li><li><strong>'What is the difference between MLOps 0 and MLOps 2?'</strong> — reveals the industrialization culture</li><li><strong>Red flag</strong> — does not know what a production model is, thinks Jupyter is sufficient for deployment</li></ul><h2 id='grille'><span class='sn'>7</span>GO / NO-GO Decision Grid</h2><table class='lt'><thead><tr><th>Skill</th><th>Junior DS</th><th>Mid-level DS</th><th>Senior DS</th></tr></thead><tbody><tr><td>Statistics</td><td>Precision/Recall, probability basics</td><td>Stat tests, AUC-ROC, imbalanced classes</td><td>Bayesian statistics, rigorous A/B testing</td></tr><tr><td>Algorithmic ML</td><td>sklearn, RandomForest, regression</td><td>XGBoost tuning, feature engineering, SHAP</td><td>Advanced algorithms, NLP/CV, deep learning</td></tr><tr><td>Evaluation</td><td>Train/test split, accuracy</td><td>Stratified CV, adapted metrics, leakage</td><td>Learning curves, production monitoring</td></tr><tr><td>Production</td><td>Basic deployment knowledge</td><td>FastAPI + Docker + MLflow</td><td>Full MLOps, CI/CD ML, drift monitoring</td></tr><tr><td>Communication</td><td>Explains their model</td><td>Presents results to business stakeholders</td><td>Frames and prioritizes data science projects</td></tr></tbody></table></div>
+<ul>
+<li><strong>ML design questions</strong> - How would you model churn? Start with the business problem, not the algorithm. GO signal: breaks it down into sub-problems, discusses constraints</li>
+<li><strong>Stats and probabilities</strong> - Explain p-value simply. The answer reveals whether the candidate truly understands or is reciting a definition</li>
+<li><strong>Algorithmic trade-offs</strong> - When do you prefer a simple model (logistic regression) over a complex one (XGBoost)? GO signal: mentions interpretability, maintainability, regulation</li>
+<li><strong>Production awareness</strong> - How would you handle model drift in production? Profiles without prod experience cannot answer concretely</li>
+<li><strong>Communication</strong> - Explain your last ML project to a non-technical person. The best Data Scientists translate results into quantified business impact</li>
+</ul>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

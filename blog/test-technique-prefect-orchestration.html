@@ -199,13 +199,13 @@ def pipeline():
 <h2 id='concept'><span class='sn'>1</span>Why Prefect is different from Airflow</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is the main architectural difference between Prefect and Airflow?</p></div>
 <ul>
-<li><strong>Airflow</strong> — DAG statically defined in Python, central scheduler that schedules, workers that execute. DAG must be parseable without error on load, even without execution</li>
+<li><strong>Airflow</strong> — DAG statically defined in Python, central scheduler that plans, workers that execute. DAG must be parseable without error at load time, even without execution</li>
 <li><strong>Prefect</strong> — flows defined in pure Python (@flow/@task decorators). Execution is decoupled from scheduling. Prefect Cloud stores metadata, workers execute locally</li>
 <li><strong>Prefect advantages</strong> — less boilerplate, native retry per task, advanced state management, locally testable without infrastructure, typed inputs/outputs</li>
 <li><strong>Airflow advantages</strong> — mature ecosystem (400+ providers), more widespread in enterprise, better integration with existing tools</li>
-<li><strong>Dagster</strong> — asset-centric (the data, not the tasks). Ideal for teams who want to reason in terms of data products</li>
+<li><strong>Dagster</strong> — asset-centric (the data, not the tasks). Ideal for teams that want to reason in terms of data products</li>
 </ul>
-<div class='cb'><code># Test unitaire d'un flow Prefect (impossible avec Airflow sans mocking lourd)
+<div class='cb'><code># Unit test of a Prefect flow (impossible with Airflow without heavy mocking)
 from prefect import flow, task
 
 @task
@@ -217,7 +217,7 @@ def pipeline(url: str = "https://api.example.com"):
     data = extract(url)
     return data
 
-# Test simple en local - aucune infrastructure nécessaire
+# Simple local test - no infrastructure needed
 if __name__ == "__main__":
     result = pipeline("https://api.example.com/orders")
     print(result)</code></div>
@@ -244,7 +244,7 @@ def extract_data(source_url: str) -> list:
 def transform(data: list) -> pd.DataFrame:
     df = pd.DataFrame(data)
     df = df[df['amount'] > 0]
-    print(f"{len(df)} lignes après filtrage")
+    print(f"{len(df)} rows after filtering")
     return df
 
 @task
@@ -252,15 +252,15 @@ def load(df: pd.DataFrame, table: str) -> int:
     df.to_sql(table, engine, if_exists='append', index=False)
     return len(df)
 
-@flow(name='pipeline-ventes', log_prints=True)
+@flow(name='sales-pipeline', log_prints=True)
 def pipeline(source: str = 'https://api.example.com/orders'):
     data = extract_data(source)
     df = transform(data)
     n = load(df, 'orders')
-    print(f'{n} lignes chargées')
+    print(f'{n} rows loaded')
     return n</code></div>
 <ul>
-<li><strong>Native cache</strong> — task_input_hash caches the result based on inputs. If the inputs haven't changed, the task is skipped</li>
+<li><strong>Native cache</strong> — task_input_hash caches the result based on inputs. If inputs haven't changed, the task is skipped</li>
 <li><strong>Tags</strong> — organize and filter runs in the UI. Useful for team-based alerts</li>
 <li><strong>Subflows</strong> — a flow can call another flow. Allows composition of complex pipelines</li>
 </ul>
@@ -270,19 +270,96 @@ def pipeline(source: str = 'https://api.example.com/orders'):
 <div class='cb'><code>from prefect.deployments import Deployment
 from prefect.server.schemas.schedules import CronSchedule
 
-# Créer un déploiement avec CRON
+# Create a deployment with CRON
 deployment = Deployment.build_from_flow(
     flow=pipeline,
-    name='pipeline-ventes-quotidien',
+    name='daily-sales-pipeline',
     schedule=CronSchedule(cron='0 6 * * *', timezone='Europe/Paris'),
-    work_pool_name='mon-pool-gcp',
+    work_pool_name='my-gcp-pool',
     parameters={'source': 'https://api.example.com/orders'},
-    tags=['production', 'ventes']
+    tags=['production', 'sales']
 )
 deployment.apply()
 
-# Types de work pools :
-# Process      → exécution locale (dev/te</code></div></div>
+# Work pool types:
+# Process      → local execution (dev/test)
+# Docker       → isolated Docker container
+# Kubernetes   → K8s pod with autoscaling
+# Cloud Run    → GCP serverless (pay-per-use)
+# ECS          → AWS serverless</code></div>
+<ul>
+<li><strong>Work pool</strong> — defines the execution infrastructure. The same flow can be deployed on multiple pools (dev, staging, prod)</li>
+<li><strong>Worker</strong> — process that polls the pool and executes flows. Runs locally or in a cluster</li>
+<li><strong>Prefect Cloud vs self-hosted</strong> — Prefect Cloud (SaaS) manages the server. Self-hosted: deploy prefect server yourself</li>
+</ul>
+
+<h2 id='retry'><span class='sn'>4</span>Error handling and retry</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you handle errors in Prefect? Why is it more powerful than Airflow?</p></div>
+<div class='cb'><code>from prefect.tasks import exponential_backoff
+
+@task(
+    retries=3,
+    retry_delay_seconds=exponential_backoff(backoff_factor=10),  # 10s, 100s, 1000s
+    retry_jitter_factor=0.5  # avoids retry storms
+)
+def call_external_api(url: str) -> dict:
+    ...
+
+# State handlers: react to state changes
+from prefect import flow
+from prefect.states import Failed
+
+def notify_on_failure(flow, flow_run, state):
+    if isinstance(state, Failed):
+        send_slack_alert(f"Flow {flow_run.name} failed: {state.message}")
+
+@flow(on_failure=[notify_on_failure])
+def pipeline():
+    ...</code></div>
+<ul>
+<li><strong>Exponential backoff</strong> — avoids overloading a failing API by exponentially spacing out retries</li>
+<li><strong>State handlers</strong> — trigger actions (Slack, PagerDuty, email) based on flow or task state</li>
+<li><strong>Resume from checkpoint</strong> — restart a failed flow from the last successful task without rerunning everything</li>
+<li><strong>Prefect Cloud automations</strong> — event-driven rules: if flow fails 3 times → create an Opsgenie incident</li>
+</ul>
+
+<h2 id='vs'><span class='sn'>5</span>Airflow vs Prefect vs Dagster</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose your orchestrator based on context?</p></div>
+<table class='lt'><thead><tr><th></th><th>Airflow</th><th>Prefect</th><th>Dagster</th></tr></thead>
+<tbody>
+<tr><td>Paradigm</td><td>DAG-centric (tasks)</td><td>Flow-centric (pure Python)</td><td>Asset-centric (data)</td></tr>
+<tr><td>Learning curve</td><td>High</td><td>Low</td><td>Medium</td></tr>
+<tr><td>Ecosystem</td><td>Mature, 400+ providers</td><td>Growing</td><td>Growing</td></tr>
+<tr><td>Developer experience</td><td>Average</td><td>Excellent</td><td>Excellent</td></tr>
+<tr><td>Data assets</td><td>Not native</td><td>Partial</td><td>Native</td></tr>
+<tr><td>Local testing</td><td>Difficult</td><td>Very easy</td><td>Easy</td></tr>
+<tr><td>Ideal for</td><td>Existing teams, many providers</td><td>New Python-first projects</td><td>Data-asset oriented teams</td></tr>
+</tbody></table>
+
+<h2 id='monitoring'><span class='sn'>6</span>Monitoring and observability</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you monitor your Prefect flows in production?</p></div>
+<ul>
+<li><strong>Prefect Cloud dashboard</strong> — centralized view of all runs, filtering by flow/tag/state, centralized logs with full-text search</li>
+<li><strong>Automations</strong> — trigger actions (Slack, email, webhook) when a flow fails, exceeds its SLA, or succeeds too rarely</li>
+<li><strong>Work pool monitoring</strong> — monitor worker health (queue depth, last activity)</li>
+<li><strong>Prometheus/Grafana integration</strong> — export Prefect metrics (runs, latency, failure rate) via a dedicated exporter</li>
+<li><strong>SLA alerts</strong> — configure alerts if a flow is more than N minutes late after its scheduled time</li>
+</ul>
+
+<ul>
+<li><strong>Work pool</strong> - defines the execution infrastructure. The same flow can be deployed on multiple pools (dev, staging, prod)</li>
+<li><strong>Prefect Cloud automations</strong> - event-driven rules: if flow fails 3 times -> create an Opsgenie incident. Replaces manual monitoring scripts</li>
+<li><strong>State handlers</strong> - trigger actions (Slack, PagerDuty, email) based on flow or task state. on_failure, on_completion, on_cancellation</li>
+<li><strong>SLA monitoring</strong> - alerts if a flow is more than N minutes late after its scheduled time. Configurable per deployment</li>
+<li><strong>prefect serve vs deployment</strong> - prefect serve: launch directly from Python (dev, no work pool). Deployment: persistent config with CRON scheduling (prod)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Mid-level</span></td><td>Flows and tasks, deployments, basic retry, CRON scheduling</td><td>Has converted a Python script into a Prefect flow, knows how to deploy with a CRON and a work pool</td><td>Has never used an orchestrator, confuses Prefect and Airflow</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Work pools, state handlers, automations, orchestrator comparison</td><td>Justifies orchestrator choice based on context, has configured automations and SLA alerts</td><td>Cannot explain the architectural difference between Airflow and Prefect</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

@@ -132,9 +132,10 @@ def classify(text, classes, class_embeddings):
 print(classify('mon paquet est perdu', classes, class_embeddings))</code></div><ul><li><strong>Sentence transformers vs word2vec</strong> - word2vec : embedding au niveau mot, context-free. Sentence transformers : embedding de la phrase entiere, context-aware (BERT-based)</li><li><strong>Modeles multilingues</strong> - paraphrase-multilingual-MiniLM-L12-v2 : 50 langues, rapide. multilingual-e5-large : meilleure qualite mais plus lent. BGE-M3 : tres performant, multilingue</li><li><strong>Dimension des vecteurs</strong> - MiniLM : 384 dimensions. BGE-large : 1024 dimensions. Plus de dimensions = plus precise mais plus de memoire et calcul</li><li><strong>Fine-tuning</strong> - adapter un modele pre-entraine sur un domaine specifique (e-commerce, medical, juridique) avec des paires de phrases similaires/dissimilaires</li><li><strong>BM25 vs embeddings</strong> - BM25 : matching lexical exact, rapide, interpretable. Embeddings : comprehension semantique, gere les synonymes et paraphrases. Hybrid = meilleur des deux</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Tokenisation, sentence transformers, classification basique</td><td>A utilisé sentence-transformers pour du RAG, sait ce qu est BPE</td><td>Ne sait pas ce qu est un embedding</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Fine-tuning BERT/CamemBERT, LoRA, déploiement ONNX</td><td>A fine-tuné un modèle sur données métier, a déployé en production</td><td>N a jamais fine-tuné, ne sait pas ce qu est LoRA</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='bases'><span class='sn'>1</span>NLP fundamentals: tokenization and representation</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is tokenization? What is the difference between word-level and subword tokenization?</p></div><div class='cb'><code>from transformers import AutoTokenizer
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='bases'><span class='sn'>1</span>NLP Fundamentals: tokenization and representation</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is tokenization? What is the difference between word-level and subword tokenization?</p></div><div class='cb'><code>from transformers import AutoTokenizer
 
-# Tokenisation subword (BPE - Byte Pair Encoding)
+# Subword tokenization (BPE - Byte Pair Encoding)
 tokenizer = AutoTokenizer.from_pretrained('bert-base-multilingual-cased')
 
 text = 'Le pipeline de données traite les commandes'
@@ -143,13 +144,13 @@ ids = tokenizer.encode(text)
 
 print(tokens)
 # ['Le', 'pipeline', 'de', 'données', 'traite', 'les', 'commandes']
-# Les mots rares sont découpés en sous-mots :
+# Rare words are split into subwords:
 # 'databuilder' -> ['data', '##builder']
 
 print(f'Vocab size: {tokenizer.vocab_size}')  # ~120k tokens</code></div><ul><li><strong>Word-level</strong> — one token per word. Problem: huge vocabulary, unknown rare words (OOV)</li><li><strong>Subword (BPE)</strong> — rare words are split into known sub-tokens. No more OOV, compact vocabulary</li><li><strong>Sentencepiece</strong> — variant used by T5, LLaMA, Mistral</li></ul><h2 id='embed'><span class='sn'>2</span>Word embeddings and sentence embeddings</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between Word2Vec, GloVe and sentence transformers?</p></div><div class='cb'><code>from sentence_transformers import SentenceTransformer
 import numpy as np
 
-# Sentence Transformers : embedding de phrases entières
+# Sentence Transformers: embedding of entire sentences
 model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
 
 sentences = [
@@ -160,25 +161,81 @@ sentences = [
 
 embeddings = model.encode(sentences)
 
-# Similarité cosinus
+# Cosine similarity
 from sklearn.metrics.pairwise import cosine_similarity
 sim_matrix = cosine_similarity(embeddings)
 print(sim_matrix)
 # [[1.0,  0.87, 0.12],
-#  [0.87, 1.0,  0.11],   -> phrases 1 et 2 très similaires
-#  [0.12, 0.11, 1.0 ]]   -> phrase 3 différente</code></div><ul><li><strong>Word2Vec/GloVe</strong> — static embedding per word, no context. 'bank' has the same vector in 'river bank' and 'bank account'</li><li><strong>BERT</strong> — contextual embedding, the vector depends on the sentence context</li><li><strong>Sentence Transformers</strong> — optimized to encode entire sentences into a single vector. Ideal for similarity and RAG</li></ul><h2 id='bert'><span class='sn'>3</span>Transformers and BERT architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the attention mechanism? Why is BERT bidirectional?</p></div><ul><li><strong>Self-attention</strong> — each token looks at all other tokens in the sequence to compute its representation. Captures long-range dependencies</li><li><strong>Bidirectional BERT</strong> — unlike GPT (left → right), BERT looks at context in both directions. Better for understanding, not for generation</li><li><strong>Autoregressive GPT</strong> — predicts the next token. Ideal for text generation</li><li><strong>Multilingual models</strong> — mBERT, CamemBERT (French), XLM-RoBERTa: pre-trained models on multilingual text</li></ul><h2 id='finetune'><span class='sn'>4</span>Fine-tuning: adapting a pre-trained model</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you fine-tune a pre-trained model? How do you avoid catastrophic forgetting?</p></div><div class='cb'><code>from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
+#  [0.87, 1.0,  0.11],   -> sentences 1 and 2 very similar
+#  [0.12, 0.11, 1.0 ]]   -> sentence 3 different</code></div><ul><li><strong>Word2Vec/GloVe</strong> — static embedding per word, no context. 'bank' has the same vector in 'river bank' and 'bank account'</li><li><strong>BERT</strong> — contextual embedding, the vector depends on the sentence context</li><li><strong>Sentence Transformers</strong> — optimized to encode entire sentences into a single vector. Ideal for similarity and RAG</li></ul><h2 id='bert'><span class='sn'>3</span>Transformers and BERT architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the attention mechanism? Why is BERT bidirectional?</p></div><ul><li><strong>Self-attention</strong> — each token looks at all other tokens in the sequence to compute its representation. Captures long-range dependencies</li><li><strong>Bidirectional BERT</strong> — unlike GPT (left → right), BERT looks at context in both directions. Better for understanding, not for generation</li><li><strong>Autoregressive GPT</strong> — predicts the next token. Ideal for text generation</li><li><strong>Multilingual models</strong> — mBERT, CamemBERT (French), XLM-RoBERTa: models pre-trained on multilingual text</li></ul><h2 id='finetune'><span class='sn'>4</span>Fine-tuning: adapting a pre-trained model</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you fine-tune a pre-trained model? How do you avoid catastrophic forgetting?</p></div><div class='cb'><code>from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 from datasets import Dataset
 
-# Fine-tuning pour la classification de tickets support
+# Fine-tuning for support ticket classification
 model = AutoModelForSequenceClassification.from_pretrained(
     'camembert-base',
-    num_labels=5  # 5 catégories de tickets
+    num_labels=5  # 5 ticket categories
 )
 
 training_args = TrainingArguments(
     output_dir='./ticket_classifier',
     num_train_epochs=3,
-    p</code></div></div>
+    per_device_train_batch_size=16,
+    learning_rate=2e-5,      # low LR to avoid catastrophic forgetting
+    warmup_steps=100,
+    weight_decay=0.01,
+    evaluation_strategy='epoch'
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=eval_dataset
+)
+trainer.train()</code></div><ul><li><strong>Catastrophic forgetting</strong> — if the LR is too high, the model forgets its pre-trained knowledge. Solution: low LR (2e-5) and warmup</li><li><strong>LoRA</strong> — efficient fine-tuning that only trains a fraction of the parameters. 10x less GPU required</li></ul><h2 id='pipeline'><span class='sn'>5</span>NLP pipeline in production</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you deploy a text classification model in production?</p></div><div class='cb'><code>from transformers import pipeline
+from fastapi import FastAPI
+
+# Load the pipeline once at startup
+classifier = pipeline(
+    'text-classification',
+    model='./ticket_classifier',
+    device=0  # GPU if available
+)
+
+app = FastAPI()
+
+@app.post('/classify')
+def classify_ticket(text: str):
+    result = classifier(text, truncation=True, max_length=512)
+    return {
+        'category': result[0]['label'],
+        'confidence': round(result[0]['score'], 4)
+    }</code></div><ul><li><strong>Quantization</strong> — reduce the model from float32 to int8. 4x less memory, 2-3x faster, slight quality loss</li><li><strong>ONNX Runtime</strong> — convert the model for optimized inference. Independent of PyTorch</li></ul><h2 id='eval'><span class='sn'>6</span>Evaluating NLP models</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What metrics do you use to evaluate a multiclass text classification model?</p></div><ul><li><strong>F1 macro</strong> — average of F1 per class. Gives equal weight to each class, even small ones</li><li><strong>F1 weighted</strong> — weighted average by frequency. More representative when classes are imbalanced</li><li><strong>Cohen's Kappa</strong> — measures agreement accounting for chance. Useful for comparing multiple annotators</li><li><strong>BLEU/ROUGE</strong> — for text generation (summarization, translation). BLEU measures common n-grams between generated text and reference</li></ul><div class='cb'><code>from sentence_transformers import SentenceTransformer
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Multilingual embeddings
+model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+texts = ['Retard de livraison', 'Mon colis n est pas arrive', 'Remboursement commande']
+embeddings = model.encode(texts)  # shape: (3, 384)
+
+# Cosine similarity between documents
+sim_matrix = cosine_similarity(embeddings)
+print(f'Sim(retard, colis): {sim_matrix[0,1]:.3f}')  # ~0.75 - semantically close
+
+# Zero-shot classification by similarity with classes
+classes = ['probleme livraison', 'probleme paiement', 'retour produit']
+class_embeddings = model.encode(classes)
+
+def classify(text, classes, class_embeddings):
+    text_emb = model.encode([text])
+    sims = cosine_similarity(text_emb, class_embeddings)[0]
+    return classes[np.argmax(sims)]
+
+print(classify('mon paquet est perdu', classes, class_embeddings))</code></div><ul><li><strong>Sentence transformers vs word2vec</strong> - word2vec: word-level embedding, context-free. Sentence transformers: full sentence embedding, context-aware (BERT-based)</li><li><strong>Multilingual models</strong> - paraphrase-multilingual-MiniLM-L12-v2: 50 languages, fast. multilingual-e5-large: better quality but slower. BGE-M3: very high performance, multilingual</li><li><strong>Vector dimensions</strong> - MiniLM: 384 dimensions. BGE-large: 1024 dimensions. More dimensions = more precise but more memory and compute</li><li><strong>Fine-tuning</strong> - adapting a pre-trained model to a specific domain (e-commerce, medical, legal) with pairs of similar/dissimilar sentences</li><li><strong>BM25 vs embeddings</strong> - BM25: exact lexical matching, fast, interpretable. Embeddings: semantic understanding, handles synonyms and paraphrases. Hybrid = best of both</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Tokenization, sentence transformers, basic classification</td><td>Has used sentence-transformers for RAG, knows what BPE is</td><td>Does not know what an embedding is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Fine-tuning BERT/CamemBERT, LoRA, ONNX deployment</td><td>Has fine-tuned a model on business data, has deployed in production</td><td>Has never fine-tuned, does not know what LoRA is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist NLP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

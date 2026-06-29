@@ -167,7 +167,8 @@ async def predict_churn(request: PredictionRequest):
 def health(): return {'status': 'ok', 'model_version': 'v2.1.3'}</code></div><ul><li><strong>FastAPI vs Flask pour la data</strong> - FastAPI : validation automatique via Pydantic, async natif, OpenAPI auto-genere. Flask : plus simple pour les POC, moins adapte aux APIs de prediction</li><li><strong>Rate limiting</strong> - limiter les requetes par client (slowapi). Evite la surcharge du modele par un consumer unique</li><li><strong>Versionning d API</strong> - /v1/predict et /v2/predict en parallele pendant la migration. Les consumers peuvent migrer a leur rythme</li><li><strong>Batch vs real-time</strong> - scoring en batch (nuit) pour les volumes > 100k predictions/jour. API REST pour le temps reel (scoring a la demande, < 1s)</li><li><strong>Monitoring</strong> - instrumenter avec Prometheus (latence p50/p95/p99, taux d erreur) et tracker la distribution des predictions pour detecter le drift</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Méthodes HTTP, auth API Key/Bearer, pagination basique</td><td>Implémente la pagination correctement, gère les erreurs HTTP</td><td>Ne gère pas le rate limiting, ignore les codes d erreur</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OAuth2, cursor pagination, versioning, retry avec backoff</td><td>Utilise tenacity pour les retries, implémente cursor pagination, a versionné une API</td><td>N a jamais pensé à la dépréciation d une API</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concepts'><span class='sn'>1</span>Fundamental REST principles</h2><div class='sq'><div class='sl'>Key question</div><p>What are the REST principles? What is the difference between GET, POST, PUT and PATCH?</p></div><table class='lt'><thead><tr><th>Method</th><th>Action</th><th>Idempotent</th><th>Example</th></tr></thead><tbody><tr><td>GET</td><td>Read</td><td>Yes</td><td>GET /orders/123</td></tr><tr><td>POST</td><td>Create</td><td>No</td><td>POST /orders</td></tr><tr><td>PUT</td><td>Replace entirely</td><td>Yes</td><td>PUT /orders/123 (all properties)</td></tr><tr><td>PATCH</td><td>Partially update</td><td>No</td><td>PATCH /orders/123 (status only)</td></tr><tr><td>DELETE</td><td>Delete</td><td>Yes</td><td>DELETE /orders/123</td></tr></tbody></table><ul><li><strong>Stateless</strong> — each request contains all necessary information, with no server-side state</li><li><strong>HTTP codes</strong> — 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 429 Too Many Requests, 500 Server Error</li></ul><h2 id='auth'><span class='sn'>2</span>Authentication: API Keys vs OAuth2</h2><div class='sq'><div class='sl'>Key question</div><p>When do you use an API Key and when OAuth2 to authenticate a data API?</p></div><div class='cb'><code>import requests
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concepts'><span class='sn'>1</span>Core REST Principles</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the REST principles? What is the difference between GET, POST, PUT and PATCH?</p></div><table class='lt'><thead><tr><th>Method</th><th>Action</th><th>Idempotent</th><th>Example</th></tr></thead><tbody><tr><td>GET</td><td>Read</td><td>Yes</td><td>GET /orders/123</td></tr><tr><td>POST</td><td>Create</td><td>No</td><td>POST /orders</td></tr><tr><td>PUT</td><td>Replace entirely</td><td>Yes</td><td>PUT /orders/123 (all properties)</td></tr><tr><td>PATCH</td><td>Partially modify</td><td>No</td><td>PATCH /orders/123 (status only)</td></tr><tr><td>DELETE</td><td>Delete</td><td>Yes</td><td>DELETE /orders/123</td></tr></tbody></table><ul><li><strong>Stateless</strong> — each request contains all necessary information, with no server-side state</li><li><strong>HTTP Codes</strong> — 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 429 Too Many Requests, 500 Server Error</li></ul><h2 id='auth'><span class='sn'>2</span>Authentication: API Keys vs OAuth2</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use an API Key and when OAuth2 to authenticate a data API?</p></div><div class='cb'><code>import requests
 
 # API Key : simple, pour les services M2M (machine à machine)
 headers = {'X-API-Key': 'sk-prod-abc123...'}
@@ -188,7 +189,7 @@ def get_token(client_id: str, client_secret: str, token_url: str) -> str:
     return response.json()['access_token']
 
 # Stocker les credentials dans les variables d environnement
-# JAMAIS en dur dans le code</code></div><h2 id='pagination'><span class='sn'>3</span>Pagination: cursor vs offset</h2><div class='sq'><div class='sl'>Key question</div><p>What is the difference between offset and cursor pagination? Which do you prefer?</p></div><div class='cb'><code>import requests
+# JAMAIS en dur dans le code</code></div><h2 id='pagination'><span class='sn'>3</span>Pagination: cursor vs offset</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between offset and cursor pagination? Which do you prefer?</p></div><div class='cb'><code>import requests
 
 # Offset pagination : simple mais problèmes sur données changeantes
 def get_all_orders_offset(url: str) -> list:
@@ -215,7 +216,7 @@ def get_all_orders_cursor(url: str) -> list:
         cursor = resp.get('next_cursor')
         if not cursor:
             break
-    return all_orders</code></div><ul><li><strong>Offset</strong> — simple but unstable if data is added during pagination (rows get skipped)</li><li><strong>Cursor</strong> — stable, based on the ID of the last seen item. Standard for large APIs</li></ul><h2 id='versioning'><span class='sn'>4</span>API versioning</h2><div class='sq'><div class='sl'>Key question</div><p>How do you version a data API to avoid breaking existing consumers?</p></div><ul><li><strong>URL versioning</strong> — /api/v1/orders, /api/v2/orders. The most explicit and most widely used</li><li><strong>Header versioning</strong> — Accept: application/vnd.api+json;version=2. Cleaner but less visible</li><li><strong>Progressive deprecation</strong> — maintain v1 for at least 6 months after the launch of v2. Notify consumers</li><li><strong>Backward compatible</strong> — adding fields is OK (backward compatible). Removing or renaming = breaking change</li></ul><h2 id='consume'><span class='sn'>5</span>Consuming an API robustly</h2><div class='sq'><div class='sl'>Key question</div><p>How do you handle errors and rate limiting when consuming a third-party API?</p></div><div class='cb'><code>import requests
+    return all_orders</code></div><ul><li><strong>Offset</strong> — simple but unstable if data is added during pagination (skips rows)</li><li><strong>Cursor</strong> — stable, based on the ID of the last seen element. Standard for large APIs</li></ul><h2 id='versioning'><span class='sn'>4</span>API Versioning</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you version a data API without breaking existing consumers?</p></div><ul><li><strong>URL versioning</strong> — /api/v1/orders, /api/v2/orders. The most explicit and most widely used</li><li><strong>Header versioning</strong> — Accept: application/vnd.api+json;version=2. Cleaner but less visible</li><li><strong>Progressive deprecation</strong> — maintain v1 for at least 6 months after launching v2. Notify consumers</li><li><strong>Backward compatible</strong> — adding fields is OK (backward compatible). Removing or renaming = breaking change</li></ul><h2 id='consume'><span class='sn'>5</span>Consuming an API Robustly</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you handle errors and rate limiting when consuming a third-party API?</p></div><div class='cb'><code>import requests
 import time
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -231,7 +232,75 @@ def fetch_with_retry(url: str, headers: dict) -> dict:
         time.sleep(retry_after)
         raise Exception('Rate limited')
     
-    response.raise_for_status()  # raise pour </code></div></div>
+    response.raise_for_status()  # raise pour 4xx et 5xx
+    return response.json()
+
+# Respecter les rate limits proactivement
+from ratelimit import limits, sleep_and_retry
+
+@sleep_and_retry
+@limits(calls=100, period=60)  # 100 appels par minute
+def call_api(url: str) -> dict:
+    return requests.get(url).json()</code></div><h2 id='expose'><span class='sn'>6</span>Exposing Data via FastAPI</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you expose a BigQuery or Snowflake table via a REST API?</p></div><div class='cb'><code>from fastapi import FastAPI, Query, Depends
+from pydantic import BaseModel
+from typing import Optional
+import duckdb
+
+app = FastAPI()
+
+class OrdersResponse(BaseModel):
+    data: list
+    total: int
+    cursor: Optional[str] = None
+
+@app.get('/api/v1/orders', response_model=OrdersResponse)
+async def get_orders(
+    region: Optional[str] = Query(None),
+    date_from: Optional[str] = Query(None),
+    limit: int = Query(100, ge=1, le=1000),
+    cursor: Optional[str] = Query(None)
+):
+    query = 'SELECT * FROM orders WHERE 1=1'
+    if region: query += f" AND region = '{region}'"
+    if date_from: query += f" AND order_date >= '{date_from}'"
+    if cursor: query += f" AND order_id > '{cursor}'"
+    query += f' ORDER BY order_id LIMIT {limit + 1}'
+    
+    results = duckdb.execute(query).fetchall()
+    has_more = len(results) > limit
+    data = results[:limit]
+    next_cursor = data[-1][0] if has_more else None
+    return {'data': data, 'total': len(data), 'cursor': next_cursor}</code></div><div class='cb'><code>from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
+import pandas as pd
+
+app = FastAPI(title='Data API', version='1.0')
+
+class PredictionRequest(BaseModel):
+    customer_id: str
+    features: dict[str, float]
+
+class PredictionResponse(BaseModel):
+    customer_id: str
+    churn_probability: float
+    model_version: str
+
+@app.post('/predict', response_model=PredictionResponse)
+async def predict_churn(request: PredictionRequest):
+    try:
+        features_df = pd.DataFrame([request.features])
+        proba = model.predict_proba(features_df)[0, 1]
+        return PredictionResponse(
+            customer_id=request.customer_id,
+            churn_probability=float(proba),
+            model_version='v2.1.3'
+        )
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+@app.get('/health')
+def health(): return {'status': 'ok', 'model_version': 'v2.1.3'}</code></div><ul><li><strong>FastAPI vs Flask for data</strong> - FastAPI: automatic validation via Pydantic, native async, auto-generated OpenAPI. Flask: simpler for POCs, less suited for prediction APIs</li><li><strong>Rate limiting</strong> - limit requests per client (slowapi). Prevents model overload by a single consumer</li><li><strong>API versioning</strong> - /v1/predict and /v2/predict running in parallel during migration. Consumers can migrate at their own pace</li><li><strong>Batch vs real-time</strong> - batch scoring (overnight) for volumes &gt; 100k predictions/day. REST API for real-time (on-demand scoring, &lt; 1s)</li><li><strong>Monitoring</strong> - instrument with Prometheus (p50/p95/p99 latency, error rate) and track prediction distribution to detect drift</li></ul><h2 id='nv'><span class='sn'>7</span>Level Grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>HTTP methods, API Key/Bearer auth, basic pagination</td><td>Implements pagination correctly, handles HTTP errors</td><td>Does not handle rate limiting, ignores error codes</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OAuth2, cursor pagination, versioning, retry with backoff</td><td>Uses tenacity for retries, implements cursor pagination, has versioned an API</td><td>Has never thought about API deprecation</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

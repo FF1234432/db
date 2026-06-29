@@ -109,8 +109,9 @@ fct_commandes (
 -- Plus économique en stockage mais jointures plus complexes
 -- Déconseillé pour la BI self-service</code></div><ul><li><strong>Étoile</strong> — recommandé pour la BI. Jointures simples, performances optimales sur les data warehouses modernes</li><li><strong>Flocon</strong> — utile si les dimensions sont très larges et que le stockage est contrainte. Rare en pratique sur les cloud warehouses</li><li><strong>SCD Type 2</strong> — suivre l historique des changements dans une dimension (ex : un client qui change de segment)</li></ul><h2 id='python'><span class='sn'>5</span>Python pour l Analytics Engineer</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Quel niveau de Python attendez-vous d un AE ? Quels sont les cas d usage typiques ?</p></div><ul><li><strong>Niveau attendu</strong> — Python intermédiaire. Pas de ML, mais capable d écrire des scripts d automatisation et des macros dbt</li><li><strong>Cas d usage</strong> : automatiser le déploiement dbt via API, écrire des tests de données avec pytest, parser des fichiers pour alimenter des seeds dbt, scripts d administration (ex : Tableau Server Client)</li><li><strong>Ce qu on n attend pas</strong> — PyTorch, Spark, algorithmes ML. Ce n est pas le rôle</li><li><strong>Ce qui différencie</strong> — un AE Senior sait écrire des macros dbt avec run_query() et automatiser la génération de modèles</li></ul><h2 id='soft'><span class='sn'>6</span>Questions de contexte business</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Pourquoi les questions de contexte métier sont-elles importantes pour évaluer un AE ?</p></div><ul><li><strong>'Comment définissez-vous le chiffre d affaires dans votre modèle ?'</strong> — un bon AE sait que la définition d une métrique est un sujet politique autant que technique</li><li><strong>'Comment gérez-vous les breaking changes dans vos modèles dbt ?'</strong> — révèle la maturité sur le cycle de vie des données</li><li><strong>'Qui valide vos définitions de métriques ?'</strong> — révèle la capacité à travailler avec les métiers</li><li><strong>'Comment sauriez-vous que votre modèle est cassé en production ?'</strong> — révèle la culture de monitoring et d alerting</li></ul><h2 id='grille'><span class='sn'>7</span>Grille de décision GO / NO-GO</h2><table class='lt'><thead><tr><th>Compétence</th><th>Junior AE</th><th>Confirmé AE</th><th>Senior AE</th></tr></thead><tbody><tr><td>SQL window functions</td><td>Bases (ROW_NUMBER)</td><td>LAG/LEAD, frames, cohortes</td><td>CTEs récursives, QUALIFY, JSON</td></tr><tr><td>dbt modèles</td><td>Staging + marts, ref()</td><td>Intermediate, macros, tests custom</td><td>Packages, CI slim, snapshots SCD2</td></tr><tr><td>Modélisation</td><td>Comprend étoile vs flocon</td><td>Conçoit un schéma en étoile complet</td><td>SCD2, late-arriving facts, bridge tables</td></tr><tr><td>Python</td><td>pandas basique, scripts</td><td>Automatisation dbt API, pytest</td><td>Macros dbt avancées, outils admin</td></tr><tr><td>Communication métier</td><td>Explique son travail</td><td>Anime des ateliers de définition métriques</td><td>Définit les standards de l équipe</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='profil'><span class='sn'>1</span>The Analytics Engineer profile: between data and business</h2><p>The Analytics Engineer bridges the gap between Data Engineers (raw pipelines) and Data Analysts (consumption). They produce robust, versioned, tested and documented dbt models that the entire team can consume with confidence.</p><ul><li><strong>Expected technical skills</strong> — Senior SQL, advanced dbt, Python for automation, Git, data warehouse knowledge (Snowflake, BigQuery or Redshift)</li><li><strong>Analytical skills</strong> — dimensional modeling, business metrics definition, understanding of user needs</li><li><strong>Difference from Data Analyst</strong> — the AE produces the foundations, the DA consumes them. The AE codes in SQL/dbt, the DA analyzes in Power BI/Tableau</li></ul><h2 id='sql'><span class='sn'>2</span>SQL test: the discriminating questions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 SQL queries you systematically use to assess an AE?</p></div><div class='cb'><code>-- Question 1 : cohortes de rétention
--- Calculer le taux de rétention par cohorte hebdomadaire
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='profil'><span class='sn'>1</span>The Analytics Engineer profile: between data and business</h2><p>The Analytics Engineer bridges the gap between Data Engineers (raw pipelines) and Data Analysts (consumption). They produce robust, versioned, tested and documented dbt models that the entire team can consume with confidence.</p><ul><li><strong>Expected technical skills</strong> — Senior SQL, advanced dbt, Python for automation, Git, data warehouse concepts (Snowflake, BigQuery or Redshift)</li><li><strong>Analytical skills</strong> — dimensional modeling, business metrics definition, understanding of user needs</li><li><strong>Difference from Data Analyst</strong> — the AE builds the foundations, the DA consumes them. The AE codes in SQL/dbt, the DA analyzes in Power BI/Tableau</li></ul><h2 id='sql'><span class='sn'>2</span>SQL test: the discriminating questions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 SQL queries you systematically use to evaluate an AE?</p></div><div class='cb'><code>-- Question 1: retention cohorts
+-- Calculate retention rate by weekly cohort
 WITH premiere_commande AS (
     SELECT user_id,
            DATE_TRUNC('week', MIN(order_date)) AS cohorte
@@ -136,25 +137,25 @@ SELECT
 FROM activite
 ORDER BY cohorte, semaine_num;
 
--- Question 2 : déduplication avec préférence
--- Garder la commande la plus récente par client
+-- Question 2: deduplication with preference
+-- Keep the most recent order per customer
 SELECT *
 FROM commandes
 QUALIFY ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_date DESC) = 1;
 
--- Question 3 : running total avec reset
--- Solde cumulatif par compte, réinitialisé à zéro si négatif
+-- Question 3: running total with reset
+-- Cumulative balance per account, reset to zero if negative
 SELECT
     compte_id,
     date_op,
     montant,
     GREATEST(SUM(montant) OVER (PARTITION BY compte_id ORDER BY date_op), 0) AS solde_cumul
-FROM mouvements;</code></div><h2 id='dbt'><span class='sn'>3</span>dbt test: modeling and best practices</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you assess the dbt maturity of an AE candidate?</p></div><div class='cb'><code>-- Structure attendue d un projet dbt bien organisé
+FROM mouvements;</code></div><h2 id='dbt'><span class='sn'>3</span>dbt test: modeling and best practices</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you assess the dbt maturity of an AE candidate?</p></div><div class='cb'><code>-- Expected structure of a well-organized dbt project
 models/
-├── staging/          -- 1 modèle par table source, renommage, cast
+├── staging/          -- 1 model per source table, renaming, cast
 │   ├── stg_commandes.sql
 │   └── _stg_commandes.yml  -- tests + documentation
-├── intermediate/     -- jointures et logique métier complexe
+├── intermediate/     -- joins and complex business logic
 │   └── int_commandes_enrichies.sql
 └── marts/
     ├── finance/
@@ -162,7 +163,7 @@ models/
     └── marketing/
         └── dim_clients.sql
 
--- Ce qu on teste dans le YAML :
+-- What we test in the YAML:
 models:
   - name: fct_revenus
     columns:
@@ -172,8 +173,23 @@ models:
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 0</code></div><ul><li><strong>Junior level</strong> — staging + marts, basic tests, ref() used correctly</li><li><strong>Mid-level</strong> — intermediate layer, macros, incremental models, snapshots</li><li><strong>Senior level</strong> — custom packages, hooks, slim CI/CD, exposures documentation</li></ul><h2 id='model'><span class='sn'>4</span>Dimensional modeling</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a star schema and a snowflake schema? When do you choose one over the other?</p></div><div class='cb'><code>-- Schéma en étoile : recommandé pour la BI
--- Table de</code></div></div>
+              min_value: 0</code></div><ul><li><strong>Junior level</strong> — staging + marts, basic tests, ref() used correctly</li><li><strong>Mid-level</strong> — intermediate layer, macros, incremental models, snapshots</li><li><strong>Senior level</strong> — custom packages, hooks, slim CI/CD, exposures documentation</li></ul><h2 id='model'><span class='sn'>4</span>Dimensional modeling</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a star schema and a snowflake schema? When do you choose one over the other?</p></div><div class='cb'><code>-- Star schema: recommended for BI
+-- Central fact table + denormalized dimensions
+fct_commandes (
+    order_id PK,
+    date_id FK,       -- dim_date
+    client_id FK,     -- dim_clients (includes city, country, segment)
+    produit_id FK,    -- dim_produits (includes category, brand)
+    montant,
+    quantite
+)
+-- Dimensions are flat: no separate dim_ville table
+
+-- Snowflake schema: normalized dimensions
+-- dim_produits -> dim_categories -> dim_sous_categories
+-- More storage-efficient but more complex joins
+-- Not recommended for self-service BI</code></div><ul><li><strong>Star</strong> — recommended for BI. Simple joins, optimal performance on modern data warehouses</li><li><strong>Snowflake</strong> — useful if dimensions are very wide and storage is a constraint. Rare in practice on cloud warehouses</li><li><strong>SCD Type 2</strong> — track the history of changes in a dimension (e.g. a customer who changes segment)</li></ul><h2 id='python'><span class='sn'>5</span>Python for the Analytics Engineer</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What level of Python do you expect from an AE? What are the typical use cases?</p></div><ul><li><strong>Expected level</strong> — Intermediate Python. No ML, but able to write automation scripts and dbt macros</li><li><strong>Use cases</strong>: automate dbt deployment via API, write data tests with pytest, parse files to feed dbt seeds, administration scripts (e.g. Tableau Server Client)</li><li><strong>What is not expected</strong> — PyTorch, Spark, ML algorithms. That is not the role</li><li><strong>What makes the difference</strong> — a Senior AE knows how to write dbt macros with run_query() and automate model generation</li></ul><h2 id='soft'><span class='sn'>6</span>Business context questions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why are business context questions important for evaluating an AE?</p></div><ul><li><strong>'How do you define revenue in your model?'</strong> — a good AE knows that defining a metric is as much a political issue as a technical one</li><li><strong>'How do you handle breaking changes in your dbt models?'</strong> — reveals maturity around the data lifecycle</li><li><strong>'Who validates your metric definitions?'</strong> — reveals the ability to work with business stakeholders</li><li><strong>'How would you know if your model is broken in production?'</strong> — reveals a culture of monitoring and alerting</li></ul><h2 id='grille'><span class='sn'>7</span>GO / NO-GO decision matrix</h2><table class='lt'><thead><tr><th>Skill</th><th>Junior AE</th><th>Mid-level AE</th><th>Senior AE</th></tr></thead><tbody><tr><td>SQL window functions</td><td>Basics (ROW_NUMBER)</td><td>LAG/LEAD, frames, cohorts</td><td>Recursive CTEs, QUALIFY, JSON</td></tr><tr><td>dbt models</td><td>Staging + marts, ref()</td><td>Intermediate, macros, custom tests</td><td>Packages, slim CI, SCD2 snapshots</td></tr><tr><td>Modeling</td><td>Understands star vs snowflake</td><td>Designs a complete star schema</td><td>SCD2, late-arriving facts, bridge tables</td></tr><tr><td>Python</td><td>Basic pandas, scripts</td><td>dbt API automation, pytest</td><td>Advanced dbt macros, admin tools</td></tr><tr><td>Business communication</td><td>Explains their work</td><td>Facilitates metric definition workshops</td><td>Defines team standards</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

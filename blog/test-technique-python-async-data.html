@@ -153,31 +153,32 @@ async def stream_large_dataset(url: str) -> AsyncIterator[dict]:
                 yield json.loads(line)</code></div><ul><li><strong>asyncio.gather vs asyncio.wait</strong> - gather : collecte tous les resultats dans l ordre, leve une exception si l un echoue. wait : plus de controle (FIRST_COMPLETED, FIRST_EXCEPTION, ALL_COMPLETED)</li><li><strong>Semaphore pour le rate limiting</strong> - asyncio.Semaphore(N) limite N coroutines simultanees. Essentiel pour ne pas surcharger une API avec des quotas</li><li><strong>aiofiles pour l IO fichier</strong> - remplacer open() par aiofiles.open() dans les contextes async. L IO fichier bloque sinon la boucle d evenements</li><li><strong>asyncpg et aiomysql</strong> - drivers de bases de donnees natifs async. Plus performants que les drivers sync dans un contexte asyncio</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>asyncio basique, asyncio.gather, httpx async</td><td>A écrit un ingestion d API avec asyncio.gather, comprend await vs create_task</td><td>Utilise requests en sync pour ingérer 1000 endpoints</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Semaphore, retry async, gestion rate limiting, TaskGroup</td><td>Utilise Semaphore pour contrôler la concurrence, gère le rate limiting de manière async</td><td>Lance asyncio.gather sur 10000 URLs sans Semaphore</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>Synchronous vs Asynchronous</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is async useful for ingesting data from APIs?</p></div><ul><li><strong>Synchronous problem</strong> — calling 100 APIs sequentially: 100 * 200ms = 20 seconds of pure waiting</li><li><strong>Async solution</strong> — launching all requests in parallel: 200ms + overhead = 20x faster</li><li><strong>IO-bound vs CPU-bound</strong> — async is efficient for IO operations (network, files). Not for CPU computations (ML, heavy transformations)</li><li><strong>Python GIL</strong> — async bypasses the GIL for IO operations. For CPU, use multiprocessing</li></ul><h2 id='asyncio'><span class='sn'>2</span>asyncio: the Python async engine</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a coroutine? What is the difference between await and asyncio.create_task?</p></div><div class='cb'><code>import asyncio
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Synchronous vs Asynchronous</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is async useful for data ingestion from APIs?</p></div><ul><li><strong>Synchronous problem</strong> — calling 100 APIs in sequence: 100 * 200ms = 20 seconds of pure waiting</li><li><strong>Async solution</strong> — launching all requests in parallel: 200ms + overhead = 20x faster</li><li><strong>IO-bound vs CPU-bound</strong> — async is efficient for IO operations (network, files). Not for CPU computations (ML, heavy transformations)</li><li><strong>Python GIL</strong> — async bypasses the GIL for IO operations. For CPU, use multiprocessing</li></ul><h2 id='asyncio'><span class='sn'>2</span>asyncio: the Python async engine</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a coroutine? What is the difference between await and asyncio.create_task?</p></div><div class='cb'><code>import asyncio
 
-# Coroutine : fonction async qui peut être suspendue
+# Coroutine: async function that can be suspended
 async def fetch_data(url: str) -> dict:
-    await asyncio.sleep(0.2)  # simule une requête réseau
+    await asyncio.sleep(0.2)  # simulates a network request
     return {'url': url, 'data': 'result'}
 
-# await : suspend et attend le résultat
+# await: suspends and waits for the result
 result = await fetch_data('https://api.com/orders')
 
-# create_task : lancer sans attendre (fire and forget)
+# create_task: launch without waiting (fire and forget)
 async def main():
-    # Séquentiel : 3 * 200ms = 600ms
+    # Sequential: 3 * 200ms = 600ms
     r1 = await fetch_data('https://api.com/orders/1')
     r2 = await fetch_data('https://api.com/orders/2')
     r3 = await fetch_data('https://api.com/orders/3')
     
-    # Parallèle : 200ms
+    # Parallel: 200ms
     results = await asyncio.gather(
         fetch_data('https://api.com/orders/1'),
         fetch_data('https://api.com/orders/2'),
         fetch_data('https://api.com/orders/3')
     )
 
-asyncio.run(main())</code></div><h2 id='httpx'><span class='sn'>3</span>async httpx: API ingestion</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you ingest 1000 API endpoints in parallel with httpx?</p></div><div class='cb'><code>import httpx
+asyncio.run(main())</code></div><h2 id='httpx'><span class='sn'>3</span>httpx async: API ingestion</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you ingest 1000 API endpoints in parallel with httpx?</p></div><div class='cb'><code>import httpx
 import asyncio
 from typing import List, Dict
 
@@ -186,7 +187,7 @@ async def fetch_endpoint(
     url: str,
     semaphore: asyncio.Semaphore
 ) -> Dict:
-    async with semaphore:  # limite la concurrence
+    async with semaphore:  # limits concurrency
         try:
             response = await client.get(url, timeout=30.0)
             response.raise_for_status()
@@ -198,12 +199,85 @@ async def fetch_endpoint(
             raise
 
 async def ingest_all(urls: List[str]) -> List[Dict]:
-    semaphore = asyncio.Semaphore(50)  # max 50 requêtes simultanées
+    semaphore = asyncio.Semaphore(50)  # max 50 simultaneous requests
     async with httpx.AsyncClient() as client:
         tasks = [fetch_endpoint(client, url, semaphore) for url in urls]
         return await asyncio.gather(*tasks, return_exceptions=True)
 
-results = asyncio.run(ingest_all(urls))</code></div><h2 id='semaphore'><span class='sn'>4</span>Controlling concurrency with Semaphore</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do you use a Semaphore? What happens without one?</p></div><ul><li><strong>Without Semaphore</strong> — asyncio.gather on 10,000 URLs opens 10,000 simultaneous connections. Memory crash, API ban, network saturation</li><li><strong>With Semaphore</strong> — limits the number of simultaneously active coroutines (50-100 is a good default)</li><li><strong>asyncio.Semaphore(n)</strong> — at most n coroutines pass through at the same time. The others wait</li><li><strong>Connection pooling</strong> — httpx.AsyncClient automatically manages a connection pool. Reuses TCP connections</li></ul><h2 id='gather'><span class='sn'>5</span>asyncio.gather vs TaskGroup</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between asyncio.gather and asy</p></div></div>
+results = asyncio.run(ingest_all(urls))</code></div><h2 id='semaphore'><span class='sn'>4</span>Controlling concurrency with Semaphore</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do you use a Semaphore? What happens without one?</p></div><ul><li><strong>Without Semaphore</strong> — asyncio.gather on 10,000 URLs opens 10,000 simultaneous connections. Memory crash, API ban, network saturation</li><li><strong>With Semaphore</strong> — limits the number of simultaneously active coroutines (50-100 is a good default)</li><li><strong>asyncio.Semaphore(n)</strong> — at most n coroutines pass through at a time. The others wait</li><li><strong>Connection pooling</strong> — httpx.AsyncClient automatically manages a connection pool. Reuses TCP connections</li></ul><h2 id='gather'><span class='sn'>5</span>asyncio.gather vs TaskGroup</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between asyncio.gather and asyncio.TaskGroup (Python 3.11+)?</p></div><div class='cb'><code>import asyncio
+
+# asyncio.gather: Python 3.8+
+# Cancels all tasks if one fails (return_exceptions=False)
+results = await asyncio.gather(*tasks, return_exceptions=True)
+
+# TaskGroup: Python 3.11+ - cleaner syntax
+async def process_all(urls):
+    results = []
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch(url)) for url in urls]
+    # All tasks are completed here
+    return [t.result() for t in tasks]
+
+# Global timeout on a group of tasks
+try:
+    async with asyncio.timeout(30.0):  # Python 3.11+
+        results = await asyncio.gather(*tasks)
+except TimeoutError:
+    print('Global timeout exceeded')</code></div><h2 id='pipeline'><span class='sn'>6</span>Complete async ingestion pipeline</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Show the architecture of a production-ready async ingestion pipeline.</p></div><div class='cb'><code>import asyncio, httpx, json
+from datetime import datetime
+
+class AsyncIngestionPipeline:
+    def __init__(self, max_concurrent: int = 50, batch_size: int = 100):
+        self.semaphore = asyncio.Semaphore(max_concurrent)
+        self.batch_size = batch_size
+
+    async def fetch(self, client: httpx.AsyncClient, url: str) -> dict | None:
+        async with self.semaphore:
+            for attempt in range(3):
+                try:
+                    r = await client.get(url, timeout=30.0)
+                    r.raise_for_status()
+                    return r.json()
+                except Exception as e:
+                    if attempt == 2: return None
+                    await asyncio.sleep(2 ** attempt)
+
+    async def run(self, urls: list[str]) -> list[dict]:
+        async with httpx.AsyncClient() as client:
+            batches = [urls[i:i+self.batch_size]
+                       for i in range(0, len(urls), self.batch_size)]
+            all_results = []
+            for batch in batches:
+                results = await asyncio.gather(
+                    *[self.fetch(client, url) for url in batch]
+                )
+                all_results.extend([r for r in results if r is not None])
+            return all_results</code></div><div class='cb'><code>import asyncio, aiohttp
+from typing import AsyncIterator
+
+async def fetch_batch(session: aiohttp.ClientSession, url: str) -> dict:
+    async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+        resp.raise_for_status()
+        return await resp.json()
+
+async def extract_all_pages(base_url: str, pages: list[int]) -> list:
+    async with aiohttp.ClientSession() as session:
+        # Limit concurrency to 10 simultaneous requests
+        semaphore = asyncio.Semaphore(10)
+        async def fetch_limited(page):
+            async with semaphore:
+                return await fetch_batch(session, f'{base_url}?page={page}')
+        results = await asyncio.gather(*[fetch_limited(p) for p in pages])
+        return [item for batch in results for item in batch]
+
+# Async streaming for large volumes
+async def stream_large_dataset(url: str) -> AsyncIterator[dict]:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            async for line in resp.content:
+                yield json.loads(line)</code></div><ul><li><strong>asyncio.gather vs asyncio.wait</strong> - gather: collects all results in order, raises an exception if one fails. wait: more control (FIRST_COMPLETED, FIRST_EXCEPTION, ALL_COMPLETED)</li><li><strong>Semaphore for rate limiting</strong> - asyncio.Semaphore(N) limits N simultaneous coroutines. Essential to avoid overloading an API with quotas</li><li><strong>aiofiles for file IO</strong> - replace open() with aiofiles.open() in async contexts. File IO otherwise blocks the event loop</li><li><strong>asyncpg and aiomysql</strong> - native async database drivers. More performant than sync drivers in an asyncio context</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Basic asyncio, asyncio.gather, httpx async</td><td>Has written an API ingestion with asyncio.gather, understands await vs create_task</td><td>Uses requests in sync to ingest 1000 endpoints</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Semaphore, async retry, rate limiting management, TaskGroup</td><td>Uses Semaphore to control concurrency, handles rate limiting asynchronously</td><td>Launches asyncio.gather on 10000 URLs without Semaphore</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

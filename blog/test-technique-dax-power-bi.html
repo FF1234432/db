@@ -227,53 +227,106 @@ Segment_Client = SWITCH(
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="DAX avancé Power BI" data-en="Advanced DAX Power BI">Advanced DAX Power BI</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="DAX avancé Power BI" data-en="Advanced DAX Power BI">Advanced DAX Power BI</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="DAX avancé Power BI : les formules qu'on teste en entretien" data-en="Advanced DAX Power BI: the formulas we test in interviews">Advanced DAX Power BI: the formulas we test in interviews</h1>
 <p class="ai" data-fr="CALCULATE, REMOVEFILTERS, VAR, time intelligence — ces formules DAX séparent un vrai Data Analyst d'un utilisateur Power BI basique. Voici ce qu'on évalue vraiment." data-en="CALCULATE, REMOVEFILTERS, VAR, time intelligence — these DAX formulas separate a real Data Analyst from a basic Power BI user. Here's what we actually assess.">CALCULATE, REMOVEFILTERS, VAR, time intelligence — these DAX formulas separate a real Data Analyst from a basic Power BI user. Here's what we actually assess.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="10 min de lecture" data-en="10 min read">10 min read</span><span>·</span><span>Data Analyst</span></div>
-<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#calc">CALCULATE and filter context</a></li><li><a href="#filters">Context control</a></li><li><a href="#var">VAR/RETURN</a></li><li><a href="#ti">Time intelligence</a></li><li><a href="#iter">Iterator functions</a></li><li><a href="#perf">DAX performance</a></li><li><a href="#nv">Level grid</a></li></ol></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#calc">CALCULATE and filter context</a></li><li><a href="#filters">Context control</a></li><li><a href="#var">VAR/RETURN</a></li><li><a href="#ti">Time intelligence</a></li><li><a href="#iter">Iteration functions</a></li><li><a href="#perf">DAX performance</a></li><li><a href="#nv">Level grid</a></li></ol></div>
 <div class="ab" id="ab">
 <p>DAX is the real filter in Data Analyst Power BI interviews. Not visuals, not Power Query — DAX. A candidate who masters CALCULATE and filter context has worked on real projects. A candidate who only knows SUM and COUNT has only done drag-and-drop.</p>
 
 <h2 id="calc"><span class="sn">1</span>CALCULATE: the heart of DAX</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between a row context and a filter context? In which case does CALCULATE transform one into the other?</p></div>
 <p>CALCULATE is the most important function in DAX. It allows you to modify the filter context of a measure — that is, to calculate a result in a different context from that of the visual.</p>
-<div class="cb"><code>-- Ventes uniquement pour la catégorie Technologie
-Tech_Ventes = CALCULATE(
-    SUM(Ventes[Montant]),
-    Ventes[Categorie] = "Technologie"
+<div class="cb"><code>-- Sales only for the Technology category
+Tech_Sales = CALCULATE(
+    SUM(Sales[Amount]),
+    Sales[Category] = "Technology"
 )</code></div>
 <ul>
 <li><strong>Filter context</strong> — what Power BI automatically applies via slicers, table rows, visuals</li>
-<li><strong>Row context</strong> — what exists in calculated columns, during row-by-row iteration</li>
+<li><strong>Row context</strong> — what exists in calculated columns, when iterating row by row</li>
 <li><strong>Context transition</strong> — CALCULATE transforms the row context into a filter context in measures</li>
 </ul>
 <div class="cl"><p><strong>Warning signal:</strong> a candidate who cannot explain context transition has not yet worked on complex models.</p></div>
 
 <h2 id="filters"><span class="sn">2</span>Context control: ALL, REMOVEFILTERS, KEEPFILTERS</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between ALL() and REMOVEFILTERS()? Give a case where one is preferable to the other.</p></div>
-<p>This is the question that separates confirmed profiles from juniors. Both functions remove filters, but their behavior differs in certain contexts.</p>
-<div class="cb"><code>-- ALL supprime tous les filtres sur la table ou la colonne
-Part_de_marche = DIVIDE(
-    [Total Ventes],
-    CALCULATE([Total Ventes], ALL(Produits))
+<p>This is the question that separates experienced profiles from juniors. Both functions remove filters, but their behavior differs in certain contexts.</p>
+<div class="cb"><code>-- ALL removes all filters on the table or column
+Market_Share = DIVIDE(
+    [Total Sales],
+    CALCULATE([Total Sales], ALL(Products))
 )
 
--- REMOVEFILTERS est plus explicite et préférable pour la lisibilité
-Part_de_marche_v2 = DIVIDE(
-    [Total Ventes],
-    CALCULATE([Total Ventes], REMOVEFILTERS(Produits))
+-- REMOVEFILTERS is more explicit and preferable for readability
+Market_Share_v2 = DIVIDE(
+    [Total Sales],
+    CALCULATE([Total Sales], REMOVEFILTERS(Products))
 )
 
--- KEEPFILTERS : respecte les filtres du visuel tout en ajoutant des conditions
-Ventes_Chaussures = CALCULATE(
-    [Total Ventes],
-    KEEPFILTERS(Produits[Categorie] = "Chaussures")
+-- KEEPFILTERS: respects visual filters while adding conditions
+Shoes_Sales = CALCULATE(
+    [Total Sales],
+    KEEPFILTERS(Products[Category] = "Shoes")
 )</code></div>
 <ul>
 <li><strong>ALL()</strong> — removes all filters, can break visual filters in certain cases</li>
-<li><strong>REMOVEFILTERS()</strong> — more precise, more</div>
+<li><strong>REMOVEFILTERS()</strong> — more precise, more readable, identical behavior to ALL() in most cases</li>
+<li><strong>KEEPFILTERS()</strong> — adds a filter without removing those already in place</li>
+<li><strong>ALLEXCEPT()</strong> — removes all filters except those specified</li>
+</ul>
+
+<h2 id="var"><span class="sn">3</span>VAR/RETURN: readability and performance</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>Why does VAR improve DAX performance and not just readability?</p></div>
+<p>VAR/RETURN has become essential in 2024-2025. A profile who does not use it systematically writes suboptimal DAX.</p>
+<div class="cb"><code>-- Without VAR: SUM(Sales[Amount]) is calculated twice
+YoY_Growth = 
+    (SUM(Sales[Amount]) - CALCULATE(SUM(Sales[Amount]), DATEADD(Dates[Date], -1, YEAR))) 
+    / CALCULATE(SUM(Sales[Amount]), DATEADD(Dates[Date], -1, YEAR))
+
+-- With VAR: calculated only once, more readable and faster
+YoY_Growth = 
+VAR CurrentSales = SUM(Sales[Amount])
+VAR PreviousSales = CALCULATE(SUM(Sales[Amount]), DATEADD(Dates[Date], -1, YEAR))
+RETURN
+    DIVIDE(CurrentSales - PreviousSales, PreviousSales)</code></div>
+<ul>
+<li>VAR evaluates the expression <strong>only once</strong> and stores the result in memory</li>
+<li>Avoids multiple recalculations in complex formulas</li>
+<li>Enables debugging by returning intermediate VAR directly</li>
+<li>Makes DAX readable like pseudocode</li>
+</ul>
+<div class="cl"><p><strong>Best practice:</strong> any calculation that reuses an expression more than once should use VAR. This is the signal of a profile who thinks about maintainability.</p></div>
+
+<h2 id="ti"><span class="sn">4</span>Time intelligence: a must in interviews</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between DATEADD and SAMEPERIODLASTYEAR? In which case is one more suitable?</p></div>
+<p>Time intelligence is tested in almost every Data Analyst interview. Recruiters want to make sure the candidate can answer common business questions: annual growth, running totals, period comparisons.</p>
+<div class="cb"><code>-- Sales from the previous year (same period)
+Sales_LY = CALCULATE([Total Sales], SAMEPERIODLASTYEAR(Dates[Date]))
+
+-- Flexible: shift by n periods (months, quarters, years)
+Sales_3_months_ago = CALCULATE([Total Sales], DATEADD(Dates[Date], -3, MONTH))
+
+-- Running total since the beginning of the year (YTD)
+Sales_YTD = TOTALYTD([Total Sales], Dates[Date])
+
+-- Running total since the beginning of the month
+Sales_MTD = TOTALMTD([Total Sales], Dates[Date])</code></div>
+<ul>
+<li><strong>SAMEPERIODLASTYEAR</strong> — returns exactly the same period one year ago, useful for YoY</li>
+<li><strong>DATEADD</strong> — more flexible, shifts by n units (days, months, quarters, years)</li>
+<li><strong>TOTALYTD / TOTALMTD / TOTALQTD</strong> — running totals, require a marked date table</li>
+<li><strong>DATESINPERIOD</strong> — rolling window over N days/months</li>
+</ul>
+<div class="cl"><p><strong>Essential prerequisite:</strong> all time intelligence functions require a properly marked date table in Power BI. A candidate who ignores this has not deployed a report in production.</p></div>
+
+<h2 id="iter"><span class="sn">5</span>Iteration functions: SUMX, AVERAGEX, RANKX</h2>
+<div class="sq"><div class="sl">Discriminating question</div>
+</div>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst Power BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

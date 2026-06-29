@@ -146,7 +146,105 @@ result = t_env.sql_query("""
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Event time vs processing time, watermarks, Flink SQL</td><td>Explique la différence event/processing time, a écrit du Flink SQL</td><td>Ne sait pas la différence entre Flink et Spark Streaming</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Stateful processing, checkpointing, exactly-once</td><td>A implémenté du stateful processing, comprend le checkpointing</td><td>Ne sait pas ce qu est le stateful processing</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='vs'><span class='sn'>1</span>Flink vs Spark Streaming: when to choose</h2><div class='sq'><div class='sl'>Key question</div><p>What is the fundamental difference between Flink and Spark Structured Streaming?</p></div><ul><li><strong>Flink</strong> - true event-by-event streaming, sub-second latency, native exactly-once</li><li><strong>Spark Structured Streaming</strong> - micro-batch (100ms-1s default), better Python ecosystem, simpler deployment</li><li><strong>When Flink</strong> - latency less than 1s required, complex stateful processing, exactly-once critical</li><li><strong>When Spark</strong> - existing Spark team, latency 1-10s acceptable, Python-first approach</li><li><strong>Managed Flink</strong> - Amazon MSF, Confluent Cloud, self-hosted Kubernetes with Flink operator</li></ul><h2 id='windows'><span class='sn'>2</span>Time windows</h2><div class='sq'><div class='sl'>Key question</div><p>What is the difference between tumbling, sliding and session windows?</p></div><ul><li><strong>Tumbling windows</strong> - fixed, non-overlapping. Each event belongs to exactly one window</li><li><strong>Sliding windows</strong> - fixed size, sliding step. Each event can belong to multiple windows</li><li><strong>Session windows</strong> - dynamic, closes after X minutes of inactivity. Ideal for user sessions</li><li><strong>Event time vs processing time</strong> - always prefer event time. Requires a watermark</li></ul><h2 id='checkpoint'><span class='sn'>3</span>Checkpointing and exactly-once</h2><div class='sq'><div class='sl'>Key question</div><p>How does Flink achieve exactly-once? What is a checkpoint?</p></div><ul><li><strong>Checkpoint</strong> - consistent snapshot of all operator states, saved to S3/GCS. Flink resumes from last checkpoint without duplicates on failure</li><li><strong>Exactly-once end-to-end</strong> - Flink + Kafka sources + idempotent sinks (Delta Lake, transactional Postgres)</li><li><strong>Savepoint</strong> - manual checkpoint for controlled migrations and application upgrades</li><li><strong>RocksDB state backend</strong> - for large states: stores state on disk instead of JVM heap. Mandatory for production</li></ul><h2 id='nv'><span class='sn'>4</span>Level assessment grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Flink vs Spark, windows, watermarks, checkpointing</td><td>Explains event time vs processing time, has used Flink SQL or DataStream</td><td>Confuses Flink and Spark Streaming, does not know what a watermark is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Exactly-once, RocksDB, CEP, production deployment</td><td>Has deployed Flink in production, managed exactly-once with Kafka</td><td>Cannot explain how Flink achieves exactly-once</td></tr></tbody></table></div>
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='vs_spark'><span class='sn'>1</span>Flink vs Spark Structured Streaming</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what case do you choose Flink over Spark Streaming?</p></div><table class='lt'><thead><tr><th></th><th>Spark Streaming</th><th>Apache Flink</th></tr></thead><tbody><tr><td>Model</td><td>Micro-batch (100ms minimum)</td><td>True streaming (event by event)</td></tr><tr><td>Latency</td><td>100ms - 1s</td><td>1-10ms</td></tr><tr><td>State management</td><td>Limited</td><td>Very rich (RocksDB)</td></tr><tr><td>Exactly-once</td><td>Possible but complex</td><td>Native</td></tr><tr><td>Ideal for</td><td>Spark teams, batch + streaming unified</td><td>Sub-second latency, complex state, real-time fraud</td></tr></tbody></table><h2 id='time'><span class='sn'>2</span>Event time vs processing time</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between event time and processing time in Flink?</p></div><div class='cb'><code>from pyflink.datastream import StreamExecutionEnvironment
+from pyflink.common.time import Time
+from pyflink.datastream.window import TumblingEventTimeWindows
+
+env = StreamExecutionEnvironment.get_execution_environment()
+
+# Processing time : l heure système quand l event est traité
+# Simple mais incohérent si les events arrivent en retard
+stream.window(TumblingProcessingTimeWindows.of(Time.minutes(5)))
+
+# Event time : l heure DANS l event (quand il s est passé)
+# Cohérent, mais nécessite des watermarks pour les retardataires
+stream \
+    .assign_timestamps_and_watermarks(
+        WatermarkStrategy
+            .for_bounded_out_of_orderness(Duration.of_seconds(10))
+            .with_timestamp_assigner(MyTimestampAssigner())
+    ) \
+    .window(TumblingEventTimeWindows.of(Time.minutes(5)))</code></div><ul><li><strong>Event time recommended</strong> — for analytics. Results are deterministic even if events arrive late</li><li><strong>Processing time</strong> — for cases where latency is critical and consistency is less important</li></ul><h2 id='stateful'><span class='sn'>3</span>Stateful processing: Flink's advantage</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is stateful processing in Flink? Give a concrete example.</p></div><div class='cb'><code>from pyflink.datastream import KeyedProcessFunction
+from pyflink.datastream.state import ValueStateDescriptor
+
+# Détecter les sessions utilisateur avec état
+class SessionDetector(KeyedProcessFunction):
+    def open(self, runtime_context):
+        # État persistant par clé (user_id)
+        self.last_event_time = runtime_context.get_state(
+            ValueStateDescriptor('last_event', Types.LONG())
+        )
+        self.session_start = runtime_context.get_state(
+            ValueStateDescriptor('session_start', Types.LONG())
+        )
+
+    def process_element(self, event, ctx):
+        current_time = event.timestamp
+        last_time = self.last_event_time.value()
+        
+        if last_time is None or (current_time - last_time) > 30 * 60 * 1000:
+            # Nouvelle session (> 30 minutes d inactivité)
+            self.session_start.update(current_time)
+        
+        self.last_event_time.update(current_time)
+        yield event</code></div><h2 id='checkpoint'><span class='sn'>4</span>Checkpointing and fault tolerance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does Flink guarantee exactly-once in case of failure?</p></div><ul><li><strong>Checkpointing</strong> — Flink periodically saves the state of all operators. In case of failure, resumes from the last checkpoint</li><li><strong>Distributed snapshots</strong> — Chandy-Lamport algorithm: consistent snapshot without stopping processing</li><li><strong>Exactly-once</strong> — combination of Flink checkpointing + transactions on sinks (Kafka transactions, JDBC transactions)</li><li><strong>Configuration</strong> — env.enable_checkpointing(60000): checkpoint every 60 seconds</li><li><strong>Backend</strong> — RocksDB for large states (spillover to disk), HashMapStateBackend for small states (all in RAM)</li></ul><h2 id='sql'><span class='sn'>5</span>Flink SQL: streaming with SQL</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you write a Flink job with SQL rather than the Java/Python API?</p></div><div class='cb'><code>from pyflink.table import EnvironmentSettings, TableEnvironment
+
+env_settings = EnvironmentSettings.in_streaming_mode()
+tbl_env = TableEnvironment.create(env_settings)
+
+# Définir la source Kafka
+tbl_env.execute_sql("""
+    CREATE TABLE orders (
+        order_id STRING,
+        user_id STRING,
+        amount DOUBLE,
+        event_time TIMESTAMP(3),
+        WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+    ) WITH (
+        'connector' = 'kafka',
+        'topic' = 'orders',
+        'properties.bootstrap.servers' = 'kafka:9092',
+        'format' = 'json'
+    )
+""")
+
+# Agrégation sur une fenêtre temporelle
+tbl_env.execute_sql("""
+    SELECT
+        TUMBLE_START(event_time, INTERVAL '5' MINUTE) AS window_start,
+        user_id,
+        SUM(amount) AS total_amount
+    FROM orders
+    GROUP BY TUMBLE(event_time, INTERVAL '5' MINUTE), user_id
+""")</code></div><h2 id='usecases'><span class='sn'>6</span>Flink production use cases</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what enterprise contexts is Flink deployed?</p></div><ul><li><strong>Real-time fraud detection</strong> — analyze each transaction in a few milliseconds, cross-reference with account history</li><li><strong>Immediate business alerts</strong> — alert when a product's stock falls below a threshold, in real time</li><li><strong>Streaming ETL</strong> — transform Kafka events and load into BigQuery/Snowflake in near-real-time</li><li><strong>Real-time feature engineering</strong> — compute features (moving average, recent count) for ML serving</li></ul><div class='cb'><code>from pyflink.table import StreamTableEnvironment, EnvironmentSettings
+
+settings = EnvironmentSettings.new_instance().in_streaming_mode().build()
+t_env = StreamTableEnvironment.create(environment_settings=settings)
+
+t_env.execute_sql("""
+    CREATE TABLE orders (
+        order_id STRING,
+        amount DOUBLE,
+        customer_id STRING,
+        event_time TIMESTAMP(3),
+        WATERMARK FOR event_time AS event_time - INTERVAL '10' SECOND
+    ) WITH (
+        'connector' = 'kafka',
+        'topic' = 'orders',
+        'properties.bootstrap.servers' = 'kafka:9092',
+        'format' = 'json'
+    )
+""")
+
+result = t_env.sql_query("""
+    SELECT customer_id,
+        TUMBLE_START(event_time, INTERVAL '5' MINUTE) AS window_start,
+        SUM(amount) AS total_5min
+    FROM orders
+    GROUP BY customer_id, TUMBLE(event_time, INTERVAL '5' MINUTE)
+""")</code></div><ul><li><strong>Flink vs Spark Streaming</strong> - Flink: true streaming event by event, sub-second latency. Spark: micro-batch (second-level latency), better Python ecosystem</li><li><strong>Exactly-once with checkpointing</strong> - Flink checkpoints state to S3/GCS. In case of failure, exact recovery without duplicates</li><li><strong>Flink SQL</strong> - streaming pipelines in SQL. Confluent, Amazon MSF use Flink SQL as their main interface</li><li><strong>CEP (Complex Event Processing)</strong> - detect patterns in sequences. Ex: 3 transactions &gt; 1000 euros in 5 minutes on the same account</li><li><strong>Managed Flink</strong> - Amazon MSF, Confluent Cloud, or self-hosted Kubernetes with the Flink operator</li></ul><ul><li><strong>Flink vs Spark Streaming</strong> - Flink: true streaming event by event, sub-second latency. Spark Structured Streaming: micro-batch (second-level latency), better Python ecosystem</li><li><strong>Exactly-once with checkpointing</strong> - Flink periodically checkpoints state to S3/GCS. In case of failure, exact recovery without duplicates</li><li><strong>CEP (Complex Event Processing)</strong> - detect patterns in sequences of events: 3 transactions &gt; 1000 euros in 5 minutes for the same account</li><li><strong>Managed Flink</strong> - Amazon MSF, Confluent Cloud, or self-hosted Kubernetes with the Flink operator</li><li><strong>Flink SQL</strong> - define streaming pipelines in SQL. Confluent, Amazon MSF use Flink SQL as their main interface</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>Event time vs processing time, watermarks, Flink SQL</td><td>Explains the difference between event/processing time, has written Flink SQL</td><td>Does not know the difference between Flink and Spark Streaming</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Stateful processing, checkpointing, exactly-once</td><td>Has implemented stateful processing, understands checkpointing</td><td>Does not know what stateful processing is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer streaming avancé ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

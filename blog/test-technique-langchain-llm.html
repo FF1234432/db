@@ -119,51 +119,63 @@ chain_with_history = chain.with_types(input_type=str)     .with_config({"run_nam
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>LCEL, chains simples, RAG avec LangChain</td><td>A construit un RAG avec LCEL, connait la syntaxe |</td><td>N utilise que les anciennes LLMChain, ne connait pas LCEL</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Agents avec tools, LangGraph, LangSmith, production</td><td>A deploye un agent avec tools custom, a trace avec LangSmith, connait LangGraph</td><td>N a fait que des POCs, ne sait pas monitorer un agent en production</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concepts'><span class='sn'>1</span>LangChain Architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the main components of LangChain?</p></div><ul><li><strong>LLM / ChatModel</strong> — unified interface for calling GPT, Claude, Gemini, Llama</li><li><strong>Prompt Templates</strong> — parameterizable templates for building prompts</li><li><strong>Chains</strong> — sequences of operations: prompt → LLM → parser → next action</li><li><strong>Agents</strong> — LLM that dynamically decides which tools to call and in what order</li><li><strong>Tools</strong> — functions the agent can call (web search, calculation, DB queries)</li><li><strong>Memory</strong> — storage of conversation context</li></ul><h2 id='chain'><span class='sn'>2</span>LCEL: LangChain Expression Language</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is LCEL? Why does it replace the old LLMChain?</p></div><div class='cb'><code>from langchain_openai import ChatOpenAI
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concepts'><span class='sn'>1</span>LangChain Architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the main components of LangChain?</p></div><ul><li><strong>LLM / ChatModel</strong> — unified interface to call GPT, Claude, Gemini, Llama</li><li><strong>Prompt Templates</strong> — parameterizable templates to build prompts</li><li><strong>Chains</strong> — sequences of operations: prompt → LLM → parser → next action</li><li><strong>Agents</strong> — LLM that dynamically decides which tools to call and in what order</li><li><strong>Tools</strong> — functions the agent can call (web search, calculation, DB queries)</li><li><strong>Memory</strong> — storage of conversation context</li></ul><h2 id='chain'><span class='sn'>2</span>LCEL: LangChain Expression Language</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is LCEL? Why does it replace the old LLMChain?</p></div><div class='cb'><code>from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 llm = ChatOpenAI(model='gpt-4o-mini')
 
-# LCEL : composition avec l operateur |
+# LCEL : composition with the | operator
 prompt = ChatPromptTemplate.from_template(
-    'Tu es un expert data. Reponds a : {question}'
+    'You are a data expert. Answer: {question}'
 )
 
 chain = prompt | llm | StrOutputParser()
-result = chain.invoke({'question': 'Qu est-ce que dbt ?'})
+result = chain.invoke({'question': 'What is dbt?'})
 
-# RAG chain avec LCEL
+# RAG chain with LCEL
 rag_chain = (
     {'context': retriever, 'question': RunnablePassthrough()}
     | prompt
     | llm
     | StrOutputParser()
-)</code></div><ul><li><strong>LCEL</strong> — declarative composition with the | operator. Natively supports streaming, batch and async</li><li><strong>Advantage</strong> — readable, composable, compatible with LangSmith for tracing</li></ul><h2 id='agents'><span class='sn'>3</span>Agents and tools: the core of LangChain</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you create an agent that can query a database and search the web?</p></div><div class='cb'><code>from langchain.agents import create_tool_calling_agent, AgentExecutor
+)</code></div><ul><li><strong>LCEL</strong> — declarative composition with the | operator. Natively supports streaming, batch and async</li><li><strong>Advantage</strong> — readable, composable, compatible with LangSmith for tracing</li></ul><h2 id='agents'><span class='sn'>3</span>Agents and tools: the heart of LangChain</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you create an agent that can query a database and search the web?</p></div><div class='cb'><code>from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.tools import tool
 import duckdb
 
 @tool
 def query_sales_db(query: str) -> str:
-    '''Execute une requete SQL sur la base de ventes.
-    Utiliser pour repondre aux questions sur les ventes, CA, clients.'''
+    '''Executes a SQL query on the sales database.
+    Use to answer questions about sales, revenue, customers.'''
     try:
         conn = duckdb.connect('sales.db')
         result = conn.execute(query).fetchdf()
         return result.to_string()
     except Exception as e:
-        return f'Erreur SQL : {e}'
+        return f'SQL Error: {e}'
 
 @tool  
 def search_web(query: str) -> str:
-    '''Recherche sur le web des informations actuelles.'''
-    # implementation avec Tavily, SerpAPI, etc.
+    '''Searches the web for current information.'''
+    # implementation with Tavily, SerpAPI, etc.
     ...
 
 tools = [query_sales_db, search_web]
 agent = create_tool_calling_agent(llm, tools, prompt)
-executor = AgentExecutor(agent=agent, tools=tools, verbose=True)</code></div><h2 id='memory'><span class='sn'>4</span>Memory and context management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage a chatbot's memory to maintain conversation context?</p></div><ul><li><strong>ConversationBufferMemory</strong> — stores the entire conversation. Simple but consumes tokens</li><li><strong>ConversationSummaryMemory</strong> — summarizes history to save tokens</li><li><strong>ConversationBufferWindowMemory</strong> — keeps only the last N exchanges</li><li><strong>Persistence</strong> — Redis, PostgreSQL, MongoDB for persistent memory between sessions</li><li><strong>LangGraph checkpointer</strong> — state persistence in LangGraph workflows</li></ul><h2 id='langgraph'><span class='sn'>5</span>LangGraph: multi-step agents</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use LangGraph rather than a simple LangChain agent?</p></div><ul><li><strong>LangG</div>
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True)</code></div><h2 id='memory'><span class='sn'>4</span>Memory and context management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage a chatbot's memory to maintain conversation context?</p></div><ul><li><strong>ConversationBufferMemory</strong> — stores the entire conversation. Simple but consumes tokens</li><li><strong>ConversationSummaryMemory</strong> — summarizes history to save tokens</li><li><strong>ConversationBufferWindowMemory</strong> — keeps only the last N exchanges</li><li><strong>Persistence</strong> — Redis, PostgreSQL, MongoDB for persistent memory between sessions</li><li><strong>LangGraph checkpointer</strong> — state persistence in LangGraph workflows</li></ul><h2 id='langgraph'><span class='sn'>5</span>LangGraph: multi-step agents</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use LangGraph rather than a simple LangChain agent?</p></div><ul><li><strong>LangGraph</strong> — framework for agents with cyclic and conditional workflows. State machine for LLMs</li><li><strong>When</strong> — workflows with loops (retry, self-correction), conditional decision, parallel agents, human-in-the-loop</li><li><strong>Example</strong> — agent that writes code, executes it, analyzes the error, fixes it, re-executes until success</li><li><strong>Human-in-the-loop</strong> — workflow pause for human validation before certain critical actions</li></ul><h2 id='langsmith'><span class='sn'>6</span>LangSmith: LLM observability</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you debug and monitor a LangChain agent in production?</p></div><ul><li><strong>LangSmith</strong> — tracing and evaluation platform for LangChain applications</li><li><strong>Tracing</strong> — see every LLM call, every tool call, tokens consumed, latency</li><li><strong>Evaluation</strong> — score responses (automated or human) to measure quality</li><li><strong>Datasets</strong> — build test sets for regression testing</li></ul>
+<div class='cb'><code>from langchain_anthropic import ChatAnthropic
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.vectorstores import Qdrant
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+
+# RAG with LCEL (LangChain Expression Language)
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Qdrant.from_existing_collection("knowledge_base
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un profil GenAI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

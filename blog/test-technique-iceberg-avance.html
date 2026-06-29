@@ -165,62 +165,143 @@ CALL catalog.system.expire_snapshots(
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tables Iceberg basiques, time travel, catalogs</td><td>A créé des tables Iceberg, utilise le time travel, comprend les catalogs</td><td>Ne sait pas la différence entre Iceberg et un simple Parquet</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Partition evolution, CoW vs MoR, maintenance planifiée</td><td>A fait une partition evolution, choisit CoW vs MoR selon le cas, planifie la compaction</td><td>Ne sait pas ce qu est la partition evolution</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='catalog'><span class='sn'>1</span>Iceberg Catalog: the governance abstraction</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is an Iceberg Catalog? Why is it central in a Lakehouse architecture?</p></div><div class='cb'><code>## Types de catalogs Iceberg
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='catalog'><span class='sn'>1</span>Iceberg Catalog: the governance abstraction</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is an Iceberg Catalog? Why is it central in a Lakehouse architecture?</p></div><div class='cb'><code>## Iceberg catalog types
 
-# 1. REST Catalog (standard émergent 2025)
-# Serveur HTTP qui expose l API Iceberg REST
-# Compatible avec tous les engines (Spark, Trino, Flink, DuckDB)
+# 1. REST Catalog (emerging standard 2025)
+# HTTP server that exposes the Iceberg REST API
+# Compatible with all engines (Spark, Trino, Flink, DuckDB)
 spark = SparkSession.builder \
     .config('spark.sql.catalog.prod', 'org.apache.iceberg.spark.SparkCatalog') \
     .config('spark.sql.catalog.prod.catalog-impl', 'org.apache.iceberg.rest.RESTCatalog') \
     .config('spark.sql.catalog.prod.uri', 'https://iceberg-catalog.monentreprise.com') \
     .getOrCreate()
 
-# 2. AWS Glue Catalog (managé AWS)
+# 2. AWS Glue Catalog (AWS managed)
 .config('spark.sql.catalog.glue.catalog-impl', 'org.apache.iceberg.aws.glue.GlueCatalog')
 
-# 3. Nessie (versioning Git-like pour le catalog)
+# 3. Nessie (Git-like versioning for the catalog)
 .config('spark.sql.catalog.nessie.catalog-impl', 'org.projectnessie.iceberg.NessieCatalog')</code></div><ul><li><strong>Catalog = table registry</strong> — knows the location of metadata files for each table</li><li><strong>Multi-engine</strong> — Spark, Trino, Flink and DuckDB all read from the same catalog</li><li><strong>Nessie</strong> — catalog with Git-like branches. Isolate table changes before merging them</li></ul><h2 id='partition_evo'><span class='sn'>2</span>Partition Evolution: changing without rewriting</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is partition evolution? Why is it a major advantage of Iceberg over Hive?</p></div><div class='cb'><code>from pyiceberg.catalog import load_catalog
 from pyiceberg.transforms import MonthTransform, DayTransform
 
 catalog = load_catalog('prod')
 table = catalog.load_table('analytics.orders')
 
-# Partition Evolution : changer le schéma de partition
-# sans réécrire les données existantes
+# Partition Evolution: change the partition schema
+# without rewriting existing data
 with table.update_spec() as update:
-    # Avant : partitionné par mois
-    # Après : partitionner par jour (pour les nouvelles partitions)
-    update.remove_field('order_month')     # supprimer l ancienne
-    update.add_identity('order_date')      # ajouter la nouvelle
+    # Before: partitioned by month
+    # After: partition by day (for new partitions)
+    update.remove_field('order_month')     # remove the old one
+    update.add_identity('order_date')      # add the new one
 
-# Les anciennes données restent dans leurs partitions par mois
-# Les nouvelles données vont dans des partitions par jour
-# Iceberg gère la coexistence automatiquement
+# Old data stays in its monthly partitions
+# New data goes into daily partitions
+# Iceberg handles coexistence automatically
 
-# Avec Hive : impossible sans réécrire toutes les données !</code></div><h2 id='time_travel'><span class='sn'>3</span>Advanced Time Travel</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query the state of an Iceberg table at a specific snapshot?</p></div><div class='cb'><code>-- Time Travel par timestamp
+# With Hive: impossible without rewriting all data!</code></div><h2 id='time_travel'><span class='sn'>3</span>Advanced Time Travel</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query the state of an Iceberg table at a specific snapshot?</p></div><div class='cb'><code>-- Time Travel by timestamp
 SELECT * FROM prod.analytics.orders
 FOR SYSTEM_TIME AS OF '2025-01-15 08:00:00';
 
--- Time Travel par snapshot ID
+-- Time Travel by snapshot ID
 SELECT * FROM prod.analytics.orders
 FOR VERSION AS OF 1234567890;
 
--- Lister les snapshots disponibles
+-- List available snapshots
 SELECT * FROM prod.analytics.orders.snapshots
 ORDER BY committed_at DESC
 LIMIT 10;
 
--- Comparer deux snapshots (identifier ce qui a changé)
+-- Compare two snapshots (identify what changed)
 SELECT * FROM prod.analytics.orders.changes
 BETWEEN TIMESTAMP '2025-01-14 00:00:00'
 AND TIMESTAMP '2025-01-15 00:00:00';
 
--- Rollback vers un état précédent
+-- Rollback to a previous state
 CALL prod.system.rollback_to_timestamp(
     'analytics.orders',
     TIMESTAMP '2025-01-14 12:00:00'
-);</code></div><h2 id='cow_mor'><span class='sn'>4</span>Copy-on-Write vs Merge-on-Read</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between CoW and MoR? When do you choose one over the other?</p></div><table class='lt'><thead><tr><th></th><th>Copy-on-Write (CoW)</th><th>Merge-on-Read (MoR)</th></tr></thead><tbody><tr><td><strong>Write</strong></td><td>Rewriting of impacted files</td><td>Writing into delta files (positional deletes)</td></tr><tr><td><strong>Read</strong></td><td>Direct read, clean files</td><td>Merge at read time (data files + deletes)</td></tr></tbody></table></div>
+);</code></div><h2 id='cow_mor'><span class='sn'>4</span>Copy-on-Write vs Merge-on-Read</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between CoW and MoR? When do you choose one over the other?</p></div><table class='lt'><thead><tr><th></th><th>Copy-on-Write (CoW)</th><th>Merge-on-Read (MoR)</th></tr></thead><tbody><tr><td><strong>Write</strong></td><td>Rewrite of impacted files</td><td>Write into delta files (positional deletes)</td></tr><tr><td><strong>Read</strong></td><td>Direct read, clean files</td><td>Merge at read time (data files + deletes)</td></tr><tr><td><strong>Write cost</strong></td><td>High (I/O)</td><td>Low</td></tr><tr><td><strong>Read cost</strong></td><td>Low</td><td>Potentially high (without compaction)</td></tr><tr><td><strong>Ideal for</strong></td><td>Frequent reads, rare writes</td><td>Frequent updates (CDC), write-intensive workloads</td></tr></tbody></table><h2 id='maintenance'><span class='sn'>5</span>Iceberg Table Maintenance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What maintenance operations do you schedule on your Iceberg tables?</p></div><div class='cb'><code>## Maintenance operations (scheduler via Airflow)
+
+# 1. Compaction: merge small files
+SPARK.sql("""
+    CALL prod.system.rewrite_data_files(
+        table => 'analytics.orders',
+        strategy => 'sort',
+        sort_order => 'order_date, region',
+        options => map('min-input-files', '5', 'target-file-size-bytes', '134217728')
+    )
+""")
+
+# 2. Expire old snapshots
+SPARK.sql("""
+    CALL prod.system.expire_snapshots(
+        table => 'analytics.orders',
+        older_than => TIMESTAMP '2024-12-01 00:00:00',
+        retain_last => 3
+    )
+""")
+
+# 3. Remove orphan files
+SPARK.sql("""
+    CALL prod.system.remove_orphan_files(
+        table => 'analytics.orders',
+        dry_run => false
+    )
+""")</code></div><h2 id='multi_engine'><span class='sn'>6</span>Interoperability: Spark + Trino + DuckDB</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you run multiple engines on the same Iceberg tables?</p></div><div class='cb'><code>## Trino + Iceberg: performant OLAP SQL
+CREATE TABLE iceberg.analytics.orders (
+    order_id VARCHAR,
+    amount DOUBLE,
+    order_date DATE
+) WITH (
+    format = 'PARQUET',
+    partitioning = ARRAY['month(order_date)'],
+    sorted_by = ARRAY['order_date']
+);
+
+## DuckDB + Iceberg (v0.10+)
+INSTALL iceberg; LOAD iceberg;
+SELECT * FROM iceberg_scan(
+    's3://mon-bucket/warehouse/analytics/orders',
+    allow_moved_paths = true
+);
+
+## Coexistence rules:
+# Read from all engines
+# Write from 1 engine at a time (no concurrent writes)
+# Except Iceberg Multi-Writer (optimistic locking)</code></div>
+<div class='cb'><code>-- Iceberg Time Travel and maintenance
+SELECT * FROM prod.orders FOR SYSTEM_TIME AS OF '2025-01-01 00:00:00';
+SELECT * FROM prod.orders FOR VERSION AS OF 42;
+
+-- Schema Evolution without rewrite
+ALTER TABLE prod.orders ADD COLUMN discount DOUBLE;
+ALTER TABLE prod.orders RENAME COLUMN client_id TO customer_id;
+
+-- Partition Evolution
+ALTER TABLE prod.orders REPLACE PARTITION FIELD month(order_date) WITH day(order_date);
+
+-- Row-level deletes
+DELETE FROM prod.orders WHERE status = 'test';
+
+-- Compaction
+CALL catalog.system.rewrite_data_files(table => 'prod.orders');
+
+-- Expire old snapshots
+CALL catalog.system.expire_snapshots(
+    table => 'prod.orders',
+    older_than => TIMESTAMP '2025-01-01 00:00:00',
+    retain_last => 10
+);</code></div>
+<ul>
+<li><strong>Copy-on-write vs Merge-on-read</strong> - CoW (default): rewrite files on UPDATE/DELETE, fast reads. MoR: separate delete files, fast writes, slower reads (merge at read time)</li>
+<li><strong>Iceberg Catalogs</strong> - REST Catalog (portable standard: Polaris, Unity Catalog), Hive Metastore, AWS Glue, Nessie (Git-like versioning). Choose based on the ecosystem</li>
+<li><strong>Multi-engine</strong> - same table read from Spark, Trino, Flink, DuckDB, BigQuery Omni without conversion or copy</li>
+<li><strong>vs Delta Lake</strong> - Iceberg: maximum multi-engine portability. Delta Lake: optimal Databricks/Photon integration. Both support Time Travel, ACID, schema evolution</li>
+<li><strong>Hidden partitioning</strong> - Iceberg hides the partition strategy from SQL. No need to filter on the exact partition column</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>Basic Iceberg tables, time travel, catalogs</td><td>Has created Iceberg tables, uses time travel, understands catalogs</td><td>Does not know the difference between Iceberg and plain Parquet</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Partition evolution, CoW vs MoR, scheduled maintenance</td><td>Has performed partition evolution, chooses CoW vs MoR based on use case, schedules compaction</td><td>Does not know what partition evolution is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Iceberg Expert ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

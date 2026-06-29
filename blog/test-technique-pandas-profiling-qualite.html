@@ -152,75 +152,130 @@ print(df.describe())  # stats descriptives
 print(df.duplicated().sum())  # doublons</code></div><ul><li><strong>ydata-profiling</strong> - remplace pandas-profiling (abandonne). Genere automatiquement un rapport HTML : distributions, correlations, valeurs manquantes, outliers, doublons</li><li><strong>Correlations dangereuses</strong> - une correlation > 0.95 entre deux features = potentielle colinearite. A identifier avant d envoyer dans un modele ML</li><li><strong>Profiling en CI</strong> - generer le profil sur un echantillon a chaque run dbt. Detecter les changements de distribution avant qu ils n atteignent les dashboards</li><li><strong>Great Expectations integration</strong> - exporter les expectations depuis le profil ydata-profiling. Transformer les observations en regles de validation automatiques</li><li><strong>Sampling strategique</strong> - sur > 10M lignes, profiler un echantillon stratifie (par date, region) plutot que les premieres lignes. Evite les biais de position</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>df.describe(), valeurs manquantes, doublons</td><td>Fait une exploration systématique avant de modéliser</td><td>Commence à modéliser sans explorer les données</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>YData Profiling, IQR outliers, corrélations</td><td>Utilise YData Profiling, distingue MCAR/MAR/MNAR, détecte les outliers</td><td>Ne sait pas ce que sont MCAR et MAR</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Isolation Forest, VIF, rapport de qualité structuré</td><td>Utilise des méthodes multivariées, produit un rapport avec recommandations</td><td>N a jamais produit de rapport de qualité de données</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='methode'><span class='sn'>1</span>Quality diagnostics method</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is your systematic approach when you discover a new dataset?</p></div><div class='cb'><code>import pandas as pd
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='methode'><span class='sn'>1</span>Quality diagnostic method</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is your systematic approach when you discover a new dataset?</p></div><div class='cb'><code>import pandas as pd
 import numpy as np
 
-# Étape 1 : vue d ensemble
+# Step 1: overview
 print(df.shape)          # dimensions
-print(df.dtypes)         # types de colonnes
+print(df.dtypes)         # column types
 print(df.head())
-print(df.describe())     # statistiques descriptives
+print(df.describe())     # descriptive statistics
 
-# Étape 2 : valeurs manquantes
+# Step 2: missing values
 missing = df.isnull().sum()
 missing_pct = (missing / len(df) * 100).sort_values(ascending=False)
 print(missing_pct[missing_pct > 0])
 
-# Étape 3 : doublons
-print(f'Doublons complets: {df.duplicated().sum()}')
-print(f'Doublons sur clé: {df.duplicated(subset=["order_id"]).sum()}')
+# Step 3: duplicates
+print(f'Full duplicates: {df.duplicated().sum()}')
+print(f'Duplicates on key: {df.duplicated(subset=["order_id"]).sum()}')
 
-# Étape 4 : distributions
+# Step 4: distributions
 for col in df.select_dtypes(include='number').columns:
     print(f'{col}: min={df[col].min():.2f}, max={df[col].max():.2f}, '
-          f'mean={df[col].mean():.2f}, median={df[col].median():.2f}')</code></div><ul><li><strong>Recommended order</strong> — 1. dimensions/types, 2. missing values, 3. duplicates, 4. distributions, 5. correlations, 6. anomalies</li><li><strong>Document</strong> — record each discovered anomaly with its potential impact</li></ul><h2 id='profiling'><span class='sn'>2</span>YData Profiling: automated report</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use YData Profiling to speed up diagnostics?</p></div><div class='cb'><code>from ydata_profiling import ProfileReport
+          f'mean={df[col].mean():.2f}, median={df[col].median():.2f}')</code></div><ul><li><strong>Recommended order</strong> — 1. dimensions/types, 2. missing values, 3. duplicates, 4. distributions, 5. correlations, 6. anomalies</li><li><strong>Document</strong> — record each anomaly discovered with its potential impact</li></ul><h2 id='profiling'><span class='sn'>2</span>YData Profiling: automatic report</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use YData Profiling to speed up the diagnostic?</p></div><div class='cb'><code>from ydata_profiling import ProfileReport
 
-# Rapport complet (attention : lent sur >100k lignes)
+# Full report (warning: slow on >100k rows)
 profile = ProfileReport(
     df,
-    title='Diagnostic qualité - Commandes 2024',
+    title='Quality diagnostic - Orders 2024',
     explorative=True
 )
-profile.to_file('diagnostic_qualite.html')
+profile.to_file('quality_diagnostic.html')
 
-# Rapport minimal pour les gros volumes
+# Minimal report for large volumes
 profile_minimal = ProfileReport(
     df,
-    minimal=True,  # désactive les corrélations coûteuses
-    title='Diagnostic rapide'
+    minimal=True,  # disables expensive correlations
+    title='Quick diagnostic'
 )
 
-# Ce que le rapport contient automatiquement :
-# - Distribution de chaque variable
-# - Valeurs manquantes et patterns
-# - Corrélations (Pearson, Spearman, Cramér V)
-# - Alertes automatiques (skewness, constantes, haute cardinalité)
-# - Interactions entre variables</code></div><h2 id='manquants'><span class='sn'>3</span>Analyzing missing values</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you distinguish between MCAR, MAR and MNAR? Why does it matter?</p></div><div class='cb'><code>import missingno as msno
+# What the report automatically contains:
+# - Distribution of each variable
+# - Missing values and patterns
+# - Correlations (Pearson, Spearman, Cramér V)
+# - Automatic alerts (skewness, constants, high cardinality)
+# - Interactions between variables</code></div><h2 id='manquants'><span class='sn'>3</span>Analyzing missing values</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you distinguish MCAR, MAR and MNAR? Why does it matter?</p></div><div class='cb'><code>import missingno as msno
 import matplotlib.pyplot as plt
 
-# Visualiser les patterns de valeurs manquantes
-msno.matrix(df)           # pattern visuel
-msno.heatmap(df)          # corrélation entre colonnes manquantes
-msno.dendrogram(df)       # clustering des patterns
+# Visualize missing value patterns
+msno.matrix(df)           # visual pattern
+msno.heatmap(df)          # correlation between missing columns
+msno.dendrogram(df)       # clustering of patterns
 
-# Test de Little (MCAR vs non-MCAR)
-# Si p-value < 0.05 : les données ne sont PAS MCAR
+# Little's test (MCAR vs non-MCAR)
+# If p-value < 0.05: data is NOT MCAR
 from scipy import stats
 
-# Vérifier si les manquants dépendent d autres colonnes
+# Check if missingness depends on other columns
 df['income_missing'] = df['income'].isnull().astype(int)
 print(df.groupby('income_missing')['age'].describe())
-# Si l âge diffère selon income_missing -> MAR (pas MCAR)</code></div><ul><li><strong>MCAR</strong> — Missing Completely At Random. Missingness is random. Simple imputation acceptable</li><li><strong>MAR</strong> — Missing At Random. Missingness depends on other observed variables. Model-based imputation recommended</li><li><strong>MNAR</strong> — Missing Not At Random. Missingness depends on the value itself. Serious issue, often uncorrectable</li></ul><h2 id='outliers'><span class='sn'>4</span>Detecting outliers</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What methods do you use to detect outliers?</p></div><div class='cb'><code>import numpy as np
+# If age differs based on income_missing -> MAR (not MCAR)</code></div><ul><li><strong>MCAR</strong> — Missing Completely At Random. Missingness is random. Simple imputation acceptable</li><li><strong>MAR</strong> — Missing At Random. Missingness depends on other observed variables. Model-based imputation recommended</li><li><strong>MNAR</strong> — Missing Not At Random. Missingness depends on the value itself. Serious problem, often uncorrectable</li></ul><h2 id='outliers'><span class='sn'>4</span>Detecting outliers</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What methods do you use to detect outliers?</p></div><div class='cb'><code>import numpy as np
 from scipy import stats
 
-# Méthode 1 : IQR (robuste)
+# Method 1: IQR (robust)
 def detect_outliers_iqr(series):
     Q1 = series.quantile(0.25)
     Q3 = series.quantile(0.75)
     IQR = Q3 - Q1
     lower = Q1 - 1.5 * IQR
     upper = Q3 + 1.5 * IQR
-    return series[(series < lower) | (series > up</code></div></div>
+    return series[(series < lower) | (series > upper)]
+
+# Method 2: Z-score (if normal distribution)
+z_scores = np.abs(stats.zscore(df['amount']))
+outliers_z = df[z_scores > 3]
+
+# Method 3: Isolation Forest (multivariate)
+from sklearn.ensemble import IsolationForest
+iso = IsolationForest(contamination=0.01, random_state=42)
+df['is_outlier'] = iso.fit_predict(df[numeric_cols])
+# -1 = outlier, 1 = normal</code></div><ul><li><strong>IQR</strong> — robust, non-parametric. Preferred for skewed distributions</li><li><strong>Z-score</strong> — sensitive to outliers themselves. Use only on distributions close to normal</li><li><strong>Isolation Forest</strong> — multivariate detection. Finds outliers invisible on a single dimension</li></ul><h2 id='correlations'><span class='sn'>5</span>Correlations and redundancies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you identify redundant features in a dataset?</p></div><div class='cb'><code>import seaborn as sns
+
+# Linear correlations (Pearson)
+corr_matrix = df.select_dtypes('number').corr()
+
+# Visualize with heatmap
+sns.heatmap(corr_matrix, annot=True, fmt='.2f', cmap='coolwarm')
+
+# Identify highly correlated pairs
+upper = corr_matrix.where(
+    np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
+)
+high_corr = [(c, r, upper.loc[r, c])
+             for c in upper.columns
+             for r in upper.index
+             if abs(upper.loc[r, c]) > 0.95]
+print('Highly correlated features (>0.95):', high_corr)
+
+# Variance Inflation Factor (VIF) for multicollinearity
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+vif = pd.DataFrame()
+vif['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
+vif['feature'] = X.columns
+# VIF > 10: problematic multicollinearity</code></div><h2 id='rapport'><span class='sn'>6</span>Producing an actionable quality report</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is an actionable data quality report?</p></div><ul><li><strong>Recommended structure</strong> — executive summary (number of critical issues), then detail by quality dimension</li><li><strong>Prioritization</strong> — distinguish blocking (data cannot be used), major (possible bias), minor (to monitor)</li><li><strong>Concrete recommendations</strong> — for each issue: recommended action, owner, deadline</li><li><strong>Format</strong> — Jupyter notebook exported to HTML, or YData Profiling report, or Metabase dashboard</li></ul><div class='cb'><code>import pandas as pd
+from ydata_profiling import ProfileReport
+
+df = pd.read_csv('orders.csv')
+
+# Full quality report
+profile = ProfileReport(df, title='Orders Quality Report', explorative=True)
+profile.to_file('quality_report.html')
+
+# Two-period comparison (drift detection)
+profile_week1 = ProfileReport(df_week1, title='Week 1')
+profile_week2 = ProfileReport(df_week2, title='Week 2')
+comparison = profile_week1.compare(profile_week2)
+comparison.to_file('drift_comparison.html')
+
+# Key manual checks
+print(df.dtypes)
+print(df.isnull().sum() / len(df))  # null rate per column
+print(df.describe())  # descriptive stats
+print(df.duplicated().sum())  # duplicates</code></div><ul><li><strong>ydata-profiling</strong> - replaces pandas-profiling (deprecated). Automatically generates an HTML report: distributions, correlations, missing values, outliers, duplicates</li><li><strong>Dangerous correlations</strong> - a correlation > 0.95 between two features = potential collinearity. Must be identified before feeding into an ML model</li><li><strong>Profiling in CI</strong> - generate the profile on a sample at each dbt run. Detect distribution changes before they reach dashboards</li><li><strong>Great Expectations integration</strong> - export expectations from the ydata-profiling profile. Turn observations into automatic validation rules</li><li><strong>Strategic sampling</strong> - on > 10M rows, profile a stratified sample (by date, region) rather than the first rows. Avoids position bias</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>df.describe(), missing values, duplicates</td><td>Performs systematic exploration before modeling</td><td>Starts modeling without exploring the data</td></tr><tr><td><span class='bd bm'>Mid-level</span></td><td>YData Profiling, IQR outliers, correlations</td><td>Uses YData Profiling, distinguishes MCAR/MAR/MNAR, detects outliers</td><td>Does not know what MCAR and MAR are</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Isolation Forest, VIF, structured quality report</td><td>Uses multivariate methods, produces a report with recommendations</td><td>Has never produced a data quality report</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

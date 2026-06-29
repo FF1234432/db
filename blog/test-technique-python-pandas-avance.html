@@ -280,77 +280,156 @@ report.to_file("report.html")</code></div>
 </div>
 </div>
 <div id="body-en" style="display:none"><div class="ab">
-
-<p>A Data Engineer who uses <code>iterrows()</code> loops on pandas DataFrames in production is delivering technical debt. Performance pitfalls, vectorization, and mastery of DuckDB or Polars are the real differentiators in interviews.</p>
+<p>A Data Engineer who uses <code>iterrows()</code> loops on pandas DataFrames in production delivers technical debt. Performance pitfalls, vectorization, and mastery of DuckDB or Polars are the real differentiators in interviews.</p>
 
 <h2 id="pandas"><span class="sn">1</span>pandas: classic pitfalls</h2>
-<div class="sq"><div class="sl">Differentiating question</div><p>What is the difference between .loc, .iloc and .at? Why should you absolutely avoid iterrows() on a large DataFrame?</p></div>
-<div class="cb"><code># MAUVAIS : boucle Python sur un DataFrame (tres lent)
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between .loc, .iloc and .at? Why should you absolutely avoid iterrows() on a large DataFrame?</p></div>
+<div class="cb"><code># BAD: Python loop on a DataFrame (very slow)
 for index, row in df.iterrows():
     df.at[index, 'profit'] = row['revenue'] - row['cost']
 
-# BON : vectorisation directe
+# GOOD: direct vectorization
 df['profit'] = df['revenue'] - df['cost']
 
-# BON : np.where pour les conditions simples
+# GOOD: np.where for simple conditions
 import numpy as np
 df['tier'] = np.where(df['amount'] > 1000, 'gold',
              np.where(df['amount'] > 100, 'silver', 'bronze'))
 
-# Selection par label vs position
-df.loc[df['status'] == 'active', 'revenue']  # par label/condition
-df.iloc[0:10, 2:5]                           # par position entiere
-df.at[42, 'revenue']                         # acces scalaire rapide par label</code></div>
+# Selection by label vs position
+df.loc[df['status'] == 'active', 'revenue']  # by label/condition
+df.iloc[0:10, 2:5]                           # by integer position
+df.at[42, 'revenue']                         # fast scalar access by label</code></div>
 <ul>
 <li><strong>iterrows()</strong> — iterates in pure Python: 100x to 1000x slower than vectorization. Never in production</li>
-<li><strong>Vectorization</strong> — operations on the entire column in one instruction (C compiled via NumPy)</li>
+<li><strong>Vectorization</strong> — operations on the entire column in a single instruction (compiled C via NumPy)</li>
 <li><strong>apply()</strong> — more flexible than a vectorized operation, but slower. Last resort</li>
 <li><strong>SettingWithCopyWarning</strong> — always work on an explicit copy (.copy()) to avoid silent modifications</li>
 <li><strong>Perf rule</strong> — vectorization &gt; np.where &gt; pd.apply() &gt; itertuples() &gt; iterrows()</li>
 </ul>
-<div class="cl"><p><strong>Senior GO signal:</strong> the candidate spontaneously cites iterrows() as an anti-pattern, explains vectorization, and knows np.where.</p></div>
+<div class="cl"><p><strong>Senior GO Signal:</strong> the candidate spontaneously cites iterrows() as an anti-pattern, explains vectorization and knows np.where.</p></div>
 
 <h2 id="dtypes"><span class="sn">2</span>Memory optimization: reducing DataFrame size</h2>
-<div class="sq"><div class="sl">Differentiating question</div><p>How do you reduce the memory consumption of a 3 GB pandas DataFrame?</p></div>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you reduce the memory consumption of a 3 GB pandas DataFrame?</p></div>
 <div class="cb"><code>import pandas as pd
 
-# Diagnostic memoire
+# Memory diagnostic
 print(df.memory_usage(deep=True).sum() / 1024**2, "MB")
 
-# Reduction des types numeriques
-df['age']    = df['age'].astype('int8')      # int64 -> int8  : 8x moins
-df['score']  = df['score'].astype('float32') # float64 -> float32 : 2x moins
+# Reducing numeric types
+df['age']    = df['age'].astype('int8')      # int64 -> int8  : 8x less
+df['score']  = df['score'].astype('float32') # float64 -> float32 : 2x less
 df['status'] = df['status'].astype('category') # string -> category : -80%
-df['pays']   = df['pays'].astype('category')
+df['country']   = df['country'].astype('category')
 
-# Types specifies a l'import (optimal)
+# Types specified at import (optimal)
 df = pd.read_csv("data.csv", dtype={
     'age': 'int8',
     'status': 'category',
     'amount': 'float32'
 })
 
-# Lecture par chunks pour les tres gros fichiers
+# Chunk reading for very large files
 for chunk in pd.read_csv("big_file.csv", chunksize=100_000):
     process(chunk)</code></div>
 <ul>
-<li><strong>int64 → int8/int16/int32</strong> — depending on the actual min/max values of the column</li>
-<li><strong>float64 → float32</strong> — reduced precision but acceptable for the majority of analyses</li>
-<li><strong>string → category</strong> — essential for low-cardinality columns (status, country, type). Can reduce memory by 80%</li>
-<li><strong>Chunk reading</strong> — processing files larger than RAM in successive chunks</li>
+<li><strong>int64 → int8/int16/int32</strong> — based on the actual min/max values of the column</li>
+<li><strong>float64 → float32</strong> — reduced precision but acceptable for most analyses</li>
+<li><strong>string → category</strong> — essential for low cardinality columns (status, country, type). Can reduce memory by 80%</li>
+<li><strong>Chunk reading</strong> — process files larger than RAM in successive chunks</li>
 </ul>
 
-<h2 id="vecto"><span class="sn">3</span>Vectorization and NumPy: why it's faster</h2>
-<div class="sq"><div class="sl">Differentiating question</div><p>Explain why a NumPy vectorized operation is 500x faster than an equivalent Python loop.</p></div>
+<h2 id="vecto"><span class="sn">3</span>Vectorization and NumPy: why it is faster</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>Explain why a NumPy vectorized operation is 500x faster than an equivalent Python loop.</p></div>
 <div class="cb"><code>import numpy as np
 
-# Boucle Python : ~5 secondes sur 1M de lignes
+# Python loop: ~5 seconds on 1M rows
 distances = []
 for i in range(len(df)):
     d = np.sqrt(df['x'].iloc[i]**2 + df['y'].iloc[i]**2)
     distances.append(d)
 
-# Vectorisation NumPy : ~10 milliseco</code></div></div>
+# NumPy vectorization: ~10 milliseconds (500x faster)
+distances = np.sqrt(df['x']**2 + df['y']**2)
+
+# pd.cut for bin slicing
+df['age_group'] = pd.cut(df['age'],
+    bins=[0, 18, 35, 50, 100],
+    labels=['junior', 'adult', 'senior', 'elder']
+)</code></div>
+<ul>
+<li><strong>Why vectorized is faster</strong> — vectorized operations execute in compiled C, without the Python interpreter overhead or loop dispatch</li>
+<li><strong>SIMD parallelism</strong> — NumPy leverages the processor's SIMD instructions to process multiple elements simultaneously</li>
+<li><strong>pd.cut / pd.qcut</strong> — bin or quantile slicing, natively vectorized</li>
+</ul>
+
+<h2 id="duckdb"><span class="sn">4</span>DuckDB: SQL on DataFrames and Parquet files</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>In which case do you use DuckDB instead of pandas? What is its main strength with Parquet files?</p></div>
+<div class="cb"><code>import duckdb
+
+# DuckDB reads Parquet files directly without loading everything into RAM
+result = duckdb.sql("""
+    SELECT
+        country,
+        SUM(revenue)  AS total_revenue,
+        COUNT(*)      AS nb_orders
+    FROM 'data/orders_*.parquet'
+    WHERE order_date >= '2024-01-01'
+    GROUP BY country
+    ORDER BY total_revenue DESC
+    LIMIT 20
+""").df()  # converts to pandas DataFrame if needed
+
+# DuckDB can also directly query an existing pandas DataFrame
+conn = duckdb.connect()
+result = conn.execute("""
+    SELECT customer_id, SUM(amount) AS total
+    FROM df_orders
+    GROUP BY customer_id
+    HAVING total > 1000
+""").df()</code></div>
+<ul>
+<li><strong>DuckDB vs pandas</strong> — 10x to 100x faster on aggregations and joins thanks to its vectorized columnar engine</li>
+<li><strong>Out-of-core</strong> — processes files larger than RAM thanks to streaming</li>
+<li><strong>Native Parquet</strong> — reads Parquet/CSV files directly, with predicate and projection pushdown</li>
+<li><strong>When to use it</strong> — aggregations, joins, filters on large volumes. Keep pandas for fine-grained manipulation (reshape, pivot, string operations)</li>
+</ul>
+<div class="cl"><p><strong>Zero-installation alternative:</strong> DuckDB runs in-process without a server. <code>pip install duckdb</code> and it's ready. Ideal for local ETL scripts on large files.</p></div>
+
+<h2 id="polars"><span class="sn">5</span>Polars: maximum performance, lazy API</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between the eager and lazy API in Polars? When should you migrate from pandas to Polars?</p></div>
+<div class="cb"><code>import polars as pl
+
+# Eager API: immediate execution (like pandas)
+df = pl.read_csv("data.csv")
+result = (
+    df
+    .filter(pl.col("amount") > 100)
+    .group_by("category")
+    .agg(pl.col("amount").sum().alias("total"))
+)
+
+# Lazy API: deferred and optimized execution (like Spark)
+result = (
+    pl.scan_csv("data.csv")      # scan = lazy read
+    .filter(pl.col("amount") > 100)
+    .group_by("category")
+    .agg(pl.col("amount").sum().alias("total"))
+    .collect()                   # triggers optimized execution
+)
+# Polars automatically optimizes: predicate pushdown,
+# projection pushdown, native multi-thread parallelism</code></div>
+<ul>
+<li><strong>Polars vs pandas</strong> — 5x to 50x faster thanks to Rust, natively parallelized multi-thread execution</li>
+<li><strong>Lazy API</strong> — the query planner optimizes operations before executing them (like Spark). Preferred for large volumes</li>
+<li><strong>When to migrate</strong> — volumes &gt; 500 MB in RAM, need for critical performance, team ready to learn the API</li>
+<li><strong>Compatibility</strong> — easy conversion to/from pandas via .to_pandas() and pl.from_pandas()</li>
+</ul>
+
+<h2 id="profil"><span class="sn">6</span>Profiling and performance diagnostics</h2>
+<div
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist Python ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

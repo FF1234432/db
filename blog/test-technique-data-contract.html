@@ -124,7 +124,8 @@ sla:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Comprend le concept, sait qu un test dbt est une forme de contract</td><td>Peut expliquer pourquoi les data contracts existent, a mis des tests dbt en place</td><td>N a jamais entendu parler de data contracts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>A formalisé des contracts YAML, gère le versioning, communique les breaking changes</td><td>A mis en place des contracts sur des datasets critiques, gère la dépréciation</td><td>Ne sait pas comment gérer une breaking change sans casser les consommateurs</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>Definition and added value</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a data contract? What concrete problem does it solve?</p></div><ul><li><strong>Data contract</strong> — formal agreement between a dataset producer and its consumers, specifying schema, quality, freshness and SLA</li><li><strong>Problem solved</strong> — without a contract, a Data Engineer can rename a column without knowing that 5 dashboards depend on it. With a contract, the change must be negotiated and communicated</li><li><strong>Analogy</strong> — like a REST API contract (OpenAPI), but for data</li><li><strong>Popularized by</strong> — Chad Sanderson (Data Products), Andrew Jones (Data Contracts book)</li></ul><h2 id='composants'><span class='sn'>2</span>The 4 components of a data contract</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What elements should a complete data contract contain?</p></div><div class='cb'><code># data-contract.yaml (format standard emergent)
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Definition and added value</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a data contract? What concrete problem does it solve?</p></div><ul><li><strong>Data contract</strong> — formal agreement between a dataset producer and its consumers, specifying the schema, quality, freshness and SLAs</li><li><strong>Problem solved</strong> — without a contract, a Data Engineer can rename a column without knowing that 5 dashboards depend on it. With a contract, the change must be negotiated and communicated</li><li><strong>Analogy</strong> — like a REST API contract (OpenAPI), but for data</li><li><strong>Popularized by</strong> — Chad Sanderson (Data Products), Andrew Jones (Data Contracts book)</li></ul><h2 id='composants'><span class='sn'>2</span>The 4 components of a data contract</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What elements must a complete data contract contain?</p></div><div class='cb'><code># data-contract.yaml (format standard emergent)
 apiVersion: v2.0.0
 kind: DataContract
 id: orders-v2
@@ -155,7 +156,7 @@ quality:
 
 terms:
   usage: Données internes uniquement
-  noticePeriod: 30 jours avant breaking change</code></div><h2 id='dbt'><span class='sn'>3</span>Implementing with dbt</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use dbt to enforce a data contract?</p></div><ul><li><strong>sources.yml</strong> — define the contract on source data: freshness, expected schema</li><li><strong>YAML tests</strong> — not_null, unique, accepted_values, relationships: dbt tests are the simplest form of contract enforcement</li><li><strong>dbt-contracts (package)</strong> — package that formats dbt tests as explicit contracts with SLA</li><li><strong>schema.yml</strong> — dbt documentation + tests = a living, executable contract</li></ul><div class='cb'><code>sources:
+  noticePeriod: 30 jours avant breaking change</code></div><h2 id='dbt'><span class='sn'>3</span>Implement with dbt</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use dbt to enforce a data contract?</p></div><ul><li><strong>sources.yml</strong> — define the contract on source data: freshness, expected schema</li><li><strong>YAML Tests</strong> — not_null, unique, accepted_values, relationships: dbt tests are the simplest form of contract enforcement</li><li><strong>dbt-contracts (package)</strong> — package that formats dbt tests as explicit contracts with SLAs</li><li><strong>schema.yml</strong> — dbt documentation + tests = a living and executable contract</li></ul><div class='cb'><code>sources:
   - name: commerce
     freshness:
       warn_after: {count: 12, period: hour}
@@ -169,7 +170,47 @@ terms:
           - name: status
             tests:
               - accepted_values:
-                  values: [completed, pending, cancelled]</code></div><h2 id='versioning'><span class='sn'>4</span>Schema versioning: managing breaking changes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you handle a breaking change on a dataset that has consumers?</p></div><ul><li><strong>Semantic versioning</strong> — MAJOR.MINOR.PATCH: breaking change = MAJOR increment</li><li><strong>Backward compatible changes</strong> — adding a nullable column: MINOR. Removing or renaming a column: MAJOR</li><li><strong>Progressive deprecation</strong> — keep the old column with a deprecated flag for 30 days, document the migration</li><li><strong>Communication</strong> — notify all registered consumers before any breaking change</li><li><strong>Consumers registry</strong> — maintain a registry of consumers for each dataset (dbt exposures)</li></ul><h2 id='process'><span class='sn'>5</span>Organizational process</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you convince a team to implement</p></div></div>
+                  values: [completed, pending, cancelled]</code></div><h2 id='versioning'><span class='sn'>4</span>Schema versioning: managing breaking changes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you handle a breaking change on a dataset that has consumers?</p></div><ul><li><strong>Semantic versioning</strong> — MAJOR.MINOR.PATCH: breaking change = MAJOR increment</li><li><strong>Backward compatible changes</strong> — adding a nullable column: MINOR. Deleting or renaming a column: MAJOR</li><li><strong>Progressive deprecation</strong> — keep the old column with a deprecated flag for 30 days, document the migration</li><li><strong>Communication</strong> — notify all registered consumers before any breaking change</li><li><strong>Consumers registry</strong> — maintain a registry of consumers for each dataset (dbt exposures)</li></ul><h2 id='process'><span class='sn'>5</span>Organizational process</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you convince a team to implement data contracts?</p></div><ul><li><strong>Start with critical datasets</strong> — the 5-10 most consumed tables, not the entire stack at once</li><li><strong>Equip the producer</strong> — the contract must be easy to create and maintain. If it is a chore, no one will do it</li><li><strong>Automate validation</strong> — contract tests must run automatically in CI on every PR</li><li><strong>Data stewards</strong> — designate domain owners to validate and maintain contracts</li></ul><h2 id='outils'><span class='sn'>6</span>Tools and frameworks in 2025</h2><ul><li><strong>Data Contract CLI</strong> — open source tool to create, validate and publish data contracts (standard YAML format)</li><li><strong>dbt + YAML tests</strong> — the most widespread and practical form of data contract for dbt teams</li><li><strong>Soda</strong> — quality framework that supports data contracts with explicit SLAs</li><li><strong>DataHub / OpenMetadata</strong> — catalogs that can store and publish contracts</li></ul><div class='cb'><code># Data Contract YAML (OpenDataContracts standard)
+dataContractSpecification: 0.9.3
+id: orders-contract-v2
+info:
+  title: Orders Contract
+  version: 2.1.0
+  owner: data-platform-team
+  contact: slack://data-platform
+
+models:
+  orders:
+    description: "Table des commandes validées"
+    fields:
+      order_id:
+        type: string
+        required: true
+        unique: true
+        pii: false
+      amount:
+        type: number
+        minimum: 0
+        maximum: 1000000
+      status:
+        type: string
+        enum: [pending, completed, cancelled, refunded]
+      created_at:
+        type: timestamp
+        required: true
+
+quality:
+  - rule: freshness
+    metric: max(created_at) > now() - interval 24 hours
+  - rule: volume
+    metric: count(*) BETWEEN 10000 AND 10000000
+  - rule: completeness
+    metric: count(order_id is not null) / count(*) > 0.99
+
+sla:
+  latency: 2h
+  uptime: 99.5%</code></div><ul><li><strong>OpenDataContracts</strong> — open standard for describing data contracts in YAML. Compatible with dbt, Great Expectations, and monitoring tools</li><li><strong>Who defines the contract</strong> — the producer (source team) defines the schema and SLAs. The consumer validates that the contract meets their needs. Negotiation before agreement</li><li><strong>Semantic versioning</strong> — breaking changes (column deletion, type change) = major bump. Backward-compatible changes (column addition) = minor bump. Consumers must be notified before a major bump</li><li><strong>Automatic enforcement</strong> — validate the contract in CI/CD on every merge. If a SQL migration drops a contracted column, the pipeline fails before reaching production</li><li><strong>Data Contract Studio</strong> — open source tool for visualizing and validating contracts. Generate dbt or Great Expectations tests from a YAML contract</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Understands the concept, knows that a dbt test is a form of contract</td><td>Can explain why data contracts exist, has set up dbt tests</td><td>Has never heard of data contracts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Has formalized YAML contracts, manages versioning, communicates breaking changes</td><td>Has implemented contracts on critical datasets, manages deprecation</td><td>Does not know how to handle a breaking change without breaking consumers</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

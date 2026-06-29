@@ -127,40 +127,41 @@ JOIN {{ ref('dim_products') }} p ON o.product_id = p.product_id</code></div>
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Technical Test Data Governance: catalog, lineage, quality, GDPR</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Data Governance Technical Test: catalog, lineage, quality, GDPR</span></div>
 <div class="at">Data recruitment guide</div>
-<h1 class="ah">Technical Test Data Governance: catalog, lineage, quality, GDPR</h1>
-<p class="ai">Data governance has become a critical challenge. In Analytics Engineer or Data Architect interviews, the ability to structure quality, traceability and compliance of data at scale is assessed.</p>
+<h1 class="ah">Data Governance Technical Test: catalog, lineage, quality, GDPR</h1>
+<p class="ai">Data governance has become a critical issue. In Analytics Engineer or Data Architect interviews, the ability to structure data quality, traceability and compliance at scale is evaluated.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span>8 min read</span><span>·</span><span>Analytics Engineer · Data Architect</span></div>
-<div class="tc"><div class="tt">Table of contents</div><ol id="tl"><li><a href="#catalogue">Data catalog</a></li>
+<div class="tc"><div class="tt">Table of Contents</div><ol id="tl"><li><a href="#catalogue">Data catalog</a></li>
 <li><a href="#lineage">Data lineage</a></li>
 <li><a href="#quality">Data quality</a></li>
 <li><a href="#mdm">Master Data Management</a></li>
 <li><a href="#rgpd">GDPR and compliance</a></li>
 <li><a href="#outils">Tools and stack</a></li>
-<li><a href="#nv">Level grid</a></li></ol></div>
+<li><a href="#nv">Level-based grid</a></li></ol></div>
 <div class="ab" id="ab">
 <p>Data governance is not an administrative constraint — it is what allows data teams to scale without chaos. Without governance, every project starts from scratch, metric definitions diverge, and trust in data collapses.</p>
 
 <h2 id="catalogue"><span class="sn">1</span>Data catalog</h2>
-<div class="sq"><div class="sl">Key question</div><p>What is the difference between a technical data catalog and a business data catalog? Have you ever set up a catalog?</p></div>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between a technical data catalog and a business data catalog? Have you ever set up a catalog?</p></div>
 <ul>
-<li><strong>Technical catalog</strong> — references tables, columns, types, quality statistics. Automatically populated by tools like DataHub, Apache Atlas, OpenMetadata</li>
+<li><strong>Technical catalog</strong> — references tables, columns, types, quality statistics. Automatically populated by tools such as DataHub, Apache Atlas, OpenMetadata</li>
 <li><strong>Business catalog</strong> — enriches the technical catalog with business definitions, owners, sensitivity tags, and natural language descriptions</li>
 <li><strong>Tools</strong>: DataHub (LinkedIn, open source), Collibra (enterprise), Alation, OpenMetadata, dbt docs (for dbt models)</li>
-<li><strong>Active vs passive metadata</strong> — a passive catalog is documented manually and becomes obsolete. An active catalog is automatically populated by pipelines and tools</li>
+<li><strong>Active vs passive metadata</strong> — a passive catalog is documented manually and becomes outdated. An active catalog is automatically populated by pipelines and tools</li>
 </ul>
 <div class="cl"><p><strong>dbt as an entry point:</strong> for analytics teams, the dbt project (with YAML descriptions) is often the first natural catalog. dbt docs automatically generates navigable documentation with SQL lineage.</p></div>
 
 <h2 id="lineage"><span class="sn">2</span>Data lineage: tracing data from source to dashboard</h2>
-<div class="sq"><div class="sl">Key question</div><p>What is data lineage? Give a concrete example of a case where it was useful to you.</p></div>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is data lineage? Give a concrete example of a case where it was useful to you.</p></div>
 <ul>
 <li><strong>Data lineage</strong> — complete traceability of data from its source (transactional database, API, file) to its use (dashboard, ML model, report)</li>
-<li><strong>Column-level lineage</strong> — knowing exactly which source column feeds which target column, through all SQL transformations</li>
+<li><strong>Column-level lineage</strong> — knowing exactly which source column feeds which target column, across all SQL transformations</li>
 <li><strong>Use cases</strong>: impact analysis (if I change this source table, which dashboards are affected?), root cause analysis (why did this KPI change?), GDPR compliance (where is personal data?)</li>
 <li><strong>Tools</strong>: DataHub, OpenLineage (open standard), dbt (model lineage), Marquez</li>
 </ul>
-<div class="cb"><code># dbt : le lineage est calculé automatiquement depuis les refs
+<div class="cb"><code># dbt: lineage is automatically calculated from refs
 -- models/marts/finance/fct_revenue.sql
 SELECT
     o.order_id,
@@ -168,17 +169,64 @@ SELECT
     c.customer_segment,
     p.product_category,
     o.amount
-FROM {{ ref('stg_orders') }} o          -- source tracée
+FROM {{ ref('stg_orders') }} o          -- traced source
 JOIN {{ ref('dim_customers') }} c ON o.customer_id = c.customer_id
 JOIN {{ ref('dim_products') }} p ON o.product_id = p.product_id</code></div>
 
 <h2 id="quality"><span class="sn">3</span>Data quality: measuring and monitoring</h2>
-<div class="sq"><div class="sl">Key question</div><p>What are the dimensions of data quality? How do you measure them automatically in your pipelines?</p></div>
-<table class="lt"><thead><tr><th>Dimension</th><th>Definition</th><th>Example test</th></tr></thead><tbody>
+<div class="sq"><div class="sl">Discriminating question</div><p>What are the dimensions of data quality? How do you automatically measure them in your pipelines?</p></div>
+<table class="lt"><thead><tr><th>Dimension</th><th>Definition</th><th>Test example</th></tr></thead><tbody>
 <tr><td><strong>Completeness</strong></td><td>% of non-null values</td><td>not_null on critical columns</td></tr>
 <tr><td><strong>Accuracy</strong></td><td>Conformity to expected values</td><td>accepted_values, value ranges</td></tr>
-<tr><td><strong>Freshness</strong></td><td>Age of data relative to what is expected</td><td>source_freshness in dbt</td></tr>
-<tr><td><strong>Uniqueness</strong></td><td>Absence of duplicates on keys</td></tr></tbody></table></div></div>
+<tr><td><strong>Freshness</strong></td><td>Data age relative to expectation</td><td>source_freshness in dbt</td></tr>
+<tr><td><strong>Uniqueness</strong></td><td>Absence of duplicates on keys</td><td>unique on PKs</td></tr>
+<tr><td><strong>Consistency</strong></td><td>Consistency between related tables</td><td>relationships test in dbt</td></tr>
+<tr><td><strong>Validity</strong></td><td>Compliance with schema and formats</td><td>Schema validation, regex tests</td></tr>
+</tbody></table>
+<ul>
+<li><strong>dbt tests</strong> — not_null, unique, accepted_values, relationships: automated tests at each run</li>
+<li><strong>Great Expectations</strong> — Python framework for complex and configurable quality rules</li>
+<li><strong>Monte Carlo / Bigeye</strong> — automatic data observability, anomaly detection without predefined rules</li>
+</ul>
+
+<h2 id="mdm"><span class="sn">4</span>Master Data Management (MDM)</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is Master Data Management? Give an example of a problem that MDM solves.</p></div>
+<ul>
+<li><strong>MDM</strong> — management of a single, reliable reference repository for key organizational entities (customers, products, suppliers, legal entities)</li>
+<li><strong>Problem solved</strong> — a customer who exists in 3 different systems with different IDs. MDM creates a unique identifier (Golden Record) that reconciles all sources</li>
+<li><strong>Components</strong>: deduplication/matching, record linkage, golden record, distribution to consuming systems</li>
+<li><strong>Tools</strong>: Informatica MDM, Stibo STEP, Reltio, or custom with dbt + Splink (open source probabilistic matching)</li>
+</ul>
+
+<h2 id="rgpd"><span class="sn">5</span>GDPR and data compliance</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you handle the GDPR right to erasure in a data lake? What anonymization techniques do you use?</p></div>
+<ul>
+<li><strong>Personal data inventory</strong> — identify and tag all columns containing personal data in the catalog</li>
+<li><strong>Right to erasure</strong> — soft delete in the transactional database + propagation in the data lake (tricky because Parquet files are immutable → requires Delta Lake/Iceberg vacuuming)</li>
+<li><strong>Anonymization</strong> — permanent deletion of the identifier: irreversible, data can no longer be linked to a person</li>
+<li><strong>Pseudonymization</strong> — replacement of the identifier with a reversible pseudonym (tokenization): re-identification remains possible with the key</li>
+<li><strong>Minimization</strong> — collect only the data strictly necessary for the purpose</li>
+<li><strong>Data Classification</strong> — tag data according to sensitivity: Public, Internal, Confidential, PII, Sensitive PII</li>
+</ul>
+
+<h2 id="outils"><span class="sn">6</span>Typical governance stack in 2025</h2>
+<ul>
+<li><strong>Catalog</strong> — DataHub (open source, LinkedIn) or OpenMetadata</li>
+<li><strong>Quality</strong> — dbt tests + Great Expectations or Soda Core</li>
+<li><strong>Lineage</strong> — DataHub with Airflow + dbt integration</li>
+<li><strong>Observability</strong> — Monte Carlo or Metaplane (automatic anomaly detection)</li>
+<li><strong>Access control</strong> — Row-Level Security in Snowflake/BigQuery + tag policy</li>
+<li><strong>GDPR</strong> — Delta Lake/Iceberg for the right to erasure + encryption at rest</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Level-based grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bm">Confirmed</span></td><td>dbt tests, basic catalog, data classification</td><td>Has implemented not_null/unique/accepted_values, has documented their dbt models</td><td>Does not know what data lineage is, has never written tests on their data</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>DataHub/OpenMetadata, Great Expectations, column-level lineage, practical GDPR</td><td>Has set up DataHub, has handled a GDPR right to erasure request, knows pseudonymization</td><td>Does not know how to handle the right to erasure in a data lake</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Complete governance architecture, MDM, data contracts, team standards</td><td>Has defined their organization's governance strategy, has implemented data contracts</td><td>Cannot explain the difference between anonymization and pseudonymization</td></tr>
+</tbody></table>
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>
 </div>

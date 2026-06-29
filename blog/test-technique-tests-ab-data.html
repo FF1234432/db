@@ -99,17 +99,18 @@ def sample_size_needed(baseline_rate, mde=0.1, alpha=0.05, power=0.8):
     return int(np.ceil(n))</code></div><ul><li><strong>Significativite statistique 95%</strong> - p-value < 0.05 ne signifie pas que le test est concluant. Il faut aussi une taille d echantillon suffisante et un effet minimal detectable defini a l avance</li><li><strong>MDE (Minimum Detectable Effect)</strong> - definir avant le test l effet minimal que vous voulez detecter. MDE 1% sur un taux de 5% = 4 fois plus d echantillons qu un MDE de 2%</li><li><strong>Biais de peeking</strong> - arreter le test des que p < 0.05 augmente le taux de faux positifs. Definir la duree a l avance et ne pas y toucher</li><li><strong>Multi-armed bandit</strong> - alternative aux A/B tests classiques. Alloue dynamiquement plus de trafic vers la variante gagnante. Thompson Sampling ou UCB</li><li><strong>Metriques guardrail</strong> - definir des metriques de securite (latence, taux d erreur, revenus par user) qui ne doivent pas degrader meme si la metrique primaire s ameliore</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Test t et z, p-value, alpha, randomisation</td><td>Calcule la taille d échantillon avant le test, sait choisir entre test t et z</td><td>Arrête le test dès que p < 0.05 (peeking)</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Puissance, erreurs type I/II, multiple comparisons, interprétation business</td><td>Calcule la puissance, corrige pour les comparaisons multiples, présente en termes business</td><td>Ne sait pas ce qu est la puissance statistique</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>A/B test foundations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the prerequisites for conducting a rigorous A/B test?</p></div><ul><li><strong>Clear hypothesis</strong> — 'changing the CTA button color from gray to orange increases the click rate by 5%'. Only one hypothesis tested at a time</li><li><strong>Primary metric</strong> — define ONE main metric before launching. Not 10 metrics 'just to be safe'</li><li><strong>Randomization</strong> — assign users randomly. Never by even/odd week or by region</li><li><strong>Isolation</strong> — no other changes during the test. A contaminated A/B test yields unusable results</li><li><strong>Minimum duration</strong> — run for at least 2 weeks to capture cyclical effects (weekday vs weekend)</li></ul><h2 id='puissance'><span class='sn'>2</span>Calculating sample size</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you calculate the required sample size before launching an A/B test?</p></div><div class='cb'><code>from scipy import stats
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Fundamentals of A/B Testing</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the prerequisites for conducting a rigorous A/B test?</p></div><ul><li><strong>Clear hypothesis</strong> — 'changing the CTA button color from gray to orange increases the click-through rate by 5%'. Only one hypothesis tested at a time</li><li><strong>Primary metric</strong> — define ONE main metric before launching. Not 10 metrics 'just to be safe'</li><li><strong>Randomization</strong> — assign users randomly. Never by even/odd week or by region</li><li><strong>Isolation</strong> — no other changes during the test. A contaminated A/B test produces unusable results</li><li><strong>Minimum duration</strong> — let it run for at least 2 weeks to capture cyclical effects (weekday vs weekend)</li></ul><h2 id='puissance'><span class='sn'>2</span>Calculating Sample Size</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you calculate the required sample size before launching an A/B test?</p></div><div class='cb'><code>from scipy import stats
 from statsmodels.stats.power import TTestIndPower
 import numpy as np
 
-# Paramètres du test
-baseline_rate = 0.05      # taux de conversion actuel : 5%
-min_detectable_effect = 0.01  # on veut détecter +1pp (5% -> 6%)
-alpha = 0.05              # risque d erreur de type I (5%)
-power = 0.80              # puissance souhaitée (80%)
+# Test parameters
+baseline_rate = 0.05      # current conversion rate: 5%
+min_detectable_effect = 0.01  # we want to detect +1pp (5% -> 6%)
+alpha = 0.05              # type I error risk (5%)
+power = 0.80              # desired power (80%)
 
-# Calcul de la taille d échantillon pour un test de proportion
+# Sample size calculation for a proportion test
 from statsmodels.stats.proportion import proportion_effectsize
 effect_size = proportion_effectsize(baseline_rate, baseline_rate + min_detectable_effect)
 
@@ -120,28 +121,55 @@ n = analysis.solve_power(
     power=power,
     alternative='two-sided'
 )
-print(f'Taille par groupe : {int(np.ceil(n))} utilisateurs')
-# Si 1000 visites/jour -> durée = 2 * ceil(n) / 1000 jours</code></div><h2 id='erreurs'><span class='sn'>3</span>Type I and II errors</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a type I error and a type II error? How do you control them?</p></div><table class='lt'><thead><tr><th>Error</th><th>Definition</th><th>Probability</th><th>Control</th></tr></thead><tbody><tr><td><strong>Type I (false positive)</strong></td><td>Declaring an effect that doesn't exist</td><td>α (significance level)</td><td>Set α = 0.05 before the test</td></tr><tr><td><strong>Type II (false negative)</strong></td><td>Missing a real effect</td><td>β = 1 - power</td><td>Sufficient sample size</td></tr></tbody></table><div class='cl'><p><strong>Analogy:</strong> α = convicting an innocent person. β = letting a guilty person go free. Both are errors, but of different natures. In business A/B testing, β = missing a real improvement.</p></div><h2 id='tests'><span class='sn'>4</span>Choosing the right statistical test</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which statistical test do you use depending on the metric being tested?</p></div><div class='cb'><code>from scipy import stats
+print(f'Size per group: {int(np.ceil(n))} users')
+# If 1000 visits/day -> duration = 2 * ceil(n) / 1000 days</code></div><h2 id='erreurs'><span class='sn'>3</span>Type I and Type II Errors</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between a type I error and a type II error? How do you control them?</p></div><table class='lt'><thead><tr><th>Error</th><th>Definition</th><th>Probability</th><th>Control</th></tr></thead><tbody><tr><td><strong>Type I (false positive)</strong></td><td>Declaring an effect that does not exist</td><td>α (significance level)</td><td>Set α = 0.05 before the test</td></tr><tr><td><strong>Type II (false negative)</strong></td><td>Missing a real effect</td><td>β = 1 - power</td><td>Sufficient sample size</td></tr></tbody></table><div class='cl'><p><strong>Analogy:</strong> α = convicting an innocent person. β = letting a guilty person go free. Both are errors, but of different natures. In business A/B testing, β = missing a real improvement.</p></div><h2 id='tests'><span class='sn'>4</span>Choosing the Right Statistical Test</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which statistical test do you use depending on the metric being tested?</p></div><div class='cb'><code>from scipy import stats
 import numpy as np
 
-# Test de proportion (taux de clic, taux de conversion)
+# Proportion test (click-through rate, conversion rate)
 from statsmodels.stats.proportion import proportions_ztest
-count = np.array([150, 180])  # conversions A et B
-nobs = np.array([3000, 3000])  # visiteurs A et B
+count = np.array([150, 180])  # conversions A and B
+nobs = np.array([3000, 3000])  # visitors A and B
 stat, pvalue = proportions_ztest(count, nobs)
 
-# Test t (panier moyen, durée de session)
+# t-test (average basket, session duration)
 stat, pvalue = stats.ttest_ind(group_a['revenue'], group_b['revenue'])
 
-# Test U de Mann-Whitney (non paramétrique, si non-normal)
+# Mann-Whitney U test (non-parametric, if non-normal)
 stat, pvalue = stats.mannwhitneyu(group_a['revenue'], group_b['revenue'])
 
-# Chi-carré (variables catégorielles)
+# Chi-square (categorical variables)
 contingency = np.array([[450, 550], [480, 520]])  # [A: conv/non-conv, B]
 chi2, pvalue, dof, expected = stats.chi2_contingency(contingency)
 
 print(f'p-value: {pvalue:.4f}')
-print(f'Résultat: {"Significatif" if pvalue < 0.05</code></div></div>
+print(f'Result: {"Significant" if pvalue < 0.05 else "Not significant"}')</code></div><h2 id='pieges'><span class='sn'>5</span>Classic A/B Testing Pitfalls</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the most common mistakes in A/B tests?</p></div><ul><li><strong>Peeking problem</strong> — stopping the test as soon as p < 0.05 without waiting for the planned sample size. Multiplies false positives by 3-5x</li><li><strong>Multiple comparisons</strong> — testing 10 metrics and taking the most significant one. Bonferroni correction required: α/n</li><li><strong>Sample ratio mismatch</strong> — if group B has 45% of users instead of 50%, randomization is broken. Check before analyzing</li><li><strong>Novelty effect</strong> — users click more on something new. Wait 2+ weeks</li><li><strong>Network effects</strong> — users from group A and B interact (social networks, sharing platforms). Incorrect experimentation unit</li></ul><h2 id='interpretation'><span class='sn'>6</span>Interpreting Results</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you present the results of an A/B test to non-statistician stakeholders?</p></div><ul><li><strong>Avoid 'statistically significant'</strong> — say instead 'we are 95% confident that the change has a real effect'</li><li><strong>Confidence interval</strong> — 'the true improvement is between +0.5% and +2.3% with 95% confidence' is more useful than a p-value alone</li><li><strong>Practical significance</strong> — an improvement of +0.1% may be statistically significant but too small to justify deployment</li><li><strong>Business decision</strong> — present results in terms of projected revenue: '+1.2% conversion = +€45,000/month'</li></ul><div class='cb'><code>import scipy.stats as stats
+import numpy as np
+
+# Statistical significance test
+def ab_test_significance(control_conversions, control_n, treatment_conversions, treatment_n):
+    p_control = control_conversions / control_n
+    p_treatment = treatment_conversions / treatment_n
+    
+    # Proportion z test
+    p_pool = (control_conversions + treatment_conversions) / (control_n + treatment_n)
+    se = np.sqrt(p_pool * (1-p_pool) * (1/control_n + 1/treatment_n))
+    z_score = (p_treatment - p_control) / se
+    p_value = 2 * (1 - stats.norm.cdf(abs(z_score)))
+    
+    return {
+        'p_value': p_value, 'z_score': z_score,
+        'significant': p_value < 0.05,
+        'relative_lift': (p_treatment - p_control) / p_control
+    }
+
+# Minimum sample size calculation
+def sample_size_needed(baseline_rate, mde=0.1, alpha=0.05, power=0.8):
+    from statsmodels.stats.power import zt_ind_solve_power
+    effect_size = mde * baseline_rate / np.sqrt(baseline_rate * (1-baseline_rate))
+    n = zt_ind_solve_power(effect_size=effect_size, alpha=alpha, power=power)
+    return int(np.ceil(n))</code></div><ul><li><strong>Statistical significance 95%</strong> - p-value < 0.05 does not mean the test is conclusive. A sufficient sample size and a minimum detectable effect defined in advance are also required</li><li><strong>MDE (Minimum Detectable Effect)</strong> - define before the test the minimum effect you want to detect. MDE 1% on a 5% rate = 4 times more samples than an MDE of 2%</li><li><strong>Peeking bias</strong> - stopping the test as soon as p < 0.05 increases the false positive rate. Define the duration in advance and do not change it</li><li><strong>Multi-armed bandit</strong> - alternative to classic A/B tests. Dynamically allocates more traffic to the winning variant. Thompson Sampling or UCB</li><li><strong>Guardrail metrics</strong> - define safety metrics (latency, error rate, revenue per user) that must not degrade even if the primary metric improves</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Level Grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>t-test and z-test, p-value, alpha, randomization</td><td>Calculates sample size before the test, knows how to choose between t-test and z-test</td><td>Stops the test as soon as p < 0.05 (peeking)</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Power, type I/II errors, multiple comparisons, business interpretation</td><td>Calculates power, corrects for multiple comparisons, presents in business terms</td><td>Does not know what statistical power is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ou Data Analyst ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

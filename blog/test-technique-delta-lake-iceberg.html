@@ -94,19 +94,20 @@ CALL catalog.system.expire_snapshots(
 <li><strong>Tendance 2025</strong> — Iceberg gagne du terrain car AWS, Google et Snowflake le supportent nativement. Delta reste dominant si stack Databricks</li>
 </ul><div class='cl'><p><strong>Tendance 2025 :</strong> Delta Lake et Hudi ont annonce la compatibilite avec le format Iceberg. La guerre des formats est en train de se terminer en faveur d Iceberg comme standard de lecture.</p></div><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>Delta Lake ou Iceberg, ACID, Time Travel, MERGE</td><td>Explique pourquoi Parquet seul ne suffit pas, a utilise Delta MERGE</td><td>Ne sait pas ce qu est un table format</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Comparaison Delta/Iceberg/Hudi, choix selon le contexte</td><td>Justifie le choix du table format selon l ecosysteme, connait la partition evolution Iceberg</td><td>Ne connait qu un seul table format</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='probleme'><span class='sn'>1</span>The Limits of Parquet Without a Table Format</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Parquet alone not enough for a production data lake?</p></div><ul><li><strong>No ACID</strong> — two jobs writing at the same time can corrupt data</li><li><strong>No rollback</strong> — if a job fails halfway through, the data is in an inconsistent state</li><li><strong>Fragile schema evolution</strong> — adding a column can break existing readers</li><li><strong>No native upsert</strong> — updating a row in Parquet = rewriting the entire partition</li><li><strong>No time travel</strong> — impossible to query yesterday's data without having saved it separately</li></ul><h2 id='delta'><span class='sn'>2</span>Delta Lake: The Databricks/Microsoft Standard</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 main components of Delta Lake?</p></div><ul><li><strong>Transaction Log</strong> — _delta_log/ file that tracks all operations (commits). Source of truth for ACID and time travel</li><li><strong>OPTIMIZE + ZORDER</strong> — compact small files and co-locate frequently queried data together</li><li><strong>Auto Optimize</strong> — automatic compaction in Databricks. Eliminates small files created by streaming</li><li><strong>Ecosystem</strong> — native Databricks, supported by Spark, PySpark. Increasingly supported outside of Databricks (Trino, Flink)</li></ul>
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='probleme'><span class='sn'>1</span>The Limits of Parquet Without a Table Format</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Parquet alone not enough for a production data lake?</p></div><ul><li><strong>No ACID</strong> — two jobs writing at the same time can corrupt the data</li><li><strong>No rollback</strong> — if a job fails halfway through, the data is in an inconsistent state</li><li><strong>Fragile schema evolution</strong> — adding a column can break existing readers</li><li><strong>No native upsert</strong> — updating a row in Parquet means rewriting the entire partition</li><li><strong>No time travel</strong> — impossible to query yesterday's data without having saved it separately</li></ul><h2 id='delta'><span class='sn'>2</span>Delta Lake: The Databricks/Microsoft Standard</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the 3 main components of Delta Lake?</p></div><ul><li><strong>Transaction Log</strong> — _delta_log/ file that tracks all operations (commits). Source of truth for ACID and time travel</li><li><strong>OPTIMIZE + ZORDER</strong> — compact small files and co-locate frequently queried data together</li><li><strong>Auto Optimize</strong> — automatic compaction in Databricks. Eliminates small files created by streaming</li><li><strong>Ecosystem</strong> — native Databricks, supported by Spark, PySpark. Increasingly supported outside Databricks (Trino, Flink)</li></ul>
 <div class='cb'><code>from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder     .config("spark.jars.packages", "io.delta:delta-core_2.12:2.4.0")     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")     .getOrCreate()
 
-# Créer une table Delta
+# Create a Delta table
 df.write.format("delta").partitionBy("date").save("/data/delta/orders")
 
-# Lire avec Time Travel
+# Read with Time Travel
 df_yesterday = spark.read.format("delta")     .option("versionAsOf", 5)     .load("/data/delta/orders")
 
-# MERGE (upsert) sur Delta
+# MERGE (upsert) on Delta
 delta_table = DeltaTable.forPath(spark, "/data/delta/orders")
 delta_table.alias("t").merge(
     source_df.alias("s"),
@@ -120,8 +121,44 @@ spark.sql("VACUUM delta.`/data/delta/orders` RETAIN 168 HOURS")</code></div>
 <li><strong>ACID transactions</strong> — Delta Lake guarantees atomicity: a job that fails halfway does not leave corrupted data. Impossible with raw Parquet</li>
 <li><strong>Schema enforcement</strong> — Delta rejects writes with an incompatible schema. Schema evolution with <code>mergeSchema=true</code> to add columns</li>
 <li><strong>Small files problem</strong> — OPTIMIZE compacts small Parquet files into large files. ZORDER sorts data for pruning</li>
-</ul><h2 id='iceberg'><span class='sn'>3</span>Apache Iceberg: The Multi-Engine Standard</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In what way is Iceberg superior to Delta Lake for multi-engine environments?</p></div><ul><li><strong>Open and portable</strong> — natively supported by Spark, Trino, Flink, Hive, Dremio, Athena (AWS), BigQuery. No vendor dependency</li><li><strong>Partition evolution</strong> — change the partitioning schema without rewriting data. Delta Lake does not natively allow this</li><li><strong>Hidden partitioning</strong> — users do not need to know the partition structure to write efficient queries</li><li><strong>Catalog</strong> — Iceberg Catalog (REST, Hive, Glue, Nessie). Centralized metadata for governance</li><li><strong>2025 adoption</strong> — AWS, Google Cloud and Azure natively support Iceberg. Strong trend</li></ul>
-<div</div>
+</ul><h2 id='iceberg'><span class='sn'>3</span>Apache Iceberg: The Multi-Engine Standard</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How is Iceberg superior to Delta Lake in multi-engine environments?</p></div><ul><li><strong>Open and portable</strong> — natively supported by Spark, Trino, Flink, Hive, Dremio, Athena (AWS), BigQuery. No vendor dependency</li><li><strong>Partition evolution</strong> — change the partitioning schema without rewriting data. Delta Lake does not support this natively</li><li><strong>Hidden partitioning</strong> — users do not need to know the partition structure to write efficient queries</li><li><strong>Catalog</strong> — Iceberg Catalog (REST, Hive, Glue, Nessie). Centralized metadata for governance</li><li><strong>2025 adoption</strong> — AWS, Google Cloud and Azure support Iceberg natively. Strong trend</li></ul>
+<div class='cb'><code>-- Iceberg with Spark SQL
+CREATE TABLE catalog.db.orders (
+    order_id BIGINT,
+    customer_id BIGINT,
+    amount DOUBLE,
+    order_date DATE
+) USING iceberg
+PARTITIONED BY (days(order_date));
+
+-- Iceberg Time Travel
+SELECT * FROM catalog.db.orders
+FOR SYSTEM_TIME AS OF '2025-01-01 00:00:00';
+
+-- Iceberg Compaction
+CALL catalog.system.rewrite_data_files(
+    table => 'db.orders',
+    strategy => 'sort',
+    sort_order => 'zorder(customer_id, amount)'
+);
+
+-- Expire old snapshots
+CALL catalog.system.expire_snapshots(
+    table => 'db.orders',
+    older_than => TIMESTAMP '2025-01-01 00:00:00'
+);</code></div>
+<ul>
+<li><strong>Open format</strong> — Iceberg is not tied to Databricks. Works with Spark, Trino, Flink, DuckDB, BigQuery Omni</li>
+<li><strong>Row-level deletes</strong> — DELETE FROM ... WHERE works without rewriting the entire partition. Copy-on-write (default) or Merge-on-read (for frequent DELETEs)</li>
+<li><strong>Partition evolution</strong> — change the partition strategy without rewriting data. Impossible with Hive</li>
+<li><strong>Iceberg Catalog</strong> — REST Catalog (Polaris, Nessie), AWS Glue, Hive Metastore. The catalog maintains metadata and snapshots</li>
+</ul><h2 id='hudi'><span class='sn'>4</span>Apache Hudi: The CDC Specialist</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use Hudi over Delta or Iceberg?</p></div><ul><li><strong>Hudi</strong> — optimized for frequent upserts and CDC (Change Data Capture). Two table types: COW (Copy-on-Write) and MOR (Merge-on-Read)</li><li><strong>COW</strong> — rewrite files on every update. Fast reads, slow writes</li><li><strong>MOR</strong> — write updates to delta files, merge at read time. Fast writes, slower reads</li><li><strong>Use cases</strong> — CDC pipelines from transactional databases (Debezium + Hudi), frequently changing data</li></ul><h2 id='vs'><span class='sn'>5</span>Comparison of the Three Formats</h2><table class='lt'><thead><tr><th></th><th>Delta Lake</th><th>Iceberg</th><th>Hudi</th></tr></thead><tbody><tr><td>ACID</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Time Travel</td><td>Yes (delta_log)</td><td>Yes (snapshots)</td><td>Yes (commits)</td></tr><tr><td>Partition Evolution</td><td>Limited</td><td>Full</td><td>Limited</td></tr><tr><td>Multi-engine</td><td>Average (Databricks-centric)</td><td>Excellent</td><td>Good</td></tr><tr><td>Upsert/CDC</td><td>Good (MERGE)</td><td>Good</td><td>Excellent (MOR)</td></tr><tr><td>Cloud ecosystem</td><td>Azure (Fabric), Databricks</td><td>AWS, GCP, Azure</td><td>AWS EMR</td></tr></tbody></table><h2 id='choix'><span class='sn'>6</span>How to Choose in Practice</h2><ul><li><strong>Databricks or Azure stack</strong> → Delta Lake. Native, very well integrated</li><li><strong>Multi-cloud, multi-engine, vendor independence</strong> → Iceberg. Emerging standard</li><li><strong>Intensive CDC from transactional databases</strong> → Hudi. Optimized upserts</li><li><strong>Greenfield 2025</strong> → Iceberg. The ecosystem is converging toward Iceberg as the open standard</li></ul>
+<ul>
+<li><strong>Delta Lake</strong> — de facto standard in the Databricks/Spark ecosystem. Best performance with Photon. Open source since 2019</li>
+<li><strong>Apache Iceberg</strong> — open multi-engine format. Strategic choice to avoid Databricks vendor lock-in. Adopted by Netflix, Apple, AWS</li>
+<li><strong>Apache Hudi</strong> — optimized for frequent upserts (fintech, IoT use cases). Less widespread than Delta/Iceberg in 2025</li>
+<li><strong>2025 trend</strong> — Iceberg is gaining ground as AWS, Google and Snowflake support it natively. Delta remains dominant on Databricks stacks</li>
+</ul><div class='cl'><p><strong>2025 trend:</strong> Delta Lake and Hudi have announced compatibility with the Iceberg format. The format war is coming to an end in favor of Iceberg as the read standard.</p></div><h2 id='nv'><span class='sn'>7</span>Level Grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>Delta Lake or Iceberg, ACID, Time Travel, MERGE</td><td>Explains why Parquet alone is not enough, has used Delta MERGE</td><td>Does not know what a table format is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Delta/Iceberg/Hudi comparison, choice based on context</td><td>Justifies table format choice based on ecosystem, knows Iceberg partition evolution</td><td>Only knows one table format</td></tr></tbody></table>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer architecte lakehouse ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>

@@ -157,7 +157,8 @@ FROM fct_orders GROUP BY region;</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>JOINs, GROUP BY, sous-requetes, CTEs simples</td><td>Ecrit des CTEs lisibles, sait quand utiliser HAVING vs WHERE</td><td>Confond WHERE et HAVING, ne sait pas ce qu est une CTE</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Window functions, QUALIFY, pivots, agregations conditionnelles</td><td>Ecrit une analyse de cohorte avec ROW_NUMBER, utilise LAG/LEAD</td><td>Ne connait pas les window functions, ne sait pas faire un PIVOT</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CTEs recursives, EXPLAIN ANALYZE, Materialized Views, JSON</td><td>A debug une requete lente avec EXPLAIN, a ecrit une CTE recursive</td><td>Ne sait pas lire un plan EXPLAIN, n a jamais utilise de Materialized View</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>In Senior SQL interviews, we rarely test simple SELECT statements. We test the ability to solve complex analytical problems: cohorts, hierarchies, sessions, rolling rankings. Here are the patterns we actually evaluate.</p><h2 id='window'><span class='sn'>1</span>Window functions: advanced patterns</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between ROW_NUMBER(), RANK() and DENSE_RANK()? Give a case where each one is the right choice.</p></div><div class='cb'><code>-- Analyse de cohortes : retention par semaine
+<div id="body-en" style="display:none"><div class="ab">
+<p>In Senior SQL interviews, simple SELECT is rarely tested. What's tested is the ability to solve complex analytical problems: cohorts, hierarchies, sessions, rolling rankings. Here are the patterns that are really evaluated.</p><h2 id='window'><span class='sn'>1</span>Window functions: advanced patterns</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between ROW_NUMBER(), RANK() and DENSE_RANK()? Give a case where each one is the right choice.</p></div><div class='cb'><code>-- Cohort analysis: retention by week
 WITH first_purchase AS (
     SELECT user_id,
            DATE_TRUNC('week', MIN(order_date)) AS cohort_week
@@ -180,8 +181,8 @@ SELECT
     FIRST_VALUE(users) OVER (PARTITION BY cohort_week ORDER BY activity_week) AS cohort_size,
     users * 100.0 / FIRST_VALUE(users) OVER (PARTITION BY cohort_week ORDER BY activity_week) AS retention_pct
 FROM weekly_activity
-ORDER BY cohort_week, week_number;</code></div><ul><li><strong>FRAME CLAUSE</strong> — ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW for cumulative totals, ROWS BETWEEN 6 PRECEDING AND CURRENT ROW for 7-day rolling averages</li><li><strong>LAG/LEAD</strong> — access previous/next rows within a partition. Essential for growth calculations</li><li><strong>FIRST_VALUE/LAST_VALUE</strong> — first/last value of a partition. Useful for cohorts</li></ul><h2 id='pivot'><span class='sn'>2</span>PIVOT and conditional aggregations</h2><div class='cb'><code>-- PIVOT dynamique avec agregation conditionnelle
--- Ventes par trimestre en colonnes
+ORDER BY cohort_week, week_number;</code></div><ul><li><strong>FRAME CLAUSE</strong> — ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW for cumulative totals, ROWS BETWEEN 6 PRECEDING AND CURRENT ROW for 7-day rolling averages</li><li><strong>LAG/LEAD</strong> — access previous/next rows within a partition. Essential for growth calculations</li><li><strong>FIRST_VALUE/LAST_VALUE</strong> — first/last value of a partition. Useful for cohorts</li></ul><h2 id='pivot'><span class='sn'>2</span>PIVOT and conditional aggregations</h2><div class='cb'><code>-- Dynamic PIVOT with conditional aggregation
+-- Sales by quarter as columns
 SELECT
     product_category,
     SUM(CASE WHEN QUARTER(order_date) = 1 THEN amount ELSE 0 END) AS Q1,
@@ -193,33 +194,98 @@ FROM orders
 GROUP BY product_category
 ORDER BY total DESC;
 
--- QUALIFY (BigQuery, Snowflake) : filtrer les window functions
+-- QUALIFY (BigQuery, Snowflake) : filter window functions
 SELECT *
 FROM orders
-QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) = 1;</code></div><h2 id='cte'><span class='sn'>3</span>Recursive CTEs: hierarchies and graphs</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query an organizational hierarchy with SQL? Write the query to retrieve all subordinates of a manager.</p></div><div class='cb'><code>-- Traverser une hierarchie avec une CTE recursive
+QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) = 1;</code></div><h2 id='cte'><span class='sn'>3</span>Recursive CTEs: hierarchies and graphs</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query an organizational hierarchy with SQL? Write the query to retrieve all subordinates of a manager.</p></div><div class='cb'><code>-- Traverse a hierarchy with a recursive CTE
 WITH RECURSIVE org_hierarchy AS (
-    -- Cas de base : le manager racine
+    -- Base case: the root manager
     SELECT employee_id, name, manager_id, 0 AS depth,
            CAST(name AS VARCHAR(500)) AS path
     FROM employees
-    WHERE manager_id IS NULL  -- PDG
+    WHERE manager_id IS NULL  -- CEO
     
     UNION ALL
     
-    -- Recursion : les subordonnes
+    -- Recursion: the subordinates
     SELECT e.employee_id, e.name, e.manager_id,
            oh.depth + 1,
            oh.path || ' > ' || e.name
     FROM employees e
     INNER JOIN org_hierarchy oh ON e.manager_id = oh.employee_id
-    WHERE oh.depth < 10  -- eviter les cycles infinis
+    WHERE oh.depth < 10  -- avoid infinite loops
 )
 SELECT * FROM org_hierarchy
-WHERE depth <= 3  -- 3 niveaux sous le PDG
-ORDER BY path;</code></div><h2 id='perf'><span class='sn'>4</span>Optimization: EXPLAIN ANALYZE and strategies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Your query takes 45 seconds. How do you diagnose the problem and where do you start?</p></div><div class='cb'><code>-- PostgreSQL : plan d execution
+WHERE depth <= 3  -- 3 levels below the CEO
+ORDER BY path;</code></div><h2 id='perf'><span class='sn'>4</span>Optimization: EXPLAIN ANALYZE and strategies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Your query takes 45 seconds. How do you diagnose the problem and where do you start?</p></div><div class='cb'><code>-- PostgreSQL: execution plan
 EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
 SELECT c.name, COUNT(o.id), SUM(o.amount)
-FROM customer</code></div></div>
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE o.status = 'completed'
+  AND o.created_at > '2024-01-01'
+GROUP BY c.name;
+
+-- What to look for in the plan:
+-- Seq Scan on large table -> missing index
+-- Hash Join with large hash table -> too much memory
+-- Sort with many rows -> index on ORDER BY</code></div><ul><li><strong>Index on WHERE and JOIN</strong> — first reflex: are the filter columns indexed?</li><li><strong>Statistics</strong> — ANALYZE to update planner statistics</li><li><strong>Partitioning</strong> — on large tables with frequent time-based filters</li><li><strong>Materialized View</strong> — for complex queries run frequently on data that changes infrequently</li></ul><h2 id='materialized'><span class='sn'>5</span>Materialized Views and incremental refresh</h2><div class='cb'><code>-- Materialized View for costly aggregations
+CREATE MATERIALIZED VIEW mv_daily_revenue AS
+SELECT
+    DATE_TRUNC('day', order_date) AS day,
+    product_category,
+    SUM(amount) AS revenue,
+    COUNT(*) AS nb_orders
+FROM orders
+GROUP BY 1, 2;
+
+CREATE INDEX ON mv_daily_revenue (day);
+
+-- Periodic refresh (e.g.: every night via cron)
+REFRESH MATERIALIZED VIEW CONCURRENTLY mv_daily_revenue;</code></div><h2 id='json'><span class='sn'>6</span>JSON manipulation: events and flexible schemas</h2><div class='cb'><code>-- PostgreSQL / BigQuery: extract JSON fields
+SELECT
+    event_type,
+    event_properties->>'product_id' AS product_id,
+    (event_properties->>'price')::FLOAT AS price,
+    event_properties->'tags' AS tags_array
+FROM events
+WHERE event_properties->>'event_name' = 'purchase';
+
+-- Explode a JSON array into rows
+SELECT user_id, item
+FROM events,
+JSONB_ARRAY_ELEMENTS_TEXT(event_properties->'items') AS item
+WHERE event_type = 'cart_add';</code></div><div class='cb'><code>-- Monthly retention cohort analysis
+WITH cohorts AS (
+    SELECT customer_id, DATE_TRUNC('month', first_order_date) AS cohort_month
+    FROM dim_customers
+),
+retention AS (
+    SELECT c.cohort_month,
+        DATEDIFF('month', c.cohort_month, DATE_TRUNC('month', o.order_date)) AS month_n,
+        COUNT(DISTINCT o.customer_id) AS active_customers
+    FROM cohorts c JOIN fct_orders o ON c.customer_id = o.customer_id
+    GROUP BY 1, 2
+),
+sizes AS (SELECT cohort_month, COUNT(*) AS cohort_size FROM cohorts GROUP BY 1)
+SELECT r.cohort_month, r.month_n,
+    ROUND(r.active_customers * 100.0 / s.cohort_size, 1) AS retention_pct
+FROM retention r JOIN sizes s USING (cohort_month)
+ORDER BY cohort_month, month_n;
+
+-- Median and percentiles
+SELECT region,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY amount) AS median,
+    PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY amount) AS p90
+FROM fct_orders GROUP BY region;</code></div>
+<ul>
+<li><strong>Cohort analysis</strong> - fundamental technique for measuring retention by acquisition period. Double CTE: cohorts (first purchase) + retention (activity by month)</li>
+<li><strong>QUALIFY</strong> - filter on window functions (Snowflake, BigQuery, DuckDB). Avoids an extra CTE after RANK() or ROW_NUMBER()</li>
+<li><strong>LATERAL JOIN</strong> - join with a table-valued function. Example: explode a JSON array column by column</li>
+<li><strong>Recursive CTEs</strong> - traverse hierarchical structures (org charts, nested categories) in pure SQL</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>JOINs, GROUP BY, subqueries, simple CTEs</td><td>Writes readable CTEs, knows when to use HAVING vs WHERE</td><td>Confuses WHERE and HAVING, doesn't know what a CTE is</td></tr><tr><td><span class='bd bm'>Mid-level</span></td><td>Window functions, QUALIFY, pivots, conditional aggregations</td><td>Writes a cohort analysis with ROW_NUMBER, uses LAG/LEAD</td><td>Doesn't know window functions, can't do a PIVOT</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Recursive CTEs, EXPLAIN ANALYZE, Materialized Views, JSON</td><td>Has debugged a slow query with EXPLAIN, has written a recursive CTE</td><td>Can't read an EXPLAIN plan, has never used a Materialized View</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

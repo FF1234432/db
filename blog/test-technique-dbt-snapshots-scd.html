@@ -210,18 +210,18 @@ ORDER BY dbt_valid_from;</code></div>
 <ul>
 <li><strong>SCD Type 1</strong> — overwrite. The current value overwrites the old one. No history. Simple, ideal for error corrections</li>
 <li><strong>SCD Type 2</strong> — new row for each change. Preserves full history with valid_from/valid_to/is_current columns. Most common in data warehousing</li>
-<li><strong>SCD Type 3</strong> — additional column for the previous value. Limitation: only preserves N versions. Rare in practice</li>
+<li><strong>SCD Type 3</strong> — additional column for the previous value. Limitation: only keeps N versions. Rare in practice</li>
 <li><strong>When SCD2</strong> — behavioral analysis over time (how the customer segment evolved), correct attribution (price at time of purchase), regulatory compliance</li>
-<li><strong>SCD2 Cost</strong> — joins with an SCD2 table require filtering on is_current=true or on the date range. Adds complexity to queries</li>
+<li><strong>SCD2 cost</strong> — joins with an SCD2 table require filtering on is_current=true or on the date range. Adds complexity to queries</li>
 </ul>
 <table class='lt'><thead><tr><th>Type</th><th>History</th><th>Complexity</th><th>Use case</th></tr></thead>
 <tbody>
 <tr><td>SCD1</td><td>None</td><td>Simple</td><td>Reference data, corrections</td></tr>
-<tr><td>SCD2</td><td>Complete</td><td>High</td><td>Customer, product, geography dimensions</td></tr>
+<tr><td>SCD2</td><td>Full</td><td>High</td><td>Customer, product, geography dimensions</td></tr>
 <tr><td>SCD3</td><td>Partial (N versions)</td><td>Medium</td><td>Rare</td></tr>
 </tbody></table>
 
-<h2 id='snapshot'><span class='sn'>2</span>dbt Snapshots: automatic SCD2</h2>
+<h2 id='snapshot'><span class='sn'>2</span>dbt snapshots: automatic SCD2</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is a dbt snapshot? How do you configure it?</p></div>
 <div class='cb'><code>-- snapshots/customers_snapshot.sql
 {% snapshot customers_snapshot %}
@@ -251,7 +251,7 @@ FROM {{ source('crm', 'customers') }}
 -- dbt_scd_id     : snapshot primary key (hash)
 -- dbt_valid_from : validity start date
 -- dbt_valid_to   : end date (NULL = current record)
--- dbt_updated_at : timestamp of last update</code></div>
+-- dbt_updated_at : last update timestamp</code></div>
 <ul>
 <li><strong>dbt snapshot run</strong> — creates the snapshot if it doesn't exist, otherwise detects changes and inserts new rows</li>
 <li><strong>target_schema</strong> — store snapshots in a dedicated schema, separate from marts models</li>
@@ -286,11 +286,94 @@ FROM {{ source('crm', 'customers') }}
 <li><strong>Timestamp pitfall</strong> — if the source does not update updated_at correctly, changes will be missed</li>
 </ul>
 
-<h2 id='delete'><span class='sn'>4</span>Managing deletions in snapshots</h2>
+<h2 id='delete'><span class='sn'>4</span>Handling deletions in snapshots</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What happens when a row is deleted in the source? How do you handle it?</p></div>
 <div class='cb'><code>-- With invalidate_hard_deletes=True
 -- dbt marks deleted records with dbt_valid_to = current_timestamp
--- The dbt_is_deleted column is automatically added</code></div></div>
+-- The dbt_is_deleted column is added automatically
+
+-- Query to analyze deletions
+SELECT
+    customer_id,
+    email,
+    dbt_valid_from,
+    dbt_valid_to,
+    CASE WHEN dbt_valid_to IS NULL THEN 'active' ELSE 'inactive/deleted' END AS status
+FROM {{ ref('customers_snapshot') }}
+WHERE customer_id = 12345
+ORDER BY dbt_valid_from;</code></div>
+<ul>
+<li><strong>invalidate_hard_deletes=True</strong> — recommended. dbt detects deletions and closes the current row</li>
+<li><strong>Without this option</strong> — deleted records remain open (dbt_valid_to = NULL) indefinitely</li>
+<li><strong>Soft deletes</strong> — if the source has an is_deleted column, filter in the snapshot query: <code>WHERE is_deleted = false</code></li>
+</ul>
+
+<h2 id='consume'><span class='sn'>5</span>Consuming snapshots in dbt models</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you query a snapshot to get the current state vs the historical state?</p></div>
+<div class='cb'><code>-- CURRENT state: records where dbt_valid_to is NULL
+-- models/marts/dim_customers.sql
+SELECT
+    customer_id,
+    email,
+    plan,
+    segment,
+    dbt_valid_from AS snapshot_date
+FROM {{ ref('customers_snapshot') }}
+WHERE dbt_valid_to IS NULL  -- active records only
+
+-- HISTORICAL state: what segment did this customer have at the time of their order?
+-- Useful for correct attribution
+SELECT
+    o.order_id,
+    o.customer_id,
+    o.amount,
+    o.order_date,
+    c.segment AS segment_at_order_time  -- customer segment AT THE TIME of the order
+FROM {{ ref('fct_orders') }} o
+JOIN {{ ref('customers_snapshot') }} c
+    ON o.customer_id = c.customer_id
+    AND o.order_date BETWEEN c.dbt_valid_from AND COALESCE(c.dbt_valid_to, CURRENT_DATE)</code></div>
+
+<ul>
+<li><strong>SCD Type 2 in practice</strong> - the complexity lies in downstream joins. Always join with the temporal condition: order_date BETWEEN dbt_valid_from AND COALESCE(dbt_valid_to, CURRENT_DATE)</li>
+<li><strong>Timestamp pitfall</strong> - if the source does not update updated_at correctly, changes will be missed. Verify the reliability of the column before choosing the timestamp strategy</li>
+<li><strong>invalidate_hard_deletes</strong> - recommended. dbt detects deletions and closes the current row with dbt_valid_to = current_timestamp</li>
+<li><strong>Performance</strong> - snapshots on source tables of several million rows can be slow with the check strategy. Prefer timestamp when possible</li>
+<li><strong>Snapshot testing</strong> - test that dbt_valid_to IS NULL for active records, dbt_valid_from < dbt_valid_to for historical ones, no overlapping periods</li>
+</ul>
+<div class='cb'><code>-- Consuming a dbt snapshot correctly
+-- CURRENT state: records where dbt_valid_to is NULL
+SELECT customer_id, email, plan, segment, dbt_valid_from AS since
+FROM {{ ref('customers_snapshot') }}
+WHERE dbt_valid_to IS NULL;
+
+-- HISTORICAL state: what segment did this customer have at the time of their order?
+-- Essential for correct attribution
+SELECT
+    o.order_id, o.amount, o.order_date,
+    c.segment AS segment_at_order_time
+FROM {{ ref('fct_orders') }} o
+JOIN {{ ref('customers_snapshot') }} c
+    ON o.customer_id = c.customer_id
+    AND o.order_date BETWEEN c.dbt_valid_from AND COALESCE(c.dbt_valid_to, CURRENT_DATE);
+
+-- Analyze a customer's history
+SELECT customer_id, plan, segment, dbt_valid_from, dbt_valid_to
+FROM {{ ref('customers_snapshot') }}
+WHERE customer_id = 'CUST-42'
+ORDER BY dbt_valid_from;</code></div>
+<ul>
+<li><strong>Temporal join</strong> - join a fact table with an SCD2 using the condition: event_date BETWEEN dbt_valid_from AND COALESCE(dbt_valid_to, CURRENT_DATE)</li>
+<li><strong>Snapshot performance</strong> - snapshots on source tables of several million rows can be slow with the check strategy. Prefer timestamp when available</li>
+<li><strong>Snapshot testing</strong> - test that dbt_valid_to IS NULL for active records, that dbt_valid_from is earlier than dbt_valid_to for historical ones</li>
+</ul>
+<h2 id='nv'><span class='sn'>6</span>Level grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Mid-level</span></td><td>SCD1 vs SCD2, dbt snapshot configuration, timestamp strategy</td><td>Explains the 3 SCD types, has configured a snapshot with timestamp strategy, knows how to query the current state</td><td>Does not know what an SCD2 is, has never used dbt snapshots</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Deletion handling, historical joins, check vs timestamp, performance</td><td>Handles hard deletes, performs temporal joins for historical attribution, knows performance limitations</td><td>Does not know how to join a fact table with an SCD2 at the right point in time</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

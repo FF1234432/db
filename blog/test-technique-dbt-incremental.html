@@ -114,8 +114,9 @@ FROM {{ source('raw', 'orders') }}
 -- SELECT MAX(updated_at) FROM {{ this }} -- doit etre proche de NOW()</code></div><ul><li><strong>Safety window</strong> - toujours inclure un overlap (1-2h ou 1j) dans le filtre incremental pour capturer les donnees en retard de la source. Ne pas filtrer exactement sur MAX(updated_at)</li><li><strong>Strategie merge vs append</strong> - merge : upsert, necessite une unique_key. append : ajoute uniquement les nouvelles lignes (plus rapide mais risque de doublons si rerun). delete+insert : supprime la partition puis reinsere</li><li><strong>on_schema_change</strong> - sync_all_columns ajoute les nouvelles colonnes automatiquement. fail (defaut) : bloquer si le schema change. Choisir selon la maturite de la source</li><li><strong>Full refresh force</strong> - dbt run --full-refresh recrée la table completement. A utiliser apres un changement de logique majeur ou pour corriger des donnees historiques</li><li><strong>Partition pruning avec incremental</strong> - sur BigQuery/Snowflake, filtrer sur la colonne de partition dans la condition incrementale. Evite de scanner toute la table source</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Stratégie append et merge, is_incremental(), unique_key</td><td>A configuré un modèle merge avec unique_key, comprend is_incremental()</td><td>Ne sait pas ce qu est un modèle incrémental dbt</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Late-arriving data, full refresh strategy, optimisation warehouse</td><td>Gère les late-arriving data avec fenêtre glissante, bloque le full refresh sur les grandes tables</td><td>Ne sait pas ce qu est le late-arriving data</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>Why incremental models</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problem do dbt incremental models solve?</p></div><ul><li><strong>Problem</strong> — fully rebuilding a 1 billion row table on every dbt run is expensive in time and compute</li><li><strong>Solution</strong> — only process new rows or modified rows since the last run</li><li><strong>Example</strong> — fct_events table: 500M historical rows. Every day, 1M new rows arrive. Processing 1M instead of 501M = 500x less compute</li><li><strong>Risk</strong> — poorly configured, an incremental model can miss rows or create duplicates</li></ul><h2 id='strategies'><span class='sn'>2</span>The 4 incremental strategies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the different dbt strategies for incremental models?</p></div><div class='cb'><code>-- Strategy 1 : append (par défaut)
--- Ajoute les nouvelles lignes, ne modifie pas les existantes
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Why incremental models</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problem do dbt incremental models solve?</p></div><ul><li><strong>Problem</strong> — fully rebuilding a 1 billion row table on every dbt run is expensive in time and compute</li><li><strong>Solution</strong> — only process new rows or modified rows since the last run</li><li><strong>Example</strong> — fct_events table: 500M historical rows. Every day, 1M new rows arrive. Processing 1M instead of 501M = 500x less compute</li><li><strong>Risk</strong> — if misconfigured, an incremental model can miss rows or create duplicates</li></ul><h2 id='strategies'><span class='sn'>2</span>The 4 incremental strategies</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the different dbt strategies for incremental models?</p></div><div class='cb'><code>-- Strategy 1 : append (default)
+-- Adds new rows, does not modify existing ones
 {{ config(materialized='incremental') }}
 SELECT *
 FROM {{ ref('stg_events') }}
@@ -124,7 +125,7 @@ WHERE event_date > (SELECT MAX(event_date) FROM {{ this }})
 {% endif %}
 
 -- Strategy 2 : merge (upsert)
--- INSERT de nouvelles lignes + UPDATE des existantes
+-- INSERT new rows + UPDATE existing ones
 {{ config(
     materialized='incremental',
     unique_key='order_id',
@@ -136,15 +137,15 @@ WHERE updated_at > (SELECT MAX(updated_at) FROM {{ this }})
 {% endif %}
 
 -- Strategy 3 : delete+insert
--- Supprime les lignes de la fenetre et reinsere
+-- Deletes rows in the window and reinserts them
 {{ config(
     materialized='incremental',
     unique_key=['order_id', 'date'],
     incremental_strategy='delete+insert'
-) }}</code></div><h2 id='merge'><span class='sn'>3</span>Merge strategy: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use merge rather than append? What is the risk if unique_key is poorly defined?</p></div><ul><li><strong>Append</strong> — for immutable data (events, logs). A row once created never changes</li><li><strong>Merge</strong> — for data that changes (order status, customer profile). Requires a unique_key</li><li><strong>Incorrect unique_key risk</strong> — if multiple rows share the same key, the merge keeps only one arbitrarily. Silent data loss</li><li><strong>Composite key</strong> — often required: unique_key=['order_id', 'date'] if data is partitioned by date</li></ul><h2 id='late'><span class='sn'>4</span>Handling late-arriving data</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is late-arriving data? How do you handle it in an incremental model?</p></div><div class='cb'><code>-- Problème : des événements du passé arrivent en retard
--- Ex : un mobile en mode offline synchronise des events datant de 3 jours
+) }}</code></div><h2 id='merge'><span class='sn'>3</span>Merge strategy: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use merge instead of append? What is the risk if unique_key is incorrectly defined?</p></div><ul><li><strong>Append</strong> — for immutable data (events, logs). A row once created never changes</li><li><strong>Merge</strong> — for data that changes (order status, customer profile). Requires a unique_key</li><li><strong>Incorrect unique_key risk</strong> — if multiple rows share the same key, the merge keeps only one arbitrarily. Silent data loss</li><li><strong>Composite key</strong> — often required: unique_key=['order_id', 'date'] if data is partitioned by date</li></ul><h2 id='late'><span class='sn'>4</span>Handling late-arriving data</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is late-arriving data? How do you handle it in an incremental model?</p></div><div class='cb'><code>-- Problem: past events arrive late
+-- Ex: a mobile device in offline mode syncs events from 3 days ago
 
--- Solution : reprocesser une fenetre glissante de N jours
+-- Solution: reprocess a sliding window of N days
 {{ config(
     materialized='incremental',
     unique_key='event_id'
@@ -153,15 +154,51 @@ WHERE updated_at > (SELECT MAX(updated_at) FROM {{ this }})
 SELECT *
 FROM {{ ref('stg_events') }}
 {% if is_incremental() %}
--- Reprocesser les 3 derniers jours pour capturer les retardataires
+-- Reprocess the last 3 days to capture late arrivals
 WHERE event_date >= (
     SELECT DATEADD('day', -3, MAX(event_date))
     FROM {{ this }}
 )
-{% endif %}</code></div><ul><li><strong>Late-arriving data</strong> — data that arrives in the pipeline after the expected date</li><li><strong>Sliding window</strong> — reprocess the last N days rather than only since the MAX. More expensive but correct</li></ul><h2 id='full'><span class='sn'>5</span>Full refresh: when to use it</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases do you force a full refresh on an incremental model?</p></div><div class='cb'><code># Forcer un full refresh manuellement
+{% endif %}</code></div><ul><li><strong>Late-arriving data</strong> — data that arrives in the pipeline after the expected date</li><li><strong>Sliding window</strong> — reprocess the last N days rather than only since the MAX. More costly but correct</li></ul><h2 id='full'><span class='sn'>5</span>Full refresh: when to use it</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases do you force a full refresh on an incremental model?</p></div><div class='cb'><code># Force a full refresh manually
 dbt run --full-refresh --select fct_orders
 
-# Cas où le full </code></div></div>
+# Cases where full refresh is necessary:
+# 1. Logic change that affects historical data
+# 2. Adding a new calculated column
+# 3. Bug discovered in past data
+# 4. Strategy migration (append -> merge)
+
+# Configuration: block full refresh in production
+{{ config(
+    materialized='incremental',
+    full_refresh=false  # blocks dbt run --full-refresh on this table
+) }}</code></div><ul><li><strong>Block full refresh</strong> — on very large tables (TB+), an accidental full refresh can be very costly</li><li><strong>Migration process</strong> — for historical changes, use a controlled backfill in date-range batches</li></ul><h2 id='snowflake'><span class='sn'>6</span>Incremental optimization on Snowflake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you optimize the performance of a dbt incremental model on Snowflake?</p></div><div class='cb'><code>{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge',
+    cluster_by=['order_date', 'region'],  # clustering on Snowflake
+    on_schema_change='append_new_columns',
+    snowflake_warehouse='TRANSFORM_WH_S',
+    merge_exclude_columns=['created_at']  # do not update created_at
+) }}</code></div><ul><li><strong>cluster_by</strong> — pre-sort data so the merge is faster on large tables</li><li><strong>merge_exclude_columns</strong> — avoid overwriting columns that should not change (created_at, inserted_at)</li><li><strong>on_schema_change</strong> — append_new_columns adds new columns without a full refresh</li></ul><div class='cb'><code>-- dbt incremental: strategies
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge',  -- merge, append, delete+insert, insert_overwrite
+    on_schema_change='sync_all_columns'  -- handle schema changes
+) }}
+
+SELECT order_id, customer_id, amount, status, updated_at
+FROM {{ source('raw', 'orders') }}
+{% if is_incremental() %}
+    WHERE updated_at > (SELECT MAX(updated_at) FROM {{ this }})
+    -- For Snowflake: WHERE updated_at > (SELECT DATEADD('day',-1,MAX(updated_at)) FROM {{ this }})
+    -- Safety window of 1 day for replication delays
+{% endif %}
+
+-- Check freshness after a run
+-- SELECT MAX(updated_at) FROM {{ this }} -- should be close to NOW()</code></div><ul><li><strong>Safety window</strong> — always include an overlap (1-2h or 1 day) in the incremental filter to capture data delayed from the source. Do not filter exactly on MAX(updated_at)</li><li><strong>Merge vs append strategy</strong> — merge: upsert, requires a unique_key. append: only adds new rows (faster but risk of duplicates on rerun). delete+insert: deletes the partition then reinserts</li><li><strong>on_schema_change</strong> — sync_all_columns automatically adds new columns. fail (default): blocks if the schema changes. Choose based on source maturity</li><li><strong>Forced full refresh</strong> — dbt run --full-refresh fully recreates the table. Use after a major logic change or to fix historical data</li><li><strong>Partition pruning with incremental</strong> — on BigQuery/Snowflake, filter on the partition column in the incremental condition. Avoids scanning the entire source table</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>Append and merge strategy, is_incremental(), unique_key</td><td>Has configured a merge model with unique_key, understands is_incremental()</td><td>Does not know what a dbt incremental model is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Late-arriving data, full refresh strategy, warehouse optimization</td><td>Handles late-arriving data with a sliding window, blocks full refresh on large tables</td><td>Does not know what late-arriving data is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

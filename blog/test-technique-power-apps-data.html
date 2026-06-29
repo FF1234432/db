@@ -187,7 +187,8 @@ If(
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Power Apps : ce qu'on évalue pour un profil data" data-en="Power Apps technical interview: what we assess for a data profile">Power Apps technical interview: what we assess for a data profile</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Power Apps : ce qu'on évalue pour un profil data" data-en="Power Apps technical interview: what we assess for a data profile">Power Apps technical interview: what we assess for a data profile</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Test technique Power Apps : ce qu'on évalue pour un profil data" data-en="Power Apps technical interview: what we assess for a data profile">Power Apps technical interview: what we assess for a data profile</h1>
 <p class="ai" data-fr="Power Apps est devenu un outil clé pour les Analytics Engineers qui travaillent dans un écosystème Microsoft. On ne teste pas la maîtrise du drag-and-drop — on évalue la capacité à architecturer des solutions robustes connectées à l'écosystème data." data-en="Power Apps has become a key tool for Analytics Engineers working in a Microsoft ecosystem. We don't test drag-and-drop skills — we assess the ability to architect robust solutions connected to the data ecosystem.">Power Apps has become a key tool for Analytics Engineers working in a Microsoft ecosystem. We don't test drag-and-drop skills — we assess the ability to architect robust solutions connected to the data ecosystem.</p>
@@ -198,24 +199,85 @@ If(
 <li><a href="#automate">Power Automate</a></li>
 <li><a href="#perf">Limits and performance</a></li>
 <li><a href="#gouv">ALM governance</a></li>
-<li><a href="#nv">Level-based grid</a></li></ol></div>
+<li><a href="#nv">Level grid</a></li></ol></div>
 <div class="ab" id="ab">
-<p>Power Apps is becoming the go-to tool in Microsoft data teams to replace scattered Excel files, collect data in a structured way, and connect business processes to data pipelines. In interviews, we look for profiles who can architect — not just click.</p>
+<p>Power Apps is establishing itself in Microsoft data teams to replace scattered Excel files, collect data in a structured way, and connect business processes to data pipelines. In interviews, we look for profiles capable of architecting — not just clicking.</p>
 
 <h2 id="arch"><span class="sn">1</span>Power Apps solution architecture</h2>
 <div class="sq"><div class="sl">Key question</div><p>Describe the architecture of a Power Apps application you built in production. What data sources did you use and why?</p></div>
-<p>A complete Power Apps application combines several components from the Power Platform:</p>
+<p>A complete Power Apps application combines several components of the Power Platform:</p>
 <ul>
-<li><strong>Canvas App</strong> — screen-based user interface, business logic in Power Fx, navigation between screens</li>
-<li><strong>Data sources</strong> — SharePoint Lists (simple, no additional licence), Dataverse (recommended for robustness), SQL Server, Excel, REST APIs</li>
+<li><strong>Canvas App</strong> — on-screen user interface, business logic in Power Fx, navigation between screens</li>
+<li><strong>Data sources</strong> — SharePoint Lists (simple, no additional license), Dataverse (recommended for robustness), SQL Server, Excel, REST API</li>
 <li><strong>Power Automate</strong> — workflows triggered from the app (email sending, Teams notifications, validation)</li>
-<li><strong>Embedded Power BI</strong> — Power BI visuals embedded within Power Apps screens</li>
+<li><strong>Embedded Power BI</strong> — Power BI visuals embedded in Power Apps screens</li>
 <li><strong>Environments</strong> — separate DEV, TEST, PROD with solution management (ALM)</li>
 </ul>
-<div class="cl"><p><strong>Typical data use case:</strong> replacing multi-country Excel data collection with a centralised application featuring input validation, automatic notifications via Power Automate, and Power BI reporting connected to Dataverse.</p></div>
+<div class="cl"><p><strong>Typical data use case:</strong> replacing multi-country Excel collection with a centralized application featuring input validation, automatic notifications via Power Automate, and Power BI reporting connected to Dataverse.</p></div>
 
 <h2 id="pfx"><span class="sn">2</span>Power Fx: application logic</h2>
-<div class="sq"><div class="sl">Key question</div><p>What is the difference between <code>Patch()</code> and <code>SubmitForm()</code>? In</div>
+<div class="sq"><div class="sl">Key question</div><p>What is the difference between Patch() and SubmitForm()? In which case do you use one or the other?</p></div>
+<div class="cb"><code>// Patch: direct write to a data source
+Patch(
+    MySharePointList,
+    Defaults(MySharePointList),
+    {
+        Title: TextInput1.Text,
+        Status: "In progress",
+        CreationDate: Now()
+    }
+)
+
+// SubmitForm: submission via a form (Form control)
+// Simpler, automatically handles New/Edit modes
+SubmitForm(MyForm)
+
+// Filter and search
+Filter(
+    MyCollection,
+    Status = "Active" && Country = Dropdown1.Selected.Value
+)
+
+// Conditional navigation
+If(
+    User().Email = AdminEmail,
+    Navigate(AdminScreen, ScreenTransition.Fade),
+    Navigate(UserScreen, ScreenTransition.Fade)
+)</code></div>
+<ul>
+<li><strong>Patch()</strong> — direct write, more flexible but more verbose. Ideal for partial updates</li>
+<li><strong>SubmitForm()</strong> — linked to a Form control, handles New/Edit modes automatically. Simpler for standard forms</li>
+<li><strong>Collect() / ClearCollect()</strong> — local in-memory collections for temporary data</li>
+<li><strong>Delegation</strong> — limits of 500-2000 rows on non-delegable functions: Filter(), Search() with certain connectors</li>
+</ul>
+
+<h2 id="data"><span class="sn">3</span>Data sources: SharePoint vs Dataverse</h2>
+<div class="sq"><div class="sl">Key question</div><p>When do you choose Dataverse over SharePoint Lists as a data source?</p></div>
+<table class="lt"><thead><tr><th></th><th>SharePoint Lists</th><th>Dataverse</th></tr></thead><tbody>
+<tr><td><strong>Licenses</strong></td><td>Included in Microsoft 365</td><td>Requires Power Apps Premium</td></tr>
+<tr><td><strong>Volume</strong></td><td>Limited (~5000 performant rows)</td><td>Designed for large volumes</td></tr>
+<tr><td><strong>Modeling</strong></td><td>Flat tables only</td><td>Relationships, foreign keys, complex types</td></tr>
+<tr><td><strong>Security</strong></td><td>Simple SharePoint permissions</td><td>Granular Row-Level Security (business RLS)</td></tr>
+<tr><td><strong>Versioning</strong></td><td>Limited</td><td>Native change history</td></tr>
+<tr><td><strong>Environments</strong></td><td>Difficult to promote DEV→PROD</td><td>Native in ALM solution management</td></tr>
+</tbody></table>
+
+<h2 id="automate"><span class="sn">4</span>Power Automate: flows linked to data apps</h2>
+<div class="sq"><div class="sl">Key question</div><p>How would you automatically trigger a data pipeline from a user validation in Power Apps?</p></div>
+<ul>
+<li><strong>Instant flows (button)</strong> — manually triggered from Power Apps via a button</li>
+<li><strong>Automated flows</strong> — triggered by an event (new Dataverse row, SharePoint modification)</li>
+<li><strong>Teams/Email notifications</strong> — automatically alert managers when a submission is made</li>
+<li><strong>Azure integration</strong> — trigger an Azure Function, a Logic App, or an Azure Data Factory pipeline from a flow</li>
+<li><strong>HTTP connector</strong> — call an external REST API (webhook, Python service, etc.)</li>
+</ul>
+<div class="cl"><p><strong>Concrete use case:</strong> when a user validates a form in Power Apps → Power Automate sends an email to the manager → if approved → triggers an Azure Data Factory pipeline to ingest new data → Power BI refreshes automatically.</p></div>
+
+<h2 id="perf"><span class="sn">5</span>Limits and workarounds</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you handle the 2000-row limit in Power Apps on a table of 50,000 rows?</p></div>
+<ul>
+<li><strong>Delegation limit</strong> — 500 rows by default, configurable up to 2000, not bypassable for non-delegable functions</li>
+<li><strong>Workaround strategies
 </div>
 </div>
 </div>

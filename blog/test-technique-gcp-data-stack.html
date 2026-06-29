@@ -135,32 +135,33 @@ resource "google_composer_environment" "orchestration" {
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>BigQuery, GCS, Cloud Composer, IAM basique</td><td>A déployé des pipelines sur Cloud Composer, optimise BigQuery avec partitionnement</td><td>Ne sait pas ce qu est Workload Identity sur GCP</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Dataflow, Pub/Sub, Vertex AI, architecture end-to-end</td><td>A construit un pipeline streaming Pub/Sub → Dataflow → BigQuery, connaît Vertex AI</td><td>Ne sait pas la différence entre Dataflow et Spark/Dataproc</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='archi'><span class='sn'>1</span>Reference data architecture on GCP</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe an end-to-end data architecture on GCP.</p></div><div class='cb'><code># Architecture GCP typique
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='archi'><span class='sn'>1</span>Reference data architecture on GCP</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe an end-to-end data architecture on GCP.</p></div><div class='cb'><code># Typical GCP architecture
 
 SOURCES
-├── Cloud SQL / AlloyDB (bases transactionnelles)
-├── APIs tierces
-├── Fichiers (GCS)
+├── Cloud SQL / AlloyDB (transactional databases)
+├── Third-party APIs
+├── Files (GCS)
 └── Streaming (IoT, events)
 
 INGESTION
 ├── Pub/Sub (streaming)
 ├── Cloud Storage Transfer (batch)
-├── Datastream (CDC depuis Cloud SQL)
-└── Fivetran / Airbyte (connecteurs SaaS)
+├── Datastream (CDC from Cloud SQL)
+└── Fivetran / Airbyte (SaaS connectors)
 
 ORCHESTRATION
-└── Cloud Composer (Airflow managé)
+└── Cloud Composer (managed Airflow)
 
 TRANSFORMATION
 ├── Dataflow (streaming + batch)
 ├── BigQuery SQL + dbt
-└── Spark sur Dataproc
+└── Spark on Dataproc
 
-STOCKAGE ANALYTIQUE
+ANALYTICAL STORAGE
 └── BigQuery
 
-CONSOMMATION
+CONSUMPTION
 ├── Looker / Looker Studio
 ├── Vertex AI (ML)
 └── APIs via Cloud Run</code></div><h2 id='bigquery'><span class='sn'>2</span>BigQuery: the GCP center of gravity</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What BigQuery features do you use beyond basic SQL?</p></div><ul><li><strong>Partitioning + clustering</strong> — reduce costs and improve performance on large tables</li><li><strong>Materialized Views</strong> — pre-compute frequent aggregations with automatic incremental refresh</li><li><strong>BigQuery ML</strong> — train ML models directly in SQL (regression, clustering, time series)</li><li><strong>BigQuery Omni</strong> — query data in AWS S3 or Azure Blob without moving it</li><li><strong>BigQuery Biglake</strong> — tables on GCS with centralized security, Iceberg compatible</li><li><strong>Connected Sheets</strong> — analyze billions of BigQuery rows directly in Google Sheets</li></ul><h2 id='dataflow'><span class='sn'>3</span>Dataflow: unified batch and streaming processing</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between Dataflow and Spark? When do you choose Dataflow?</p></div><div class='cb'><code>import apache_beam as beam
@@ -168,10 +169,10 @@ from apache_beam.options.pipeline_options import PipelineOptions
 
 options = PipelineOptions(
     runner='DataflowRunner',
-    project='mon-projet-gcp',
+    project='my-gcp-project',
     region='europe-west1',
-    temp_location='gs://mon-bucket/temp',
-    staging_location='gs://mon-bucket/staging'
+    temp_location='gs://my-bucket/temp',
+    staging_location='gs://my-bucket/staging'
 )
 
 with beam.Pipeline(options=options) as p:
@@ -185,23 +186,62 @@ with beam.Pipeline(options=options) as p:
             'revenue': row['quantity'] * row['unit_price']
         })
         | 'WriteToBQ' >> beam.io.WriteToBigQuery(
-            'mon-projet:dataset.fct_revenue'
+            'my-project:dataset.fct_revenue'
         )
     )</code></div><ul><li><strong>Dataflow</strong> — managed service based on Apache Beam. Serverless, autoscaling. Ideal for streaming pipelines to BigQuery</li><li><strong>When Dataflow</strong> — streaming (Pub/Sub → BigQuery), batch pipelines on GCS, native GCP integration</li><li><strong>When Spark/Dataproc</strong> — existing Spark code to migrate, advanced needs (Spark ML, Delta Lake)</li></ul><h2 id='pubsub'><span class='sn'>4</span>Pub/Sub: real-time messaging</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you integrate Pub/Sub into a streaming data pipeline?</p></div><div class='cb'><code>from google.cloud import pubsub_v1
 import json
 
-# Publisher : émettre des événements
+# Publisher: emit events
 publisher = pubsub_v1.PublisherClient()
-topic_path = 'projects/mon-projet/topics/orders-events'
+topic_path = 'projects/my-project/topics/orders-events'
 
 def publish_order_event(order: dict):
     data = json.dumps(order).encode('utf-8')
     future = publisher.publish(topic_path, data)
     return future.result()
 
-# Pattern typique : API → Pub/Sub → Dataflow → BigQuery
-# Pub/Sub garantit la livraison at-least-once
-# Dataflow déduplique avec les windows et watermarks</code></div><ul><li><strong>At-least-once</strong> — Pub/Sub guarantees delivery</div>
+# Typical pattern: API → Pub/Sub → Dataflow → BigQuery
+# Pub/Sub guarantees at-least-once delivery
+# Dataflow deduplicates with windows and watermarks</code></div><ul><li><strong>At-least-once</strong> — Pub/Sub guarantees delivery but may deliver duplicates. Handle deduplication downstream</li><li><strong>Pull vs Push</strong> — Pull: the subscriber pulls messages. Push: Pub/Sub sends to an HTTP endpoint</li><li><strong>Dead Letter Topic</strong> — unprocessed messages after N attempts → DLT for investigation</li></ul><h2 id='composer'><span class='sn'>5</span>Cloud Composer: managed Airflow on GCP</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why Cloud Composer rather than self-hosted Airflow on K8s?</p></div><ul><li><strong>Cloud Composer</strong> — fully managed Airflow on GKE. No cluster maintenance, automatic updates</li><li><strong>Native GCP integrations</strong> — BigQueryOperator, DataflowOperator, GCSOperator, VertexAIOperator pre-configured</li><li><strong>Workload Identity</strong> — DAGs authenticate to GCP without explicit credentials</li><li><strong>Cost</strong> — more expensive than self-hosted but zero maintenance. Composer 2 (based on KubernetesExecutor) is more cost-effective</li></ul><h2 id='vertex'><span class='sn'>6</span>Vertex AI: GCP ML platform</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which Vertex AI components do you use in an end-to-end ML project?</p></div><ul><li><strong>Vertex AI Training</strong> — train models with managed GPUs, integrated monitoring, hyperparameter tuning</li><li><strong>Vertex AI Model Registry</strong> — version and promote models to production</li><li><strong>Vertex AI Endpoints</strong> — deploy a model as a REST API with autoscaling</li><li><strong>Feature Store</strong> — store and share ML features across projects</li><li><strong>Vertex AI Pipelines</strong> — orchestrate ML pipelines with Kubeflow Pipelines or TFX</li><li><strong>BigQuery ML</strong> — train directly in BigQuery for simple models</li></ul>
+<div class='cb'><code># GCP Data Stack with Terraform
+resource "google_bigquery_dataset" "analytics" {
+  dataset_id = "analytics_prod"
+  location   = "EU"
+  labels     = { env = "production", team = "data" }
+}
+
+resource "google_dataflow_job" "streaming" {
+  name              = "orders-streaming"
+  template_gcs_path = "gs://dataflow-templates/latest/PubSub_to_BigQuery"
+  parameters = {
+    inputTopic      = "projects/${var.project}/topics/orders"
+    outputTableSpec = "${var.project}:analytics.orders_stream"
+  }
+}
+
+resource "google_composer_environment" "orchestration" {
+  name   = "data-platform"
+  region = "europe-west1"
+  config {
+    software_config {
+      airflow_config_overrides = {
+        "core-dags_are_paused_at_creation" = "True"
+      }
+    }
+    workloads_config {
+      worker { min_count = 1; max_count = 6 }
+    }
+  }
+}</code></div>
+<ul>
+<li><strong>Pub/Sub to BigQuery</strong> - native GCP streaming pattern. Pub/Sub buffers, Dataflow transforms, BigQuery stores. End-to-end latency of a few seconds</li>
+<li><strong>Cloud Composer</strong> - managed Airflow on GCP. Zero ops scheduler, automatic upgrades. Costly but saves one FTE of infra maintenance</li>
+<li><strong>Dataproc vs Dataflow</strong> - Dataproc: managed Spark/Hadoop cluster. Dataflow: managed Apache Beam, serverless autoscaling. Prefer Dataflow for new projects</li>
+<li><strong>Vertex AI</strong> - GCP ML platform: Feature Store, training pipelines, model serving, monitoring. Managed alternative to MLflow + Kubernetes</li>
+<li><strong>Data Catalog GCP</strong> - automatic inventory of BigQuery, GCS, Pub/Sub. Policy tags for governance and GDPR compliance</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>BigQuery, GCS, Cloud Composer, basic IAM</td><td>Has deployed pipelines on Cloud Composer, optimized BigQuery with partitioning</td><td>Does not know what Workload Identity is on GCP</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Dataflow, Pub/Sub, Vertex AI, end-to-end architecture</td><td>Has built a Pub/Sub → Dataflow → BigQuery streaming pipeline, knows Vertex AI</td><td>Does not know the difference between Dataflow and Spark/Dataproc</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer GCP ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

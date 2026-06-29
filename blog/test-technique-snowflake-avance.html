@@ -200,21 +200,22 @@ ALTER WAREHOUSE ETL_WH SET RESOURCE_MONITOR = monthly_budget;</code></div>
 </tbody></table>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='streams'><span class='sn'>1</span>Streams: Native CDC in Snowflake</h2>
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='streams'><span class='sn'>1</span>Streams: Native CDC in Snowflake</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is a Snowflake Stream? What is the difference between APPEND_ONLY and DEFAULT?</p></div>
-<div class='cb'><code>-- Créer un stream sur une table source
+<div class='cb'><code>-- Create a stream on a source table
 CREATE STREAM orders_stream ON TABLE orders
-    APPEND_ONLY = FALSE;  -- capture INSERT + UPDATE + DELETE
+    APPEND_ONLY = FALSE;  -- captures INSERT + UPDATE + DELETE
 
--- APPEND_ONLY = TRUE : capture uniquement les INSERT (plus performant)
--- APPEND_ONLY = FALSE : capture INSERT + UPDATE + DELETE via METADATA$ACTION
+-- APPEND_ONLY = TRUE : captures INSERT only (more performant)
+-- APPEND_ONLY = FALSE : captures INSERT + UPDATE + DELETE via METADATA$ACTION
 
--- Consommer le stream dans un MERGE
+-- Consume the stream in a MERGE
 MERGE INTO orders_target AS t
 USING (
     SELECT order_id, customer_id, amount,
-           METADATA$ACTION,      -- INSERT ou DELETE
-           METADATA$ISUPDATE     -- True si c'est un UPDATE (représenté par DELETE+INSERT)
+           METADATA$ACTION,      -- INSERT or DELETE
+           METADATA$ISUPDATE     -- True if it's an UPDATE (represented as DELETE+INSERT)
     FROM orders_stream
 ) AS s ON t.order_id = s.order_id
 WHEN MATCHED AND s.METADATA$ACTION = 'DELETE' AND NOT s.METADATA$ISUPDATE 
@@ -224,7 +225,7 @@ WHEN MATCHED AND s.METADATA$ACTION = 'INSERT' AND s.METADATA$ISUPDATE
 WHEN NOT MATCHED AND s.METADATA$ACTION = 'INSERT' 
     THEN INSERT (order_id, customer_id, amount) VALUES (s.order_id, s.customer_id, s.amount);
 
--- Vérifier si le stream a des données à consommer
+-- Check if the stream has data to consume
 SELECT SYSTEM$STREAM_HAS_DATA('orders_stream');</code></div>
 <ul>
 <li><strong>Streams are pointers</strong> — they point to an offset in the table history (like Kafka). Consuming the stream advances the offset</li>
@@ -234,20 +235,20 @@ SELECT SYSTEM$STREAM_HAS_DATA('orders_stream');</code></div>
 
 <h2 id='tasks'><span class='sn'>2</span>Tasks: Native Snowflake Orchestration</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>How do you combine Streams and Tasks for an automatic CDC pipeline?</p></div>
-<div class='cb'><code>-- Task planifiée toutes les heures
+<div class='cb'><code>-- Task scheduled every hour
 CREATE OR REPLACE TASK refresh_aggregates
     WAREHOUSE = 'ETL_WH'
     SCHEDULE = 'USING CRON 0 * * * * UTC'
-    ERROR_INTEGRATION = 'my_notification_int'  -- alerte en cas d'erreur
+    ERROR_INTEGRATION = 'my_notification_int'  -- alert on error
 AS
     CALL refresh_daily_revenue();
 
 ALTER TASK refresh_aggregates RESUME;
 
--- Task déclenchée automatiquement par un Stream (quand nouvelles données)
+-- Task automatically triggered by a Stream (when new data arrives)
 CREATE OR REPLACE TASK process_new_orders
     WAREHOUSE = 'ETL_WH'
-    AFTER refresh_aggregates  -- task parente (DAG de tasks)
+    AFTER refresh_aggregates  -- parent task (task DAG)
     WHEN SYSTEM$STREAM_HAS_DATA('orders_stream')
 AS
     MERGE INTO orders_processed AS t
@@ -255,7 +256,7 @@ AS
     WHEN MATCHED THEN UPDATE SET t.amount = s.amount
     WHEN NOT MATCHED THEN INSERT VALUES (s.order_id, s.customer_id, s.amount);
 
--- Surveiller les tasks
+-- Monitor tasks
 SELECT *
 FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY(
     SCHEDULED_TIME_RANGE_START => DATEADD('hour', -24, CURRENT_TIMESTAMP)
@@ -264,9 +265,9 @@ ORDER BY SCHEDULED_TIME DESC;</code></div>
 
 <h2 id='dynamic'><span class='sn'>3</span>Dynamic Tables: Automatic Incremental Refresh</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is a Dynamic Table? When should you use it instead of a dbt model?</p></div>
-<div class='cb'><code>-- Créer une Dynamic Table
+<div class='cb'><code>-- Create a Dynamic Table
 CREATE OR REPLACE DYNAMIC TABLE analytics.daily_revenue
-    TARGET_LAG = '1 hour'  -- fraîcheur souhaitée
+    TARGET_LAG = '1 hour'  -- desired freshness
     WAREHOUSE = ETL_WH
 AS
 SELECT
@@ -277,15 +278,98 @@ SELECT
 FROM raw.orders
 GROUP BY 1, 2;
 
--- Snowflake gère automatiquement le refresh incrémental
--- Pas besoin de scheduler externe ni de logique incremental manuelle
+-- Snowflake automatically manages incremental refresh
+-- No external scheduler or manual incremental logic needed
 
--- Vérifier le statut
+-- Check status
 SHOW DYNAMIC TABLES LIKE 'daily_revenue';</code></div>
 <ul>
 <li><strong>TARGET_LAG</strong> — acceptable delay between sources and the Dynamic Table. '1 hour' = data fresher than 1h</li>
-<li><strong>vs Materialized Views</strong> — Dynamic Tables</li>
-</ul></div>
+<li><strong>vs Materialized Views</strong> — Dynamic Tables support complex JOINs, CTEs, subqueries. Much more expressive</li>
+<li><strong>vs dbt incremental</strong> — Dynamic Tables are automatic (no scheduler needed). dbt incremental requires external orchestration</li>
+<li><strong>Cost</strong> — Snowflake charges for refresh compute. A short TARGET_LAG = more refreshes = higher cost</li>
+</ul>
+
+<h2 id='clone'><span class='sn'>4</span>Zero-Copy Cloning</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>What is Zero-Copy Cloning? How do you use it in practice?</p></div>
+<div class='cb'><code>-- Clone an entire database in seconds, without copying data
+CREATE DATABASE staging_clone CLONE production;
+-- Data is NOT duplicated. Micro-partitions are shared.
+-- Writing to staging → only modified partitions are copied (copy-on-write)
+
+-- Use cases:
+-- 1. Risk-free migration testing
+-- 2. Dev environment with production data
+-- 3. Quick snapshot before a risky operation
+
+-- Time Travel: query past data
+SELECT * FROM orders AT(TIMESTAMP => '2025-01-01 00:00:00'::TIMESTAMP_TZ);
+SELECT * FROM orders BEFORE(STATEMENT => 'last_bad_query_id');
+
+-- Restore a table from Time Travel
+CREATE TABLE orders_restored CLONE orders
+    AT(TIMESTAMP => '2025-01-01 00:00:00'::TIMESTAMP_TZ);
+
+-- Undrop: restore a dropped table (within the Time Travel window)
+DROP TABLE orders;
+UNDROP TABLE orders;  -- works for 7 to 90 days depending on config</code></div>
+
+<h2 id='snowpark'><span class='sn'>5</span>Snowpark Python: Python Inside Snowflake</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>What is Snowpark? When should you use it instead of an external Python script?</p></div>
+<div class='cb'><code>from snowflake.snowpark import Session
+from snowflake.snowpark.functions import col, sum as sum_, when
+
+session = Session.builder.configs({
+    "account": "my-account",
+    "user": "data_engineer",
+    "private_key": load_private_key()
+}).create()
+
+# Snowpark DataFrame API - runs inside Snowflake (not locally)
+df = session.table("raw.orders")
+
+result = (
+    df.filter(col("status") == "completed")
+    .group_by("region")
+    .agg(
+        sum_("amount").alias("total_revenue"),
+        count("*").alias("order_count")
+    )
+    .sort("total_revenue", ascending=False)
+)
+
+result.write.save_as_table("analytics.revenue_by_region", mode="overwrite")</code></div>
+<ul>
+<li><strong>Execution inside Snowflake</strong> — the Snowpark DataFrame is translated into SQL that runs in the warehouse. Data never leaves</li>
+<li><strong>Python UDFs</strong> — deploy Python functions inside Snowflake, callable in SQL from any tool</li>
+<li><strong>Snowpark ML</strong> — train sklearn/XGBoost models directly inside Snowflake using Snowpark</li>
+</ul>
+
+<h2 id='cost'><span class='sn'>6</span>Snowflake Cost Optimization</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>What are your practices for optimizing Snowflake costs in production?</p></div>
+<ul>
+<li><strong>Mandatory auto-suspend</strong> — 1-2 minutes for interactive warehouses, 5 minutes for ETL. Never leave a warehouse without auto-suspend</li>
+<li><strong>Warehouse sizing</strong> — start XS, scale up only if queries are slow. An M warehouse consumes 8x more than an XS for the same simple query</li>
+<li><strong>Clustering keys</strong> — on large tables (&gt;100GB) systematically filtered on the same columns (date, region)</li>
+<li><strong>Result cache</strong> — results cached for 24h if the table has not changed. Standardize BI queries to leverage the cache</li>
+<li><strong>Resource monitors</strong> — automatic alerts and suspensions when the monthly credit budget is reached</li>
+</ul>
+<div class='cb'><code>-- Resource monitor: alert at 80% and suspend at 100% of monthly budget
+CREATE OR REPLACE RESOURCE MONITOR monthly_budget
+    WITH CREDIT_QUOTA = 500  -- 500 credits/month
+    TRIGGERS
+        ON 80 PERCENT DO NOTIFY
+        ON 100 PERCENT DO SUSPEND_IMMEDIATE;
+
+ALTER WAREHOUSE ETL_WH SET RESOURCE_MONITOR = monthly_budget;</code></div>
+
+<h2 id='nv'><span class='sn'>7</span>Level Grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Mid-level</span></td><td>Basic Streams, Tasks, Time Travel, Zero-Copy Clone</td><td>Has configured a Stream + Task for CDC, has used Time Travel for debugging</td><td>Does not know what a Snowflake Stream is</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>Dynamic Tables, Snowpark, cost optimization, resource monitors</td><td>Has deployed Dynamic Tables, uses Snowpark, has set up a resource monitor</td><td>Has never worked with Snowpark or Dynamic Tables</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un profil data ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

@@ -186,20 +186,21 @@ client.transition_model_version_stage("churn_model", mv.version, "Production")
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Tracking complet, Model Registry, serving basique</td><td>Loggue paramètres + métriques + artefacts, a promu un modèle via Registry</td><td>Ne loggue que les métriques sans les paramètres ni les artefacts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>MLflow Projects, serving production, CI/CD ML, custom PythonModel</td><td>A écrit un MLproject, serve un modèle custom en production, a un CI/CD ML</td><td>Ne sait pas ce qu est MLflow Projects</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='tracking'><span class='sn'>1</span>Advanced tracking: logging everything</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What do you systematically log in MLflow beyond basic metrics?</p></div><div class='cb'><code>import mlflow
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='tracking'><span class='sn'>1</span>Advanced Tracking: log everything</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What do you systematically log in MLflow beyond basic metrics?</p></div><div class='cb'><code>import mlflow
 import mlflow.sklearn
 from mlflow.models import infer_signature
 
 with mlflow.start_run(run_name='xgb_v3_features_engineered') as run:
-    # Paramètres
+    # Parameters
     mlflow.log_params({
         'n_estimators': 500,
         'max_depth': 6,
         'learning_rate': 0.05,
-        'feature_set': 'v3_with_lags'  # quelle version des features
+        'feature_set': 'v3_with_lags'  # which feature version
     })
     
-    # Métriques
+    # Metrics
     mlflow.log_metrics({
         'auc_test': 0.87,
         'auc_train': 0.93,
@@ -208,17 +209,17 @@ with mlflow.start_run(run_name='xgb_v3_features_engineered') as run:
         'f1': 0.80
     })
     
-    # Artefacts : tout ce qui permet de reproduire
+    # Artifacts: everything needed to reproduce
     mlflow.log_artifact('feature_importance.png')
     mlflow.log_artifact('confusion_matrix.png')
-    mlflow.log_artifact('data_stats.json')   # stats des données d entrainement
+    mlflow.log_artifact('data_stats.json')   # training data stats
     
-    # Signature : inputs/outputs attendus
+    # Signature: expected inputs/outputs
     signature = infer_signature(X_train, model.predict_proba(X_train))
-    mlflow.sklearn.log_model(model, 'model', signature=signature)</code></div><h2 id='projects'><span class='sn'>2</span>MLflow Projects: reproducibility</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you guarantee that your training code is reproducible with MLflow Projects?</p></div><div class='cb'><code># MLproject file - définit comment exécuter le projet
+    mlflow.sklearn.log_model(model, 'model', signature=signature)</code></div><h2 id='projects'><span class='sn'>2</span>MLflow Projects: reproducibility</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you ensure your training code is reproducible with MLflow Projects?</p></div><div class='cb'><code># MLproject file - defines how to run the project
 name: churn_prediction
 
-conda_env: conda.yaml  # ou pip_requirements: requirements.txt
+conda_env: conda.yaml  # or pip_requirements: requirements.txt
 
 entry_points:
   train:
@@ -233,26 +234,26 @@ entry_points:
       model_uri: {type: str}
     command: 'python evaluate.py --model {model_uri}'
 
-# Lancer depuis n importe où
+# Run from anywhere
 mlflow run . -P n_estimators=500 -P max_depth=6
 
-# Ou depuis Git directement
+# Or directly from Git
 mlflow run https://github.com/org/churn-model -P n_estimators=500</code></div><h2 id='registry'><span class='sn'>3</span>Model Registry: complete workflow</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe the complete workflow for promoting a model from development to production.</p></div><div class='cb'><code>from mlflow.tracking import MlflowClient
 
 client = MlflowClient()
 
-# 1. Enregistrer le modèle depuis un run
+# 1. Register the model from a run
 model_uri = f'runs:/{run_id}/model'
 model_details = mlflow.register_model(model_uri, 'churn_predictor')
 
-# 2. Ajouter des métadonnées
+# 2. Add metadata
 client.update_model_version(
     name='churn_predictor',
     version=model_details.version,
     description='XGBoost v3, AUC=0.87, trained on 2025-01 data'
 )
 
-# 3. Promouvoir vers Staging après validation
+# 3. Promote to Staging after validation
 client.transition_model_version_stage(
     name='churn_predictor',
     version=model_details.version,
@@ -260,29 +261,89 @@ client.transition_model_version_stage(
     archive_existing_versions=False
 )
 
-# 4. Tests d intégration sur Staging...
+# 4. Integration tests on Staging...
 
-# 5. Promouvoir en Production
+# 5. Promote to Production
 client.transition_model_version_stage(
     name='churn_predictor',
     version=model_details.version,
     stage='Production',
-    archive_existing_versions=True  # archive l ancien modèle
+    archive_existing_versions=True  # archives the old model
 )</code></div><h2 id='serving'><span class='sn'>4</span>MLflow Serving: exposing a model</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you serve an MLflow model via a REST API?</p></div><div class='cb'><code>## Serving via CLI
-# Charger depuis le registry
+# Load from the registry
 mlflow models serve \
   --model-uri models:/churn_predictor/Production \
   --port 5000 \
   --no-conda
 
-## Serving dans Python (pour les custom handlers)
+## Serving in Python (for custom handlers)
 from mlflow.pyfunc import PythonModel
 
 class ChurnPredictor(PythonModel):
     def load_context(self, context):
         import joblib
         self.model = joblib.load(context.artifacts['model_path'])
-        self.threshold = 0.6  # seuil bus</code></div></div>
+        self.threshold = 0.6  # business threshold
+    
+    def predict(self, context, model_input):
+        probas = self.model.predict_proba(model_input)[:, 1]
+        return pd.DataFrame({
+            'probability': probas,
+            'prediction': (probas > self.threshold).astype(int)
+        })
+
+## Request to the served API
+import requests
+response = requests.post(
+    'http://localhost:5000/invocations',
+    json={'dataframe_records': X_test.to_dict('records')}
+)</code></div><h2 id='cicd'><span class='sn'>5</span>CI/CD with MLflow: automating promotions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you integrate MLflow into a CI/CD pipeline for ML?</p></div><ul><li><strong>CI on PR</strong> — run training on a sample, verify that metrics are above the baseline</li><li><strong>Automatic comparison</strong> — compare the new model with the model in Production. Promote only if better</li><li><strong>GitHub Actions</strong> — workflow that triggers training, registers in MLflow, promotes if metrics are OK</li><li><strong>Model approval gate</strong> — some critical models require human validation before Production promotion</li></ul><h2 id='databricks'><span class='sn'>6</span>MLflow on Databricks: differences</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does Managed MLflow on Databricks differ from open source MLflow?</p></div><ul><li><strong>Centralized tracking server</strong> — no configuration needed, integrated into the Databricks workspace</li><li><strong>Unity Catalog integration</strong> — in Databricks 13+, the Model Registry is in Unity Catalog. Lineage, RBAC access</li><li><strong>Auto logging</strong> — mlflow.autolog() automatically captures sklearn, XGBoost, PyTorch, LightGBM</li><li><strong>Feature Store</strong> — native integration between Databricks Feature Store features and MLflow models</li></ul>
+<div class='cb'><code>import mlflow, mlflow.sklearn
+from mlflow.tracking import MlflowClient
+
+# Autolog: MLflow captures everything automatically
+mlflow.sklearn.autolog()  # params, metrics, model, feature importance
+
+with mlflow.start_run(run_name="xgboost_churn_v3") as run:
+    model = XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.03)
+    model.fit(X_train, y_train)
+    
+    # Custom metrics
+    mlflow.log_metrics({
+        "auc_roc": roc_auc_score(y_test, model.predict_proba(X_test)[:,1]),
+        "precision_at_k": precision_at_k(y_test, model, k=100)
+    })
+    mlflow.log_artifact("shap_summary.png")
+    mlflow.set_tags({"team": "risk", "dataset_version": "2025-Q1"})
+
+# Select and promote the best run
+client = MlflowClient()
+best = client.search_runs(
+    experiment_ids=["1"],
+    order_by=["metrics.auc_roc DESC"]
+)[0]
+
+mv = mlflow.register_model(f"runs:/{best.info.run_id}/model", "churn_model")
+client.transition_model_version_stage("churn_model", mv.version, "Production")
+
+# Serve the model
+# mlflow models serve -m models:/churn_model/Production -p 5000</code></div>
+<ul>
+<li><strong>MLflow vs W&B</strong> — MLflow: open source, integrated with Databricks, self-hostable. Weights & Biases: better deep learning UX, collaboration, hyperparameter sweeps, paid</li>
+<li><strong>Model Registry</strong> — version models with transitions (None → Staging → Production → Archived). Rollback in 1 line if regression in prod</li>
+<li><strong>MLflow Projects</strong> — package training code (MLproject file + conda.yaml). Full reproducibility: <code>mlflow run . -P learning_rate=0.01</code></li>
+<li><strong>MLflow Serving</strong> — simple REST endpoint for scoring. For high-availability prod: deploy the MLflow model in Docker, Kubernetes or Databricks Model Serving</li>
+<li><strong>Experiment tracking best practices</strong> — one run = one training. Always log hyperparameters, train/val/test metrics, dataset version, artifacts (SHAP plots, confusion matrix)</li>
+</ul>
+<ul>
+<li><strong>MLflow vs W&B</strong> - MLflow: open source, integrated with Databricks, self-hostable. Weights & Biases: better deep learning UX, hyperparameter sweeps, paid</li>
+<li><strong>Model Registry</strong> - version models with transitions (None -> Staging -> Production -> Archived). Rollback in 1 line if regression in prod</li>
+<li><strong>MLflow Projects</strong> - package training code (MLproject file). Full reproducibility: mlflow run . -P learning_rate=0.01</li>
+<li><strong>MLflow Serving</strong> - simple REST endpoint for scoring. For high-availability prod: deploy the model in Docker, Kubernetes or Databricks Model Serving</li>
+<li><strong>Experiment tracking best practices</strong> - one run = one training. Always log hyperparameters, train/val/test metrics, dataset version, artifacts (SHAP plots)</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>Complete tracking, Model Registry, basic serving</td><td>Logs parameters + metrics + artifacts, has promoted a model via Registry</td><td>Only logs metrics without parameters or artifacts</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>MLflow Projects, production serving, ML CI/CD, custom PythonModel</td><td>Has written an MLproject, serves a custom model in production, has an ML CI/CD</td><td>Does not know what MLflow Projects is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

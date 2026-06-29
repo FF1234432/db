@@ -153,28 +153,29 @@ VACUUM prod_catalog.analytics.orders RETAIN 168 HOURS;</code></div>
 </tbody></table>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='catalog'><span class='sn'>1</span>Unity Catalog: centralized governance</h2>
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='catalog'><span class='sn'>1</span>Unity Catalog: centralized governance</h2>
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is Unity Catalog? Why does it replace Hive Metastore?</p></div>
 <ul>
 <li><strong>Unity Catalog</strong> — unified Databricks governance layer: manages permissions on tables, views, volumes (files), ML models and functions in a single place</li>
 <li><strong>Hierarchy</strong> — Catalog → Schema (Database) → Table/View/Volume. 3-level notation: <code>catalog.schema.table</code></li>
 <li><strong>Row-level and Column-level security</strong> — dynamic masking of PII columns based on role, row filtering by user</li>
-<li><strong>Data lineage</strong> — Unity Catalog automatically traces lineage column by column between tables</li>
+<li><strong>Data lineage</strong> — Unity Catalog automatically tracks lineage column by column between tables</li>
 <li><strong>vs Hive Metastore</strong> — Hive Metastore is limited to a single workspace. Unity Catalog is cross-workspace and cross-cloud</li>
 </ul>
-<div class='cb'><code>-- Créer un catalog et un schema avec Unity Catalog
+<div class='cb'><code>-- Create a catalog and a schema with Unity Catalog
 CREATE CATALOG IF NOT EXISTS prod_catalog
-  COMMENT 'Catalogue de production';
+  COMMENT 'Production catalog';
 
 CREATE SCHEMA IF NOT EXISTS prod_catalog.analytics
-  COMMENT 'Données analytiques';
+  COMMENT 'Analytical data';
 
--- Attribuer des permissions
+-- Assign permissions
 GRANT USE CATALOG ON CATALOG prod_catalog TO `data-analysts`;
 GRANT SELECT ON SCHEMA prod_catalog.analytics TO `data-analysts`;
 GRANT MODIFY ON TABLE prod_catalog.analytics.orders TO `data-engineers`;
 
--- Masquage dynamique d'une colonne PII
+-- Dynamic masking of a PII column
 CREATE OR REPLACE FUNCTION prod_catalog.security.mask_email(email STRING)
   RETURNS STRING
   RETURN CASE WHEN is_member('pii-readers') THEN email 
@@ -184,15 +185,15 @@ ALTER TABLE prod_catalog.analytics.users
   ALTER COLUMN email SET MASK prod_catalog.security.mask_email;</code></div>
 
 <h2 id='jobs'><span class='sn'>2</span>Jobs and Workflows: Databricks orchestration</h2>
-<div class='sq'><div class='sl'>Discriminating question</div><p>When do you use Databricks Workflows rather than Airflow?</p></div>
+<div class='sq'><div class='sl'>Discriminating question</div><p>When do you use Databricks Workflows instead of Airflow?</p></div>
 <ul>
-<li><strong>Databricks Workflows</strong> — native orchestrator for Databricks jobs. Ideal when all processing is in Databricks and the team wants to avoid a separate Airflow infrastructure</li>
+<li><strong>Databricks Workflows</strong> — native orchestrator for Databricks jobs. Ideal when all processing is within Databricks and the team wants to avoid a separate Airflow infrastructure</li>
 <li><strong>Tasks</strong> — notebook, Python script, dbt, Spark JAR, SQL. Each task can have its own cluster or share a job cluster</li>
 <li><strong>Dependencies</strong> — DAG graph between tasks with conditions (run-if: all_success, at_least_one_success, none_failed)</li>
 <li><strong>Job clusters vs All-purpose clusters</strong> — job clusters shut down at the end of the job. All-purpose clusters remain active. Always use job clusters in production</li>
 <li><strong>Triggers</strong> — CRON, event-based (file arrival in a volume), continuous, or triggered via API</li>
 </ul>
-<div class='cb'><code># Déclencher un job Databricks via API depuis Airflow
+<div class='cb'><code># Trigger a Databricks job via API from Airflow
 import requests
 
 def trigger_databricks_job(job_id, params):
@@ -208,17 +209,69 @@ def trigger_databricks_job(job_id, params):
 <div class='sq'><div class='sl'>Discriminating question</div><p>What is Delta Live Tables? How does it differ from a dbt pipeline?</p></div>
 <ul>
 <li><strong>DLT</strong> — Databricks framework for defining data pipelines as Python/SQL tables with quality expectations</li>
-<li><strong>@dlt.table</strong> — declares a table, Databricks manages orchestration, incremental refresh and error handling</li>
+<li><strong>@dlt.table</strong> — declares a table; Databricks handles orchestration, incremental refresh and error management</li>
 <li><strong>Expectations</strong> — built-in quality rules: warn, drop (reject invalid rows) or fail (block the pipeline)</li>
-<li><strong>vs dbt</strong> — DLT integrates Spark natively, handles streaming. dbt is SQL-first, more portable, better testing ecosystem</li>
+<li><strong>vs dbt</strong> — DLT integrates Spark natively and handles streaming. dbt is SQL-first, more portable, with a better testing ecosystem</li>
 <li><strong>Streaming tables vs Materialized Views</strong> — Streaming Tables: continuous ingestion from Kafka/Auto Loader. MV: aggregations recalculated periodically</li>
 </ul>
 <div class='cb'><code>import dlt
 from pyspark.sql.functions import col
 
-@dlt.table(comment="Commandes brutes depuis S3")
+@dlt.table(comment="Raw orders from S3")
 def raw_orders():
-    return spark.readStream.format("cloudFiles")         .option("cloudFiles.format", "json")    </code></div></div>
+    return spark.readStream.format("cloudFiles")         .option("cloudFiles.format", "json")         .load("/mnt/landing/orders/")
+
+@dlt.table(comment="Validated orders")
+@dlt.expect_or_drop("positive_amount", col("amount") > 0)
+@dlt.expect_or_warn("valid_email", col("email").rlike(r".+@.+\..+"))
+def validated_orders():
+    return dlt.read_stream("raw_orders")         .filter(col("status") != "cancelled")         .select("order_id", "customer_id", "amount", "email", "created_at")</code></div>
+
+<h2 id='mlflow'><span class='sn'>4</span>MLflow integrated in Databricks</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How does Databricks integrate MLflow into the ML model lifecycle?</p></div>
+<ul>
+<li><strong>MLflow autolog</strong> — Databricks automatically enables MLflow autologging: every sklearn/XGBoost/PyTorch run is tracked without additional code</li>
+<li><strong>Model Registry</strong> — version and promote models (Staging → Production). With Unity Catalog: <code>models:/catalog.schema.model/version</code></li>
+<li><strong>Model Serving</strong> — deploy a model as a REST endpoint in 2 clicks from the Model Registry</li>
+<li><strong>Feature Store</strong> — store and reuse ML features across different models and teams</li>
+</ul>
+
+<h2 id='compute'><span class='sn'>5</span>Compute optimization</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>How do you reduce compute costs in Databricks?</p></div>
+<ul>
+<li><strong>Photon Engine</strong> — vectorized execution engine written in C++. Speeds up SQL queries and DataFrames by up to 12x without changing code</li>
+<li><strong>Auto-termination</strong> — configure an inactivity timeout on all interactive clusters (20-30 min max)</li>
+<li><strong>Spot instances</strong> — use AWS/Azure/GCP spot instances for workers (50-80% savings). Configure an on-demand fallback</li>
+<li><strong>OPTIMIZE and ZORDER</strong> — compact small Delta files and sort data to improve pruning</li>
+<li><strong>Serverless SQL</strong> — for analytical SQL queries: no cluster to manage, billed per second of compute</li>
+</ul>
+<div class='cb'><code>-- Optimize a Delta table in production
+OPTIMIZE prod_catalog.analytics.orders
+  ZORDER BY (order_date, customer_id);
+
+-- Analyze statistics for the query planner
+ANALYZE TABLE prod_catalog.analytics.orders
+  COMPUTE STATISTICS FOR ALL COLUMNS;
+
+-- Vacuum: remove old files (>7 days by default)
+VACUUM prod_catalog.analytics.orders RETAIN 168 HOURS;</code></div>
+
+<h2 id='serverless'><span class='sn'>6</span>Serverless and modern architecture</h2>
+<div class='sq'><div class='sl'>Discriminating question</div><p>What is Databricks serverless? When should you use it?</p></div>
+<ul>
+<li><strong>Serverless SQL Warehouse</strong> — warehouse managed by Databricks, starts in &lt;5s, billed per second. Ideal for BI and dashboards</li>
+<li><strong>Serverless Jobs</strong> — run jobs without managing clusters. Databricks handles provisioning automatically</li>
+<li><strong>Lakehouse Federation</strong> — query BigQuery, Snowflake, Redshift, PostgreSQL directly from Databricks without moving data</li>
+<li><strong>When NOT serverless</strong> — very heavy Spark workloads with specific memory requirements, GPU jobs for ML</li>
+</ul>
+
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2>
+<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
+<tbody>
+<tr><td><span class='bd bm'>Mid-level</span></td><td>Notebooks, basic Jobs, Delta Lake, Unity Catalog permissions</td><td>Has created Databricks jobs, manages Delta tables, uses Unity Catalog</td><td>Works on All-purpose clusters in production, does not use Delta</td></tr>
+<tr><td><span class='bd bs'>Senior</span></td><td>DLT, MLflow, compute optimization (Photon, ZORDER), Lakehouse architecture</td><td>Has deployed DLT pipelines, reduced costs via spot + auto-termination + OPTIMIZE</td><td>Does not know what Delta Live Tables or Unity Catalog are</td></tr>
+</tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Databricks ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

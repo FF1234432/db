@@ -161,18 +161,19 @@ models:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Structure staging/marts, tests, déploiement manuel</td><td>A structuré un projet dbt en 3 layers, a configuré Snowflake warehouses</td><td>Met toute la logique dans les marts sans staging</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Incremental models, slim CI, coûts maîtrisés, gouvernance</td><td>A mis en place le slim CI, utilise des incremental models, monitore les coûts</td><td>Ne sait pas ce qu est un incremental model, ne connaît pas le slim CI</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='archi'><span class='sn'>1</span>dbt + Snowflake Reference Architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe the complete architecture of a well-structured dbt + Snowflake stack.</p></div><div class='cb'><code># Architecture dbt + Snowflake de référence
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='archi'><span class='sn'>1</span>dbt + Snowflake reference architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe the complete architecture of a well-structured dbt + Snowflake stack.</p></div><div class='cb'><code># dbt + Snowflake reference architecture
 
 SNOWFLAKE
-├── RAW_DB           # données brutes, jamais modifiées
+├── RAW_DB           # raw data, never modified
 │   ├── FIVETRAN/    # ingestion via Fivetran
 │   └── AIRBYTE/     # ingestion via Airbyte
-├── DEV_DB           # environnement de développement
-│   └── ANALYTICS/   # schémas dbt dev (par développeur)
+├── DEV_DB           # development environment
+│   └── ANALYTICS/   # dbt dev schemas (per developer)
 └── PROD_DB          # production
-    ├── STAGING/     # modèles staging dbt
-    ├── INTERMEDIATE/# modèles intermédiaires
-    └── MARTS/       # tables consommées par la BI
+    ├── STAGING/     # dbt staging models
+    ├── INTERMEDIATE/# intermediate models
+    └── MARTS/       # tables consumed by BI
 
 # dbt profiles.yml
 my_project:
@@ -180,19 +181,19 @@ my_project:
   outputs:
     dev:
       type: snowflake
-      account: mon_compte
+      account: my_account
       database: DEV_DB
       schema: '{{ env_var("DBT_SCHEMA", "analytics_" ~ env_var("USER")) }}'
       warehouse: DEV_WH
     prod:
       database: PROD_DB
       schema: MARTS
-      warehouse: PROD_WH</code></div><ul><li><strong>RAW/DEV/PROD separation</strong> — raw data is never modified. Developers work in their own schema</li><li><strong>Schema per developer</strong> — each dev has their own isolated schema in DEV. Avoids conflicts</li></ul><h2 id='models'><span class='sn'>2</span>dbt Model Organization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you organize staging, intermediate and marts in a dbt project?</p></div><div class='cb'><code># dbt_project.yml - configuration par layer
+      warehouse: PROD_WH</code></div><ul><li><strong>RAW/DEV/PROD separation</strong> — raw data is never modified. Developers work in their own schema</li><li><strong>Schema per developer</strong> — each dev has their own isolated schema in DEV. Avoids conflicts</li></ul><h2 id='models'><span class='sn'>2</span>dbt model organization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you organize staging, intermediate and marts in a dbt project?</p></div><div class='cb'><code># dbt_project.yml - configuration per layer
 models:
-  mon_projet:
+  my_project:
     staging:
       +schema: staging
-      +materialized: view          # vues légères
+      +materialized: view          # lightweight views
       +tags: ['staging']
     intermediate:
       +schema: intermediate
@@ -200,7 +201,7 @@ models:
       +tags: ['intermediate']
     marts:
       +schema: marts
-      +materialized: table         # tables pour la BI
+      +materialized: table         # tables for BI
       finance:
         +materialized: table
       marketing:
@@ -208,11 +209,11 @@ models:
       +tags: ['marts']
     seeds:
       +schema: seeds
-      +tags: ['seed']</code></div><ul><li><strong>Staging</strong> — 1 model per source table, renaming, casting, no business logic</li><li><strong>Intermediate</strong> — joins and business logic shared across multiple marts</li><li><strong>Marts</strong> — final business-oriented tables, consumed by Power BI/Tableau/Looker</li><li><strong>Materializations</strong> — views for staging/intermediate (no storage), tables for marts (BI performance)</li></ul><h2 id='perf'><span class='sn'>3</span>Snowflake Optimization for dbt</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which Snowflake parameters do you optimize for your dbt models?</p></div><div class='cb'><code>-- Cluster Key sur les grandes tables marts
+      +tags: ['seed']</code></div><ul><li><strong>Staging</strong> — 1 model per source table, renaming, cast, no business logic</li><li><strong>Intermediate</strong> — joins and business logic shared across multiple marts</li><li><strong>Marts</strong> — final business-oriented tables, consumed by Power BI/Tableau/Looker</li><li><strong>Materializations</strong> — views for staging/intermediate (no storage), tables for marts (BI performance)</li></ul><h2 id='perf'><span class='sn'>3</span>Snowflake optimization for dbt</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which Snowflake parameters do you optimize for your dbt models?</p></div><div class='cb'><code>-- Cluster Key on large marts tables
 ALTER TABLE PROD_DB.MARTS.FCT_ORDERS
 CLUSTER BY (order_date, region);
 
--- Incremental model dbt optimisé
+-- Optimized dbt incremental model
 {{ config(
     materialized='incremental',
     unique_key='order_id',
@@ -225,11 +226,11 @@ SELECT *
 FROM {{ ref('stg_orders') }}
 {% if is_incremental() %}
 WHERE order_date > (SELECT MAX(order_date) FROM {{ this }})
-{% endif %}</code></div><ul><li><strong>Incremental models</strong> — only reprocess new data. Reduces compute by 90%+ on large tables</li><li><strong>Warehouse sizing</strong> — use a small warehouse (XS-S) for lightweight models, a larger one (M-L) for heavy transformations</li><li><strong>Query tags</strong> — tag dbt queries with the model name for cost attribution</li></ul><h2 id='cicd'><span class='sn'>4</span>CI/CD: dbt Slim CI on Snowflake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you set up dbt slim CI to limit Snowflake costs in CI?</p></div><div class='cb'><code># .github/workflows/dbt-ci.yml
+{% endif %}</code></div><ul><li><strong>Incremental models</strong> — only reprocess new data. Reduces compute by 90%+ on large tables</li><li><strong>Warehouse sizing</strong> — use a small warehouse (XS-S) for lightweight models, a larger one (M-L) for heavy transformations</li><li><strong>Query tags</strong> — tag dbt queries with the model name for cost attribution</li></ul><h2 id='cicd'><span class='sn'>4</span>CI/CD: dbt slim CI on Snowflake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you set up dbt slim CI to limit Snowflake costs in CI?</p></div><div class='cb'><code># .github/workflows/dbt-ci.yml
 jobs:
   dbt_slim_ci:
     steps:
-      - name: dbt build (models modifiés uniquement)
+      - name: dbt build (modified models only)
         run: |
           dbt build \
             --select state:modified+ \
@@ -243,7 +244,52 @@ jobs:
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
           
       - name: Upload artifacts
-        u</code></div></h2></div>
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: target/manifest.json</code></div><ul><li><strong>state:modified+</strong> — rebuild only changed models and their descendants</li><li><strong>--defer</strong> — use PROD relations for unmodified models. No need to rebuild the entire stack</li><li><strong>CI warehouse</strong> — use a dedicated XS warehouse for CI. Suspend after each run</li></ul><h2 id='cost'><span class='sn'>5</span>Snowflake + dbt cost management</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you reduce Snowflake costs for your dbt pipelines?</p></div><ul><li><strong>Incremental models</strong> — first lever. Avoid full refresh on large tables</li><li><strong>Aggressive auto-suspend</strong> — 1 minute suspension for dbt warehouses (jobs are short)</li><li><strong>Warehouse per use case</strong> — one warehouse for CI (XS), one for daily transformations (S-M), one for BI (XS with cache)</li><li><strong>INFORMATION_SCHEMA monitoring</strong> — track credits consumed per dbt model via query_tag</li><li><strong>Avoid SELECT *</strong> — always select only the necessary columns in dbt models</li></ul><h2 id='gouv'><span class='sn'>6</span>Governance: documentation and lineage</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you ensure your dbt project remains maintainable over time?</p></div><ul><li><strong>Mandatory descriptions</strong> — configure dbt to enforce documentation of key columns via pre-commit hooks</li><li><strong>Exposures</strong> — document who consumes each model (Power BI dashboards, APIs, automated reports)</li><li><strong>dbt docs</strong> — automatically generate and publish documentation on every merge to main</li><li><strong>Elementary</strong> — data observability package to monitor data quality in production</li><li><strong>Naming conventions</strong> — stg_ for staging, int_ for intermediate, fct_ and dim_ for marts</li></ul><div class='cb'><code># profiles.yml Snowflake multi-env
+my_project:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: myorg.snowflakecomputing.com
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      role: TRANSFORMER_DEV
+      database: DEV_DB
+      warehouse: TRANSFORM_WH_XS
+      schema: "dbt_{{ env_var('USER', 'dev') }}"
+      threads: 4
+    prod:
+      type: snowflake
+      account: myorg.snowflakecomputing.com
+      user: dbt_prod_svc
+      private_key_path: /secrets/snowflake_pk.p8
+      role: TRANSFORMER_PROD
+      database: PROD_DB
+      warehouse: TRANSFORM_WH_M
+      schema: analytics
+      threads: 16
+
+# dbt_project.yml Snowflake optimizations
+models:
+  my_project:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+      +snowflake_warehouse: TRANSFORM_WH_L
+      +post-hook: "GRANT SELECT ON {{ this }} TO ROLE REPORTER"</code></div>
+<ul>
+<li><strong>Key pair authentication</strong> - prefer RSA private key over password for service accounts. More secure, supported by secrets managers</li>
+<li><strong>Warehouse sizing per layer</strong> - staging/intermediate on XS (lightweight views), marts on M or L for materialized tables</li>
+<li><strong>Dynamic tables vs dbt incremental</strong> - for simple aggregations, Snowflake Dynamic Tables advantageously replace dbt incremental: zero external orchestration</li>
+<li><strong>Cloning for tests</strong> - CREATE DATABASE dev_clone CLONE production before migration tests. Zero-copy, instant, without impacting prod</li>
+<li><strong>COPY INTO vs INSERT</strong> - load large volumes into Snowflake via COPY INTO from S3/GCS. 10-100x faster than batch INSERT</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>staging/marts structure, tests, manual deployment</td><td>Has structured a dbt project in 3 layers, has configured Snowflake warehouses</td><td>Puts all logic in marts without staging</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Incremental models, slim CI, cost management, governance</td><td>Has set up slim CI, uses incremental models, monitors costs</td><td>Does not know what an incremental model is, does not know slim CI</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer dbt + Snowflake ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

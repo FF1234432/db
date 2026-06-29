@@ -139,7 +139,8 @@ sink:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>A utilisé un catalog, sait ce que le lineage apporte</td><td>A configuré l ingestion dbt → DataHub, utilise le catalog pour l impact analysis</td><td>Ne sait pas ce qu est un data catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Déploiement DataHub/OpenMetadata, stratégie d adoption, lineage multi-sources</td><td>A déployé un catalog en production, a défini une stratégie d adoption</td><td>Ne peut pas expliquer comment faire adopter un catalog par les équipes</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='choix'><span class='sn'>1</span>Choosing between DataHub, OpenMetadata, Collibra</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose your data catalog?</p></div><table class='lt'><thead><tr><th>Tool</th><th>Type</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>DataHub</strong></td><td>Open source (LinkedIn)</td><td>Mature, lineage, GraphQL APIs, rich ecosystem</td><td>Technical teams, diverse stack</td></tr><tr><td><strong>OpenMetadata</strong></td><td>Open source</td><td>Modern UI, built-in data quality, data contracts</td><td>Teams that want an all-in-one solution</td></tr><tr><td><strong>Collibra</strong></td><td>Enterprise SaaS</td><td>Advanced governance, stewardship, compliance</td><td>Large regulated enterprises</td></tr><tr><td><strong>Atlan</strong></td><td>SaaS</td><td>Excellent UX, easy integrations</td><td>Teams that want to get started quickly</td></tr></tbody></table><h2 id='datahub'><span class='sn'>2</span>DataHub: architecture and deployment</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How is DataHub architected? How do you deploy it?</p></div><div class='cb'><code>## Déploiement DataHub avec Docker Compose (dev)
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='choix'><span class='sn'>1</span>Choosing between DataHub, OpenMetadata, Collibra</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose your data catalog?</p></div><table class='lt'><thead><tr><th>Tool</th><th>Type</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>DataHub</strong></td><td>Open source (LinkedIn)</td><td>Mature, lineage, GraphQL APIs, rich ecosystem</td><td>Technical teams, diversified stack</td></tr><tr><td><strong>OpenMetadata</strong></td><td>Open source</td><td>Modern UI, integrated data quality, data contracts</td><td>Teams that want an all-in-one solution</td></tr><tr><td><strong>Collibra</strong></td><td>Enterprise SaaS</td><td>Advanced governance, stewardship, compliance</td><td>Large regulated enterprises</td></tr><tr><td><strong>Atlan</strong></td><td>SaaS</td><td>Excellent UX, easy integrations</td><td>Teams that want to get started quickly</td></tr></tbody></table><h2 id='datahub'><span class='sn'>2</span>DataHub: architecture and deployment</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How is DataHub architected? How do you deploy it?</p></div><div class='cb'><code>## Déploiement DataHub avec Docker Compose (dev)
 datahub docker quickstart
 # Démarre : GMS (Graph Metadata Service), Frontend, Kafka, Elasticsearch
 
@@ -164,7 +165,7 @@ sink:
     server: http://datahub-gms:8080
 
 # Lancer l ingestion
-datahub ingest -c datahub-dbt.yaml</code></div><h2 id='openmetadata'><span class='sn'>3</span>OpenMetadata: key differences</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the features that differentiate OpenMetadata from DataHub?</p></div><ul><li><strong>Built-in Data Quality</strong> — quality tests configurable directly in the interface, without a separate Great Expectations setup</li><li><strong>Data Contracts</strong> — define and enforce contracts directly in the catalog</li><li><strong>Collaboration</strong> — comments, @mentions, tasks on assets. Like Notion for data</li><li><strong>Automatic profiling</strong> — DataHub requires a separate ingestion connector for profiling. OpenMetadata integrates it natively</li></ul><h2 id='ingestion'><span class='sn'>4</span>Automatic metadata ingestion</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you configure automatic ingestion from Snowflake, dbt, and Airflow?</p></div><div class='cb'><code>## DataHub : ingestion Snowflake
+datahub ingest -c datahub-dbt.yaml</code></div><h2 id='openmetadata'><span class='sn'>3</span>OpenMetadata: key differences</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the features that differentiate OpenMetadata from DataHub?</p></div><ul><li><strong>Integrated Data Quality</strong> — configurable quality tests directly in the interface, without a separate Great Expectations setup</li><li><strong>Data Contracts</strong> — define and enforce contracts directly in the catalog</li><li><strong>Collaboration</strong> — comments, @mentions, tasks on assets. Like Notion for data</li><li><strong>Automatic Profiling</strong> — DataHub requires a separate ingestion connector for profiling. OpenMetadata integrates it natively</li></ul><h2 id='ingestion'><span class='sn'>4</span>Automatic metadata ingestion</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you configure automatic ingestion from Snowflake, dbt and Airflow?</p></div><div class='cb'><code>## DataHub : ingestion Snowflake
 source:
   type: snowflake
   config:
@@ -188,7 +189,50 @@ source:
 ## Schedule : ingérer quotidiennement
 schedule:
   interval: '@daily'
-  timezone: 'Europe/Paris'</code></div><h2 id='adoption'><span class='sn'>5</span>Driving catalog adoption across teams</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What strategies ensure that teams actually use the catalog?</p></div><ul><li><strong>Problem to solve</strong> — don't deploy the catalog for governance's sake. Deploy it because it solves the problem 'I don't know where this data comes from'</li><li><strong>Quick wins</strong> — document the 10 most-used tables in week 1. Immediate visibility</li><li></div>
+  timezone: 'Europe/Paris'</code></div><h2 id='adoption'><span class='sn'>5</span>Driving catalog adoption across teams</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the strategies to get teams to actually use the catalog?</p></div><ul><li><strong>Problem to solve</strong> — don't deploy the catalog for governance. Deploy it because it solves the problem 'I don't know where this data comes from'</li><li><strong>Quick wins</strong> — document the 10 most-used tables in week 1. Immediate visibility</li><li><strong>Workflow integration</strong> — link the catalog in dbt PRs, in tickets, in dashboards</li><li><strong>Data Stewards</strong> — assign owners per domain, don't wait for everyone to document spontaneously</li><li><strong>Measure adoption</strong> — track views, searches, descriptions added. What gets measured gets improved</li></ul><h2 id='lineage'><span class='sn'>6</span>Automatic lineage: key integrations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which integrations do you prioritize for lineage?</p></div><ul><li><strong>dbt → DataHub</strong> — complete model lineage, column by column. First one to configure</li><li><strong>Airflow → DataHub</strong> — ETL pipeline lineage. Which DAGs feed which tables</li><li><strong>Snowflake/BigQuery → DataHub</strong> — lineage of SQL queries in production. Captured via Query History</li><li><strong>Looker/Power BI → DataHub</strong> — which dashboards consume which tables. Lineage all the way to end consumers</li><li><strong>Result</strong> — complete lineage source → ingestion → dbt transformation → warehouse → dashboard</li></ul><div class='cb'><code># DataHub ingestion YAML (BigQuery + dbt lineage)
+source:
+  type: dbt
+  config:
+    manifest_path: /dbt/target/manifest.json
+    catalog_path: /dbt/target/catalog.json
+    target_platform: bigquery
+    include_column_lineage: true
+
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080
+
+# Ingestion BigQuery
+source:
+  type: bigquery
+  config:
+    project_id: mon-projet-gcp
+    include_table_lineage: true
+    include_usage_statistics: true  # qui consomme quelle table</code></div><ul><li><strong>DataHub vs OpenMetadata vs Collibra</strong> — DataHub (LinkedIn, open source): API-first, Kubernetes, extensible. OpenMetadata: polished UX, simple deployment. Collibra: enterprise, advanced governance, high price</li><li><strong>Progressive adoption</strong> — start with the 20 most-consumed tables. A complete but unmaintained catalog is worth less than a small well-curated one</li><li><strong>Mandatory Data Owners</strong> — without a defined owner per domain, metadata degrades within 6 months. Attribution process from day one</li><li><strong>dbt integration</strong> — dbt models automatically generate descriptions, tests and lineage. Primary metadata source for dbt-first teams</li><li><strong>Automatic lineage</strong> — DataHub and OpenMetadata can extract lineage from Airflow, Spark, dbt and SQL to trace end-to-end dependencies</li></ul><div class='cb'><code># DataHub ingestion multi-sources
+source:
+  type: dbt
+  config:
+    manifest_path: /dbt/target/manifest.json
+    catalog_path: /dbt/target/catalog.json
+    target_platform: snowflake
+    include_column_lineage: true
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080
+---
+source:
+  type: bigquery
+  config:
+    project_id: mon-projet-gcp
+    include_table_lineage: true
+    include_usage_statistics: true
+sink:
+  type: datahub-rest
+  config:
+    server: http://datahub-gms:8080</code></div><ul><li><strong>DataHub vs OpenMetadata vs Collibra</strong> - DataHub (LinkedIn OSS): API-first, Kubernetes, highly extensible. OpenMetadata: modern UX, easy to deploy. Collibra: enterprise, high price</li><li><strong>Adoption in 3 phases</strong> - Phase 1: catalog the 20 most-consumed tables with owners. Phase 2: automatic lineage dbt + Airflow. Phase 3: semantic search</li><li><strong>Mandatory Data Owners</strong> - without an owner per domain, metadata degrades within 6 months. Assignment at launch</li><li><strong>Automatic lineage</strong> - DataHub extracts lineage from dbt, Airflow, Spark and SQL. Trace end-to-end dependencies without manual effort</li><li><strong>Measurable ROI</strong> - time to find the right table (before: 30min, after: 30s), weekly queries on the catalog, reduction in Slack questions</li></ul><h2 id='nv'><span class='sn'>7</span>Level-based grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO Signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Has used a catalog, understands what lineage brings</td><td>Has configured dbt → DataHub ingestion, uses the catalog for impact analysis</td><td>Does not know what a data catalog is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>DataHub/OpenMetadata deployment, adoption strategy, multi-source lineage</td><td>Has deployed a catalog in production, has defined an adoption strategy</td><td>Cannot explain how to drive catalog adoption across teams</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

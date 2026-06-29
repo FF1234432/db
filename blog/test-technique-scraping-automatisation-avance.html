@@ -129,7 +129,8 @@ async def scrape_dynamic_page(url: str) -> dict:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>BeautifulSoup + requests, pagination, gestion erreurs</td><td>A scrape un site avec pagination, verifie robots.txt</td><td>Ne verifie pas robots.txt, ne gere pas les erreurs HTTP</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Playwright pour les SPA, Scrapy, anti-detection basique</td><td>Sait quand utiliser Playwright, a un projet Scrapy</td><td>Ne sait pas gerer les sites dynamiques JS</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Proxies rotatifs, pipeline industrialise, aspects legaux maitrise</td><td>Cite spontanement les risques RGPD et la legislation, a deploye un scraper en production avec Airflow</td><td>Ne mentionne pas les aspects legaux</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>Scraping is a powerful tool but one that engages the developer's responsibility. In interviews, only the technical side isn't tested — knowledge of legal and ethical limits is also verified.</p><h2 id='bases'><span class='sn'>1</span>Crawling, scraping, automation: the 3 concepts</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between crawling and scraping? And web automation?</p></div><ul><li><strong>Crawling</strong> — automatically browsing a site to discover pages and links. This is what Google bots do. Objective: indexing</li><li><strong>Scraping</strong> — extracting specific data from a web page. Objective: retrieving data for yourself</li><li><strong>Automation</strong> — automatically reproducing human actions on a site (filling out a form, clicking, downloading). Objective: replacing a repetitive task</li></ul><h2 id='outils'><span class='sn'>2</span>Python scraping ecosystem 2025</h2><table class='lt'><thead><tr><th>Tool</th><th>Static</th><th>Dynamic</th><th>Scale</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>BeautifulSoup + requests</strong></td><td>Yes</td><td>No</td><td>No</td><td>Simple static pages, prototyping</td></tr><tr><td><strong>Playwright</strong></td><td>Yes</td><td>Yes</td><td>Medium</td><td>Dynamic JS sites, UI automation</td></tr><tr><td><strong>Selenium</strong></td><td>Yes</td><td>Yes</td><td>No</td><td>Dynamic sites, UI testing (slower than Playwright)</td></tr><tr><td><strong>Scrapy</strong></td><td>Yes</td><td>Partial</td><td>Yes</td><td>Massive scraping, production pipelines</td></tr><tr><td><strong>httpx + asyncio</strong></td><td>Yes</td><td>No</td><td>Yes</td><td>High-performance parallel requests</td></tr></tbody></table><h2 id='playwright'><span class='sn'>3</span>Playwright: the modern successor to Selenium</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Playwright preferred over Selenium in 2025? When do you use one or the other?</p></div><div class='cb'><code>from playwright.async_api import async_playwright
+<div id="body-en" style="display:none"><div class="ab">
+<p>Scraping is a powerful tool but one that engages the developer's responsibility. In interviews, we don't just test technical skills — we also check knowledge of legal and ethical limits.</p><h2 id='bases'><span class='sn'>1</span>Crawling, scraping, automation: the 3 concepts</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between crawling and scraping? And web automation?</p></div><ul><li><strong>Crawling</strong> — automatically browsing a site to discover pages and links. This is what Google bots do. Goal: indexing</li><li><strong>Scraping</strong> — extracting specific data from a web page. Goal: retrieving data for yourself</li><li><strong>Automation</strong> — automatically reproducing human actions on a site (filling a form, clicking, downloading). Goal: replacing a repetitive task</li></ul><h2 id='outils'><span class='sn'>2</span>Python scraping ecosystem 2025</h2><table class='lt'><thead><tr><th>Tool</th><th>Static</th><th>Dynamic</th><th>Mass</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>BeautifulSoup + requests</strong></td><td>Yes</td><td>No</td><td>No</td><td>Simple static pages, prototyping</td></tr><tr><td><strong>Playwright</strong></td><td>Yes</td><td>Yes</td><td>Medium</td><td>Dynamic JS sites, UI automation</td></tr><tr><td><strong>Selenium</strong></td><td>Yes</td><td>Yes</td><td>No</td><td>Dynamic sites, UI testing (slower than Playwright)</td></tr><tr><td><strong>Scrapy</strong></td><td>Yes</td><td>Partial</td><td>Yes</td><td>Mass scraping, production pipelines</td></tr><tr><td><strong>httpx + asyncio</strong></td><td>Yes</td><td>No</td><td>Yes</td><td>High-performance parallel requests</td></tr></tbody></table><h2 id='playwright'><span class='sn'>3</span>Playwright: the modern successor to Selenium</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is Playwright preferred over Selenium in 2025? When do you use one or the other?</p></div><div class='cb'><code>from playwright.async_api import async_playwright
 import asyncio
 
 async def scrape_spa():
@@ -137,12 +138,12 @@ async def scrape_spa():
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         
-        # Intercepter les requetes reseau
+        # Intercept network requests
         page.on('response', lambda r: print(r.url) if '/api/' in r.url else None)
         
         await page.goto('https://exemple.com/products')
         
-        # Attendre que les donnees soient chargees
+        # Wait for data to be loaded
         await page.wait_for_selector('.product-card', timeout=10000)
         
         products = await page.query_selector_all('.product-card')
@@ -165,11 +166,35 @@ class ProductSpider(scrapy.Spider):
     start_urls = ['https://exemple.com/catalogue']
     
     custom_settings = {
-        'DOWNLOAD_DELAY': 1.5,       # politesse
-        'ROBOTSTXT_OBEY': True,      # respecte robots.txt
-        'AUTOTHROTTLE_ENABLED': True, # adaptation automatique
+        'DOWNLOAD_DELAY': 1.5,       # politeness
+        'ROBOTSTXT_OBEY': True,      # respect robots.txt
+        'AUTOTHROTTLE_ENABLED': True, # automatic adaptation
         'ITEM_PIPELINES': {
-            'myproject.pipeli</code></div></div>
+            'myproject.pipelines.DatabasePipeline': 300,
+        }
+    }
+    
+    def parse(self, response):
+        for product in response.css('.product-card'):
+            yield {
+                'name': product.css('.title::text').get(),
+                'price': product.css('.price::text').get(),
+                'url': product.css('a::attr(href)').get()
+            }
+        # Automatic pagination
+        next_page = response.css('a.next::attr(href)').get()
+        if next_page:
+            yield response.follow(next_page, self.parse)</code></div><h2 id='antidect'><span class='sn'>5</span>Anti-detection: the techniques</h2><ul><li><strong>User-Agent rotation</strong> — varying HTTP headers to avoid being identified as a bot</li><li><strong>Random delays</strong> — random.uniform(1, 3) between requests. AutoThrottle in Scrapy</li><li><strong>Rotating proxies</strong> — distributing requests across different IPs (Bright Data, Oxylabs)</li><li><strong>429 Too Many Requests</strong> — respect the Retry-After header, increase delays</li><li><strong>First reflex</strong> — check if an official API exists. Scraping is always a last resort</li></ul><h2 id='legal'><span class='sn'>6</span>Legislation: what every scraper must know</h2><ul><li><strong>robots.txt</strong> — always check before scraping. Not legally binding but ethically mandatory</li><li><strong>Terms of Service</strong> — some sites explicitly prohibit scraping. Possible violation = legal risk</li><li><strong>GDPR</strong> — scraping personal data of European citizens without a legal basis = violation. Ex: LinkedIn (fined $500K in the hiQ case)</li><li><strong>French criminal law</strong> — fraudulent extraction of data from an STAD is a criminal offense (art. 323-3 Penal Code)</li></ul><div class='cb'><code>import asyncio
+from playwright.async_api import async_playwright
+from bs4 import BeautifulSoup
+
+async def scrape_dynamic_page(url: str) -> dict:
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (compatible; DataCollector/1.0)
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

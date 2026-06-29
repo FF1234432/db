@@ -112,46 +112,75 @@ bus.subscribe("order_paid", send_confirmation_email)</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>EDA principes, Kafka producer/consumer, découplage</td><td>Explique les avantages du découplage via events, a consommé Kafka</td><td>Ne sait pas ce qu est l eventual consistency</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CQRS, Event Sourcing, Outbox pattern, Saga</td><td>A implémenté l outbox pattern, explique CQRS et ses trade-offs</td><td>Ne sait pas ce qu est l outbox pattern</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='eda'><span class='sn'>1</span>Event-Driven Architecture: principles</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the advantages of an event-driven architecture for a data system?</p></div><ul><li><strong>Decoupling</strong> — the producer does not know the consumers. Adding a new consumer does not require modifying the producer</li><li><strong>Resilience</strong> — if a consumer is down, events accumulate in the bus (Kafka). No data loss</li><li><strong>Scalability</strong> — each consumer scales independently according to its load</li><li><strong>Auditability</strong> — events are immutable and persisted. Complete history of changes</li><li><strong>Complexity</strong> — harder debugging, eventual consistency to manage</li></ul><h2 id='cqrs'><span class='sn'>2</span>CQRS: separating reads and writes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is CQRS? How does it apply to a data architecture?</p></div><div class='cb'><code># CQRS : Command Query Responsibility Segregation
-# Séparer les opérations d écriture (Commands) des lectures (Queries)
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='eda'><span class='sn'>1</span>Event-Driven Architecture: principles</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the advantages of an event-driven architecture for a data system?</p></div><ul><li><strong>Decoupling</strong> — the producer does not know the consumers. Adding a new consumer does not require modifying the producer</li><li><strong>Resilience</strong> — if a consumer is down, events accumulate in the bus (Kafka). No data loss</li><li><strong>Scalability</strong> — each consumer scales independently according to its load</li><li><strong>Auditability</strong> — events are immutable and persisted. Complete history of changes</li><li><strong>Complexity</strong> — harder debugging, eventual consistency to manage</li></ul><h2 id='cqrs'><span class='sn'>2</span>CQRS: separating reads and writes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is CQRS? How does it apply to a data architecture?</p></div><div class='cb'><code># CQRS : Command Query Responsibility Segregation
+# Separate write operations (Commands) from reads (Queries)
 
-# COMMAND SIDE : optimisé pour les écritures
-# - Base transactionnelle (PostgreSQL)
-# - Modèle normalisé
-# - Cohérence forte
+# COMMAND SIDE : optimized for writes
+# - Transactional database (PostgreSQL)
+# - Normalized model
+# - Strong consistency
 class CreateOrderCommand:
     def execute(self, order: dict) -> None:
         db.insert('orders', order)
-        event_bus.publish('OrderCreated', order)  # publier l event
+        event_bus.publish('OrderCreated', order)  # publish the event
 
-# QUERY SIDE : optimisé pour les lectures
+# QUERY SIDE : optimized for reads
 # - Data warehouse (Snowflake, BigQuery)
-# - Modèle dénormalisé, pré-agrégé
-# - Cohérence éventuelle (délai de réplication)
+# - Denormalized, pre-aggregated model
+# - Eventual consistency (replication delay)
 class GetRevenueByRegionQuery:
     def execute(self, region: str) -> float:
         return warehouse.query(
             'SELECT SUM(amount) FROM fct_revenue WHERE region = ?', region
-        )</code></div><h2 id='sourcing'><span class='sn'>3</span>Event Sourcing: Kafka as source of truth</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How can Kafka serve as a source of truth in an event sourcing architecture?</p></div><ul><li><strong>Event Sourcing</strong> — storing the history of events rather than the current state. The state is rebuilt by replaying events</li><li><strong>Kafka as source of truth</strong> — events are immutable, partitioned, replicated. Long retention (years)</li><li><strong>Advantages</strong> — complete audit trail, ability to reconstruct any past state, easier debugging</li><li><strong>Materialization</strong> — current states are projections computed from events. Can be rebuilt if corrupted</li><li><strong>Compaction</strong> — Kafka Log Compaction: keep only the last event per key for current states</li></ul><h2 id='outbox'><span class='sn'>4</span>Outbox Pattern: guaranteeing consistency</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problem does the outbox pattern solve?</p></div><div class='cb'><code># Problème sans outbox :
-# 1. INSERT en base (succès)
-# 2. Publier event Kafka (ÉCHEC)
-# -> la base et Kafka sont incohérents
+        )</code></div><h2 id='sourcing'><span class='sn'>3</span>Event Sourcing: Kafka as source of truth</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How can Kafka serve as a source of truth in an event sourcing architecture?</p></div><ul><li><strong>Event Sourcing</strong> — storing the history of events rather than the current state. State is reconstructed by replaying events</li><li><strong>Kafka as source of truth</strong> — events are immutable, partitioned, replicated. Long retention (years)</li><li><strong>Advantages</strong> — complete audit trail, ability to reconstruct any past state, easier debugging</li><li><strong>Materialization</strong> — current states are projections computed from events. Can be rebuilt if corrupted</li><li><strong>Compaction</strong> — Kafka Log Compaction: keep only the last event per key for current states</li></ul><h2 id='outbox'><span class='sn'>4</span>Outbox Pattern: guaranteeing consistency</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problem does the outbox pattern solve?</p></div><div class='cb'><code># Problem without outbox:
+# 1. INSERT into database (success)
+# 2. Publish Kafka event (FAILURE)
+# -> the database and Kafka are inconsistent
 
-# Outbox Pattern : atomic dual write
-# Dans la même transaction :
+# Outbox Pattern: atomic dual write
+# Within the same transaction:
 def create_order(order: dict):
     with transaction():
-        db.insert('orders', order)          # 1. Insérer en base
-        db.insert('outbox', {               # 2. Insérer dans l outbox
+        db.insert('orders', order)          # 1. Insert into database
+        db.insert('outbox', {               # 2. Insert into outbox
             'event_type': 'OrderCreated',
             'payload': json.dumps(order),
             'status': 'pending'
         })
-    # Transaction atomique : les deux réussissent ou échouent ensemble
+    # Atomic transaction: both succeed or fail together
 
-# Débrayeur (Debezium ou polling) :
-# Lire l outbox et publier dans Kafka
-# Marquer comme 'published' après succès</code></div><h2 id='saga'><span class='sn'>5</span>Saga Pattern: distributed transactions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a Saga? How does it handle the failure of a step in a process?</p></div></div>
+# Relay (Debezium or polling):
+# Read the outbox and publish to Kafka
+# Mark as 'published' after success</code></div><h2 id='saga'><span class='sn'>5</span>Saga Pattern: distributed transactions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a Saga? How does it handle the failure of a step in a multi-service process?</p></div><ul><li><strong>Saga</strong> — sequence of compensable local transactions. Replaces distributed transactions (2PC) in microservices architectures</li><li><strong>Orchestration</strong> — a central orchestrator coordinates the steps. In case of failure, triggers compensations</li><li><strong>Choreography</strong> — each service listens to events and reacts. More decoupled but harder to debug</li><li><strong>Compensation</strong> — each step has a reverse transaction. If step 3 fails, steps 2 and 1 are compensated</li></ul><h2 id='choix'><span class='sn'>6</span>When to use event-driven architecture</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you decide if an event-driven architecture is justified?</p></div><ul><li><strong>Yes if</strong> — multiple independent consumers, need for auditability, unpredictable load spikes, loose coupling required</li><li><strong>No if</strong> — simple system with 1-2 services, strong consistency required everywhere, small team without messaging expertise</li><li><strong>Additional complexity</strong> — eventual consistency, harder debugging, duplicate management (at-least-once delivery)</li><li><strong>Start simple</strong> — a well-designed monolithic REST API is often preferable to premature EDA</li></ul><div class='cb'><code>import asyncio
+from dataclasses import dataclass
+from typing import Callable
+import json
+
+# Simple event-driven pipeline with Kafka
+@dataclass
+class OrderEvent:
+    order_id: str
+    customer_id: str
+    amount: float
+    event_type: str  # order_created, order_paid, order_shipped
+
+class EventBus:
+    def __init__(self):
+        self.handlers: dict[str, list[Callable]] = {}
+    
+    def subscribe(self, event_type: str, handler: Callable):
+        self.handlers.setdefault(event_type, []).append(handler)
+    
+    async def publish(self, event: OrderEvent):
+        for handler in self.handlers.get(event.event_type, []):
+            await handler(event)
+
+# Handlers
+async def update_inventory(event: OrderEvent):
+    await db.execute("UPDATE inventory SET stock = stock - 1 WHERE product_id = ?
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Architect ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

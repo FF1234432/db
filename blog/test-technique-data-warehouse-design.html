@@ -121,58 +121,99 @@ JOIN dim_date od ON o.order_date_id = od.date_id
 JOIN dim_date dd ON o.delivery_date_id = dd.date_id
 GROUP BY 1, 2;</code></div><h2 id='mini'><span class='sn'>6</span>Mini-dimensions : gérer les grandes dimensions qui changent</h2><div class='sq'><div class='sl'>Question discriminante</div><p>Qu est-ce qu une mini-dimension ? Quand l utilisez-vous à la place d un SCD2 ?</p></div><ul><li><strong>Problème</strong> — une dimension client a 50M de lignes et des attributs qui changent souvent (segment, score de crédit). SCD2 ferait exploser la table</li><li><strong>Mini-dimension</strong> — extraire les attributs qui changent fréquemment dans une petite dimension séparée</li><li><strong>Structure</strong> — dim_customers (attributs stables) + dim_customer_profile (segment, score, statut) + bridge si nécessaire</li><li><strong>Avantages</strong> — les requêtes sur les attributs stables restent rapides, seule la mini-dimension utilise le SCD2</li></ul><h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Grain, additivité, schéma en étoile complet</td><td>Définit le grain avant de modéliser, distingue additif et semi-additif</td><td>Ne sait pas ce qu est le grain</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Factless facts, bridge tables, junk dimensions, role-playing</td><td>A utilisé une bridge table pour un M:N, explique les junk dimensions</td><td>Ne connaît pas les patterns avancés de Kimball</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='etoile'><span class='sn'>1</span>Revision: grain, additivity, conformance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the grain of a fact table? What is the difference between an additive and semi-additive fact?</p></div><ul><li><strong>Grain</strong> — the level of detail of a row in the fact table. Ex: 'one row per order' or 'one row per order line'</li><li><strong>Additive fact</strong> — can be summed across all dimensions. Ex: sales amount (OK by date, by region, by product)</li><li><strong>Semi-additive fact</strong> — can only be summed across certain dimensions. Ex: bank balance (OK by date but not cumulable over time)</li><li><strong>Non-additive fact</strong> — cannot be summed. Ex: conversion rate, unit price. Always calculated from additive facts</li><li><strong>Conformed dimensions</strong> — same dimension shared across multiple fact tables to enable cross-analysis</li></ul><h2 id='factless'><span class='sn'>2</span>Factless fact tables</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a factless fact table? Give two concrete examples.</p></div><div class='cb'><code>-- Factless fact table type 1 : événements
--- 'L étudiant a assisté à ce cours ce jour'
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='etoile'><span class='sn'>1</span>Review: grain, additivity, conformance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the grain of a fact table? What is the difference between an additive and semi-additive fact?</p></div><ul><li><strong>Grain</strong> — the level of detail of a row in the fact table. Ex: 'one row per order' or 'one row per order line'</li><li><strong>Additive fact</strong> — can be summed across all dimensions. Ex: sales amount (OK by date, by region, by product)</li><li><strong>Semi-additive fact</strong> — can be summed across some dimensions only. Ex: bank balance (OK by date but not cumulative over time)</li><li><strong>Non-additive fact</strong> — cannot be summed. Ex: conversion rate, unit price. Always calculated from additive facts</li><li><strong>Conformed dimensions</strong> — same dimension shared across multiple fact tables to enable cross-analysis</li></ul><h2 id='factless'><span class='sn'>2</span>Factless fact tables</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a factless fact table? Give two concrete examples.</p></div><div class='cb'><code>-- Factless fact table type 1: events
+-- 'The student attended this course on this day'
 CREATE TABLE fct_attendance (
-    student_id INT,       -- FK vers dim_students
-    course_id INT,        -- FK vers dim_courses
-    date_id INT,          -- FK vers dim_date
-    -- Pas de mesure ! La présence est le fait
+    student_id INT,       -- FK to dim_students
+    course_id INT,        -- FK to dim_courses
+    date_id INT,          -- FK to dim_date
+    -- No measure! Attendance is the fact
     PRIMARY KEY (student_id, course_id, date_id)
 );
 
--- Factless fact table type 2 : couverture
--- 'Ce produit était en promotion ce jour dans cette région'
--- Permet de calculer les ventes SANS promo (anti-join)
+-- Factless fact table type 2: coverage
+-- 'This product was on promotion on this day in this region'
+-- Allows calculation of sales WITHOUT promo (anti-join)
 CREATE TABLE fct_promotions (
     product_id INT,
     region_id INT,
     date_id INT
-    -- La présence dans la table = produit en promo
+    -- Presence in the table = product on promotion
 );
 
--- Utilisation : taux de conversion des promos
+-- Usage: promo conversion rate
 SELECT
     p.product_id,
-    COUNT(DISTINCT v.order_id) AS ventes,
-    COUNT(DISTINCT p.date_id) AS jours_en_promo
+    COUNT(DISTINCT v.order_id) AS sales,
+    COUNT(DISTINCT p.date_id) AS days_on_promo
 FROM fct_promotions p
 LEFT JOIN fct_orders v ON p.product_id = v.product_id AND p.date_id = v.date_id
-GROUP BY p.product_id;</code></div><h2 id='bridge'><span class='sn'>3</span>Bridge tables: many-to-many relationships</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you model a many-to-many relationship between facts and dimensions?</p></div><div class='cb'><code>-- Problème : un compte peut avoir plusieurs propriétaires
--- et un propriétaire peut avoir plusieurs comptes
--- -> on ne peut pas mettre customer_id directement dans fct_transactions
+GROUP BY p.product_id;</code></div><h2 id='bridge'><span class='sn'>3</span>Bridge tables: many-to-many relationships</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you model a many-to-many relationship between facts and dimensions?</p></div><div class='cb'><code>-- Problem: an account can have multiple owners
+-- and an owner can have multiple accounts
+-- -> customer_id cannot be placed directly in fct_transactions
 
--- Solution : bridge table avec weight factor
+-- Solution: bridge table with weight factor
 CREATE TABLE bridge_account_customer (
     account_id INT,
     customer_id INT,
-    allocation_factor DECIMAL(5,4)  -- 1.0 si seul propriétaire, 0.5 si deux propriétaires
+    allocation_factor DECIMAL(5,4)  -- 1.0 if sole owner, 0.5 if two owners
 );
 
--- Requête : CA par client (avec pondération)
+-- Query: revenue by customer (with weighting)
 SELECT
     c.customer_name,
     SUM(t.amount * b.allocation_factor) AS allocated_revenue
 FROM fct_transactions t
 JOIN bridge_account_customer b ON t.account_id = b.account_id
 JOIN dim_customers c ON b.customer_id = c.customer_id
-GROUP BY c.customer_name;</code></div><ul><li><strong>Fanout problem</strong> — without an allocation_factor, amounts are counted multiple times (once per customer)</li><li><strong>Weight factor</strong> — 1/N for equal attribution among N parties, or specific business weighting</li></ul><h2 id='junk'><span class='sn'>4</span>Junk dimensions: grouping flags</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a junk dimension? When and how do you create one?</p></div><div class='cb'><code>-- Problème : la table de faits a de nombreux indicateurs booléens
--- is_promotional, is_online, is_returned, is_gift_wrap -> 4 colonnes dans les faits
+GROUP BY c.customer_name;</code></div><ul><li><strong>Fanout problem</strong> — without allocation_factor, amounts are counted multiple times (once per customer)</li><li><strong>Weight factor</strong> — 1/N for equal attribution among N parties, or specific business weighting</li></ul><h2 id='junk'><span class='sn'>4</span>Junk dimensions: grouping flags</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a junk dimension? When and how do you create one?</p></div><div class='cb'><code>-- Problem: the fact table has many boolean indicators
+-- is_promotional, is_online, is_returned, is_gift_wrap -> 4 columns in facts
 
--- Solution : junk dimension
--- Regroupe les combinaisons possibles de ces flags
+-- Solution: junk dimension
+-- Groups all possible combinations of these flags
 CREATE TABLE dim_order_flags (
-    flag_key INT PR</code></div></div>
+    flag_key INT PRIMARY KEY,
+    is_promotional BOOLEAN,
+    is_online BOOLEAN,
+    is_returned BOOLEAN,
+    is_gift_wrap BOOLEAN
+);
+-- Pre-populate all combinations (2^4 = 16 rows)
+
+-- The fact table only needs a single FK
+CREATE TABLE fct_orders (
+    order_id INT,
+    flag_key INT,  -- FK to dim_order_flags
+    amount DECIMAL
+);</code></div><ul><li><strong>Advantages</strong> — reduces the number of columns in the fact table, groups logically related flags</li><li><strong>When</strong> — 3+ low-cardinality boolean flags, often filtered together</li></ul><h2 id='role'><span class='sn'>5</span>Role-playing dimensions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a role-playing dimension? Show an example with a date.</p></div><div class='cb'><code>-- The same dimension can play multiple roles in a fact table
+-- Ex: an order has a creation date AND a delivery date
+
+-- A single date dimension table
+CREATE TABLE dim_date (
+    date_id INT PRIMARY KEY,
+    full_date DATE,
+    year INT, quarter INT, month INT, day_of_week INT
+);
+
+-- The fact table references dim_date twice with different names
+CREATE TABLE fct_orders (
+    order_id INT,
+    order_date_id INT,     -- FK to dim_date (role: order date)
+    delivery_date_id INT,  -- FK to dim_date (role: delivery date)
+    amount DECIMAL
+);
+
+-- Query with alias for each role
+SELECT
+    od.year AS order_year,
+    dd.year AS delivery_year,
+    AVG(DATEDIFF('day', od.full_date, dd.full_date)) AS avg_delivery_days
+FROM fct_orders o
+JOIN dim_date od ON o.order_date_id = od.date_id
+JOIN dim_date dd ON o.delivery_date_id = dd.date_id
+GROUP BY 1, 2;</code></div><h2 id='mini'><span class='sn'>6</span>Mini-dimensions: handling large changing dimensions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a mini-dimension? When do you use it instead of a SCD2?</p></div><ul><li><strong>Problem</strong> — a customer dimension has 50M rows and frequently changing attributes (segment, credit score). SCD2 would cause the table to explode</li><li><strong>Mini-dimension</strong> — extract frequently changing attributes into a small separate dimension</li><li><strong>Structure</strong> — dim_customers (stable attributes) + dim_customer_profile (segment, score, status) + bridge if needed</li><li><strong>Advantages</strong> — queries on stable attributes remain fast, only the mini-dimension uses SCD2</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>Grain, additivity, complete star schema</td><td>Defines grain before modeling, distinguishes additive and semi-additive</td><td>Does not know what grain is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Factless facts, bridge tables, junk dimensions, role-playing</td><td>Has used a bridge table for M:N, explains junk dimensions</td><td>Does not know Kimball advanced patterns</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Architect ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

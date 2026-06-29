@@ -194,15 +194,16 @@ def test_transform(make_order):
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Hypothesis, paramétrisation avancée, branch coverage</td><td>A utilisé Hypothesis pour découvrir des bugs, configure le branch coverage</td><td>Ne sait pas ce qu est le property-based testing</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Mutation testing, benchmarks, stratégies Hypothesis custom</td><td>A utilisé mutmut pour trouver des lacunes dans ses tests, a des benchmarks en CI</td><td>N a jamais entendu parler du mutation testing</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='hypothesis'><span class='sn'>1</span>Hypothesis: finding edge cases automatically</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is property-based testing? How is it superior to example-based tests?</p></div><div class='cb'><code>from hypothesis import given, strategies as st
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='hypothesis'><span class='sn'>1</span>Hypothesis : finding edge cases automatically</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is property-based testing? How is it superior to example-based tests?</p></div><div class='cb'><code>from hypothesis import given, strategies as st
 import pandas as pd
 
-# Test classique : vérifie 1 exemple
+# Classic test : checks 1 example
 def test_revenue_calculation_example():
     df = pd.DataFrame({'qty': [2], 'price': [10.0]})
     assert calculate_revenue(df)['revenue'].iloc[0] == 20.0
 
-# Property-based : Hypothesis génère des milliers d exemples
+# Property-based : Hypothesis generates thousands of examples
 @given(
     qty=st.integers(min_value=0, max_value=10000),
     price=st.floats(min_value=0.01, max_value=100000, allow_nan=False)
@@ -212,8 +213,8 @@ def test_revenue_is_always_non_negative(qty, price):
     result = calculate_revenue(df)
     assert result['revenue'].iloc[0] >= 0
 
-# Hypothesis trouve automatiquement les cas qui échouent
-# et les minimise (shrinking) pour donner le plus petit contre-exemple
+# Hypothesis automatically finds failing cases
+# and minimizes them (shrinking) to give the smallest counterexample
 
 @given(st.data())
 def test_partition_total_is_preserved(data):
@@ -221,32 +222,32 @@ def test_partition_total_is_preserved(data):
         columns=[st.column('amount', elements=st.floats(0, 1000, allow_nan=False))]
     ))
     result = transform_by_region(df)
-    assert abs(result['amount'].sum() - df['amount'].sum()) < 0.01</code></div><h2 id='properties'><span class='sn'>2</span>Defining the right properties</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you identify the properties to test on a data pipeline?</p></div><ul><li><strong>Conservation</strong> — a transformation must not lose rows (or lose exactly N rows if filtering)</li><li><strong>Additivity</strong> — the sum of parts equals the whole after aggregation</li><li><strong>Idempotence</strong> — applying the transformation twice must yield the same result as applying it once</li><li><strong>Monotonicity</strong> — if the input increases, the output must also increase (for certain metrics)</li><li><strong>Symmetry</strong> — the order of rows should not change the result of an aggregation</li></ul><h2 id='mutmut'><span class='sn'>3</span>Mutation testing with Mutmut</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is mutation testing? How do you use it to assess test quality?</p></div><div class='cb'><code>## Mutation testing : vérifier que vos tests détectent les bugs
+    assert abs(result['amount'].sum() - df['amount'].sum()) < 0.01</code></div><h2 id='properties'><span class='sn'>2</span>Defining the right properties</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you identify the properties to test on a data pipeline?</p></div><ul><li><strong>Conservation</strong> — a transformation must not lose rows (or lose exactly N rows if filtering)</li><li><strong>Additivity</strong> — the sum of parts equals the whole after an aggregation</li><li><strong>Idempotence</strong> — applying the transformation twice must give the same result as applying it once</li><li><strong>Monotonicity</strong> — if the input increases, the output must also increase (for certain metrics)</li><li><strong>Symmetry</strong> — the order of rows should not change the result of an aggregation</li></ul><h2 id='mutmut'><span class='sn'>3</span>Mutation testing with Mutmut</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is mutation testing? How do you use it to evaluate test quality?</p></div><div class='cb'><code>## Mutation testing : verify that your tests detect bugs
 
 ## Installation
 pip install mutmut
 
-## Lancer le mutation testing
+## Run mutation testing
 mutmut run --paths-to-mutate=src/transforms.py
 
-## Résultats
+## Results
 mutmut results
 # 45 mutations tested
-# 38 killed (tests ont détecté la mutation)
-# 7 survived (tests n ont PAS détecté la mutation = lacune)
+# 38 killed (tests detected the mutation)
+# 7 survived (tests did NOT detect the mutation = gap)
 
-mutmut show 42  # voir la mutation qui a survécu
+mutmut show 42  # see the mutation that survived
 # Original : if amount > 0:
 # Mutant :   if amount >= 0:
-# -> Ce test manque ! Ajouter test avec amount=0
+# -> This test is missing! Add test with amount=0
 
-## Interpréter le score
+## Interpret the score
 # Mutation score = killed / total
-# > 80% : bonne couverture
-# > 90% : excellente couverture</code></div><h2 id='parametrize'><span class='sn'>4</span>Advanced pytest parametrization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use pytest.mark.parametrize to test data pipelines?</p></div><div class='cb'><code>import pytest
+# > 80% : good coverage
+# > 90% : excellent coverage</code></div><h2 id='parametrize'><span class='sn'>4</span>Advanced pytest parametrization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use pytest.mark.parametrize to test data pipelines?</p></div><div class='cb'><code>import pytest
 from datetime import date
 
-# Paramétrisation simple
+# Simple parametrization
 @pytest.mark.parametrize('status,expected_count', [
     ('completed', 10),
     ('cancelled', 3),
@@ -256,13 +257,109 @@ def test_filter_by_status(status, expected_count, sample_orders):
     result = filter_orders(sample_orders, status=status)
     assert len(result) == expected_count
 
-# Paramétrisation avec IDs
+# Parametrization with IDs
 @pytest.mark.parametrize('date_range,expected', [
     pytest.param((date(2025,1,1), date(2025,1,31)), 100, id='january'),
     pytest.param((date(2025,2,1), date(2025,2,28)), 85, id='february'),
 ], ids=lambda x: x if isinstance(x, str) else None)
 def test_revenue_by_month(date_range, expected):
-    result = get</code></div></div>
+    result = get_revenue(*date_range)
+    assert abs(result - expected) < 5
+
+# Parametrized fixtures
+@pytest.fixture(params=['bigquery', 'snowflake', 'duckdb'])
+def warehouse(request):
+    return create_warehouse_connection(request.param)</code></div><h2 id='benchmarks'><span class='sn'>5</span>Performance testing with pytest-benchmark</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you measure and track the performance of your transformations?</p></div><div class='cb'><code>## pytest-benchmark : measure performance in a reproducible way
+import pytest
+
+def test_transform_performance(benchmark, sample_df_100k):
+    # benchmark.pedantic : precise control of iterations
+    result = benchmark.pedantic(
+        transform_orders,
+        args=(sample_df_100k,),
+        rounds=10,
+        iterations=3
+    )
+    assert len(result) > 0
+
+## Benchmark history
+# pytest --benchmark-save=baseline
+# pytest --benchmark-compare=baseline --benchmark-compare-fail=mean:10%
+# -> Fails if performance degrades by more than 10%
+
+## Integrated into CI to detect performance regressions
+## before merging to production</code></div><h2 id='coverage'><span class='sn'>6</span>Advanced coverage : branches and conditions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you go beyond simple line coverage?</p></div><div class='cb'><code>## pytest.ini
+[pytest]
+addopts = --cov=src --cov-report=term-missing --cov-branch
+
+## Branch coverage : verifies that both branches of an if are tested
+## if amount > 0:  -> test amount > 0 AND amount <= 0
+
+## coverage.ini
+[coverage:run]
+branch = True
+omit = tests/*
+
+[coverage:report]
+exclude_lines =
+    pragma: no cover  # annotate lines to exclude
+    if __name__ == .__main__.
+    raise NotImplementedError
+    
+fail_under = 85  # fails if coverage < 85%
+
+## View uncovered branches
+coverage html
+# Open htmlcov/index.html : lines and branches in red</code></div><div class='cb'><code>import pytest
+from unittest.mock import patch, AsyncMock
+from hypothesis import given, strategies as st
+
+# Async tests
+@pytest.mark.asyncio
+async def test_async_extract():
+    result = await extract_orders_async('2025-01-01')
+    assert len(result) > 0
+
+# Mock of an external API
+@patch('src.pipeline.requests.get')
+def test_extract_with_mock(mock_get):
+    mock_get.return_value.json.return_value = [{'id': 1, 'amount': 100}]
+    mock_get.return_value.status_code = 200
+    result = extract_orders('https://api.example.com')
+    assert len(result) == 1
+
+# Hypothesis : property-based testing
+@given(st.floats(min_value=-1e6, max_value=1e6))
+def test_amount_never_raises(amount):
+    result = process_amount(amount)
+    assert isinstance(result, (int, float))
+
+# Factory fixture
+@pytest.fixture
+def make_order():
+    def _make(order_id='ORD-001', amount=100.0, status='completed'):
+        return {'order_id': order_id, 'amount': amount, 'status': status}
+    return _make
+
+def test_transform(make_order):
+    result = transform(make_order(amount=250.0))
+    assert result['amount_eur'] == 250.0</code></div>
+<ul>
+<li><strong>pytest-asyncio</strong> - test async Python code. Configure asyncio_mode=auto in pytest.ini to avoid the marker on every test</li>
+<li><strong>Hypothesis</strong> - automatically generates test cases (boundary values, NaN, unicode). Finds edge-case bugs impossible to anticipate manually</li>
+<li><strong>Factory fixtures</strong> - fixture that returns a creation function. Create objects with varied parameters in each test without duplication</li>
+<li><strong>AsyncMock</strong> - mock async functions (coroutines). MagicMock does not work for async, use unittest.mock.AsyncMock</li>
+<li><strong>scope session</strong> - share a DB connection across all tests. scope=session creates the fixture only once, reduces setup time</li>
+</ul>
+<ul>
+<li><strong>pytest-asyncio</strong> - test async Python code. Configure asyncio_mode=auto in pytest.ini to avoid the marker on every test</li>
+<li><strong>Hypothesis</strong> - automatically generates test cases (boundary values, NaN, unicode). Finds edge-case bugs impossible to anticipate manually</li>
+<li><strong>Factory fixtures</strong> - fixture that returns a creation function. Create objects with varied parameters in each test without duplication</li>
+<li><strong>AsyncMock</strong> - mock async functions (coroutines). MagicMock does not work for async, use unittest.mock.AsyncMock</li>
+<li><strong>scope session</strong> - share a DB connection across all tests. scope=session creates the fixture only once, significantly reduces setup time</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bs'>Senior</span></td><td>Hypothesis, advanced parametrization, branch coverage</td><td>Has used Hypothesis to discover bugs, configures branch coverage</td><td>Does not know what property-based testing is</td></tr><tr><td><span class='bd bl'>Expert</span></td><td>Mutation testing, benchmarks, custom Hypothesis strategies</td><td>Has used mutmut to find gaps in their tests, has benchmarks in CI</td><td>Has never heard of mutation testing</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer rigoureux ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

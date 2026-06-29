@@ -111,35 +111,36 @@ db_password = os.environ.get("DB_PASSWORD")  # injecté par K8s Secret ou HashiC
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Secrets dans variables d env, TLS, RBAC basique</td><td>N a jamais de credentials en dur dans le code, utilise des variables d environnement</td><td>Stocke des mots de passe dans le code ou les logs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Secret Manager, Workload Identity, dynamic masking, audit logs</td><td>Utilise Workload Identity ou Secret Manager, a mis en place le dynamic masking</td><td>Ne sait pas ce qu est Workload Identity</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='chiffrement'><span class='sn'>1</span>Encryption at-rest and in-transit</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between at-rest and in-transit encryption? How do you implement them?</p></div><ul><li><strong>At-rest</strong> — data is encrypted when stored. S3 SSE-S3/SSE-KMS, BigQuery encryption, Snowflake BYOK</li><li><strong>In-transit</strong> — data is encrypted during transport. TLS 1.2+ mandatory, HTTPS for APIs</li><li><strong>At-use (Confidential Computing)</strong> — data is encrypted even during processing. GCP Confidential VMs</li><li><strong>CMEK (Customer Managed Encryption Keys)</strong> — manage your own encryption keys in Cloud KMS for highly sensitive data</li><li><strong>PII column encryption</strong> — individually encrypt columns containing personal data (email, IBAN) in the data warehouse</li></ul><h2 id='secrets'><span class='sn'>2</span>Secrets management: never hardcoded</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the absolute rules for secrets management in a data pipeline?</p></div><div class='cb'><code># JAMAIS : credentials en dur dans le code
-conn = psycopg2.connect(password='motdepasse123')  # NON
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='chiffrement'><span class='sn'>1</span>Encryption at-rest and in-transit</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between at-rest and in-transit encryption? How do you implement them?</p></div><ul><li><strong>At-rest</strong> — data is encrypted when stored. S3 SSE-S3/SSE-KMS, BigQuery encryption, Snowflake BYOK</li><li><strong>In-transit</strong> — data is encrypted during transport. TLS 1.2+ required, HTTPS for APIs</li><li><strong>At-use (Confidential Computing)</strong> — data is encrypted even during processing. GCP Confidential VMs</li><li><strong>CMEK (Customer Managed Encryption Keys)</strong> — manage your own encryption keys in Cloud KMS for highly sensitive data</li><li><strong>PII column encryption</strong> — individually encrypt columns containing personal data (email, IBAN) in the data warehouse</li></ul><h2 id='secrets'><span class='sn'>2</span>Secrets management: never hardcoded</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the absolute rules for secrets management in a data pipeline?</p></div><div class='cb'><code># NEVER : hardcoded credentials in code
+conn = psycopg2.connect(password='motdepasse123')  # NO
 
-# Bonne pratique 1 : variables d environnement
+# Best practice 1 : environment variables
 import os
 conn = psycopg2.connect(password=os.environ['DB_PASSWORD'])
 
-# Bonne pratique 2 : Secret Manager (GCP/AWS)
+# Best practice 2 : Secret Manager (GCP/AWS)
 from google.cloud import secretmanager
 def get_secret(name: str) -> str:
     client = secretmanager.SecretManagerServiceClient()
     secret = client.access_secret_version(name=name)
     return secret.payload.data.decode('UTF-8')
 
-# Bonne pratique 3 : Workload Identity (zéro credential)
-# Le service s authentifie via son identité cloud
-# Aucun secret à stocker ou à faire tourner
+# Best practice 3 : Workload Identity (zero credential)
+# The service authenticates via its cloud identity
+# No secret to store or rotate
 
-# Bonne pratique 4 : .gitignore strict
-# .env, *.pem, credentials.json, *_key.json</code></div><h2 id='rbac'><span class='sn'>3</span>RBAC access control</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you implement the principle of least privilege in your data stack?</p></div><ul><li><strong>Principle of least privilege</strong> — each service and user only has access to what they strictly need</li><li><strong>Dedicated service accounts</strong> — one service account per pipeline. Never a shared admin account</li><li><strong>Snowflake/BigQuery roles</strong> — create roles by function (INGESTION_ROLE, TRANSFORM_ROLE, BI_ROLE) with precise permissions</li><li><strong>Time-limited access</strong> — for temporary access (debug, audit), use time-limited tokens</li><li><strong>Access review</strong> — quarterly audit of who has access to what. Revoke inactive access</li></ul><h2 id='anonymisation'><span class='sn'>4</span>Technical anonymization and pseudonymization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you technically anonymize PII data in your data warehouse?</p></div><div class='cb'><code>-- Pseudonymisation : hashage avec sel (réversible avec le sel)
+# Best practice 4 : strict .gitignore
+# .env, *.pem, credentials.json, *_key.json</code></div><h2 id='rbac'><span class='sn'>3</span>RBAC access control</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you implement the principle of least privilege in your data stack?</p></div><ul><li><strong>Principle of least privilege</strong> — each service and user only has access to what they strictly need</li><li><strong>Dedicated service accounts</strong> — one service account per pipeline. Never a shared admin account</li><li><strong>Snowflake/BigQuery roles</strong> — create roles by function (INGESTION_ROLE, TRANSFORM_ROLE, BI_ROLE) with precise permissions</li><li><strong>Time-limited access</strong> — for temporary access (debug, audit), use tokens with a limited lifetime</li><li><strong>Access review</strong> — quarterly audit of who has access to what. Revoke inactive access</li></ul><h2 id='anonymisation'><span class='sn'>4</span>Anonymization and pseudonymization techniques</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you technically anonymize PII data in your data warehouse?</p></div><div class='cb'><code>-- Pseudonymization : hashing with salt (reversible with the salt)
 SELECT
-    SHA256(email || 'sel_secret_2025') AS email_hash,
-    SHA256(phone || 'sel_secret_2025') AS phone_hash,
-    -- données non-PII conservées
+    SHA256(email || 'secret_salt_2025') AS email_hash,
+    SHA256(phone || 'secret_salt_2025') AS phone_hash,
+    -- non-PII data preserved
     age_bucket,
     region
 FROM users;
 
--- Masquage dynamique Snowflake : montrer selon le rôle
+-- Snowflake dynamic masking : display based on role
 CREATE OR REPLACE MASKING POLICY email_mask AS
 (val STRING) RETURNS STRING ->
     CASE
@@ -150,14 +151,40 @@ CREATE OR REPLACE MASKING POLICY email_mask AS
 ALTER TABLE users MODIFY COLUMN email
     SET MASKING POLICY email_mask;
 
--- Généralisation : remplacer valeur précise par intervalle
+-- Generalization : replace exact value with range
 SELECT
     CASE
         WHEN age < 25 THEN '18-24'
         WHEN age < 35 THEN '25-34'
         ELSE '35+'
     END AS age_bracket
-FROM users;</code></div><h2 id='audit'><span class='sn'>5</span>Audit logs</div>
+FROM users;</code></div><h2 id='audit'><span class='sn'>5</span>Audit logs: tracking all access</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you implement audit logs on your data warehouse?</p></div><ul><li><strong>Snowflake Access History</strong> — who accessed which table, at what time, which columns</li><li><strong>BigQuery Data Access audit logs</strong> — enabled in Cloud Audit Logs. Every BigQuery query is logged</li><li><strong>Log retention</strong> — GDPR: retain access logs long enough to audit incidents</li><li><strong>Alerts on abnormal access</strong> — alert if a user accesses 100x more data than usual</li></ul><h2 id='secure'><span class='sn'>6</span>Secure by default: the principle</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What does 'secure by default' mean in a data architecture?</p></div><ul><li><strong>Access denied by default</strong> — no access without explicit grant. Opposite of a public S3 bucket by default</li><li><strong>Encryption enabled by default</strong> — enable at-rest encryption on all services upon creation</li><li><strong>No direct internet access</strong> — data pipelines run in a VPC without internet access. Use Private Endpoints</li><li><strong>Automatic secrets scanning</strong> — git-secrets, truffleHog in CI to detect credentials before push</li></ul><div class='cb'><code>from google.cloud import secretmanager
+import os
+
+# NEVER : hardcoded credentials
+# conn = psycopg2.connect(password='motdepasse123')  ← NO
+
+# Best practice 1 : Secret Manager (GCP)
+def get_secret(project_id: str, secret_name: str) -> str:
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8")
+
+# Best practice 2 : Workload Identity (zero credential)
+# The K8s pod authenticates via its service account → GCS access without storing a key
+# Configure in GKE : gcloud iam service-accounts add-iam-policy-binding ...
+
+# Best practice 3 : Environment variables + K8s secrets
+import os
+db_password = os.environ.get("DB_PASSWORD")  # injected by K8s Secret or HashiCorp Vault
+
+# Automatic secrets scanning in Git
+# Pre-commit hook with detect-secrets :
+# pip install detect-secrets
+# detect-secrets scan > .secrets.baseline
+# detect-secrets audit .secrets.baseline</code></div><ul><li><strong>Workload Identity Federation</strong> — the modern standard for AWS/GCP: services authenticate via their cloud identity with no key to store. Eliminates secret rotation</li><li><strong>HashiCorp Vault</strong> — dynamic secrets (credentials that expire after N minutes), full access audit, multi-cloud. Enterprise standard for centralized secrets</li><li><strong>Dynamic masking Snowflake/BigQuery</strong> — mask PII columns (email, IBAN) based on the user's role at query time, without touching stored data</li><li><strong>Column-level encryption</strong> — individually encrypt PII columns in the data warehouse with customer-managed keys (BYOK/CMEK). Protection even if the DB is compromised</li><li><strong>Mandatory audit logs</strong> — BigQuery Data Access logs, Snowflake Access History, AWS CloudTrail. Minimum 1-year retention for GDPR compliance and security audits</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>Secrets in environment variables, TLS, basic RBAC</td><td>Never has hardcoded credentials in code, uses environment variables</td><td>Stores passwords in code or logs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Secret Manager, Workload Identity, dynamic masking, audit logs</td><td>Uses Workload Identity or Secret Manager, has implemented dynamic masking</td><td>Does not know what Workload Identity is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer soucieux de la sécurité ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

@@ -115,7 +115,8 @@ client.emit(run_event)
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Lineage dbt, dbt docs, comprend le concept</td><td>Utilise ref() systématiquement, sait générer dbt docs avec le lineage</td><td>Ne sait pas ce qu est le data lineage</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OpenLineage, DataHub, column-level lineage, impact analysis</td><td>A déployé DataHub, utilise l impact analysis avant chaque changement critique</td><td>N a jamais entendu parler d OpenLineage</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>Why data lineage is critical</h2><div class='sq'><div class='sl'>Differentiating question</div><p>In which concrete cases has data lineage been useful to you?</p></div><ul><li><strong>Impact analysis</strong> — 'if I rename this column in stg_orders, which dashboards break?' Without lineage, impossible to answer</li><li><strong>Root cause analysis</strong> — 'the revenue KPI dropped 20% yesterday, which transformation is responsible?' Lineage lets you trace back to the source</li><li><strong>GDPR compliance</strong> — 'where is the personal data from this source table used?' Lineage answers in seconds</li><li><strong>Onboarding</strong> — understanding how data flows through the organization without querying dozens of people</li></ul><h2 id='openlineage'><span class='sn'>2</span>OpenLineage: the open standard</h2><div class='sq'><div class='sl'>Differentiating question</div><p>What is OpenLineage? Why is it an important standard?</p></div><div class='cb'><code># Exemple d événement OpenLineage émis par Airflow
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Why data lineage is critical</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which concrete cases has data lineage been useful to you?</p></div><ul><li><strong>Impact analysis</strong> — 'if I rename this column in stg_orders, which dashboards will break?' Without lineage, impossible to answer</li><li><strong>Root cause analysis</strong> — 'the revenue KPI dropped 20% yesterday, which transformation is responsible?' Lineage allows tracing back to the source</li><li><strong>GDPR compliance</strong> — 'where is the personal data from this source table being used?' Lineage answers in seconds</li><li><strong>Onboarding</strong> — understanding how data flows through the organization without having to ask dozens of people</li></ul><h2 id='openlineage'><span class='sn'>2</span>OpenLineage: the open standard</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is OpenLineage? Why is it an important standard?</p></div><div class='cb'><code># Example of an OpenLineage event emitted by Airflow
 {
   'eventType': 'COMPLETE',
   'eventTime': '2025-01-15T08:30:00Z',
@@ -136,11 +137,11 @@ client.emit(run_event)
     'namespace': 'snowflake',
     'name': 'PROD_DB.STAGING.STG_ORDERS'
   }]
-}</code></div><ul><li><strong>OpenLineage</strong> — open standard (Linux Foundation) for emitting lineage events from any tool</li><li><strong>Native integrations</strong> — Airflow, Spark, dbt, Flink, Great Expectations emit OpenLineage events</li><li><strong>Backends</strong> — Marquez (open source reference), DataHub, Atlan can receive these events</li></ul><h2 id='datahub'><span class='sn'>3</span>DataHub: centralized catalog and lineage</h2><div class='sq'><div class='sl'>Differentiating question</div><p>How does DataHub aggregate lineage from several different tools?</p></div><ul><li><strong>DataHub</strong> — open source governance platform (LinkedIn) that centralizes metadata and lineage</li><li><strong>Ingestion sources</strong> — Snowflake, BigQuery, dbt, Airflow, Looker, Power BI, Kafka: each source has a DataHub connector</li><li><strong>Lineage UI</strong> — interactive graph showing dependencies from source to dashboards</li><li><strong>Deployment</strong> — Docker Compose for local dev, Kubernetes for production</li></ul><div class='cb'><code># Lancer DataHub localement
+}</code></div><ul><li><strong>OpenLineage</strong> — open standard (Linux Foundation) for emitting lineage events from any tool</li><li><strong>Native integrations</strong> — Airflow, Spark, dbt, Flink, Great Expectations natively emit OpenLineage events</li><li><strong>Backends</strong> — Marquez (open source reference), DataHub, Atlan can receive these events</li></ul><h2 id='datahub'><span class='sn'>3</span>DataHub: centralized catalog and lineage</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does DataHub aggregate lineage from several different tools?</p></div><ul><li><strong>DataHub</strong> — open source governance platform (LinkedIn) that centralizes metadata and lineage</li><li><strong>Ingestion sources</strong> — Snowflake, BigQuery, dbt, Airflow, Looker, Power BI, Kafka: each source has a DataHub connector</li><li><strong>Lineage UI</strong> — interactive graph showing dependencies from the source all the way to dashboards</li><li><strong>Deployment</strong> — Docker Compose for local dev, Kubernetes for production</li></ul><div class='cb'><code># Launch DataHub locally
 pip install acryl-datahub
 datahub docker quickstart
 
-# Ingestor dbt
+# dbt ingestor
 datahub ingest -c dbt_ingest.yaml
 # dbt_ingest.yaml
 source:
@@ -148,7 +149,59 @@ source:
   config:
     manifest_path: ./target/manifest.json
     catalog_path: ./target/catalog.json
-    sources_path: ./target/sources.json</code></div><h2 id='dbt'><span class='sn'>4</span>dbt lineage: the starting point</h2><div class='sq'><div class='sl'>Differentiating question</div><p>How does dbt automatically generate lineage?</p></div><ul><li><strong>ref() and source()</strong> — every call to ref() and source() in a dbt model creates an edge in the lineage graph</li><li><strong>dbt DAG</strong> — dbt automatically builds the dependency graph from refs. Viewable in dbt docs</li><li><strong>dbt docs generate</strong> — generates a documentation site with a navigable lineage graph</li><li><strong>Exposure</strong> — documenting final consumers (dashboards, APIs) as outgoing edges of the lineage</li></ul><h2 id='column'><span class='sn'>5</span>Column-level lineage: maximum granularity</h2><div class='sq'><div class='sl'>Differentiating question</div><p>What is column-level lineage? Why is it more pow</p></div></div>
+    sources_path: ./target/sources.json</code></div><h2 id='dbt'><span class='sn'>4</span>dbt lineage: the starting point</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does dbt automatically generate lineage?</p></div><ul><li><strong>ref() and source()</strong> — every call to ref() and source() in a dbt model creates an edge in the lineage graph</li><li><strong>dbt DAG</strong> — dbt automatically builds the dependency graph from refs. Viewable in dbt docs</li><li><strong>dbt docs generate</strong> — generates a documentation site with a navigable lineage graph</li><li><strong>Exposure</strong> — documenting final consumers (dashboards, APIs) as outgoing edges in the lineage</li></ul><h2 id='column'><span class='sn'>5</span>Column-level lineage: maximum granularity</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is column-level lineage? Why is it more powerful than table-level lineage?</p></div><ul><li><strong>Table-level lineage</strong> — 'the fct_orders table depends on stg_orders'. Useful but not sufficient for impact analysis</li><li><strong>Column-level lineage</strong> — 'the fct_orders.amount column comes from stg_orders.unit_price * stg_orders.quantity'. Fine-grained granularity</li><li><strong>Use cases</strong> — precisely identifying which source column impacts which KPI, even after 10 transformations</li><li><strong>Tools</strong> — dbt 1.6+ automatically generates column-level lineage. DataHub and Atlan visualize it</li><li><strong>Limitation</strong> — complex transformations (Python, Spark) are difficult to trace at the column level</li></ul><h2 id='impact'><span class='sn'>6</span>Impact analysis in practice</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Show how you use lineage to assess the impact of a change.</p></div><div class='cb'><code># dbt: identify models impacted by a change
+# If I modify stg_orders.sql, which models are affected?
+dbt ls --select stg_orders+  # stg_orders and all its descendants
+
+# Exclude models outside the scope
+dbt build --select stg_orders+  # rebuild the full chain
+
+# DataHub API: programmatic impact analysis
+from datahub.ingestion.api.common import PipelineContext
+# Query the downstream datasets of a column
+client.get_downstream_lineage(
+    dataset='urn:li:dataset:(urn:li:dataPlatform:snowflake,PROD_DB.STAGING.STG_ORDERS,PROD)'
+)</code></div>
+<div class='cb'><code># OpenLineage: emit lineage from any job
+from openlineage.client import OpenLineageClient, set_producer
+from openlineage.client.run import RunEvent, Run, Job
+from openlineage.client.facet import SqlJobFacet, DatasetFacet
+
+client = OpenLineageClient.from_environment()
+set_producer("https://github.com/my-org/data-pipeline")
+
+# Emit a job start event
+run_event = RunEvent(
+    eventType="START",
+    eventTime=datetime.now().isoformat(),
+    run=Run(runId=str(uuid.uuid4())),
+    job=Job(namespace="data-platform", name="transform_orders"),
+    inputs=[DatasetFacet(namespace="snowflake", name="raw.orders")],
+    outputs=[DatasetFacet(namespace="snowflake", name="analytics.fct_orders")]
+)
+client.emit(run_event)
+
+# Native OpenLineage integrations
+# - dbt: dbt-ol package (automatic lineage)
+# - Airflow: openlineage-airflow provider
+# - Spark: openlineage-spark jar
+# - Great Expectations: openlineage-great-expectations</code></div>
+<ul>
+<li><strong>OpenLineage vs DataHub lineage</strong> — OpenLineage: open standard for emitting lineage from any tool. DataHub/Marquez/Atlan: backends that consume these events</li>
+<li><strong>Marquez</strong> — open source metadata repository compatible with OpenLineage. Lightweight alternative to DataHub for lineage only</li>
+<li><strong>Column-by-column lineage</strong> — table-to-table lineage is not enough. Column lineage allows tracing the origin of each field (e.g.: amount in fct_orders comes from raw.transactions.price)</li>
+<li><strong>Impact analysis</strong> — with lineage, answer in 30 seconds: 'if I change this source column, which dashboards will be impacted?'</li>
+<li><strong>Airflow integration</strong> — install <code>apache-airflow-providers-openlineage</code>. Each Airflow task automatically emits lineage events to Marquez or DataHub</li>
+</ul>
+<ul>
+<li><strong>OpenLineage vs DataHub lineage</strong> - OpenLineage: open standard for emitting lineage from any tool. DataHub/Marquez/Atlan: backends that consume these events</li>
+<li><strong>Marquez</strong> - open source metadata repository compatible with OpenLineage. Lightweight alternative to DataHub for lineage only</li>
+<li><strong>Column-by-column lineage</strong> - table-to-table lineage is not enough. Tracing the origin of each field enables precise impact analysis</li>
+<li><strong>Impact analysis</strong> - with lineage, answer in 30 seconds: if I change this source column, which dashboards will be impacted?</li>
+<li><strong>Airflow integration</strong> - install apache-airflow-providers-openlineage. Each Airflow task automatically emits lineage events to Marquez or DataHub</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>dbt lineage, dbt docs, understands the concept</td><td>Uses ref() systematically, knows how to generate dbt docs with lineage</td><td>Does not know what data lineage is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>OpenLineage, DataHub, column-level lineage, impact analysis</td><td>Has deployed DataHub, uses impact analysis before every critical change</td><td>Has never heard of OpenLineage</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Analytics Engineer ou Data Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

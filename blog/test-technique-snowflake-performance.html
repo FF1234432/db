@@ -98,7 +98,8 @@ ALTER WAREHOUSE ETL_WH SET RESOURCE_MONITOR = monthly_budget;</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>Query Profile, clustering basique, auto-suspend</td><td>Lit le Query Profile, a configuré un clustering key</td><td>Ne sait pas lire le Query Profile</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Clustering efficacité, MV, SOS, QAS, multi-cluster</td><td>Vérifie l efficacité du clustering avec CLUSTERING_INFORMATION, a utilisé MV ou SOS</td><td>Ne sait pas la différence entre scale up et scale out</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='profile'><span class='sn'>1</span>Query Profile: diagnosing slow queries</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use the Snowflake Query Profile to identify a bottleneck?</p></div><div class='cb'><code>-- Trouver les requêtes lentes des dernières 24h
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='profile'><span class='sn'>1</span>Query Profile: diagnosing slow queries</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use the Snowflake Query Profile to identify a bottleneck?</p></div><div class='cb'><code>-- Find slow queries from the last 24h
 SELECT
     query_id,
     query_text,
@@ -110,26 +111,63 @@ SELECT
 FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
 WHERE START_TIME >= DATEADD('hour', -24, CURRENT_TIMESTAMP)
   AND EXECUTION_STATUS = 'SUCCESS'
-  AND TOTAL_ELAPSED_TIME > 30000  -- > 30 secondes
+  AND TOTAL_ELAPSED_TIME > 30000  -- > 30 seconds
 ORDER BY TOTAL_ELAPSED_TIME DESC
 LIMIT 20;
 
--- Signal de problème : pct_scanned proche de 100%
--- Signifie que le clustering n aide pas</code></div><ul><li><strong>Nodes in Query Profile</strong> — TableScan (effective pruning?), Sort (avoidable?), Join (hash vs merge?)</li><li><strong>Partitions pruned</strong> — if 100% of partitions are scanned, clustering is useless for that filter</li></ul><h2 id='clustering'><span class='sn'>2</span>Advanced clustering: beyond the basics</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you create a Clustering Key on multiple columns? How do you verify its effectiveness?</p></div><div class='cb'><code>-- Clustering sur plusieurs colonnes (ordre important)
--- Colonne la plus sélective en premier
+-- Problem signal: pct_scanned close to 100%
+-- Means clustering is not helping</code></div><ul><li><strong>Nodes in Query Profile</strong> — TableScan (effective pruning?), Sort (avoidable?), Join (hash vs merge?)</li><li><strong>Partitions pruned</strong> — if 100% of partitions are scanned, clustering is useless on this filter</li></ul><h2 id='clustering'><span class='sn'>2</span>Advanced clustering: beyond the basics</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you create a Clustering Key on multiple columns? How do you verify its effectiveness?</p></div><div class='cb'><code>-- Clustering on multiple columns (order matters)
+-- Most selective column first
 ALTER TABLE fct_events
 CLUSTER BY (event_date, event_type, user_segment);
 
--- Vérifier l efficacité du clustering
+-- Check clustering effectiveness
 SELECT SYSTEM$CLUSTERING_INFORMATION('fct_events',
     '(event_date, event_type)');
--- average_depth proche de 1 = bon clustering
--- average_depth > 3 = reclustering nécessaire
+-- average_depth close to 1 = good clustering
+-- average_depth > 3 = reclustering needed
 
--- Clustering automatique (Automatic Clustering)
--- Snowflake maintient le clustering automatiquement
--- Coût: crédit de compute supplémentaire
-ALTER TABLE fct_events RESUME RECLUSTER;</code></div><h2 id='mat_views'><span class='sn'>3</span>Materialized Views: when to use them</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which case is a Snowflake Materialized View preferable to a dbt table?</p></div><ul><li><strong>Snowflake Materialized View</strong> — automatic and transparent refresh when source data changes. Zero orchestration</li><li><strong>Very frequent queries</strong> — an aggregation queried 1000 times per day benefits from an MV</li><li><strong>Limitations</strong> — more restrictive SQL than dbt models (no complex JOINs, no subqueries)</li><li><strong>Vs dbt table</strong> — the dbt table is more flexible (any SQL) but requires a scheduler. The MV is automatic but more limited</li></ul><h2 id='search'><span class='sn'>4</span>Search Optimization Service</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the Search Optimization Service? For which types of queries?</p></div><ul><li><strong>Search Optimization Service</strong> — search index for exact value lookups on very large tables</li><li><strong>Use case</strong> — WHERE id = 'abc123' queries on a 10 billion row table. Without SOS: full scan. With SOS: direct lookup</li><li><strong>Do not use for</strong> — analytical queries with aggregations. Clustering is better suited</li><li><strong>Cost</strong> — additional storage cost for the index. Worth it if performance gains are significant</li></ul><h2 id='qas'><span class='sn'>5</span>Query Acceleration Service</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the Query Acceleration Service?</p></div><ul><li><strong>QAS</strong> — Snowflake automatically launches additional resources to accelerate the slow parts of a query (outlier partitions)</li><li><strong>Enable</strong> — ALTER</li></ul></div>
+-- Automatic Clustering
+-- Snowflake maintains clustering automatically
+-- Cost: additional compute credits
+ALTER TABLE fct_events RESUME RECLUSTER;</code></div><h2 id='mat_views'><span class='sn'>3</span>Materialized Views: when to use them</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which case is a Snowflake Materialized View preferable to a dbt table?</p></div><ul><li><strong>Snowflake Materialized View</strong> — automatic and transparent refresh when source data changes. Zero orchestration</li><li><strong>Very frequent queries</strong> — an aggregation queried 1000 times per day benefits from a MV</li><li><strong>Limitations</strong> — more restrictive SQL than dbt models (no complex JOINs, no subqueries)</li><li><strong>Vs dbt table</strong> — the dbt table is more flexible (any SQL) but requires a scheduler. The MV is automatic but more limited</li></ul><h2 id='search'><span class='sn'>4</span>Search Optimization Service</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the Search Optimization Service? For which types of queries?</p></div><ul><li><strong>Search Optimization Service</strong> — search index for exact-value lookups on very large tables</li><li><strong>Use case</strong> — WHERE id = 'abc123' queries on a 10 billion row table. Without SOS: full scan. With SOS: direct lookup</li><li><strong>Do not use for</strong> — analytical queries with aggregations. Clustering is more appropriate</li><li><strong>Cost</strong> — additional storage cost for the index. Worth it if performance gains are significant</li></ul><h2 id='qas'><span class='sn'>5</span>Query Acceleration Service</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the Query Acceleration Service?</p></div><ul><li><strong>QAS</strong> — Snowflake automatically spins up additional resources to accelerate the slow parts of a query (outlier partitions)</li><li><strong>Enable</strong> — ALTER WAREHOUSE mywh SET ENABLE_QUERY_ACCELERATION = TRUE</li><li><strong>Use case</strong> — queries with a few partitions much larger than the others (data skew in partitions)</li><li><strong>Cost</strong> — additional credits only when used. No fixed cost</li></ul><h2 id='warehouse'><span class='sn'>6</span>Warehouse sizing and multi-cluster</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you choose between scaling up (larger warehouse) and scaling out (multi-cluster)?</p></div><table class='lt'><thead><tr><th>Problem</th><th>Solution</th><th>Why</th></tr></thead><tbody><tr><td>Single query too slow</td><td>Scale UP (XS → S → M)</td><td>More compute per query</td></tr><tr><td>Too many concurrent queries (queueing)</td><td>Scale OUT (multi-cluster)</td><td>More parallel warehouses</td></tr><tr><td>Slow nightly transformation</td><td>Scale UP temporarily</td><td>Finish faster, then auto-suspend</td></tr><tr><td>BI dashboard with 50 concurrent users</td><td>Multi-cluster auto-scale</td><td>Distribute the load</td></tr></tbody></table><div class='cb'><code>-- Identify slow queries
+SELECT query_id, total_elapsed_time/1000 AS sec,
+    bytes_scanned/POW(1024,3) AS gb,
+    ROUND(partitions_scanned*100.0/NULLIF(partitions_total,0),1) AS pct_scanned
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE START_TIME >= DATEADD('hour',-24,CURRENT_TIMESTAMP)
+  AND TOTAL_ELAPSED_TIME > 30000
+ORDER BY TOTAL_ELAPSED_TIME DESC LIMIT 20;
+
+-- Check clustering
+SELECT SYSTEM$CLUSTERING_INFORMATION('fct_events','(event_date, event_type)');
+-- average_depth close to 1 = good clustering
+
+-- Search Optimization Service
+ALTER TABLE customers ADD SEARCH OPTIMIZATION ON EQUALITY(customer_id, email);
+
+-- Resource monitor
+CREATE RESOURCE MONITOR monthly_budget
+    WITH CREDIT_QUOTA = 500
+    TRIGGERS ON 80 PERCENT DO NOTIFY
+             ON 100 PERCENT DO SUSPEND;
+ALTER WAREHOUSE ETL_WH SET RESOURCE_MONITOR = monthly_budget;</code></div>
+<ul>
+<li><strong>Query Profile UI</strong> - identify bottlenecks: TableScan (pruning ok?), Sort (avoidable?), Join (hash vs merge?). Slowest nodes = optimization priority</li>
+<li><strong>Materialized Views vs Dynamic Tables</strong> - MV: automatic refresh, limited SQL. Dynamic Tables: complex JOINs, auto incremental, configurable TARGET_LAG</li>
+<li><strong>Search Optimization Service</strong> - index for point lookups (WHERE id = 'abc') on tables > 10M rows. Costly: verify ROI before enabling</li>
+<li><strong>Query Acceleration Service</strong> - Snowflake spins up additional resources for queries with data skew. SET ENABLE_QUERY_ACCELERATION = TRUE on the warehouse</li>
+<li><strong>Scale up vs Scale out</strong> - single slow query = scale UP (XS to M). Too many queries queuing = scale OUT (multi-cluster). Two different problems, two solutions</li>
+</ul>
+<ul>
+<li><strong>Query Profile UI</strong> - identify bottlenecks: TableScan (pruning ok?), Sort (avoidable?), Join (hash vs merge?). Slowest nodes = optimization priority</li>
+<li><strong>Search Optimization Service</strong> - index for point lookups (WHERE id = 'abc') on tables > 10M rows. Verify ROI before enabling: fixed monthly cost</li>
+<li><strong>Query Acceleration Service</strong> - Snowflake spins up additional resources for queries with data skew. SET ENABLE_QUERY_ACCELERATION = TRUE on the warehouse</li>
+<li><strong>Scale up vs Scale out</strong> - single slow query = scale UP (XS to M). Too many queries queuing = scale OUT (multi-cluster). Two different problems, two solutions</li>
+<li><strong>Materialized Views vs Dynamic Tables</strong> - MV: automatic refresh, limited SQL. Dynamic Tables: complex JOINs, auto incremental, configurable TARGET_LAG</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Query Profile, basic clustering, auto-suspend</td><td>Reads the Query Profile, has configured a clustering key</td><td>Cannot read the Query Profile</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Clustering effectiveness, MV, SOS, QAS, multi-cluster</td><td>Verifies clustering effectiveness with CLUSTERING_INFORMATION, has used MV or SOS</td><td>Does not know the difference between scale up and scale out</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Snowflake Senior ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

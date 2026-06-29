@@ -152,29 +152,30 @@ def test_model_performance():
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>MLOps technical interview: CI/CD for ML, MLflow, model deployment</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>MLOps technical interview: CI/CD for ML, MLflow, model deployment</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Test technique MLOps : CI/CD pour le ML, MLflow, déploiement de modèles" data-en="MLOps technical interview: CI/CD for ML, MLflow, model deployment">MLOps technical interview: CI/CD for ML, MLflow, model deployment</h1>
 <p class="ai" data-fr="MLOps est le point de friction entre Data Science et Data Engineering. En entretien, on évalue la capacité à industrialiser un modèle ML : versioning, déploiement, monitoring et retraining automatisé." data-en="MLOps is the friction point between Data Science and Data Engineering. In interviews, we assess the ability to industrialize an ML model: versioning, deployment, monitoring and automated retraining.">MLOps is the friction point between Data Science and Data Engineering. In interviews, we assess the ability to industrialize an ML model: versioning, deployment, monitoring and automated retraining.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="9 min de lecture" data-en="9 min read">9 min read</span><span>·</span><span>Data Scientist · ML Engineer</span></div>
-<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#principes">MLOps principles</a></li>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#principes">MLOps Principles</a></li>
 <li><a href="#mlflow">MLflow: tracking and registry</a></li>
 <li><a href="#cicd">CI/CD for ML</a></li>
 <li><a href="#deploy">Model deployment</a></li>
 <li><a href="#monitor">Monitoring and data drift</a></li>
 <li><a href="#features">Feature store</a></li>
-<li><a href="#nv">Level-based assessment grid</a></li></ol></div>
+<li><a href="#nv">Level-based grid</a></li></ol></div>
 <div class="ab" id="ab">
-<p>A Data Scientist who cannot deploy their models to production is a cost, not a value. MLOps is the bridge between the research notebook and a reliable production system. In interviews, we distinguish profiles who have actually industrialized models from those who have only trained models.</p>
+<p>A Data Scientist who cannot deploy their models to production is a cost, not a value. MLOps is the bridge between the research notebook and the reliable production system. In interviews, we distinguish profiles who have actually industrialized models from those who have only trained models.</p>
 
-<h2 id="principes"><span class="sn">1</span>MLOps principles: maturity levels</h2>
-<div class="sq"><div class="sl">Discriminating question</div><p>Describe the 3 MLOps maturity levels (MLOps 0, 1, 2). Which level does your current organization sit at?</p></div>
+<h2 id="principes"><span class="sn">1</span>MLOps Principles: maturity levels</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>Describe the 3 MLOps maturity levels (MLOps 0, 1, 2). At which level is your current organization?</p></div>
 <ul>
 <li><strong>MLOps 0 — Manual</strong>: manual deployment, a notebook exported as a script, no model versioning, no monitoring. Most data teams are here</li>
 <li><strong>MLOps 1 — ML pipeline automation</strong>: automated training pipeline, versioning with MLflow, semi-automated deployment, basic performance monitoring</li>
 <li><strong>MLOps 2 — CI/CD pipeline automation</strong>: fully automated pipeline from data to deployment, automated tests, automatically triggered retraining, advanced monitoring with alerts</li>
 </ul>
-<div class="cl"><p><strong>Senior GO signal:</strong> the candidate can identify their organization's maturity level and explain the steps to progress to the next level.</p></div>
+<div class="cl"><p><strong>Senior GO Signal:</strong> the candidate can identify their organization's maturity level and explain the steps to progress to the next level.</p></div>
 
 <h2 id="mlflow"><span class="sn">2</span>MLflow: tracking, registry and serving</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between MLflow Tracking, MLflow Model Registry and MLflow Serving?</p></div>
@@ -182,13 +183,78 @@ def test_model_performance():
 import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
 
-# MLflow Tracking : loguer les expériences
+# MLflow Tracking: log experiments
 with mlflow.start_run(run_name="RF_v2_features_v3"):
     mlflow.log_param("n_estimators", 100)
     mlflow.log_param("max_depth", 5)
     
     model = RandomForestClassifier(n_estimators=100, max_depth=5)
-    model.fit(X_train, y_trai</code></div></div>
+    model.fit(X_train, y_train)
+    
+    accuracy = model.score(X_test, y_test)
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_metric("f1_score", f1)
+    
+    # Log the model with its signature
+    mlflow.sklearn.log_model(
+        model,
+        "random_forest",
+        signature=infer_signature(X_train, model.predict(X_train))
+    )
+
+# MLflow Model Registry: promote to production
+client = mlflow.tracking.MlflowClient()
+client.transition_model_version_stage(
+    name="churn_predictor",
+    version=3,
+    stage="Production"  # Staging → Production
+)</code></div>
+<ul>
+<li><strong>MLflow Tracking</strong> — log the parameters, metrics, artifacts and models of each experiment</li>
+<li><strong>MLflow Model Registry</strong> — centralize and version models, manage Staging/Production/Archived transitions</li>
+<li><strong>MLflow Serving</strong> — expose a model as a REST API (mlflow models serve)</li>
+<li><strong>Model signature</strong> — describe the expected inputs/outputs, essential for production validation</li>
+</ul>
+
+<h2 id="cicd"><span class="sn">3</span>CI/CD for Machine Learning</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is an ML model test in a CI/CD pipeline? What types of tests do you implement?</p></div>
+<ul>
+<li><strong>Data tests</strong> — validate the schema, distributions, absence of data leakage in the training dataset (Great Expectations, pytest)</li>
+<li><strong>Performance tests</strong> — verify that the new model performs better than the production model on a fixed validation dataset</li>
+<li><strong>Regression tests</strong> — verify that predictions on known cases have not changed unexpectedly</li>
+<li><strong>Inference tests</strong> — verify that the deployed model responds correctly (latency, response format)</li>
+<li><strong>Shadow mode</strong> — deploy the new model in parallel without exposing it to users to compare predictions</li>
+</ul>
+<div class="cb"><code># Example of a performance test in a CI pipeline
+def test_model_performance():
+    model = load_model("models/churn_v3")
+    X_test, y_test = load_validation_set()
+    
+    score = f1_score(y_test, model.predict(X_test))
+    baseline = 0.82  # current production model performance
+    
+    assert score >= baseline * 0.98, (
+        f"New model too weak: {score:.3f} vs baseline {baseline:.3f}"
+    )</code></div>
+
+<h2 id="deploy"><span class="sn">4</span>Model deployment in production</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What are the different ML model deployment strategies? In which case do you choose each one?</p></div>
+<table class="lt"><thead><tr><th>Strategy</th><th>Description</th><th>Use case</th></tr></thead><tbody>
+<tr><td><strong>Batch scoring</strong></td><td>Scheduled pipeline, batch predictions stored in database</td><td>Nightly email recommendations, monthly customer scoring</td></tr>
+<tr><td><strong>Real-time API</strong></td><td>FastAPI/Flask, on-demand prediction, low latency</td><td>Real-time credit score, fraud detection</td></tr>
+<tr><td><strong>Streaming</strong></td><td>Kafka + embedded model, prediction on each event</td><td>Real-time anomaly detection, IoT</td></tr>
+<tr><td><strong>Embedded model</strong></td><td>Model in the application (mobile, edge)</td><td>Offline NLP, computer vision on device</td></tr>
+</tbody></table>
+<ul>
+<li><strong>Containerization</strong> — Docker + Kubernetes for API deployment, automatic scaling</li>
+<li><strong>Canary deployment</strong> — expose 5-10% of traffic to the new model before full deployment</li>
+<li><strong>A/B testing</strong> — compare two models on random subpopulations to measure real business impact</li>
+</ul>
+
+<h2 id="monitor"><span class="sn">5</span>Monitoring and data drift</h2>
+<div class="sq"><
+</div>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ou ML Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

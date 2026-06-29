@@ -170,12 +170,13 @@ terraform {
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Syntaxe HCL, plan/apply, ressources basiques</td><td>Cree un bucket GCS et un dataset BigQuery, sait faire un plan</td><td>Ne sait pas ce qu est le state Terraform</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Modules, remote backend, variables et outputs</td><td>A cree un module reutilisable, configure un remote backend GCS/S3</td><td>Stocke le state en local, ne sait pas creer un module</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CI/CD, import, workspaces, gestion des secrets</td><td>A integre Terraform dans GitHub Actions, a fait un terraform import</td><td>Ne sait pas ce qu est le state locking</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='bases'><span class='sn'>1</span>Terraform core concepts</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between terraform plan and terraform apply? And between a resource and a data source?</p></div><div class='cb'><code># Structure d un projet Terraform data
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='bases'><span class='sn'>1</span>Terraform Core Concepts</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between terraform plan and terraform apply? And between a resource and a data source?</p></div><div class='cb'><code># Structure d un projet Terraform data
 .
-├── main.tf          # ressources principales
+├── main.tf          # main resources
 ├── variables.tf     # inputs
 ├── outputs.tf       # outputs
-├── versions.tf      # versions des providers
+├── versions.tf      # provider versions
 └── modules/
     ├── bigquery/
     │   ├── main.tf
@@ -212,7 +213,7 @@ resource 'google_bigquery_dataset' 'this' {
   delete_contents_on_destroy = var.delete_on_destroy
 }
 
-# Appel du module
+# Module call
 module 'dataset_analytics' {
   source     = './modules/bigquery'
   dataset_id = 'analytics_prod'
@@ -221,7 +222,7 @@ module 'dataset_analytics' {
   access_roles = [
     { role = 'READER', email = 'analysts@company.com' }
   ]
-}</code></div><h2 id='state'><span class='sn'>3</span>State management in a team</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why should you never store the Terraform state locally when working as a team? How do you manage it?</p></div><div class='cb'><code># backend.tf - remote state dans GCS
+}</code></div><h2 id='state'><span class='sn'>3</span>State management in a team</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why should you never store Terraform state locally in a team? How do you manage it?</p></div><div class='cb'><code># backend.tf - remote state in GCS
 terraform {
   backend 'gcs' {
     bucket = 'mon-projet-tfstate'
@@ -229,12 +230,12 @@ terraform {
   }
 }
 
-# Locking automatique via Cloud Storage
-# Empêche deux apply simultanes
+# Automatic locking via Cloud Storage
+# Prevents two simultaneous applies
 
-# Workspaces : environnements separes
+# Workspaces: separate environments
 terraform workspace new staging
-terraform workspace select production</code></div><ul><li><strong>Remote backend required</strong> — GCS, S3, Azure Blob, Terraform Cloud. Never keep .tfstate locally in a team</li><li><strong>State locking</strong> — prevents two simultaneous applies that would corrupt the state</li><li><strong>terraform.tfvars</strong> — variables per environment. Never commit secrets</li></ul><h2 id='cicd'><span class='sn'>4</span>Terraform CI/CD with GitHub Actions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you integrate Terraform into a CI/CD pipeline?</p></div><div class='cb'><code># .github/workflows/terraform.yml
+terraform workspace select production</code></div><ul><li><strong>Remote backend required</strong> — GCS, S3, Azure Blob, Terraform Cloud. Never .tfstate locally in a team</li><li><strong>State locking</strong> — prevents two simultaneous applies that would corrupt the state</li><li><strong>terraform.tfvars</strong> — variables per environment. Never commit secrets</li></ul><h2 id='cicd'><span class='sn'>4</span>CI/CD Terraform with GitHub Actions</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you integrate Terraform into a CI/CD pipeline?</p></div><div class='cb'><code># .github/workflows/terraform.yml
 name: Terraform
 on:
   pull_request:
@@ -256,9 +257,61 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         
-      - name: Terraform Apply  # uniquement sur main
+      - name: Terraform Apply  # on main only
         if: github.ref == 'refs/heads/main'
-        run: terraform apply tfplan</code></div><h2 id='data'><span class='sn'>5</span>Common data resources in Terraform</h2><ul><li><strong>GCS buckets</strong> — google_storage_bucket with</div>
+        run: terraform apply tfplan</code></div><h2 id='data'><span class='sn'>5</span>Common data resources in Terraform</h2><ul><li><strong>GCS buckets</strong> — google_storage_bucket with lifecycle rules, versioning, CMEK</li><li><strong>BigQuery</strong> — google_bigquery_dataset, google_bigquery_table with JSON schema</li><li><strong>Airflow (Cloud Composer)</strong> — google_composer_environment with DAG variables</li><li><strong>IAM</strong> — google_project_iam_member, google_storage_bucket_iam_binding</li><li><strong>Secret Manager</strong> — google_secret_manager_secret for credentials</li></ul><h2 id='import'><span class='sn'>6</span>Importing existing resources</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you manage existing infrastructure that was not created with Terraform?</p></div><div class='cb'><code># terraform import: take control of an existing resource
+terraform import google_bigquery_dataset.analytics \
+  projects/mon-projet/datasets/analytics
+
+# Terraform 1.5+: import block in code
+import {
+  to = google_bigquery_dataset.analytics
+  id = 'projects/mon-projet/datasets/analytics'
+}
+
+# terraform plan -generate-config-out=generated.tf
+# Automatically generates Terraform code for imported resources</code></div><div class='cb'><code>module "analytics_dataset" {
+  source     = "./modules/bigquery_dataset"
+  dataset_id = "analytics_prod"
+  project_id = var.project_id
+  location   = "EU"
+  access_roles = [
+    { role = "READER", email = "analysts@company.com" }
+  ]
+}
+
+terraform {
+  backend "gcs" {
+    bucket = "mon-projet-tfstate"
+    prefix = "terraform/data-platform"
+  }
+  required_providers {
+    google = { source = "hashicorp/google", version = "~> 5.0" }
+  }
+}
+
+# Importing existing resources
+# terraform import google_bigquery_dataset.analytics projects/mon-projet/datasets/analytics
+
+# Workspaces for environments
+# terraform workspace new staging
+# terraform workspace select production</code></div>
+<ul>
+<li><strong>Remote backend required</strong> - GCS, S3, Terraform Cloud. Never .tfstate locally in a team: risk of conflicts and state loss</li>
+<li><strong>State locking</strong> - GCS and S3 lock the state during apply. Prevents two simultaneous applies that would corrupt the state</li>
+<li><strong>Resource import</strong> - take control of manually created resources. terraform import + generate code with -generate-config-out</li>
+<li><strong>Workspaces</strong> - manage multiple environments (dev/staging/prod) with the same code. Different variables per workspace</li>
+<li><strong>CI/CD Terraform</strong> - automatic plan on PR (comment the plan in GitHub), apply only on main merge. AWS/GCP secrets in GitHub Actions</li>
+</ul>
+<ul>
+<li><strong>Remote backend required</strong> - GCS, S3, or Terraform Cloud. Never .tfstate locally in a team: risk of conflicts and state loss</li>
+<li><strong>State locking</strong> - GCS and S3 lock the state during apply. Prevents two simultaneous applies that would corrupt the state</li>
+<li><strong>Resource import</strong> - terraform import to take control of manually created resources. Generate code with -generate-config-out</li>
+<li><strong>Workspaces</strong> - manage multiple environments (dev/staging/prod) with the same code. Different variables per workspace</li>
+<li><strong>CI/CD Terraform</strong> - automatic plan on PR, apply only on main merge. AWS/GCP secrets in GitHub Actions, never in code</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>HCL syntax, plan/apply, basic resources</td><td>Creates a GCS bucket and a BigQuery dataset, knows how to run a plan</td><td>Does not know what Terraform state is</td></tr><tr><td><span class='bd bm'>Mid-level</span></td><td>Modules, remote backend, variables and outputs</td><td>Has created a reusable module, configured a remote backend GCS/S3</td><td>Stores state locally, does not know how to create a module</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>CI/CD, import, workspaces, secrets management</td><td>Has integrated Terraform into GitHub Actions, has run a terraform import</td><td>Does not know what state locking is</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer cloud ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

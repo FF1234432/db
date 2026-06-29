@@ -111,31 +111,32 @@
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Power BI Technical Test Best Practices: Report, Model, Performance</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span>Power BI technical test best practices: report, model, performance</span></div>
 <div class="at">Data recruitment guide</div>
-<h1 class="ah">Power BI Technical Test Best Practices: Report, Model, Performance</h1>
-<p class="ai">Knowing how to create a chart in Power BI isn't enough. In Senior interviews, what's assessed is the rigor in building the report: page structure, interaction management, performance optimization and governance.</p>
+<h1 class="ah">Power BI technical test best practices: report, model, performance</h1>
+<p class="ai">Knowing how to create a chart in Power BI is not enough. In a Senior interview, the focus is on rigor in report building: page structure, interaction management, performance optimization and governance.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span>8 min read</span><span>·</span><span>Data Analyst</span></div>
 <div class="tc"><div class="tt">Table of contents</div><ol id="tl"><li><a href="#modele">Modeling before the report</a></li>
 <li><a href="#rapport">Report page structure</a></li>
-<li><a href="#viz">Visual choices</a></li>
+<li><a href="#viz">Choosing visuals</a></li>
 <li><a href="#perf">Performance optimization</a></li>
 <li><a href="#signets">Bookmarks and navigation</a></li>
 <li><a href="#deploy">Before publishing</a></li>
-<li><a href="#nv">Grid by level</a></li></ol></div>
+<li><a href="#nv">Level grid</a></li></ol></div>
 <div class="ab" id="ab">
-<p>A Power BI report in production is like a piece of software: it must be maintained, documented, and performant. Profiles that neglect modeling or don't test before publishing create technical debt that the entire team will have to repay.</p>
+<p>A Power BI report in production is like software: it must be maintained, documented, and performant. Profiles that neglect modeling or do not test before publishing create technical debt that the entire team will have to pay back.</p>
 
 <h2 id="modele"><span class="sn">1</span>Modeling: before touching the report</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>Why do you avoid many-to-many relationships? And why do you organize your tables in a star schema?</p></div>
 <ul>
-<li><strong>Mandatory star schema</strong> — fact table at the center, dimension tables around it. Simplifies relationships, reduces processing time</li>
+<li><strong>Star schema mandatory</strong> — fact table at the center, dimension tables around it. Simplifies relationships, reduces processing time</li>
 <li><strong>Many-to-many (M:M) relationships</strong> — to avoid: increase the risk of filter errors, create ambiguities in aggregations. Resolve with a bridge table</li>
-<li><strong>Remove unnecessary columns</strong> — every imported column consumes memory. Only keep what is necessary for the report</li>
+<li><strong>Remove unnecessary columns</strong> — every imported column consumes memory. Only keep what is needed for the report</li>
 <li><strong>Inactive relationships</strong> — remove them if unused: they can "break" the report when data is refreshed</li>
 <li><strong>Date table</strong> — create and mark a dedicated date table to enable time intelligence functions</li>
 </ul>
-<div class="cl"><p><strong>Basic rule:</strong> if your Power BI model has more than 3 levels of joins or bidirectional relationships everywhere, it's a signal that data preparation should happen upstream (Power Query or dbt), not in the model.</p></div>
+<div class="cl"><p><strong>Basic rule:</strong> if your Power BI model has more than 3 levels of joins or bidirectional relationships everywhere, it is a signal that data preparation should be done upstream (Power Query or dbt), not in the model.</p></div>
 
 <h2 id="rapport"><span class="sn">2</span>Report page structure</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>How do you structure a Power BI report page? What is your layout logic?</p></div>
@@ -143,12 +144,58 @@
 <li><strong>Funnel effect</strong> — top to bottom: filters/slicers → KPIs → charts → detail table</li>
 <li><strong>Fixed header</strong> — clear title, refresh date, report scope</li>
 <li><strong>3-4 visuals maximum per page</strong> — beyond that, performance degrades and the user is overwhelmed</li>
-<li><strong>Chart backgrounds</strong> — modify directly in the chart's formatting settings, not with overlaid shapes (better performance)</li>
+<li><strong>Chart backgrounds</strong> — modify directly in the chart layout settings, not with overlaid shapes (better performance)</li>
 <li><strong>Slicer synchronization</strong> — if a filter must apply across multiple pages, synchronize it (View → Sync slicers)</li>
 </ul>
 
-<h2 id="viz"><span class="sn">3</span>Visual choices: what to avoid</h2>
-<div class="sq"><div class="sl">Discriminating question</div><p>What types of charts do you avoid in Power BI and why?</p></div></div>
+<h2 id="viz"><span class="sn">3</span>Choosing visuals: what to avoid</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>What types of charts do you avoid in Power BI and why?</p></div>
+<ul>
+<li><strong>Pie charts</strong> — difficult to compare visually, especially with more than 4-5 segments. Prefer bar charts</li>
+<li><strong>3D is useless</strong> — 3D charts distort proportions. Always prefer 2D equivalents (donut rather than 3D pie)</li>
+<li><strong>Too many custom visuals</strong> — marketplace visuals can slow down the report and create dependencies. Prefer native visuals when possible</li>
+<li><strong>Tables with too many rows</strong> — limit to 10-20 rows, sort by the most important indicator. Use the Top N condition</li>
+<li><strong>Line charts for categorical data</strong> — use bar charts for categories, line charts for time series</li>
+</ul>
+
+<h2 id="perf"><span class="sn">4</span>Performance optimization</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you identify and resolve a slow Power BI report?</p></div>
+<ul>
+<li><strong>Performance Analyzer</strong> — enable in the View tab, measures the rendering time of each visual (DAX query, display, other)</li>
+<li><strong>Limit interactions</strong> — by default, all visuals influence each other. Disable unnecessary interactions (Format → Edit interactions)</li>
+<li><strong>Calculated columns vs measures</strong> — calculated columns are stored and increase model size. Prefer measures (calculated on the fly)</li>
+<li><strong>KPIs via tables rather than cards</strong> — aligning multiple KPIs in a single table = 1 query instead of N (improves performance)</li>
+<li><strong>Upstream filters</strong> — filter in Power Query before loading rather than with visual filters</li>
+<li><strong>DAX Studio</strong> — analyze slow measures, view the VertiPaq query plan</li>
+</ul>
+
+<h2 id="signets"><span class="sn">5</span>Bookmarks and advanced navigation</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you create a navigation menu with bookmarks? What is the difference between "Data" and "Display" in a bookmark's settings?</p></div>
+<ul>
+<li><strong>Bookmarks</strong> — save a report state: active filters, element visibility, current page</li>
+<li><strong>"Data" setting</strong> — includes the filter/slicer state in the bookmark. Enable for period tabs (Last day, Last week)</li>
+<li><strong>"Display" setting</strong> — includes element visibility. Useful for showing/hiding charts</li>
+<li><strong>Selected visuals</strong> — always prefer "Selected visuals" over "All visuals" to avoid side effects on other elements</li>
+<li><strong>Navigation without bookmarks</strong> — use native page navigation buttons (Insert → Buttons → Page navigation)</li>
+</ul>
+
+<h2 id="deploy"><span class="sn">6</span>Before publishing: checklist</h2>
+<ul>
+<li><strong>Refresh data</strong> — always refresh before submitting to avoid stale data</li>
+<li><strong>Test all buttons and filters</strong> — verify that slicers work and that buttons navigate correctly</li>
+<li><strong>Check performance</strong> — Performance Analyzer on each page before publishing</li>
+<li><strong>Clean up unused measures</strong> — orphaned measures increase file size and create confusion</li>
+<li><strong>Document sources</strong> — indicate in the report the last refresh date and data source</li>
+<li><strong>Row-Level Security</strong> — test RLS roles with "View as" before publishing</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Native visuals, slicers, simple relationships, basic publishing</td><td>Can create a star schema, avoids pie charts, refreshes before publishing</td><td>Uses bidirectional relationships everywhere, does not clean up unnecessary columns</td></tr>
+<tr><td><span class="bd bm">Confirmed</span></td><td>Advanced bookmarks, interaction optimization, Performance Analyzer</td><td>Uses bookmarks for navigation, disables unnecessary interactions, has used Performance Analyzer</td><td>Has never used Performance Analyzer, does not know how to configure bookmarks</td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Deployment pipelines, advanced RLS, DAX Studio, report standards</td><td>Has deployed via DEV/TEST/PROD pipelines, has configured dynamic RLS, uses DAX Studio</td><td>Does not know deployment pipelines, has never used DAX Studio</td></tr>
+</tbody></table>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Analyst Power BI ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

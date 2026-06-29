@@ -111,7 +111,8 @@ if report.as_dict()["metrics"][0]["result"]["missing_values_share"] > 0.05:
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>dbt source freshness, tests de volume basiques</td><td>A configuré des alertes de fraîcheur, monitore les volumes</td><td>Découvre les problèmes de qualité par les utilisateurs</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Anomaly detection, Elementary ou Monte Carlo, stratégie d alerting</td><td>A déployé Elementary ou Monte Carlo, a une stratégie d alerting claire</td><td>Ne sait pas ce qu est l anomaly detection pour la data</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='pourquoi'><span class='sn'>1</span>Why quality monitoring is critical</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the symptoms of an undetected data quality issue?</p></div><ul><li><strong>Incorrect KPI dashboard</strong> — the executive committee makes a decision based on a wrong number. Detected 2 weeks later</li><li><strong>Degrading ML model</strong> — the training data distribution has changed, the model predicts anything</li><li><strong>Silently empty pipeline</strong> — a source table has not received data for 3 days. Nobody noticed</li><li><strong>1-10-100 rule</strong> — fixing an issue at the source costs 1. In production: 10. After a business decision: 100</li></ul><h2 id='freshness'><span class='sn'>2</span>Freshness monitoring</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you alert when a table has not been updated within the expected timeframe?</p></div><div class='cb'><code># dbt source freshness
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='pourquoi'><span class='sn'>1</span>Why data quality monitoring is critical</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the symptoms of an undetected data quality problem?</p></div><ul><li><strong>Incorrect KPI dashboard</strong> — the executive committee makes a decision based on a wrong number. Detected 2 weeks later</li><li><strong>Degrading ML model</strong> — the training data distribution has changed, the model predicts anything</li><li><strong>Silently empty pipeline</strong> — a source table has not received data for 3 days. Nobody noticed</li><li><strong>1-10-100 rule</strong> — fixing a problem at the source costs 1. In production: 10. After a business decision: 100</li></ul><h2 id='freshness'><span class='sn'>2</span>Freshness monitoring</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you alert when a table has not been updated within the expected timeframe?</p></div><div class='cb'><code># dbt source freshness
 sources:
   - name: transactions
     tables:
@@ -121,39 +122,51 @@ sources:
           warn_after:  {count: 6,  period: hour}
           error_after: {count: 24, period: hour}
 
-# Lancer la vérification
+# Run the check
 dbt source freshness
 
-# Elementary (package dbt) : monitoring automatique
-# elementary_freshness_anomalies detecte les pics de latence
+# Elementary (dbt package) : automatic monitoring
+# elementary_freshness_anomalies detects latency spikes
 models:
   - name: fct_orders
     tests:
       - elementary.table_anomalies:
           table_anomalies_type:
-            - freshness  # alerte si la table n est plus alimentee</code></div><ul><li><strong>Source freshness dbt</strong> — built-in check, alerts if loaded_at is too old</li><li><strong>Airflow SLA Miss</strong> — configure SLAs on critical tasks, alerts if exceeded</li></ul><h2 id='volume'><span class='sn'>3</span>Volume monitoring</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you detect that a table has lost 50% of its rows overnight?</p></div><div class='cb'><code># Elementary : détection d anomalies de volume
+            - freshness  # alert if the table is no longer being fed</code></div><ul><li><strong>dbt source freshness</strong> — built-in check, alerts if loaded_at is too old</li><li><strong>Airflow SLA Miss</strong> — configure SLAs on critical tasks, alert if exceeded</li></ul><h2 id='volume'><span class='sn'>3</span>Volume monitoring</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you detect that a table has lost 50% of its rows overnight?</p></div><div class='cb'><code># Elementary : volume anomaly detection
 models:
   - name: fct_orders
     tests:
       - elementary.volume_anomalies:
           timestamp_column: order_date
-          # alerte si le volume sort de la plage historique
+          # alert if volume falls outside the historical range
 
-# Custom : comparer avec la moyenne glissante
+# Custom : compare with rolling average
 SELECT
-    DATE(order_date) AS jour,
-    COUNT(*) AS nb_commandes,
+    DATE(order_date) AS day,
+    COUNT(*) AS nb_orders,
     AVG(COUNT(*)) OVER (
         ORDER BY DATE(order_date)
         ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
-    ) AS moyenne_7j,
+    ) AS avg_7d,
     COUNT(*) / AVG(COUNT(*)) OVER (
         ORDER BY DATE(order_date)
         ROWS BETWEEN 7 PRECEDING AND 1 PRECEDING
-    ) AS ratio_vs_moyenne
+    ) AS ratio_vs_avg
 FROM fct_orders
 GROUP BY 1
-HAVING ratio_vs_moyenne < 0.5 OR ratio_vs_moyenne > 2.0</code></div><h2 id='schema'><span class='sn'>4</span>Detecting schema changes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How are you alerted when a column is dropped or renamed in a source table?</p></div><ul><li><strong>dbt schema tests</strong> — if a source column is renamed, the dbt staging model fails on the next run</li><li><strong>schema_changes_from_baseline</strong> — dbt test that compares the current schema with the expected schema</li><li><strong>DataHub notifications</strong> — automatic alerts when a dataset schema changes</li><li><strong>Fivetran/Airbyte</strong> — managed connectors detect breaking changes and send alerts</li></ul><h2 id='outils'><span class='sn'>5</span>Elementary vs Monte Carlo vs Soda</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which data observability tool do you choose depending on the context?</p></div><table class='lt'><thead><tr><th>Tool</th><th>Type</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>Elementary</strong></td><td>Open source dbt package</td><td>Native dbt integration, free, anomaly detection</td></tr></div>
+HAVING ratio_vs_moyenne < 0.5 OR ratio_vs_moyenne > 2.0</code></div><h2 id='schema'><span class='sn'>4</span>Detecting schema changes</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How are you alerted when a column is dropped or renamed in a source table?</p></div><ul><li><strong>dbt schema tests</strong> — if a source column is renamed, the dbt staging model fails at the next run</li><li><strong>schema_changes_from_baseline</strong> — dbt test that compares the current schema with the expected schema</li><li><strong>DataHub notifications</strong> — automatic alerts when a dataset schema changes</li><li><strong>Fivetran/Airbyte</strong> — managed connectors detect breaking changes and send alerts</li></ul><h2 id='outils'><span class='sn'>5</span>Elementary vs Monte Carlo vs Soda</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Which data observability tool do you choose depending on the context?</p></div><table class='lt'><thead><tr><th>Tool</th><th>Type</th><th>Strengths</th><th>Ideal for</th></tr></thead><tbody><tr><td><strong>Elementary</strong></td><td>Open source dbt package</td><td>Native dbt integration, free, anomaly detection</td><td>dbt-first teams, tight budget</td></tr><tr><td><strong>Monte Carlo</strong></td><td>Enterprise SaaS</td><td>Automatic detection without rules, lineage, MTTR tracking</td><td>Large teams, critical data</td></tr><tr><td><strong>Soda</strong></td><td>Open source + Cloud</td><td>Data contracts, flexible SQL checks</td><td>Custom checks, compliance</td></tr><tr><td><strong>Metaplane</strong></td><td>SaaS</td><td>Simple, good UX</td><td>Teams new to observability</td></tr></tbody></table><h2 id='alertes'><span class='sn'>6</span>Alerting strategy: avoiding alert fatigue</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you prevent quality alerts from being ignored?</p></div><ul><li><strong>Prioritization</strong> — distinguish critical alerts (blocking production) from warnings (to monitor)</li><li><strong>Appropriate channel</strong> — critical → PagerDuty + Slack #data-incidents. Warning → Slack #data-quality only</li><li><strong>Runbook</strong> — each critical alert has a runbook: who to notify, what action to take, how to verify</li><li><strong>Resolution SLA</strong> — commit to a resolution timeframe by severity level</li><li><strong>Reduce noise</strong> — a false positive rate &gt; 20% kills alert culture. Tune thresholds regularly</li></ul>
+<div class='cb'><code>import great_expectations as gx
+from evidently import Report
+from evidently.metric_preset import DataQualityPreset
+
+# Great Expectations : validation suite
+context = gx.get_context()
+suite = context.suites.add(gx.ExpectationSuite(name="orders_quality"))
+suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column="order_id"))
+suite.add_expectation(gx.expectations.ExpectTableRowCountToBeBetween(min_value=1000, max_value=10_000_000))
+suite.add_expectation(gx.expectations.ExpectColumnValuesToBeBetween(column="amount
+</div>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

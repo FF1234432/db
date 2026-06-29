@@ -132,7 +132,8 @@ resource "aws_sfn_state_machine" "pipeline" {
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>S3, Glue Catalog, Athena, IAM basique</td><td>A déployé un pipeline S3 → Glue → Athena, utilise le partitionnement Athena</td><td>Ne sait pas ce qu est le Glue Data Catalog</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Lake Formation, Redshift Serverless, architecture complète, cost optimization</td><td>A configuré Lake Formation avec column-level security, justifie Athena vs Redshift</td><td>Ne sait pas la différence entre Athena et Redshift</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='archi'><span class='sn'>1</span>Reference data architecture on AWS</h2><div class='sq'><div class='sl'>Key question</div><p>Describe an end-to-end data architecture on AWS.</p></div><div class='cb'><code># Architecture AWS typique
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='archi'><span class='sn'>1</span>Reference data architecture on AWS</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Describe an end-to-end data architecture on AWS.</p></div><div class='cb'><code># Architecture AWS typique
 
 INGESTION
 ├── AWS DMS (Database Migration Service) - CDC depuis RDS
@@ -160,7 +161,7 @@ ORCHESTRATION
 └── MWAA (Managed Airflow)
 
 CONSOMMATION
-└── QuickSight / Tableau / Power BI</code></div><h2 id='s3'><span class='sn'>2</span>S3: the AWS center of gravity</h2><div class='sq'><div class='sl'>Key question</div><p>What S3 features do you use in a data pipeline?</p></div><ul><li><strong>S3 Intelligent-Tiering</strong> — automatic transition to Standard-IA or Glacier based on access patterns. 20-80% savings</li><li><strong>S3 Lifecycle policies</strong> — archive after 90 days, delete after 7 years. Automated</li><li><strong>S3 Event Notifications</strong> — trigger Lambda or SQS when a file arrives. Event-driven ingestion</li><li><strong>S3 Select</strong> — read only the necessary rows/columns from a Parquet/CSV without downloading the entire file</li><li><strong>S3 Table Buckets</strong> — native Iceberg support on S3 (2025). Tables managed directly in S3</li></ul><h2 id='glue'><span class='sn'>3</span>AWS Glue: managed ETL and catalog</h2><div class='sq'><div class='sl'>Key question</div><p>When do you use AWS Glue vs EMR for data transformations?</p></div><div class='cb'><code>## AWS Glue : Spark managé sans cluster à gérer
+└── QuickSight / Tableau / Power BI</code></div><h2 id='s3'><span class='sn'>2</span>S3: the AWS center of gravity</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What S3 features do you use in a data pipeline?</p></div><ul><li><strong>S3 Intelligent-Tiering</strong> — automatic transition to Standard-IA or Glacier based on access patterns. 20-80% savings</li><li><strong>S3 Lifecycle policies</strong> — archive after 90 days, delete after 7 years. Automatic</li><li><strong>S3 Event Notifications</strong> — trigger Lambda or SQS when a file arrives. Event-driven ingestion</li><li><strong>S3 Select</strong> — read only the necessary rows/columns from a Parquet/CSV without downloading the entire file</li><li><strong>S3 Table Buckets</strong> — native Iceberg support on S3 (2025). Tables managed directly in S3</li></ul><h2 id='glue'><span class='sn'>3</span>AWS Glue: managed ETL and catalog</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use AWS Glue vs EMR for data transformations?</p></div><div class='cb'><code>## AWS Glue : Spark managé sans cluster à gérer
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -188,7 +189,40 @@ glue_context.write_dynamic_frame.from_options(
     connection_type='s3',
     connection_options={'path': 's3://mon-bucket/silver/orders/'},
     format='parquet'
-)</code></div><h2 id='athena'><span class='sn'>4</span>Amazon Athena: serverless SQL on S3</h2><div class='sq'><div class='sl'>Key question</div><p>In which cases is Athena more suitable than Redshift?</p></div><ul><li><strong>Athena</strong> — serverless, SQL on S3. Pay only for bytes scanned. Ideal for ad-hoc queries and exploratory analysis</li><li><strong>Hive partitioning</strong> — Athena tables use S3 partitioning to reduce costs (require_partition_filter)</li><li><strong>Athena Federated Query</strong> — query DynamoDB, RDS, Redshift from Athena. Query federation</li><li><strong>Athena for Iceberg</strong> — native Iceberg 2.x support. Merge, update, delete, time travel</li><li><strong>When to use Redshift</strong> — interactive BI (sub-second), complex repetitive queries, BI workloads with concurrency</li></ul><h2 id='redshift'><span class='sn'>5</span>Redshift Serverless</h2><div class='sq'><div class='sl'>Key question</div><p>What is Redshift Serverless? When should you prefer it over classic Redshift?</p></div><ul><li><strong>Redshift Serverless</strong> — no cluster to provision. Automatic capacity based on workload</li><li><strong>RPU billing</strong> — Redshift Processing Units billed per second. More cost-effective for variable workloads</li><li><strong>When to use Serverless</strong> — unpredictable workloads, small teams, no in-house Redshift expertise</li><li><strong>When to use Redshift RA3</strong> — predictable and intensive workload, need for precise control, highly concurrent workloads</li><li><strong>Data Sharing</strong> — share data between Redshift clusters without copying it. Cross-account reads</li></ul><h2 id='lake_formation'><span class='sn'>6</span>Lake Formation: centralized governance</h2><div class='sq'><div class='sl'>Key question</div><p>What is AWS Lake Formation? When do you use it?</p></div><ul><li><strong>Lake Formation</strong> — central governance layer on S3. Manages permissions at the column and row level</li><li><strong>Column-l</div>
+)</code></div><h2 id='athena'><span class='sn'>4</span>Amazon Athena: serverless SQL on S3</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases is Athena more suitable than Redshift?</p></div><ul><li><strong>Athena</strong> — serverless, SQL on S3. Pay only for bytes scanned. Ideal for ad-hoc queries and exploratory analysis</li><li><strong>Hive partitioning</strong> — Athena tables use S3 partitioning to reduce costs (require_partition_filter)</li><li><strong>Athena Federated Query</strong> — query DynamoDB, RDS, Redshift from Athena. Query federation</li><li><strong>Athena for Iceberg</strong> — native Iceberg 2.x support. Merge, update, delete, time travel</li><li><strong>When Redshift</strong> — interactive BI (sub-second), repetitive complex queries, BI workloads with concurrency</li></ul><h2 id='redshift'><span class='sn'>5</span>Redshift Serverless</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is Redshift Serverless? When should you prefer it over classic Redshift?</p></div><ul><li><strong>Redshift Serverless</strong> — no cluster to provision. Automatic capacity based on load</li><li><strong>RPU billing</strong> — Redshift Processing Units per second. More cost-effective for variable workloads</li><li><strong>When Serverless</strong> — unpredictable workloads, small teams, no in-house Redshift expertise</li><li><strong>When Redshift RA3</strong> — predictable and intensive workload, need for precise control, highly concurrent workloads</li><li><strong>Data Sharing</strong> — share data between Redshift clusters without copying it. Cross-account reads</li></ul><h2 id='lake_formation'><span class='sn'>6</span>Lake Formation: centralized governance</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is AWS Lake Formation? When do you use it?</p></div><ul><li><strong>Lake Formation</strong> — central governance layer on S3. Manages permissions at the column and row level</li><li><strong>Column-level security</strong> — mask or remove PII columns based on user role. Compatible with Athena, Redshift Spectrum, EMR</li><li><strong>Row-level filtering</strong> — filter rows based on user attributes. Ex: a FR analyst only sees French data</li><li><strong>Governed Tables</strong> — S3 tables with ACID transactions and time travel. Alternative to Delta/Iceberg in the AWS ecosystem</li></ul><div class='cb'><code># AWS Data Stack IaC (Terraform)
+# Glue Catalog + S3 Data Lake + Redshift + Step Functions
+
+resource "aws_glue_catalog_database" "analytics" {
+  name = "analytics_prod"
+}
+
+resource "aws_glue_crawler" "orders" {
+  name     = "orders_crawler"
+  role     = aws_iam_role.glue_role.arn
+  database_name = aws_glue_catalog_database.analytics.name
+  s3_target {
+    path = "s3://${aws_s3_bucket.datalake.bucket}/orders/"
+  }
+  schedule = "cron(0 6 * * ? *)"
+}
+
+# Step Functions pour orchestrer ETL
+resource "aws_sfn_state_machine" "pipeline" {
+  name = "data_pipeline"
+  definition = jsonencode({
+    Comment: "ETL Pipeline"
+    StartAt: "RunGlueJob"
+    States: {
+      RunGlueJob: {
+        Type: "Task"
+        Resource: "arn:aws:states:::glue:startJobRun.sync"
+        Parameters: {"JobName": "transform_orders"}
+        Next: "RefreshRedshift"
+      }
+    }
+  })
+}</code></div><ul><li><strong>AWS Glue vs EMR</strong> — Glue: serverless, pay per minute, ideal for one-off ETL jobs. EMR: managed cluster, better cost/performance ratio for continuous Spark workloads</li><li><strong>Lake Formation</strong> — governance layer on S3: fine-grained permission management (column, row-level), centralized catalog, access auditing</li><li><strong>Redshift Serverless</strong> — no cluster to provision, billing per RPU-second. For variable workloads. Classic Redshift for predictable and continuous workloads</li><li><strong>Step Functions for orchestration</strong> — native AWS orchestrator for simple pipelines. For complex workflows: MWAA (managed Airflow on AWS) or Step Functions + Lambda</li><li><strong>Cost optimization</strong> — S3 Intelligent-Tiering for data with unpredictable access patterns. Glue jobs on spot. EMR Spot instances for workers (70-90% savings)</li></ul><h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Mid-level</span></td><td>S3, Glue Catalog, Athena, basic IAM</td><td>Has deployed an S3 → Glue → Athena pipeline, uses Athena partitioning</td><td>Does not know what the Glue Data Catalog is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Lake Formation, Redshift Serverless, full architecture, cost optimization</td><td>Has configured Lake Formation with column-level security, justifies Athena vs Redshift</td><td>Does not know the difference between Athena and Redshift</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer AWS ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

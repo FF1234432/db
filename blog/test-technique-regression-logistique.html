@@ -96,7 +96,8 @@ print(odds.head(10))</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Comprend la sigmoïde, train/predict/proba, métriques</td><td>Explique pourquoi on utilise sigmoïde, sait interpréter predict_proba</td><td>Pense que la régression logistique est toujours linéaire</td></tr><tr><td><span class='bd bm'>Confirmé</span></td><td>Odds ratios, L1/L2, C parameter, hypothèses</td><td>Interprète les odds ratios, sait tuner C, connaît L1 vs L2</td><td>Ne sait pas ce qu est un odds ratio</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Calibration, diagnostics de multicolinéarité, GLMs</td><td>Vérifie la calibration, sait quand la régression logistique est meilleure qu XGBoost</td><td>Utilise toujours XGBoost sans justifier</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='concept'><span class='sn'>1</span>Why logistic regression rather than linear</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why can't we use linear regression to predict a probability?</p></div><ul><li><strong>Linear regression problem</strong> — can predict values outside [0,1]. A probability must be bounded between 0 and 1</li><li><strong>Solution</strong> — transform the output via the sigmoid function which maps ℝ → [0,1]</li><li><strong>Interpretation</strong> — logistic regression models log(p/(1-p)) = β₀ + β₁X₁ + ... (the log-odds)</li><li><strong>Advantage</strong> — interpretable, calibrated probabilities, foundation for understanding GLMs</li></ul><h2 id='sigmoid'><span class='sn'>2</span>Sigmoid function and odds ratio</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is an odds ratio? How do you interpret it in the context of a churn model?</p></div><div class='cb'><code>import numpy as np
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='concept'><span class='sn'>1</span>Why logistic regression instead of linear</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why can't we use linear regression to predict a probability?</p></div><ul><li><strong>Linear regression problem</strong> — can predict values outside [0,1]. A probability must be bounded between 0 and 1</li><li><strong>Solution</strong> — transform the output via the sigmoid function which maps ℝ → [0,1]</li><li><strong>Interpretation</strong> — logistic regression models log(p/(1-p)) = β₀ + β₁X₁ + ... (the log-odds)</li><li><strong>Advantage</strong> — interpretable, calibrated probabilities, foundation for understanding GLMs</li></ul><h2 id='sigmoid'><span class='sn'>2</span>Sigmoid function and odds ratio</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is an odds ratio? How do you interpret it in the context of a churn model?</p></div><div class='cb'><code>import numpy as np
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 
@@ -110,21 +111,59 @@ odds_ratios = pd.Series(
 ).sort_values(ascending=False)
 
 print(odds_ratios)
-# age:              0.95  -> +1 an d age = probabilite churn * 0.95
-# jours_inactif:    1.12  -> +1 jour inactif = probabilite churn * 1.12
-# nb_achats_12m:   0.88  -> +1 achat = probabilite churn * 0.88</code></div><ul><li><strong>Odds ratio > 1</strong> — the feature increases the probability of the event</li><li><strong>Odds ratio < 1</strong> — the feature decreases the probability</li><li><strong>Odds ratio = 1</strong> — the feature has no effect</li><li><strong>Example</strong> — OR = 1.12 for 'jours_inactif' means: each additional day of inactivity multiplies the churn odds by 1.12 (+12%)</li></ul><h2 id='coeff'><span class='sn'>3</span>Interpreting coefficients</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How are the coefficients of a logistic regression affected by feature scaling?</p></div><ul><li><strong>Without scaling</strong> — coefficients are not comparable. A feature in euros (0-100000) will have a very small coefficient vs a feature in [0,1]</li><li><strong>With StandardScaler</strong> — all coefficients are on the same scale. The absolute coefficient reflects the relative importance of the feature</li><li><strong>Interpretation</strong> — with scaling: 'the most important feature is the one with the highest absolute coefficient'</li><li><strong>Not to be confused</strong> — the magnitude of the coefficient ≠ p-value of the feature</li></ul><h2 id='regular'><span class='sn'>4</span>L1 (Lasso) and L2 (Ridge) regularization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between L1 and L2 in sklearn LogisticRegression? When do you use one or the other?</p></div><div class='cb'><code># sklearn : parametre C = 1/lambda (inverse de la regularisation)
-# C petit -> forte regularisation, C grand -> faible regularisation
+# age:              0.95  -> +1 year of age = churn probability * 0.95
+# jours_inactif:    1.12  -> +1 inactive day = churn probability * 1.12
+# nb_achats_12m:   0.88  -> +1 purchase = churn probability * 0.88</code></div><ul><li><strong>Odds ratio > 1</strong> — the feature increases the probability of the event</li><li><strong>Odds ratio < 1</strong> — the feature decreases the probability</li><li><strong>Odds ratio = 1</strong> — the feature has no effect</li><li><strong>Example</strong> — OR = 1.12 for 'jours_inactif' means: each additional day of inactivity multiplies the churn odds by 1.12 (+12%)</li></ul><h2 id='coeff'><span class='sn'>3</span>Interpreting coefficients</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How are logistic regression coefficients affected by feature scaling?</p></div><ul><li><strong>Without scaling</strong> — coefficients are not comparable. A feature in euros (0-100000) will have a very small coefficient vs a feature in [0,1]</li><li><strong>With StandardScaler</strong> — all coefficients are on the same scale. The absolute coefficient reflects the relative importance of the feature</li><li><strong>Interpretation</strong> — with scaling: 'the most important feature is the one with the highest absolute coefficient'</li><li><strong>Not to be confused</strong> — the magnitude of the coefficient ≠ p-value of the feature</li></ul><h2 id='regular'><span class='sn'>4</span>L1 (Lasso) and L2 (Ridge) Regularization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between L1 and L2 in sklearn LogisticRegression? When do you use one or the other?</p></div><div class='cb'><code># sklearn : parameter C = 1/lambda (inverse of regularization)
+# Small C -> strong regularization, large C -> weak regularization
 
-# L2 (Ridge) : penalty='l2' - par defaut
-# Réduit les coefficients sans les mettre à zéro
+# L2 (Ridge) : penalty='l2' - default
+# Reduces coefficients without setting them to zero
 model_l2 = LogisticRegression(penalty='l2', C=0.1, solver='lbfgs')
 
 # L1 (Lasso) : penalty='l1'
-# Met les coefficients non importants à zéro = sélection de features
+# Sets unimportant coefficients to zero = feature selection
 model_l1 = LogisticRegression(penalty='l1', C=0.1, solver='liblinear')
 
-# ElasticNet : combinaison L1 + L2
-model_en = LogisticRegression(penalty='elasticnet', l1_ratio=0.5, solver='saga')</code></div><ul><li><strong>L1</strong> — natural feature selection (coefficients → 0). Useful with many irrelevant features</li><li><strong>L2</strong> — reduces but does not eliminate. Prefer when all features are potentially useful</li><li><strong>Tuning C</strong> — use GridSearchCV or cross_val_score</li></ul></div>
+# ElasticNet : combination L1 + L2
+model_en = LogisticRegression(penalty='elasticnet', l1_ratio=0.5, solver='saga')</code></div><ul><li><strong>L1</strong> — natural feature selection (coefficients → 0). Useful with many irrelevant features</li><li><strong>L2</strong> — reduces but does not eliminate. Prefer if all features are potentially useful</li><li><strong>Tuning C</strong> — use GridSearchCV or cross_val_score</li></ul><h2 id='hypo'><span class='sn'>5</span>Assumptions and limitations</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the assumptions of logistic regression? When do they fail?</p></div><ul><li><strong>Linearity of log-odds</strong> — linear relationship between features and log-odds. Verify with partial dependence plots</li><li><strong>Independence of observations</strong> — no uncaptured temporal or spatial structure</li><li><strong>No strong multicollinearity</strong> — two highly correlated features make coefficients unstable</li><li><strong>When it fails</strong> — non-linear relationships (prefer XGBoost), very high dimensionality, complex interactions</li><li><strong>Calibration</strong> — logistic regression probabilities are well calibrated unlike those of Random Forest</li></ul><h2 id='multiclass'><span class='sn'>6</span>Multiclass extension</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does logistic regression handle multiple classes?</p></div><ul><li><strong>One-vs-Rest (OvR)</strong> — one binary classifier per class. Class i vs all others. Simple but can have uncovered regions</li><li><strong>Multinomial (Softmax)</strong> — a single model that optimizes multinomial log-likelihood. More consistent, solver='lbfgs' or 'sag'</li><li><strong>sklearn</strong> — multi_class='auto' chooses multinomial if solver is compatible, otherwise OvR</li></ul>
+<div class='cb'><code>from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+import numpy as np
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', LogisticRegression(
+        C=0.1,
+        class_weight='balanced',
+        max_iter=1000,
+        solver='lbfgs'
+    ))
+])
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_validate(pipeline, X, y, cv=cv,
+    scoring=['roc_auc', 'precision', 'recall', 'f1'])
+print(f"AUC: {scores['test_roc_auc'].mean():.3f} +/- {scores['test_roc_auc'].std():.3f}")
+
+# Odds ratios for interpretability
+pipeline.fit(X_train, y_train)
+import pandas as pd
+odds = pd.DataFrame({
+    'feature': X.columns,
+    'odds_ratio': np.exp(pipeline.named_steps['model'].coef_[0])
+}).sort_values('odds_ratio', ascending=False)
+print(odds.head(10))</code></div>
+<ul>
+<li><strong>L1 vs L2 Regularization</strong> - L2 (Ridge, default): penalizes large coefficients, keeps all features. L1 (Lasso): coefficients at zero = automatic feature selection</li>
+<li><strong>Class imbalance</strong> - class_weight="balanced" adjusts the weight. Alternative: adjust the decision threshold rather than the default 0.5</li>
+<li><strong>Metrics depending on context</strong> - AUC-ROC: general ranking. Precision-Recall: when false positives are costly. F1: balance. Accuracy: useless on imbalanced classes</li>
+<li><strong>Odds ratios</strong> - key interpretability. OR=2.5 = probability of the event multiplied by 2.5 when the feature increases by one unit</li>
+<li><strong>Calibration</strong> - verify that P(y=1|score=0.7) ≈ 70% (Platt scaling or isotonic regression). Critical for credit scoring or pricing</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Understands sigmoid, train/predict/proba, metrics</td><td>Explains why sigmoid is used, knows how to interpret predict_proba</td><td>Thinks logistic regression is always linear</td></tr><tr><td><span class='bd bm'>Confirmed</span></td><td>Odds ratios, L1/L2, C parameter, assumptions</td><td>Interprets odds ratios, knows how to tune C, knows L1 vs L2</td><td>Does not know what an odds ratio is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Calibration, multicollinearity diagnostics, GLMs</td><td>Checks calibration, knows when logistic regression is better than XGBoost</td><td>Always uses XGBoost without justification</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

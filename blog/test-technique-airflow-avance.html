@@ -227,92 +227,150 @@ def ma_tache() -> int:
 </div>
 </div>
 <div id="body-en" style="display:none"><div class="aw">
-<h2 id='taskflow'><span class='sn'>1</span>TaskFlow API and modern DAGs</h2>
-<div class='sq'><div class='sl'>Key question</div><p>What is the TaskFlow API? Why prefer it over classic operators?</p></div>
-<div class='cb'><code>from airflow.decorators import dag, task
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Airflow avancé" data-en="Advanced Airflow technical interview">Advanced Airflow technical interview</span></div>
+<div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
+<h1 class="ah" data-fr="Test technique Airflow avancé : DAGs, XCom, TaskFlow, architecture" data-en="Advanced Airflow technical interview: DAGs, XCom, TaskFlow, architecture">Advanced Airflow technical interview: DAGs, XCom, TaskFlow, architecture</h1>
+<p class="ai" data-fr="Airflow est l'orchestrateur de référence en data engineering. Mais beaucoup de profils se limitent aux DAGs basiques. Voici les concepts avancés qu'on teste pour valider un Data Engineer en production." data-en="Airflow is the reference orchestrator in data engineering. But many profiles only know basic DAGs. Here are the advanced concepts we test to validate a production Data Engineer.">Airflow is the reference orchestrator in data engineering. But many profiles only know basic DAGs. Here are the advanced concepts we test to validate a production Data Engineer.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min read</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#dag">DAGs and operators</a></li><li><a href="#taskflow">TaskFlow API</a></li><li><a href="#xcom">XCom</a></li><li><a href="#flow">Control flow and trigger rules</a></li><li><a href="#archi">Airflow architecture</a></li><li><a href="#prod">Airflow in production</a></li><li><a href="#nv">Level grid</a></li></ol></div>
+<div class="ab" id="ab">
+<p>Airflow is not a processing framework — it is an orchestrator. Understanding this distinction is the first thing we check in an interview. A Data Engineer who passes datasets via XCom or puts business logic inside their DAGs has not yet reached Senior level.</p>
+
+<h2 id="dag"><span class="sn">1</span>DAGs, operators and structure</h2>
+<div class="sq"><div class="sl">Key question</div><p>What is the difference between an operator, a sensor and a TaskFlow task decorator? In which case do you use each one?</p></div>
+<p>A DAG (Directed Acyclic Graph) is a directed graph with no cycles. It defines the execution order of tasks, their dependencies, their scheduling — but not their business content. The DAG is the orchestrator, not the processor.</p>
+<div class="cb"><code>from airflow import DAG
+from airflow.operators.python import PythonOperator
 from datetime import datetime
 
-@dag(schedule='@daily', start_date=datetime(2025,1,1), catchup=False)
-def modern_pipeline():
-    @task()
-    def extract() -> list:
-        return requests.get('https://api.example.com/orders').json()
+with DAG(
+    dag_id="mon_pipeline",
+    start_date=datetime(2025, 1, 1),
+    schedule_interval="@daily",
+    catchup=False,
+    max_active_runs=1,
+) as dag:
 
-    @task()
-    def transform(data: list) -> list:
-        return [d for d in data if d['amount'] > 0]
+    extract = PythonOperator(
+        task_id="extraction",
+        python_callable=extraire_donnees,
+    )
 
-    @task()
-    def load(data: list) -> int:
-        df = pd.DataFrame(data)
-        df.to_sql('orders', engine, if_exists='append', index=False)
-        return len(df)
+    transform = PythonOperator(
+        task_id="transformation",
+        python_callable=transformer_donnees,
+    )
 
-    raw = extract()
-    clean = transform(raw)
-    load(clean)
-
-pipeline = modern_pipeline()</code></div>
+    extract >> transform  # dependency: transform waits for extract</code></div>
 <ul>
-<li><strong>TaskFlow API</strong> — Python decorators (@dag, @task) to define DAGs. XCom is automatic between tasks via return values</li>
-<li><strong>vs classic operators</strong> — TaskFlow: more readable, typed, testable. Classic operators: more verbose but still necessary for non-Python operators (BashOperator, KubernetesPodOperator)</li>
-<li><strong>Automatic XCom</strong> — the return value of a @task is automatically pushed to XCom. No xcom_push/xcom_pull needed</li>
-<li><strong>Type hints</strong> — strongly recommended. Airflow serializes/deserializes via XCom based on types</li>
+<li><strong>Operators</strong> — predefined tasks: PythonOperator, BashOperator, SparkSubmitOperator, etc.</li>
+<li><strong>Sensors</strong> — wait for an external event (S3FileSensor, HttpSensor, ExternalTaskSensor)</li>
+<li><strong>TaskFlow (@task)</strong> — decorated Python functions, automatic value passing via XCom</li>
+<li><strong>catchup=False</strong> — do not re-execute past runs when the DAG starts</li>
+<li><strong>max_active_runs</strong> — limits concurrent executions of the same DAG</li>
+</ul>
+<div class="cl"><p><strong>Best practice:</strong> 1 task = 1 responsibility. A DAG that performs extraction + transformation + loading in a single Python task is an anti-pattern — it breaks observability and granular retry.</p></div>
+
+<h2 id="taskflow"><span class="sn">2</span>TaskFlow API: Airflow's modern DAX</h2>
+<div class="sq"><div class="sl">Key question</div><p>What are the advantages of the TaskFlow API over classic PythonOperators? What are its limitations?</p></div>
+<p>Introduced in Airflow 2.0, the TaskFlow API radically simplifies writing Python DAGs by removing explicit XCom boilerplate.</p>
+<div class="cb"><code>from airflow.decorators import dag, task
+from datetime import datetime
+
+@dag(schedule_interval="@daily", start_date=datetime(2025, 1, 1), catchup=False)
+def mon_pipeline_taskflow():
+
+    @task
+    def extraire() -> dict:
+        return {"lignes": 1500, "source": "postgres"}
+
+    @task
+    def transformer(data: dict) -> dict:
+        return {"lignes_traitees": data["lignes"], "source": data["source"]}
+
+    @task
+    def charger(data: dict):
+        print(f"Chargement de {data['lignes_traitees']} lignes depuis {data['source']}")
+
+    # Dependencies are inferred automatically
+    charger(transformer(extraire()))
+
+mon_pipeline_taskflow()</code></div>
+<ul>
+<li><strong>Advantages</strong> — more readable code, implicit XCom, automatically inferred dependencies, less boilerplate</li>
+<li><strong>Limitations</strong> — only works with Python functions, not suited for specialized operators (Spark, BigQuery, etc.)</li>
+<li><strong>Task Groups</strong> — visually group tasks in the Airflow UI without affecting execution</li>
+<li><strong>Dynamic Task Mapping</strong> — dynamically generate the number of tasks based on data</li>
 </ul>
 
-<h2 id='xcom'><span class='sn'>2</span>XCom: inter-task communication</h2>
-<div class='sq'><div class='sl'>Key question</div><p>What is XCom? What are its limitations in production?</p></div>
-<ul>
-<li><strong>XCom</strong> — key-value store in the Airflow DB for passing data between tasks. Persisted per DAG run</li>
-<li><strong>Size limit</strong> — by default, XCom is stored in the DB: 48KB in SQLite, ~1GB in Postgres but discouraged. Never pass DataFrames via XCom</li>
-<li><strong>Best practice</strong> — pass only references (S3 path, table name, record count) via XCom. Store actual data in S3/GCS</li>
-<li><strong>XCom Backend</strong> — Airflow 2.x allows customizing the XCom backend (S3, GCS) for large objects</li>
-<li><strong>Serialization</strong> — Airflow serializes XCom values as JSON. Custom objects require a custom serializer</li>
-</ul>
+<h2 id="xcom"><span class="sn">3</span>XCom: communication between tasks</h2>
+<div class="sq"><div class="sl">Key question</div><p>Is Airflow a data processing framework? Why should you not pass datasets via XCom?</p></div>
+<p>XCom (cross-communication) allows tasks to exchange information. It is a lightweight mechanism, not a data transfer system.</p>
+<div class="cb"><code># Explicit push in a classic PythonOperator
+def ma_tache(**context):
+    context['task_instance'].xcom_push(key='nb_lignes', value=1500)
 
-<h2 id='trigger'><span class='sn'>3</span>Trigger rules and dependencies</h2>
-<div class='sq'><div class='sl'>Key question</div><p>What trigger rules do you know? When do you use them?</p></div>
-<ul>
-<li><strong>all_success</strong> — default. Task runs only if all upstream tasks succeeded</li>
-<li><strong>all_failed</strong> — for alerting or cleanup tasks that run only on failure</li>
-<li><strong>all_done</strong> — runs regardless of upstream status. For cleanup tasks that always run</li>
-<li><strong>one_success</strong> — runs as soon as one upstream task succeeds. For parallel pipelines with early convergence</li>
-<li><strong>none_failed_min_one_success</strong> — most flexible: runs if no failures and at least one success. For optional branches</li>
-</ul>
+# Explicit pull
+def tache_suivante(**context):
+    nb = context['task_instance'].xcom_pull(task_ids='ma_tache', key='nb_lignes')
+    print(f"Reçu : {nb} lignes")
 
-<h2 id='pools'><span class='sn'>4</span>Pools, slots and concurrency</h2>
-<div class='sq'><div class='sl'>Key question</div><p>What is an Airflow pool? How do you avoid overloading an external API?</p></div>
+# With TaskFlow: implicit, via return
+@task
+def ma_tache() -> int:
+    return 1500  # automatically pushed to XCom</code></div>
 <ul>
-<li><strong>Pool</strong> — limits the number of tasks running simultaneously on a given resource. Each task consumes N slots from its pool</li>
-<li><strong>Use case</strong> — protect an external API: pool "api_externe" with 5 slots = max 5 simultaneous calls</li>
-<li><strong>Default pool</strong> — all tasks use the default pool (128 slots by default). Adjust based on your infrastructure</li>
-<li><strong>Priority weight</strong> — in case of slot competition, tasks with the highest priority_weight run first</li>
-<li><strong>Queues</strong> — with CeleryExecutor: route tasks to specialized workers (GPU, high-memory) via queues</li>
+<li><strong>Size limit</strong> — XCom is stored in the Airflow metadata database (~1GB depending on the backend)</li>
+<li><strong>Correct usage</strong> — pass metadata (number of rows, S3 path, status), not datasets</li>
+<li><strong>Incorrect usage</strong> — passing DataFrames or entire files via XCom</li>
+<li><strong>Alternative</strong> — write data to S3/GCS and pass the path via XCom</li>
 </ul>
-<div class='cb'><code># Task assigned to a limited pool
-extract_task = PythonOperator(
-    task_id='extract_api',
-    python_callable=extract,
-    pool='external_api',  # max 5 simultaneous
-    pool_slots=1,
-    priority_weight=10
-)</code></div>
+<div class="cl"><p><strong>Fundamental reminder:</strong> Airflow is an orchestrator, not a processing framework. Processing happens in Spark, dbt, or cloud services. Airflow triggers and monitors — it does not process.</p></div>
 
-<h2 id='executors'><span class='sn'>5</span>Executors: Local, Celery, Kubernetes</h2>
-<div class='sq'><div class='sl'>Key question</div><p>What is the difference between LocalExecutor, CeleryExecutor and KubernetesExecutor? When to use which?</p></div>
-<table class='lt'><thead><tr><th>Executor</th><th>Architecture</th><th>Use case</th><th>Limitations</th></tr></thead>
-<tbody>
-<tr><td>LocalExecutor</td><td>Multi-process on scheduler</td><td>Dev, small team, &lt;50 DAGs</td><td>Single machine, no isolation</td></tr>
-<tr><td>CeleryExecutor</td><td>Distributed workers + Redis/RabbitMQ</td><td>Medium-large production</td><td>Worker infrastructure to maintain</td></tr>
-<tr><td>KubernetesExecutor</td><td>Each task = ephemeral pod</td><td>K8s, isolation, autoscaling</td><td>Pod startup overhead (~30s)</td></tr>
+<h2 id="flow"><span class="sn">4</span>Control flow and trigger rules</h2>
+<div class="sq"><div class="sl">Key question</div><p>What is a trigger rule and in which case do you use none_failed_min_one_success?</p></div>
+<p>By default, Airflow only executes a task if all its upstream tasks have succeeded. Trigger rules allow you to modify this behavior.</p>
+<table class="lt"><thead><tr><th>Trigger rule</th><th>Execution condition</th><th>Use case</th></tr></thead><tbody>
+<tr><td><code>all_success</code></td><td>All upstream tasks succeeded (default)</td><td>Standard pipeline</td></tr>
+<tr><td><code>all_failed</code></td><td>All upstream tasks failed</td><td>Global failure notification</td></tr>
+<tr><td><code>all_done</code></td><td>All upstream tasks are done (success or failure)</td><td>Systematic cleanup</td></tr>
+<tr><td><code>one_success</code></td><td>At least one upstream task succeeded</td><td>Processing as soon as one source is available</td></tr>
+<tr><td><code>none_failed</code></td><td>No upstream task failed (success or skipped)</td><td>Final task after conditional branching</td></tr>
+<tr><td><code>none_failed_min_one_success</code></td><td>No failure + at least one success</td><td>Aggregation after branching with partial success</td></tr>
 </tbody></table>
+<ul>
+<li><strong>Branching</strong> — BranchPythonOperator to execute a conditional branch, other branches are skipped</li>
+<li><strong>TriggerDagRunOperator</strong> — trigger another DAG from a DAG</li>
+<li><strong>ShortCircuitOperator</strong> — short-circuit all downstream tasks if a condition is false</li>
+</ul>
 
-<h2 id='nv'><span class='sn'>6</span>Level assessment grid</h2>
-<table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead>
-<tbody>
-<tr><td><span class='bd bm'>Confirmed</span></td><td>TaskFlow API, XCom, trigger rules, pools</td><td>Writes DAGs with TaskFlow, explains XCom limitations, uses pools to protect APIs</td><td>Only knows classic PythonOperator, doesn't know trigger rules</td></tr>
-<tr><td><span class='bd bs'>Senior</span></td><td>Executors, dynamic DAGs, performance, CI/CD</td><td>Justifies executor choice by context, has migrated DAGs, implements DAG testing</td><td>Can't explain the difference between CeleryExecutor and KubernetesExecutor</td></tr>
-</tbody></table>
+<h2 id="archi"><span class="sn">5</span>Airflow architecture</h2>
+<div class="sq"><div class="sl">Key question</div><p>What are the components of a production Airflow architecture? What is the difference between LocalExecutor and CeleryExecutor?</p></div>
+<p>A production Airflow installation has several distinct components. Knowing the architecture is essential for deploying and debugging.</p>
+<ul>
+<li><strong>Scheduler</strong> — scans DAGs, determines which tasks to launch, submits to the executor</li>
+<li><strong>Executor</strong> — how tasks are executed: LocalExecutor (same process), CeleryExecutor (distributed workers), KubernetesExecutor (one pod per task)</li>
+<li><strong>Webserver</strong> — Airflow UI, inspection and manual triggering of DAGs</li>
+<li><strong>Metadata database</strong> — stores the state of DAGs, tasks, XCom, connections (PostgreSQL recommended in production)</li>
+<li><strong>Workers</strong> — processes that execute tasks (Celery/Kubernetes only)</li>
+</ul>
+<div class="cl"><p><strong>In production:</strong> LocalExecutor is suitable for up to ~50 DAGs. Beyond that, use CeleryExecutor or KubernetesExecutor. MWAA (AWS Managed Airflow) and Cloud Composer (GCP) manage the infrastructure automatically.</p></div>
+
+<h2 id="prod"><span class="sn">6</span>Airflow in production: connections, SLAs, monitoring</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you manage credentials in Airflow? Why should you not hard-code them in DAGs?</p></div>
+<ul>
+<li><strong>Connections</strong> — store credentials in the Airflow metadata database, accessible by conn_id in operators</li>
+<li><strong>Secrets Backend</strong> — integration with AWS Secrets Manager, GCP Secret Manager, HashiCorp Vault for sensitive credentials</li>
+<li><strong>Variables</strong> — non-sensitive configuration parameters, modifiable without redeploying the DAG</li>
+<li><strong>SLAs</strong> — define a maximum execution time, trigger an alert if exceeded</li>
+<li><strong>Callbacks</strong> — on_failure_callback, on_success_callback, on_retry_callback for Slack/PagerDuty notifications</li>
+<li><strong>Pools</strong> — limit the concurrency of certain tasks (e.g.: avoid saturating a database)</li>
+</ul>
+
+<h2 id="nv"><span class="sn">7</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Basic DAGs, PythonOperator, scheduling, simple dependencies</td><td>Understands that Airflow is an orchestrator, knows how to create a DAG with catchup=False</td><td>Confuses Airflow with a processing framework, puts business logic in the DAG</td></tr>
+<tr><td><span class="bd bm">Mid-level</span></td><td>TaskFlow API, XCom, trigger rules, branching, connections</td><td>Uses TaskFlow, knows when not to use XCom, ex</td></tr></tbody></table></div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Airflow ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

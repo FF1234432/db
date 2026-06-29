@@ -253,30 +253,31 @@ git revert HEAD               # crée un nouveau commit qui annule le précéden
 </div>
 </div>
 </div>
-<div id="body-en" style="display:none"><div class="aw"><div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Git avancé" data-en="Advanced Git technical interview">Advanced Git technical interview</span></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="../index.html" data-fr="Accueil" data-en="Home">Home</a><span>›</span><a href="index.html">Blog</a><span>›</span><span data-fr="Test technique Git avancé" data-en="Advanced Git technical interview">Advanced Git technical interview</span></div>
 <div class="at" data-fr="Guide recrutement data" data-en="Data hiring guide">Data hiring guide</div>
 <h1 class="ah" data-fr="Test technique Git avancé : rebase, hooks, pre-commit, gitflow" data-en="Advanced Git technical interview: rebase, hooks, pre-commit, gitflow">Advanced Git technical interview: rebase, hooks, pre-commit, gitflow</h1>
 <p class="ai" data-fr="Tout le monde sait faire un git commit et git push. Ce qui distingue un Data Engineer ou Analytics Engineer Senior, c'est sa maîtrise du rebase interactif, des hooks pre-commit et d'un workflow d'équipe structuré." data-en="Everyone knows how to do a git commit and git push. What distinguishes a Senior Data or Analytics Engineer is their mastery of interactive rebase, pre-commit hooks and a structured team workflow.">Everyone knows how to do a git commit and git push. What distinguishes a Senior Data or Analytics Engineer is their mastery of interactive rebase, pre-commit hooks and a structured team workflow.</p>
 <div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>June 2025</span><span>·</span><span data-fr="8 min de lecture" data-en="8 min read">8 min read</span><span>·</span><span>Data Engineer · Analytics Engineer</span></div>
-<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#branches">Branches and workflow</a></li><li><a href="#merge">Merge vs rebase</a></li><li><a href="#rebase">Interactive rebase</a></li><li><a href="#hooks">Pre-commit hooks</a></li><li><a href="#cherry">Cherry-pick and stash</a></li><li><a href="#urgence">Incident management</a></li><li><a href="#nv">Level-based assessment grid</a></li></ol></div>
+<div class="tc"><div class="tt" data-fr="Sommaire" data-en="Contents">Contents</div><ol id="tl"><li><a href="#branches">Branches and workflow</a></li><li><a href="#merge">Merge vs rebase</a></li><li><a href="#rebase">Interactive rebase</a></li><li><a href="#hooks">Pre-commit hooks</a></li><li><a href="#cherry">Cherry-pick and stash</a></li><li><a href="#urgence">Handling emergencies</a></li><li><a href="#nv">Level-based grid</a></li></ol></div>
 <div class="ab" id="ab">
-<p>In a data context, Git is not optional — whether it's for versioning Airflow DAGs, dbt models, Python scripts or notebooks. A Data Engineer who doesn't master rebase or pre-commit hooks introduces technical debt into the entire team's codebase.</p>
+<p>In a data context, Git is not optional — whether for versioning Airflow DAGs, dbt models, Python scripts or notebooks. A Data Engineer who does not master rebase or pre-commit hooks introduces technical debt into the entire team's codebase.</p>
 
 <h2 id="branches"><span class="sn">1</span>Branches and team workflow</h2>
 <div class="sq"><div class="sl">Discriminating question</div><p>How do you organize your branches in a data project with multiple contributors? Describe your gitflow.</p></div>
-<p>A good data Git workflow generally follows the gitflow principle or an adapted variant: a main/master branch for production, a develop branch for integration, feature branches per development.</p>
-<div class="cb"><code># Structure de branches type gitflow data
-main          # production stable, protégée, merge via PR uniquement
-develop       # intégration continue
-feature/xxx   # une branche par fonctionnalité/DAG/modèle
-hotfix/xxx    # correctif urgent directement depuis main
+<p>A good Git data workflow generally follows the gitflow principle or an adapted variant: a main/master branch for production, a develop branch for integration, feature branches per development.</p>
+<div class="cb"><code># Standard gitflow data branch structure
+main          # stable production, protected, merge via PR only
+develop       # continuous integration
+feature/xxx   # one branch per feature/DAG/model
+hotfix/xxx    # urgent fix directly from main
 
-# Conventions de nommage commits
-feat: ajout du DAG extraction Salesforce
-fix: correction timeout sur le pipeline BigQuery
-refactor: simplification des transformations dbt
-docs: mise à jour README pipeline facturation
-chore: mise à jour dépendances requirements.txt</code></div>
+# Commit naming conventions
+feat: add Salesforce extraction DAG
+fix: fix timeout on BigQuery pipeline
+refactor: simplify dbt transformations
+docs: update billing pipeline README
+chore: update requirements.txt dependencies</code></div>
 <ul>
 <li><strong>main protection</strong> — no direct push, only via Pull Request with review</li>
 <li><strong>Commit convention</strong> — Conventional Commits (feat/fix/refactor/docs/chore) for readable history and automatic changelog</li>
@@ -285,7 +286,81 @@ chore: mise à jour dépendances requirements.txt</code></div>
 </ul>
 
 <h2 id="merge"><span class="sn">2</span>Merge vs Rebase: when to use which</h2>
-<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between git merge and git</p></div></div>
+<div class="sq"><div class="sl">Discriminating question</div><p>What is the difference between git merge and git rebase? In which case do you prefer one over the other?</p></div>
+<div class="cb"><code># MERGE: creates a merge commit, preserves exact history
+git checkout develop
+git merge feature/my-dag
+# → creates a "Merge branch 'feature/my-dag'"
+
+# REBASE: reapplies commits onto a new base, linear history
+git checkout feature/my-dag
+git rebase develop
+# → feature/my-dag commits are reapplied after the last develop commit
+
+# Pull with rebase (recommended to avoid unnecessary merge commits)
+git pull --rebase origin develop</code></div>
+<ul>
+<li><strong>Merge</strong> — preserves exact history, creates merge commits, ideal for long-lived branches</li>
+<li><strong>Rebase</strong> — linear history, more readable, ideal for feature branches before PR</li>
+<li><strong>Golden rule</strong> — never rebase a shared branch (main, develop) — this rewrites others' history</li>
+<li><strong>git pull --rebase</strong> — avoids parasitic merge commits on working branches</li>
+</ul>
+<div class="cl"><p><strong>Senior GO signal:</strong> the candidate spontaneously explains the golden rule of rebase (do not rebase shared branches) and cites the concrete use case: updating a feature branch before the PR.</p></div>
+
+<h2 id="rebase"><span class="sn">3</span>Interactive rebase: rewriting history</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you clean up a series of WIP commits before submitting your Pull Request?</p></div>
+<p>Interactive rebase allows you to rewrite local history before sharing your work. It is an essential practice for submitting clean PRs.</p>
+<div class="cb"><code># Interactively rebase the last 5 commits
+git rebase -i HEAD~5
+
+# The editor opens with options for each commit:
+# p, pick   = keep the commit as is
+# r, reword = keep but edit the message
+# s, squash = merge with previous commit (keeps both messages)
+# f, fixup  = merge with previous commit (discards this message)
+# d, drop   = delete this commit entirely
+# e, edit   = modify the commit (to amend it)
+
+# Example: squash 3 WIP commits into a single clean commit
+pick a1b2c3 feat: start Salesforce extraction
+s d4e5f6 wip: in progress
+s g7h8i9 wip: bug fix
+
+# → becomes a single commit with the pick message</code></div>
+<ul>
+<li><strong>squash</strong> — merge several small commits into a single logical commit</li>
+<li><strong>fixup</strong> — like squash but discards the auxiliary commit message</li>
+<li><strong>reword</strong> — fix a commit message without changing the content</li>
+<li><strong>drop</strong> — delete an entire commit (caution: loses changes)</li>
+</ul>
+
+<h2 id="hooks"><span class="sn">4</span>Pre-commit hooks: automated quality</h2>
+<div class="sq"><div class="sl">Discriminating question</div><p>How do you ensure code quality before each commit? What is a pre-commit hook?</p></div>
+<p>Pre-commit hooks are scripts executed automatically before each commit. In data engineering, they allow you to lint Python code, validate DAG YAML, and auto-format with Black.</p>
+<div class="cb"><code># Installation
+pip install pre-commit
+pre-commit install  # installs hooks in .git/hooks/
+
+# .pre-commit-config.yaml (at repo root)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-yaml          # validates YAML files
+      - id: check-json           # validates JSON files
+      - id: detect-private-key   # blocks if a private key is detected
+      - id: check-added-large-files  # blocks files > 500KB
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black               # automatic Python formatting
+
+  - repo:
+</div>
+</div>
 </div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Analytics Engineer ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Réserver un appel</a></div></div>

@@ -130,39 +130,40 @@ df['avg_amount_7d'] = df.groupby('customer_id')['amount'].transform(
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Encodages basiques, imputation simple, scaling</td><td>Sait faire un OHE, impute par la mediane, sait quand normaliser</td><td>Applique le scaler avant le train/test split</td></tr><tr><td><span class='bd bm'>Confirme</span></td><td>Target encoding, features temporelles, SHAP selection</td><td>Utilise le Target Encoding avec cross-val, cree des lag features, selectionne avec SHAP</td><td>Ne sait pas ce qu est le data leakage, ne cree pas de lag features</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Pipeline sklearn complet, feature store, prevention leakage</td><td>A concu un pipeline sklearn avec ColumnTransformer, connait les feature stores</td><td>Ne peut pas expliquer un cas concret de data leakage</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='encoding'><span class='sn'>1</span>Categorical variable encoding</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use One-Hot Encoding vs Target Encoding vs Ordinal Encoding?</p></div><div class='cb'><code>import pandas as pd
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='encoding'><span class='sn'>1</span>Encoding categorical variables</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you use One-Hot Encoding vs Target Encoding vs Ordinal Encoding?</p></div><div class='cb'><code>import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from category_encoders import TargetEncoder
 
-# One-Hot Encoding : variables nominales a faible cardinalite (<15 valeurs)
+# One-Hot Encoding: nominal variables with low cardinality (<15 values)
 pd.get_dummies(df, columns=['genre', 'region'], drop_first=True)
 
-# Target Encoding : variables a forte cardinalite (>15 valeurs)
-# Encode par la moyenne de la target par categorie
+# Target Encoding: high cardinality variables (>15 values)
+# Encodes by the mean of the target per category
 enc = TargetEncoder(cols=['city', 'product_category'])
 df_encoded = enc.fit_transform(df, df['churned'])
-# Attention : risque de data leakage sur le train set
-# Toujours utiliser cross-validation ou leave-one-out
+# Warning: risk of data leakage on the train set
+# Always use cross-validation or leave-one-out
 
-# Ordinal Encoding : variables ordonnees
+# Ordinal Encoding: ordered variables
 order_map = {'faible': 0, 'moyen': 1, 'eleve': 2}
-df['niveau_encoded'] = df['niveau'].map(order_map)</code></div><ul><li><strong>One-Hot</strong> — low cardinality, no order. Creates N binary columns</li><li><strong>Target Encoding</strong> — high cardinality. Encodes the relationship with the target variable</li><li><strong>Ordinal</strong> — variables with a natural order (low/medium/high)</li><li><strong>Frequency Encoding</strong> — encodes by frequency of occurrence. Good compromise</li></ul><h2 id='manquants'><span class='sn'>2</span>Handling missing values</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What strategies do you use for handling missing values?</p></div><div class='cb'><code>from sklearn.impute import SimpleImputer, KNNImputer
+df['niveau_encoded'] = df['niveau'].map(order_map)</code></div><ul><li><strong>One-Hot</strong> — low cardinality, no order. Creates N binary columns</li><li><strong>Target Encoding</strong> — high cardinality. Encodes the relationship with the target variable</li><li><strong>Ordinal</strong> — variables with a natural order (low/medium/high)</li><li><strong>Frequency Encoding</strong> — encodes by frequency of occurrence. Good trade-off</li></ul><h2 id='manquants'><span class='sn'>2</span>Handling missing values</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What strategies do you use to handle missing values?</p></div><div class='cb'><code>from sklearn.impute import SimpleImputer, KNNImputer
 
-# Imputation simple
-imputer_median = SimpleImputer(strategy='median')  # numerique robuste
-imputer_mode = SimpleImputer(strategy='most_frequent')  # categoriel
+# Simple imputation
+imputer_median = SimpleImputer(strategy='median')  # robust numeric
+imputer_mode = SimpleImputer(strategy='most_frequent')  # categorical
 
-# KNN Imputer : impute selon les k voisins les plus proches
+# KNN Imputer: imputes based on the k nearest neighbors
 knn_imputer = KNNImputer(n_neighbors=5)
 
-# Ajouter un indicateur de valeur manquante
+# Add a missing value indicator
 df['income_missing'] = df['income'].isna().astype(int)
 df['income'].fillna(df['income'].median(), inplace=True)
 
-# Supprimer : seulement si <5% de valeurs manquantes et MCAR
-# (Missing Completely At Random)</code></div><ul><li><strong>MCAR, MAR, MNAR</strong> — understand why the value is missing before choosing a strategy</li><li><strong>Missing indicator</strong> — always add a binary column indicating that a value was missing</li><li><strong>Never impute on the test set</strong> — calculate imputation statistics only on the train set</li></ul><h2 id='temporal'><span class='sn'>3</span>Temporal features</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What temporal features do you typically create for a time series?</p></div><div class='cb'><code>df['date'] = pd.to_datetime(df['date'])
+# Drop: only if <5% missing values and MCAR
+# (Missing Completely At Random)</code></div><ul><li><strong>MCAR, MAR, MNAR</strong> — understand why the value is missing before choosing the strategy</li><li><strong>Missing indicator</strong> — always add a binary column indicating that a value was missing</li><li><strong>Never impute on the test set</strong> — calculate imputation statistics only on the train set</li></ul><h2 id='temporal'><span class='sn'>3</span>Temporal features</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What temporal features do you typically create for a time series?</p></div><div class='cb'><code>df['date'] = pd.to_datetime(df['date'])
 
-# Features calendaires
+# Calendar features
 df['year']        = df['date'].dt.year
 df['month']       = df['date'].dt.month
 df['day_of_week'] = df['date'].dt.dayofweek
@@ -170,16 +171,67 @@ df['is_weekend']  = df['day_of_week'].isin([5, 6]).astype(int)
 df['quarter']     = df['date'].dt.quarter
 df['is_month_end']= df['date'].dt.is_month_end.astype(int)
 
-# Encodage cyclique (eviter la discontinuite 12->1 pour les mois)
+# Cyclic encoding (avoid the 12->1 discontinuity for months)
 import numpy as np
 df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
 df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
 
-# Lag features (comportement passe)
+# Lag features (past behavior)
 df['revenue_lag_7d']  = df.groupby('customer_id')['revenue'].shift(7)
 df['revenue_lag_30d'] = df.groupby('customer_id')['revenue'].shift(30)
 df['revenue_roll_mean_7d'] = df.groupby('customer_id')['revenue'].transform(
-    lambda x: x.rolling(7).mean())</code></div><h2 id='scaling'><span class='sn'>4</span>Normalization: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do decision trees not need normalization? And neural networks?</p></div><ul><li><strong>StandardScaler</strong> — centers and scales (mean=0, st</div>
+    lambda x: x.rolling(7).mean())</code></div><h2 id='scaling'><span class='sn'>4</span>Normalization: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why do decision trees not need normalization? And neural networks?</p></div><ul><li><strong>StandardScaler</strong> — centers and scales (mean=0, std=1). For scale-sensitive algorithms: logistic regression, SVM, KNN, neural networks</li><li><strong>MinMaxScaler</strong> — scale [0, 1]. For neural networks, when the bounds are known</li><li><strong>RobustScaler</strong> — based on the median and IQR. Robust to outliers</li><li><strong>Not required</strong> — decision trees, Random Forest, XGBoost, LightGBM. They partition on thresholds, not on distances</li><li><strong>Rule</strong> — always fit the scaler on the train set and apply (transform) on the test set</li></ul><h2 id='selection'><span class='sn'>5</span>Feature selection</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you select the most important features for your model?</p></div><div class='cb'><code>import shap
+from sklearn.feature_selection import mutual_info_classif, RFE
+
+# Method 1: XGBoost importances
+model.fit(X_train, y_train)
+importances = pd.Series(model.feature_importances_, index=X_train.columns)
+top_20 = importances.nlargest(20)
+
+# Method 2: SHAP values (more reliable)
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_train)
+shap.summary_plot(shap_values, X_train, max_display=20)
+
+# Method 3: Mutual Information
+mi_scores = mutual_info_classif(X_train, y_train)
+
+# Warning: collinearity
+corr_matrix = X_train.corr().abs()
+# Remove features with correlation > 0.95</code></div><h2 id='leakage'><span class='sn'>6</span>Data leakage: the major pitfall</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is data leakage? Give a concrete example.</p></div><ul><li><strong>Data leakage</strong> — training features contain information about the target that will not be available in production. The model performs very well on the test set but fails in production</li><li><strong>Classic example</strong> — predicting churn with a feature 'last_customer_service_call' created AFTER the churn decision. In production, this information does not yet exist at the time of prediction</li><li><strong>Poorly done Target Encoding</strong> — computing the target encoding on the entire dataset before the train/test split</li><li><strong>Prevention</strong> — build features respecting the temporal order, never fit encoders on the test set</li></ul><div class='cb'><code>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, TargetEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+
+preprocessor = ColumnTransformer([
+    ('num', StandardScaler(), ['age', 'tenure_days', 'nb_commandes_30j']),
+    ('cat', TargetEncoder(cv=5, smooth='auto'),
+     ['region', 'plan', 'device_type']),
+])
+
+# Temporal features
+df['day_of_week'] = df['order_date'].dt.dayofweek
+df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+df['days_since_first_order'] = (df['order_date'] - df['first_order_date']).dt.days
+
+# Interaction features
+df['amount_per_order'] = df['total_amount'] / df['nb_commandes'].clip(lower=1)
+
+# Rolling features WITHOUT data leakage
+df = df.sort_values('order_date')
+df['avg_amount_7d'] = df.groupby('customer_id')['amount'].transform(
+    lambda x: x.shift(1).rolling(7, min_periods=1).mean()  # shift(1) = no leakage
+)</code></div>
+<ul>
+<li><strong>Data leakage</strong> - the most frequent mistake: using future data in features. Rolling features must always have a shift(1)</li>
+<li><strong>Target Encoding</strong> - encode high-cardinality categories by the mean of the target. With cross-validation to avoid target leakage</li>
+<li><strong>Feature selection</strong> - SHAP values to identify useless features, Spearman correlation for collinearity, Recursive Feature Elimination</li>
+<li><strong>Feature Store</strong> - centralize reusable features (Feast, Databricks Feature Store). Avoids recomputing the same features in 5 different notebooks</li>
+<li><strong>sklearn Pipelines</strong> - always encapsulate preprocessing in a Pipeline. Guarantees that the fit is done only on the train set</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grid by level</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bj'>Junior</span></td><td>Basic encodings, simple imputation, scaling</td><td>Can do OHE, imputes by median, knows when to normalize</td><td>Applies the scaler before the train/test split</td></tr><tr><td><span class='bd bm'>Mid-level</span></td><td>Target Encoding, temporal features, SHAP selection</td><td>Uses Target Encoding with cross-val, creates lag features, selects with SHAP</td><td>Does not know what data leakage is, does not create lag features</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Full sklearn Pipeline, feature store, leakage prevention</td><td>Has designed a sklearn pipeline with ColumnTransformer, knows feature stores</td><td>Cannot explain a concrete case of data leakage</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

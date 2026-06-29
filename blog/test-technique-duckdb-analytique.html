@@ -173,12 +173,13 @@ conn = duckdb.connect('md:mon_projet?motherduck_token=TOKEN')</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmé</span></td><td>SQL DuckDB basique, read_parquet, intégration pandas</td><td>Remplace pandas par DuckDB pour les agrégations, utilise read_parquet</td><td>N a jamais utilisé DuckDB</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>PIVOT/UNPIVOT natif, ASOF JOIN, S3, optimisation</td><td>Utilise DuckDB en production, configure la mémoire et les threads</td><td>Ne sait pas que DuckDB peut lire directement depuis S3</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='pourquoi'><span class='sn'>1</span>Why DuckDB in 2025</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases is DuckDB preferable to pandas or Spark?</p></div><ul><li><strong>DuckDB vs pandas</strong> — 10-100x faster on aggregations and joins. Native multi-thread execution, no GIL</li><li><strong>DuckDB vs Spark</strong> — no cluster to manage, instant startup, full native SQL. Ideal for files < 100GB</li><li><strong>DuckDB vs BigQuery/Snowflake</strong> — free, local, zero network latency. For exploratory analysis before moving to the cloud</li><li><strong>Typical use case</strong> — analyzing Parquet dumps, transformation prototype before dbt, replacement of pandas for heavy analyses</li></ul><h2 id='sql'><span class='sn'>2</span>Advanced Analytical SQL in DuckDB</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What advanced SQL features does DuckDB support natively?</p></div><div class='cb'><code>import duckdb
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='pourquoi'><span class='sn'>1</span>Why DuckDB in 2025</h2><div class='sq'><div class='sl'>Discriminating question</div><p>In which cases is DuckDB preferable to pandas or Spark?</p></div><ul><li><strong>DuckDB vs pandas</strong> — 10-100x faster on aggregations and joins. Native multi-thread execution, no GIL</li><li><strong>DuckDB vs Spark</strong> — no cluster to manage, instant startup, full native SQL. Ideal for files < 100GB</li><li><strong>DuckDB vs BigQuery/Snowflake</strong> — free, local, zero network latency. For exploratory analysis before moving to the cloud</li><li><strong>Typical use case</strong> — analyzing Parquet dumps, transformation prototype before dbt, pandas replacement for heavy analytics</li></ul><h2 id='sql'><span class='sn'>2</span>Advanced analytical SQL in DuckDB</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What advanced SQL features does DuckDB support natively?</p></div><div class='cb'><code>import duckdb
 
-# DuckDB supporte tout le SQL analytique moderne
+# DuckDB supports all modern analytical SQL
 conn = duckdb.connect()
 
-# PIVOT natif
+# Native PIVOT
 result = conn.execute("""
     PIVOT orders
     ON region
@@ -193,7 +194,7 @@ conn.execute("""
     INTO NAME quarter VALUE revenue
 """)
 
-# LIST et MAP (types natifs)
+# LIST and MAP (native types)
 conn.execute("""
     SELECT
         customer_id,
@@ -203,16 +204,16 @@ conn.execute("""
     GROUP BY customer_id
 """)
 
-# ASOF JOIN : jointure sur la valeur la plus proche
+# ASOF JOIN : join on the closest value
 conn.execute("""
     SELECT o.*, p.price
     FROM orders o
     ASOF JOIN prices p
         ON o.product_id = p.product_id
         AND o.order_date >= p.effective_date
-""")</code></div><h2 id='parquet'><span class='sn'>3</span>Querying Parquet Files Directly</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query Parquet files without loading them into memory?</p></div><div class='cb'><code>import duckdb
+""")</code></div><h2 id='parquet'><span class='sn'>3</span>Querying Parquet files directly</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you query Parquet files without loading them into memory?</p></div><div class='cb'><code>import duckdb
 
-# Requête directe sur des fichiers Parquet (glob supporté)
+# Direct query on Parquet files (glob supported)
 result = duckdb.sql("""
     SELECT
         region,
@@ -225,26 +226,26 @@ result = duckdb.sql("""
     ORDER BY revenue DESC
 """).df()
 
-# Predicate pushdown : DuckDB ne lit que les colonnes et lignes nécessaires
-# Beaucoup plus efficace que pd.read_parquet() suivi d un filtre
+# Predicate pushdown : DuckDB only reads the necessary columns and rows
+# Much more efficient than pd.read_parquet() followed by a filter
 
-# Créer une table virtuelle depuis Parquet
+# Create a virtual table from Parquet
 duckdb.execute("""
     CREATE VIEW orders_view AS
     SELECT * FROM read_parquet('data/orders/**/*.parquet')
 """)
 
-# Lire depuis S3 (nécessite le module httpfs)
+# Read from S3 (requires httpfs module)
 duckdb.install_extension('httpfs')
 duckdb.load_extension('httpfs')
 duckdb.execute("SET s3_region='eu-west-1'")
-result = duckdb.sql("SELECT * FROM 's3://mon-bucket/orders/*.parquet'").df()</code></div><h2 id='pandas'><span class='sn'>4</span>pandas Integration: Zero-Copy with Arrow</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does DuckDB communicate with pandas without copying data?</p></div><div class='cb'><code>import duckdb
+result = duckdb.sql("SELECT * FROM 's3://my-bucket/orders/*.parquet'").df()</code></div><h2 id='pandas'><span class='sn'>4</span>pandas integration: zero-copy with Arrow</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How does DuckDB communicate with pandas without copying data?</p></div><div class='cb'><code>import duckdb
 import pandas as pd
 
 df_orders = pd.read_csv('orders.csv')
 df_customers = pd.read_csv('customers.csv')
 
-# DuckDB peut requêter directement les DataFrames pandas
+# DuckDB can directly query pandas DataFrames
 # Via Apache Arrow (zero-copy)
 result = duckdb.sql("""
     SELECT
@@ -258,9 +259,65 @@ result = duckdb.sql("""
     ORDER BY total_revenue DESC
 """).df()
 
-# Convertir vers différents formats
+# Convert to different formats
 result_arrow = duckdb.sql("SELECT * FROM df_orders").arrow()   # PyArrow
-result_polars = duckdb.sql("SELECT * FROM df_orders").pl()  </code></div></div>
+result_polars = duckdb.sql("SELECT * FROM df_orders").pl()     # Polars
+result_numpy = duckdb.sql("SELECT amount FROM df_orders").numpy()</code></div><h2 id='perf'><span class='sn'>5</span>DuckDB performance optimization</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What are the important configuration parameters for optimizing DuckDB?</p></div><div class='cb'><code>import duckdb
+
+conn = duckdb.connect()
+
+# Use all available cores
+conn.execute("SET threads TO 8")
+
+# Maximum memory (default: 80% of RAM)
+conn.execute("SET memory_limit = '16GB'")
+
+# Spill to disk if necessary (for very large datasets)
+conn.execute("SET temp_directory = '/tmp/duckdb_spill'")
+
+# Intermediate result compression
+conn.execute("SET intermediate_result_chunk_cardinality = 2048")
+
+# Persistence: DuckDB can also operate in file mode
+conn_persistent = duckdb.connect('analytics.duckdb')
+conn_persistent.execute("""
+    CREATE TABLE IF NOT EXISTS orders AS
+    SELECT * FROM read_parquet('data/orders/*.parquet')
+""")</code></div><h2 id='usecases'><span class='sn'>6</span>DuckDB in production: use cases</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use DuckDB in a production pipeline?</p></div><ul><li><strong>Local transformation script</strong> — replace a heavy pandas script with DuckDB SQL. 10x less code, 100x faster</li><li><strong>Data validation</strong> — check the quality of a Parquet dump before loading it into BigQuery</li><li><strong>dbt model prototype</strong> — test SQL logic locally with DuckDB before deploying to Snowflake</li><li><strong>Serverless analytics</strong> — DuckDB + S3 as an analytics stack without a cluster. Near-zero cost for ad-hoc analysis</li><li><strong>dbt with DuckDB adapter</strong> — run dbt locally with DuckDB as the warehouse. Ultra-fast iterations</li></ul>
+<div class='cb'><code>import duckdb
+
+conn = duckdb.connect()
+
+# Read directly from S3 without downloading
+conn.execute("""
+    INSTALL httpfs; LOAD httpfs;
+    SET s3_region='eu-west-1';
+    SET s3_access_key_id='KEY'; SET s3_secret_access_key='SECRET';
+""")
+
+result = conn.execute("""
+    SELECT region, SUM(amount) as revenue, COUNT(*) as orders
+    FROM read_parquet('s3://bucket/orders/year=2025/**/*.parquet')
+    WHERE order_date >= '2025-01-01'
+    GROUP BY region ORDER BY revenue DESC
+""").df()
+
+# DuckDB as local ETL
+conn.execute("CREATE TABLE orders AS SELECT * FROM read_csv_auto('orders.csv')")
+conn.execute("COPY (SELECT * FROM orders WHERE amount > 100) TO 'filtered.parquet' (FORMAT PARQUET)")
+
+# MotherDuck : DuckDB cloud sharing
+import duckdb
+conn = duckdb.connect('md:my_project?motherduck_token=TOKEN')</code></div>
+<ul>
+<li><strong>Vectorized columnar OLAP</strong> - DuckDB uses a vectorized in-memory engine. 10-100x faster than pandas on analytical aggregations, without JVM or cluster</li>
+<li><strong>S3/GCS direct</strong> - read Parquet on S3 without downloading. Predicate and projection pushdown: pulls only the necessary columns and partitions</li>
+<li><strong>MotherDuck</strong> - DuckDB managed in the cloud. Share queries and data without infrastructure. Hybrid local/cloud</li>
+<li><strong>Perfect use cases</strong> - local exploration, lightweight ETL (less than 50GB), pipeline testing, pandas replacement for analytics, SQL in notebooks</li>
+<li><strong>Limitations</strong> - single-node (no distributed), not suited for high-volume Spark workloads, no native streaming</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd mj'>Confirmed</span></td><td>Basic DuckDB SQL, read_parquet, pandas integration</td><td>Replaces pandas with DuckDB for aggregations, uses read_parquet</td><td>Has never used DuckDB</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Native PIVOT/UNPIVOT, ASOF JOIN, S3, optimization</td><td>Uses DuckDB in production, configures memory and threads</td><td>Does not know DuckDB can read directly from S3</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer ou Data Scientist ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

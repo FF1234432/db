@@ -122,34 +122,35 @@ agg = df_filtered.groupBy('region').sum('amount')
 result.explain(extended=True)  # voir les stages, shuffles, pushdowns</code></div><ul><li><strong>AQE (Adaptive Query Execution)</strong> - Spark 3.x optimise le plan d execution au runtime. Coalesce les partitions vides, detecte le data skew, choisit broadcast join automatiquement</li><li><strong>Shuffle partitions</strong> - spark.sql.shuffle.partitions=200 par defaut. Regler selon la volumetrie : 1 partition ~128MB de donnees shufflees est un bon point de depart</li><li><strong>Data skew</strong> - une partition 100x plus grosse que les autres = un executor qui bloque tous les autres. Remedies : salting (ajouter du bruit a la cle de join), AQE skewJoin, ou filter + union</li><li><strong>Catalyst optimizer</strong> - Spark convertit les DataFrames en plan logique puis physique optimise. Privilegier les DataFrames sur les RDDs pour profiter de Catalyst</li><li><strong>Tungsten</strong> - moteur d execution memoire de Spark. Serialisation binaire, generation de bytecode. Utilise automatiquement avec les DataFrames</li></ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirme</span></td><td>DataFrame API, Delta Lake basique, partitionnement</td><td>A utilise Delta MERGE, sait ce qu est Time Travel, configure les partitions shuffle</td><td>N a jamais utilise Delta Lake, ne sait pas ce qu est AQE</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Structured Streaming, AQE, Spark on K8s, memory tuning</td><td>A deploye un job Spark Streaming, a debug un skew join, a optimise la memoire</td><td>N a jamais fait de streaming, ne sait pas diagnostiquer un OOM Spark</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Architecture lakehouse, Unity Catalog, standards d equipe</td><td>A concu une architecture lakehouse, defini les standards de gouvernance Databricks</td><td>Ne peut pas expliquer la difference entre Data Lake et Lakehouse</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><p>Spark batch on CSV files, everyone can do it. What we assess in Senior interviews is streaming, ACID transaction management with Delta Lake and the ability to diagnose slow jobs.</p><h2 id='streaming'><span class='sn'>1</span>Structured Streaming: continuous processing</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between micro-batch and continuous processing in Spark Structured Streaming?</p></div><div class='cb'><code>from pyspark.sql import SparkSession
+<div id="body-en" style="display:none"><div class="ab">
+<p>Spark batch on CSV files, everyone knows how to do it. What we evaluate in Senior interviews is streaming, ACID transaction management with Delta Lake and the ability to diagnose slow jobs.</p><h2 id='streaming'><span class='sn'>1</span>Structured Streaming: continuous processing</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is the difference between micro-batch and continuous processing in Spark Structured Streaming?</p></div><div class='cb'><code>from pyspark.sql import SparkSession
 from pyspark.sql.functions import window, count
 
 spark = SparkSession.builder.appName('streaming').getOrCreate()
 
-# Lire depuis Kafka en streaming
+# Read from Kafka in streaming
 df = spark.readStream \
     .format('kafka') \
     .option('kafka.bootstrap.servers', 'kafka:9092') \
     .option('subscribe', 'events') \
     .load()
 
-# Aggregation avec window temporelle
+# Aggregation with time window
 result = df \
     .selectExpr('CAST(value AS STRING) as event') \
     .groupBy(window('timestamp', '5 minutes'), 'event') \
     .agg(count('*').alias('cnt'))
 
-# Ecriture en Delta Lake
+# Write to Delta Lake
 query = result.writeStream \
     .format('delta') \
     .outputMode('complete') \
     .option('checkpointLocation', '/checkpoints/events') \
     .start('/data/events_aggregated')
 
-query.awaitTermination()</code></div><ul><li><strong>Micro-batch</strong> — by default, Spark processes small batches at fixed intervals. Latency of a few seconds</li><li><strong>Continuous processing</strong> — experimental mode, sub-millisecond latency, limited operations</li><li><strong>Checkpoint</strong> — stores the streaming state for recovery after failure. Mandatory in production</li><li><strong>Watermark</strong> — handles late data events in temporal aggregations</li></ul><h2 id='delta'><span class='sn'>2</span>Delta Lake: ACID for the data lake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problems does Delta Lake solve compared to classic Parquet?</p></div><div class='cb'><code>from delta.tables import DeltaTable
+query.awaitTermination()</code></div><ul><li><strong>Micro-batch</strong> — by default, Spark processes small batches at fixed intervals. Latency of a few seconds</li><li><strong>Continuous processing</strong> — experimental mode, sub-millisecond latency, limited operations</li><li><strong>Checkpoint</strong> — stores the streaming state for recovery after failure. Mandatory in production</li><li><strong>Watermark</strong> — handle late data events in time-based aggregations</li></ul><h2 id='delta'><span class='sn'>2</span>Delta Lake: ACID for the data lake</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What problems does Delta Lake solve compared to classic Parquet?</p></div><div class='cb'><code>from delta.tables import DeltaTable
 
-# MERGE : upsert ACID
+# MERGE: ACID upsert
 delta_table = DeltaTable.forPath(spark, '/data/customers')
 
 delta_table.alias('target').merge(
@@ -166,20 +167,55 @@ delta_table.alias('target').merge(
     'updated_at': 'source.updated_at'
 }).execute()
 
-# Time Travel : requeter les donnees passees
+# Time Travel: query past data
 df_yesterday = spark.read.format('delta') \
     .option('timestampAsOf', '2025-01-01') \
     .load('/data/customers')
 
-# OPTIMIZE + ZORDER : ameliorer les perfs de lecture
-delta_table.optimize().executeZOrderBy('region', 'date')</code></div><ul><li><strong>ACID</strong> — atomic transactions. No more corrupted files if the job crashes mid-way</li><li><strong>Time Travel</strong> — query data at any previous version or timestamp</li><li><strong>Schema Evolution</strong> — add columns without breaking existing queries</li><li><strong>MERGE</strong> — upsert in a single operation. Essential for CDC (Change Data Capture)</li></ul><h2 id='optim'><span class='sn'>3</span>Adaptive Query Execution (AQE)</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is AQE in Spark 3+? How does it solve the data skew problem?</p></div><div class='cb'><code># Activer AQE (actif par defaut dans Spark 3.2+)
+# OPTIMIZE + ZORDER: improve read performance
+delta_table.optimize().executeZOrderBy('region', 'date')</code></div><ul><li><strong>ACID</strong> — atomic transactions. No more corrupted files if the job crashes midway</li><li><strong>Time Travel</strong> — query data at any previous version or timestamp</li><li><strong>Schema Evolution</strong> — add columns without breaking existing queries</li><li><strong>MERGE</strong> — upsert in a single operation. Essential for CDC (Change Data Capture)</li></ul><h2 id='optim'><span class='sn'>3</span>Adaptive Query Execution (AQE)</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is AQE in Spark 3+? How does it solve the data skew problem?</p></div><div class='cb'><code># Enable AQE (active by default in Spark 3.2+)
 spark.conf.set('spark.sql.adaptive.enabled', 'true')
 spark.conf.set('spark.sql.adaptive.coalescePartitions.enabled', 'true')
 spark.conf.set('spark.sql.adaptive.skewJoin.enabled', 'true')
 
-# Pour le skew : diviser automatiquement les partitions desequilibrees
+# For skew: automatically split unbalanced partitions
 spark.conf.set('spark.sql.adaptive.skewJoin.skewedPartitionFactor', '5')
-spark.conf.set('spark.sql.adaptive.skewJoin.skewedPartitionThresholdInBytes', '256m')</code></div><ul><li><strong>AQE</strong> — re-optimizes the query plan at runtime based on actual statistics</li><li><strong>Skew join</strong> — automatically splits oversized partitions to rebalance the workload</li><li><strong>Partition coalescing</strong> — merges small partitions after a shuffle to avoid task overhead</li></ul></div>
+spark.conf.set('spark.sql.adaptive.skewJoin.skewedPartitionThresholdInBytes', '256m')</code></div><ul><li><strong>AQE</strong> — Spark optimizes the execution plan on the fly, taking into account real statistics from intermediate data</li><li><strong>Skew join handling</strong> — automatically detects and splits very large partitions (data skew)</li><li><strong>Dynamic coalescing</strong> — reduces the number of shuffle partitions if data is small</li><li><strong>Broadcast join</strong> — automatically converts a sort-merge join into a broadcast join if one table is small</li></ul><h2 id='k8s'><span class='sn'>4</span>Spark on Kubernetes</h2><ul><li><strong>spark-submit --master k8s://</strong> — the driver and executors are Kubernetes Pods</li><li><strong>Advantages</strong> — per-job isolation, elastic scaling, better resource utilization vs YARN</li><li><strong>Spot instances</strong> — reduce costs by 60-80% on batch jobs using preemptible nodes</li><li><strong>Volcano scheduler</strong> — Kubernetes scheduler optimized for ML/data workloads (gang scheduling)</li></ul><h2 id='tuning'><span class='sn'>5</span>Memory and GC tuning</h2><div class='cb'><code># Spark memory configuration
+spark.conf.set('spark.executor.memory', '8g')
+spark.conf.set('spark.executor.memoryOverhead', '2g')  # off-heap memory
+spark.conf.set('spark.sql.shuffle.partitions', '200')  # adjust based on volume
+
+# Prefer G1GC for large heaps
+spark.conf.set('spark.executor.extraJavaOptions', '-XX:+UseG1GC')
+
+# Strategic persistence
+df_heavy.persist(StorageLevel.MEMORY_AND_DISK)  # if reused multiple times
+# Clean up after use
+df_heavy.unpersist()</code></div><h2 id='catalog'><span class='sn'>6</span>Unity Catalog: Databricks governance</h2><ul><li><strong>Unity Catalog</strong> — centralized governance layer for all Databricks assets (Delta tables, files, ML models, notebooks)</li><li><strong>3 levels</strong> — Catalog > Schema > Table. Replaces the Hive metastore</li><li><strong>Column-level security</strong> — mask columns based on the user's role</li><li><strong>Automatic data lineage</strong> — lineage down to the column level, integrated with dbt and Spark</li></ul><div class='cb'><code>from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, broadcast
+
+spark = SparkSession.builder \
+    .config('spark.sql.adaptive.enabled', 'true') \
+    .config('spark.sql.adaptive.coalescePartitions.enabled', 'true') \
+    .config('spark.sql.adaptive.skewJoin.enabled', 'true') \
+    .getOrCreate()
+
+# Broadcast join: broadcast the small table to all workers
+result = large_df.join(broadcast(small_df), 'category_id')
+
+# Strategic repartition before a heavy groupBy
+df_repartitioned = df.repartition(200, col('customer_id'))
+agg_result = df_repartitioned.groupBy('customer_id').agg({'amount': 'sum'})
+
+# Persist to reuse a DataFrame computed multiple times
+df_filtered = df.filter(col('status') == 'completed').persist()
+count = df_filtered.count()
+agg = df_filtered.groupBy('region').sum('amount')
+
+# Read the execution plan
+result.explain(extended=True)  # view stages, shuffles, pushdowns</code></div><ul><li><strong>AQE (Adaptive Query Execution)</strong> - Spark 3.x optimizes the execution plan at runtime. Coalesces empty partitions, detects data skew, automatically chooses broadcast join</li><li><strong>Shuffle partitions</strong> - spark.sql.shuffle.partitions=200 by default. Tune based on data volume: 1 partition ~128MB of shuffled data is a good starting point</li><li><strong>Data skew</strong> - one partition 100x larger than the others = one executor blocking all the others. Remedies: salting (adding noise to the join key), AQE skewJoin, or filter + union</li><li><strong>Catalyst optimizer</strong> - Spark converts DataFrames into a logical then optimized physical plan. Prefer DataFrames over RDDs to benefit from Catalyst</li><li><strong>Tungsten</strong> - Spark's in-memory execution engine. Binary serialization, bytecode generation. Used automatically with DataFrames</li></ul>
+<h2 id='nv'><span class='sn'>7</span>Level grid</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Mid-level</span></td><td>DataFrame API, basic Delta Lake, partitioning</td><td>Has used Delta MERGE, knows what Time Travel is, configures shuffle partitions</td><td>Has never used Delta Lake, does not know what AQE is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Structured Streaming, AQE, Spark on K8s, memory tuning</td><td>Has deployed a Spark Streaming job, has debugged a skew join, has optimized memory</td><td>Has never done streaming, cannot diagnose a Spark OOM</td></tr><tr><td><span class='bd bl'>Lead</span></td><td>Lakehouse architecture, Unity Catalog, team standards</td><td>Has designed a lakehouse architecture, defined Databricks governance standards</td><td>Cannot explain the difference between Data Lake and Lakehouse</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer Spark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>

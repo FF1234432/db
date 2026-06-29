@@ -163,63 +163,141 @@ result.explain(mode='formatted')</code></div>
 </ul>
 <h2 id='nv'><span class='sn'>7</span>Grille par niveau</h2><table class='lt'><thead><tr><th>Niveau</th><th>Maitrise</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmé</span></td><td>Partitions basiques, broadcast joins, cache()</td><td>Ajuste les shuffle partitions, utilise broadcast sur les petites tables</td><td>Ne sait pas ce qu est une partition Spark</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Bucketing, Pandas UDFs, Spark UI diagnostic, AQE</td><td>A résolu un data skew, remplace les Python UDFs par des Pandas UDFs</td><td>Utilise des Python UDFs sans savoir pourquoi c est lent</td></tr></tbody></table></div>
 </div>
-<div id="body-en" style="display:none"><div class="ab"><h2 id='partitions'><span class='sn'>1</span>Partitions: the unit of parallelism</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How many partitions should you have for your Spark job? How do you adjust them?</p></div><div class='cb'><code>from pyspark.sql import SparkSession
+<div id="body-en" style="display:none"><div class="ab">
+<h2 id='partitions'><span class='sn'>1</span>Partitions: the unit of parallelism</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How many partitions should you have for your Spark job? How do you tune them?</p></div><div class='cb'><code>from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
 
-# Règle empirique : 2-4 partitions par coeur disponible
-# Pour 100GB de données : 200-400 partitions (128-256MB par partition)
+# Rule of thumb: 2-4 partitions per available core
+# For 100GB of data: 200-400 partitions (128-256MB per partition)
 
-# Vérifier le nombre de partitions
+# Check the number of partitions
 print(df.rdd.getNumPartitions())
 
-# Repartitionner (shuffle) : distribuer uniformément
+# Repartition (shuffle): distribute evenly
 df_balanced = df.repartition(200)
 
-# Repartitionner sur une colonne (pour les jointures)
+# Repartition on a column (for joins)
 df_keyed = df.repartition(200, 'customer_id')
 
-# Coalesce (pas de shuffle) : réduire le nombre de partitions
-df_smaller = df.coalesce(50)  # pour l écriture finale
+# Coalesce (no shuffle): reduce the number of partitions
+df_smaller = df.coalesce(50)  # for final write
 
-# Configuration shuffle partitions
+# Shuffle partitions configuration
 spark.conf.set('spark.sql.shuffle.partitions', '200')
-# AQE ajuste automatiquement ce nombre depuis Spark 3.0</code></div><ul><li><strong>Too few partitions</strong> — underutilization of cores, OOM if partitions are huge</li><li><strong>Too many partitions</strong> — scheduling overhead, small output files</li><li><strong>Rule</strong> — 128-256MB per partition is the sweet spot</li></ul><h2 id='shuffle'><span class='sn'>2</span>Minimizing shuffle</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is shuffle the most expensive operation in Spark?</p></div><div class='cb'><code># Shuffle = transfert de données entre executors
-# Cause : groupBy, join, distinct, repartition
+# AQE automatically adjusts this number since Spark 3.0</code></div><ul><li><strong>Too few partitions</strong> — underutilization of cores, OOM if partitions are huge</li><li><strong>Too many partitions</strong> — scheduling overhead, small output files</li><li><strong>Rule</strong> — 128-256MB per partition is the sweet spot</li></ul><h2 id='shuffle'><span class='sn'>2</span>Minimizing shuffle</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why is shuffle the most expensive operation in Spark?</p></div><div class='cb'><code># Shuffle = data transfer between executors
+# Caused by: groupBy, join, distinct, repartition
 
-# MAUVAIS : groupBy sur une colonne à haute cardinalité
-df.groupBy('user_id').count()  # beaucoup de shuffle
+# BAD: groupBy on a high-cardinality column
+df.groupBy('user_id').count()  # lots of shuffle
 
-# MIEUX : filtrer avant de grouper
+# BETTER: filter before grouping
 df.filter(df.date >= '2025-01-01').groupBy('region').count()
 
-# Bucketing : pré-partitionner pour éviter le shuffle aux joins
+# Bucketing: pre-partition to avoid shuffle on joins
 df.write.bucketBy(50, 'customer_id').sortBy('customer_id')\
   .saveAsTable('orders_bucketed')
 
 df2.write.bucketBy(50, 'customer_id').sortBy('customer_id')\
    .saveAsTable('customers_bucketed')
 
-# Maintenant le join ne shuffle pas
-spark.sql('SELECT * FROM orders_bucketed JOIN customers_bucketed USING (customer_id)')</code></div><ul><li><strong>Shuffle is costly</strong> — all data must travel across the network. Written to disk, then read back</li><li><strong>Bucketing</strong> — pre-partition tables at write time to avoid shuffle in future joins</li></ul><h2 id='broadcast'><span class='sn'>3</span>Broadcast joins: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a broadcast join? Does Spark do it automatically?</p></div><div class='cb'><code>from pyspark.sql.functions import broadcast
+# Now the join does not shuffle
+spark.sql('SELECT * FROM orders_bucketed JOIN customers_bucketed USING (customer_id)')</code></div><ul><li><strong>Shuffle is expensive</strong> — all data must travel across the network. Written to disk, then read back</li><li><strong>Bucketing</strong> — pre-partition tables at write time to avoid shuffle on future joins</li></ul><h2 id='broadcast'><span class='sn'>3</span>Broadcast joins: when and how</h2><div class='sq'><div class='sl'>Discriminating question</div><p>What is a broadcast join? Does Spark do it automatically?</p></div><div class='cb'><code>from pyspark.sql.functions import broadcast
 
-# Sans broadcast : Spark fait un sort-merge join (avec shuffle)
+# Without broadcast: Spark does a sort-merge join (with shuffle)
 result = large_df.join(small_df, 'customer_id')
 
-# Avec broadcast : small_df est envoyé à chaque executor
-# Évite totalement le shuffle sur large_df
+# With broadcast: small_df is sent to each executor
+# Completely avoids shuffle on large_df
 result = large_df.join(broadcast(small_df), 'customer_id')
 
-# Automatique si small_df < spark.sql.autoBroadcastJoinThreshold
-# Par défaut : 10MB. Augmenter :
+# Automatic if small_df < spark.sql.autoBroadcastJoinThreshold
+# Default: 10MB. To increase:
 spark.conf.set('spark.sql.autoBroadcastJoinThreshold', '100m')
 
-# AQE (Adaptive Query Execution) peut convertir
-# automatiquement un sort-merge join en broadcast join
-# si une table s avère petite après filtrage</code></div><ul><li><strong>Broadcast</strong> — copy the small table to every executor. Ideal for dimension tables (&lt;100MB)</li><li><strong>Do not broadcast</strong> — large tables. Memory consumption is proportional to the number of executors</li></ul><h2 id='cache'><span class='sn'>4</span>Caching: when to keep in memory</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you persist a Spark DataFrame? What is the difference between cache() and persist()?</p></div><div class='cb'><code>from pyspark import StorageLevel
+# AQE (Adaptive Query Execution) can automatically convert
+# a sort-merge join into a broadcast join
+# if a table turns out to be small after filtering</code></div><ul><li><strong>Broadcast</strong> — copy the small table to each executor. Ideal for dimension tables (&lt;100MB)</li><li><strong>Do not broadcast</strong> — large tables. Memory consumption is proportional to the number of executors</li></ul><h2 id='cache'><span class='sn'>4</span>Caching: when to keep in memory</h2><div class='sq'><div class='sl'>Discriminating question</div><p>When do you persist a Spark DataFrame? What is the difference between cache() and persist()?</p></div><div class='cb'><code>from pyspark import StorageLevel
 
 # cache() = MEMORY_AND_DISK
-# Stocker en mémoire d abord,</code></div></div>
+# Store in memory first, then disk if necessary
+df_filtered = df.filter(df.status == 'active').cache()
+
+# persist() = granular control
+df.persist(StorageLevel.MEMORY_ONLY)        # RAM only
+df.persist(StorageLevel.MEMORY_AND_DISK)    # RAM + disk
+df.persist(StorageLevel.DISK_ONLY)          # disk only
+df.persist(StorageLevel.OFF_HEAP)           # off-heap memory
+
+# When to cache:
+# 1. DataFrame reused multiple times in the same job
+# 2. Expensive intermediate computation
+
+# Always unpersist after use
+df_filtered.unpersist()
+
+# Check what is cached
+spark.catalog.isCached('my_table')</code></div><h2 id='udf'><span class='sn'>5</span>UDFs: avoid them when possible</h2><div class='sq'><div class='sl'>Discriminating question</div><p>Why are Python UDFs so slow in PySpark? What are the alternatives?</p></div><div class='cb'><code>from pyspark.sql.functions import pandas_udf, col
+import pandas as pd
+
+# BAD: classic Python UDF (very slow)
+from pyspark.sql.functions import udf
+@udf('string')
+def categorize(amount):
+    if amount > 1000: return 'high'
+    elif amount > 100: return 'medium'
+    else: return 'low'
+
+# BETTER: Pandas UDF (vectorized via Apache Arrow)
+@pandas_udf('string')
+def categorize_vectorized(amount: pd.Series) -> pd.Series:
+    return pd.cut(amount, bins=[0, 100, 1000, float('inf')],
+                  labels=['low', 'medium', 'high']).astype(str)
+
+# BEST: native Spark functions (no UDF at all)
+from pyspark.sql.functions import when
+df.withColumn('tier', 
+    when(col('amount') > 1000, 'high')
+    .when(col('amount') > 100, 'medium')
+    .otherwise('low')
+)</code></div><h2 id='diagnostic'><span class='sn'>6</span>Diagnosing with Spark UI</h2><div class='sq'><div class='sl'>Discriminating question</div><p>How do you use the Spark UI to identify bottlenecks?</p></div><ul><li><strong>Jobs → Stages</strong> — identify the longest stage. That is where the problem is hiding</li><li><strong>Data Skew</strong> — in the Stage tab, if one task takes 10x longer than the others = data skew on the partition key</li><li><strong>Shuffle Read/Write</strong> — a high shuffle volume indicates expensive joins or groupBy operations</li><li><strong>GC Time</strong> — if GC Time &gt; 10% of total time, memory is too small or Python objects are too heavy</li><li><strong>SQL tab</strong> — view the physical execution plan to identify avoidable sort-merge joins</li></ul><div class='cb'><code>from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, broadcast, spark_partition_id, count, rand, concat, lit
+
+spark = SparkSession.builder \
+    .config('spark.sql.adaptive.enabled', 'true') \
+    .config('spark.sql.adaptive.coalescePartitions.enabled', 'true') \
+    .config('spark.sql.adaptive.skewJoin.enabled', 'true') \
+    .config('spark.sql.shuffle.partitions', '200') \
+    .getOrCreate()
+
+# Diagnose data skew
+df.groupBy(spark_partition_id()).agg(count('*').alias('n')).orderBy('n', ascending=False).show()
+
+# Broadcast join (table < 10MB)
+result = large_df.join(broadcast(small_lookup), 'product_id')
+
+# Anti-skew salting
+SALT = 10
+large_df = large_df.withColumn('salt', (rand() * SALT).cast('int'))
+large_df = large_df.withColumn('key_salted', concat(col('customer_id'), lit('_'), col('salt')))
+
+# Persist reused DataFrames
+from pyspark import StorageLevel
+df_enriched = df.join(dim, 'id').persist(StorageLevel.MEMORY_AND_DISK)
+count_total = df_enriched.count()
+agg = df_enriched.groupBy('region').sum('amount')
+
+# Execution plan
+result.explain(mode='formatted')</code></div>
+<ul>
+<li><strong>AQE (Adaptive Query Execution)</strong> - Spark 3+ optimizes the plan at runtime: coalesces empty partitions, detects skew, chooses broadcast join. Always enable it</li>
+<li><strong>Anti-skew salting</strong> - add a random suffix to the join key to distribute skewed data. Two-step join: explode + reduce</li>
+<li><strong>Repartition vs coalesce</strong> - repartition(n): full shuffle. coalesce(n): reduces without shuffle. Use coalesce to reduce before writing</li>
+<li><strong>Kryo serializer</strong> - spark.serializer=KryoSerializer: 2-10x faster than Java serializer for shuffles and RDD cache</li>
+<li><strong>Off-heap memory</strong> - spark.memory.offHeap.enabled=true for jobs with large amounts of cached data. Avoids Java GC pressure</li>
+</ul>
+<h2 id='nv'><span class='sn'>7</span>Grid by level</h2><table class='lt'><thead><tr><th>Level</th><th>Mastery</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class='bd bm'>Confirmed</span></td><td>Basic partitions, broadcast joins, cache()</td><td>Adjusts shuffle partitions, uses broadcast on small tables</td><td>Does not know what a Spark partition is</td></tr><tr><td><span class='bd bs'>Senior</span></td><td>Bucketing, Pandas UDFs, Spark UI diagnostic, AQE</td><td>Has resolved a data skew issue, replaces Python UDFs with Pandas UDFs</td><td>Uses Python UDFs without knowing why they are slow</td></tr></tbody></table>
+</div>
 </div>
 <div class="cb2"><h3>Vous recrutez un Data Engineer PySpark ?</h3><p>Premier entretien gratuit. Rapport GO/NO-GO sous 48h.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo">Reserver un appel</a></div></div>
 </div>
