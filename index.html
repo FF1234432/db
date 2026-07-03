@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr" data-lang="fr">
 <head>
-<meta name="google-site-verification" content="8SZrzJYllqiYbBtWCOoWmnLdrpN3F_ME8ZpR8RX4bxI"/>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="google-site-verification" content="8SZrzJYllqiYbBtWCOoWmnLdrpN3F_ME8ZpR8RX4bxI"/>
 <title>Data Builder · Évaluation technique data externalisée</title>
-<meta name="description" content="Data Builder conduit les entretiens techniques data à votre place. 14 technos, 1h en live, rapport GO/NO-GO sous 48h."/>
+<meta name="description" content="Data Builder conduit les entretiens techniques data à votre place. 12 technos, 1h en live, rapport GO/NO-GO sous 48h."/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
@@ -15,7 +15,7 @@
   window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{'analytics_storage':'denied'});
-  function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}
+  function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-Y0S9RGM2HD';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-Y0S9RGM2HD');gtag('consent','update',{'analytics_storage':'granted'});};}
   if(localStorage.getItem('db_cookies')==='accepted') loadGA();
 </script>
 <style>
@@ -35,9 +35,11 @@
 .eval-q { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g500); margin-bottom: 18px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-.chip { background: var(--white); border: 1px solid var(--border); border-radius: 99px; padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--g600); cursor: pointer; font-family: inherit; transition: all .15s; }
+.chip { background: var(--white); border: 1px solid var(--border); border-radius: 99px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--g600); cursor: pointer; font-family: inherit; transition: all .15s; display: inline-flex; align-items: center; gap: 7px; }
 .chip:hover { border-color: #c4b5fd; color: var(--black); }
 .chip.on { background: var(--p); border-color: var(--p); color: #fff; }
+.chip-logo { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.chip.on .chip-logo { filter: brightness(0) invert(1); }
 
 .panel { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; animation: up .2s ease; }
 @keyframes up { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
@@ -69,16 +71,18 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <nav>
-  <a href="/" class="nav-logo">Data <b>Builder</b></a>
-  <div class="nav-links">
-    <a href="/how" data-i18n="nav-how">Comment ça marche</a>
-    <a href="/about" data-i18n="nav-about">À propos</a>
-    <a href="/blog" data-i18n="nav-blog">Blog</a>
+  <a href="index.html" class="nav-logo">Data <b>Builder</b></a>
+  <div class="nav-links" id="navLinks">
+    <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
+    <a href="about.html" data-i18n="nav-about">À propos</a>
+    <a href="blog/index.html" data-i18n="nav-blog">Blog</a>
+    <button class="btn-nav nav-cta-mobile" onclick="openModal()" data-i18n="nav-cta">Prendre rendez-vous</button>
   </div>
   <div class="nav-right">
     <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
     <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
-    <button class="btn-nav" onclick="openModal()" data-i18n="nav-cta">Prendre rendez-vous</button>
+    <button class="btn-nav nav-cta-desktop" onclick="openModal()" data-i18n="nav-cta">Prendre rendez-vous</button>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" onclick="toggleNav()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -90,12 +94,12 @@
     <p class="hero-sub" data-i18n="hero-sub">Des praticiens data conduisent les entretiens techniques à votre place. Rapport GO&nbsp;/ NO-GO sous 48h.</p>
     <div class="hero-actions">
       <button class="btn-p" onclick="openModal()" data-i18n="hero-cta1">Tester gratuitement</button>
-      <a href="https://calendly.com/frederique-frindel/30min" target="_blank" class="btn-o" data-i18n="hero-cta2">Prendre rendez-vous</a>
+      <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-o" data-i18n="hero-cta2">Prendre rendez-vous</a>
     </div>
   </div>
   <div class="hero-right">
     <div class="stat"><div class="stat-n">1h</div><div class="stat-l" data-i18n="stat1">entretien live avec le candidat</div></div>
-    <div class="stat"><div class="stat-n">14</div><div class="stat-l" data-i18n="stat2">technos data couvertes</div></div>
+    <div class="stat"><div class="stat-n">12</div><div class="stat-l" data-i18n="stat2">technos data couvertes</div></div>
     <div class="stat"><div class="stat-n">48h</div><div class="stat-l" data-i18n="stat3">rapport GO / NO-GO garanti</div></div>
     <div class="stat"><div class="stat-n">100%</div><div class="stat-l" data-i18n="stat4">adapté à votre contexte</div></div>
   </div>
@@ -160,9 +164,9 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-links">
-      <a href="/how" data-i18n="nav-how">Comment ça marche</a>
-      <a href="/about" data-i18n="nav-about">À propos</a>
-      <a href="/cgu">CGU</a>
+      <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
+      <a href="about.html" data-i18n="nav-about">À propos</a>
+      <a href="cgu.html">CGU</a>
       <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
     </div>
     <div class="footer-copy">© 2025 Data Builder</div>
@@ -182,9 +186,9 @@
         <select name="techno">
           <option value="" data-i18n="f-select">Sélectionner…</option>
           <option>SQL</option><option>Power BI</option><option>Tableau</option><option>Looker</option>
-          <option>Python</option><option>Power Apps</option><option>Power Automate</option>
+          <option>Python</option><option>Excel</option>
           <option>Spark</option><option>Airflow</option><option>dbt</option>
-          <option>AWS</option><option>Git</option><option>BigQuery</option><option>Snowflake</option>
+          <option>Git</option><option>BigQuery</option><option>Snowflake</option>
           <option data-i18n="f-multi">Plusieurs technos</option>
         </select>
       </div>
@@ -200,7 +204,7 @@
 
 <!-- COOKIE -->
 <div class="cookie-banner" id="cookie-banner">
-  <div class="cookie-text"><span data-i18n="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span> <a href="/cgu" data-i18n="cookie-link">En savoir plus</a></div>
+  <div class="cookie-text"><span data-i18n="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span> <a href="cgu.html" data-i18n="cookie-link">En savoir plus</a></div>
   <div class="cookie-actions">
     <button class="cookie-refuse" onclick="refuseCookies()" data-i18n="cookie-refuse">Refuser</button>
     <button class="cookie-accept" onclick="acceptCookies()" data-i18n="cookie-accept">Accepter</button>
@@ -286,12 +290,10 @@ const DATA = {
     { id:'tableau', name:'Tableau', skills:['LOD Expressions : FIXED, INCLUDE, EXCLUDE','Calculs de table : running total, % du total, rank','Sets, groupes et paramètres pour les vues dynamiques','Blending vs Join vs Relationship : cas d\'usage','Optimisation : extraits Hyper, user filters','Tableau Prep pour la préparation des données'] },
     { id:'looker', name:'Looker', skills:['Structure LookML : views, dimensions, measures, explores','Types de dimensions et agrégations (count_distinct, sum, average)','Jointures dans un explore et fan-out problems','Derived Tables : SQL PDT et native PDT','Symmetrical aggregates pour éviter les doubles-comptages','Access grants et Row-Level Security'] },
     { id:'python', name:'Python', skills:['Pandas : merge, groupby, apply, gestion mémoire, chunking','POO appliquée à la data : abstraction, pipelines réutilisables','Gestion des exceptions, logging structuré, stratégies de retry','Tests unitaires : pytest, fixtures, mocking','Appels API REST : pagination, authentification, timeouts','Connexion aux services cloud : boto3, google-cloud-storage'] },
-    { id:'powerapps', name:'Power Apps', skills:['Canvas App vs Model-driven : quand et pourquoi','Formules : Patch, Collect, Filter, LookUp, UpdateIf','Gestion de la délégation sur les grandes listes','Component libraries pour la réutilisabilité','Intégration avec Power Automate : déclencher un flux','ALM : solutions managed/unmanaged, déploiement Dev → Prod'] },
-    { id:'powerautomate', name:'Power Automate', skills:['Types de flux : instant, automatisé, planifié, desktop','Boucles : Apply to each avec contrôle de la concurrence, Do until','Opérations sur tableaux : Select, Filter Array, Join','Pattern Try/Catch : Configure run after, Scope','Appels HTTP et connecteurs personnalisés','Approbations multi-étapes et workflows de validation'] },
+    { id:'excel', name:'Excel', skills:['Fonctions de recherche : RECHERCHEX, INDEX/EQUIV, RECHERCHEV','Formules matricielles dynamiques : FILTRE, TRIER, UNIQUE, SEQUENCE','Tableaux croisés dynamiques : regroupements, champs calculés, segments','Power Query : import, transformation et actualisation des données','Power Pivot et DAX : modèle de données, mesures, relations','Formules avancées : SOMMEPROD, DECALER, INDIRECT, gestion des erreurs'] },
     { id:'spark', name:'Spark', skills:['Architecture : Driver, Executor — ce qui se passe lors d\'un shuffle','Partitionnement : repartition vs coalesce, partitionBy','Types de joins : Broadcast, Sort-merge — quand forcer lequel','Lecture du Spark UI : data skew, spill, shuffle excessif','Delta Lake : MERGE pour les upserts, time travel, vacuum','Structured Streaming : watermarks et données en retard'] },
     { id:'airflow', name:'Airflow', skills:['Structure d\'un DAG : schedule, catchup, idempotence','Operators : PythonOperator, KubernetesPodOperator, Sensors','BranchPythonOperator et Task Groups','Conception de DAGs idempotents : rejouer sans effets de bord','DAG Factory : générer des DAGs dynamiquement','Observabilité : logs, alerting, métriques Scheduler'] },
     { id:'dbt', name:'dbt', skills:['Matérialisations : table, view, incremental, ephemeral','Modèles incrementaux : unique_key, is_incremental(), merge','Tests : unique, not_null, relationships, tests custom SQL','Macros Jinja et packages dbt-utils','Snapshots SCD Type 2 pour les dimensions historisées','Slim CI : ne tester que les modèles modifiés'] },
-    { id:'aws', name:'AWS', skills:['S3 : storage classes, lifecycle rules, bucket policies','IAM : principe du moindre privilège, roles vs users','Services data : Glue ETL, Athena, Redshift, EMR, Kinesis, Lambda','Step Functions pour l\'orchestration','Lake Formation : gouvernance et contrôle d\'accès','Optimisation des coûts : Savings Plans, Spot, storage tiers'] },
     { id:'git', name:'Git', skills:['rebase vs merge : différences et cas d\'usage','cherry-pick, stash, bisect : les commandes essentielles','Résolution de conflits sur une branche divergée','Hooks Git : pre-commit, pre-push pour linting et tests','Branch protection rules, CODEOWNERS, stratégies de review','Récupération après erreur : reflog, reset, revert'] },
     { id:'bigquery', name:'BigQuery', skills:['Facturation au byte scanné : bonnes pratiques avant d\'exécuter','Partitionnement : par date, par colonne — pruning et impact coûts','Clustering : jusqu\'à 4 colonnes, ordre qui compte','STRUCT et ARRAY : requêtes sur champs imbriqués, UNNEST','Materialized Views : quand elles aident vraiment','INFORMATION_SCHEMA.JOBS : auditer et identifier les requêtes coûteuses'] },
     { id:'snowflake', name:'Snowflake', skills:['Architecture : séparation compute/storage','Virtual Warehouses : sizing, auto-suspend, multi-cluster','Micro-partitions et cluster keys : quand clustérer','Streams et Tasks : CDC et automatisation','Snowpipe pour l\'ingestion continue depuis S3 ou GCS','Masking policies et row access policies pour les données sensibles'] },
@@ -302,12 +304,10 @@ const DATA = {
     { id:'tableau', name:'Tableau', skills:['LOD Expressions: FIXED, INCLUDE, EXCLUDE','Table calculations: running total, % of total, rank','Sets, groups and parameters for dynamic views','Blending vs Join vs Relationship: use cases','Optimisation: Hyper extracts, user filters','Tableau Prep for upstream data preparation'] },
     { id:'looker', name:'Looker', skills:['LookML structure: views, dimensions, measures, explores','Dimension types and aggregations (count_distinct, sum, average)','Joins in an explore and fan-out problems','Derived Tables: SQL PDT and native PDT','Symmetrical aggregates to avoid double-counting','Access grants and Row-Level Security'] },
     { id:'python', name:'Python', skills:['Pandas: merge, groupby, apply, memory management, chunking','OOP applied to data: abstraction, reusable pipelines','Exception handling, structured logging, retry strategies','Unit tests: pytest, fixtures, mocking','REST API calls: pagination, authentication, timeouts','Cloud service connections: boto3, google-cloud-storage'] },
-    { id:'powerapps', name:'Power Apps', skills:['Canvas App vs Model-driven: when and why','Formulas: Patch, Collect, Filter, LookUp, UpdateIf','Managing delegation on large lists','Component libraries for reusability','Power Automate integration: triggering flows','ALM: managed/unmanaged solutions, Dev → Prod deployment'] },
-    { id:'powerautomate', name:'Power Automate', skills:['Flow types: instant, automated, scheduled, desktop','Loops: Apply to each with concurrency control, Do until','Array operations: Select, Filter Array, Join','Try/Catch pattern: Configure run after, Scope','HTTP calls and custom connectors','Multi-step approvals and validation workflows'] },
+    { id:'excel', name:'Excel', skills:['Lookup functions: XLOOKUP, INDEX/MATCH, VLOOKUP','Dynamic array formulas: FILTER, SORT, UNIQUE, SEQUENCE','PivotTables: grouping, calculated fields, slicers','Power Query: import, transform and refresh data','Power Pivot and DAX: data model, measures, relationships','Advanced formulas: SUMPRODUCT, OFFSET, INDIRECT, error handling'] },
     { id:'spark', name:'Spark', skills:['Architecture: Driver, Executor — what happens during a shuffle','Partitioning: repartition vs coalesce, partitionBy on write','Join types: Broadcast, Sort-merge — when to force which','Reading Spark UI: data skew, spill, excessive shuffle','Delta Lake: MERGE for upserts, time travel, vacuum','Structured Streaming: watermarks and late-arriving data'] },
     { id:'airflow', name:'Airflow', skills:['DAG structure: schedule, catchup, idempotency','Operators: PythonOperator, KubernetesPodOperator, Sensors','BranchPythonOperator and Task Groups','Designing idempotent DAGs: replay without side effects','DAG Factory: dynamically generating DAGs','Observability: logs, alerting, Scheduler metrics'] },
     { id:'dbt', name:'dbt', skills:['Materialisations: table, view, incremental, ephemeral','Incremental models: unique_key, is_incremental(), merge strategy','Tests: unique, not_null, relationships, custom SQL tests','Jinja macros and dbt-utils packages','SCD Type 2 snapshots for historical dimensions','Slim CI: only test modified models'] },
-    { id:'aws', name:'AWS', skills:['S3: storage classes, lifecycle rules, bucket policies','IAM: least privilege principle, roles vs users','Data services: Glue ETL, Athena, Redshift, EMR, Kinesis, Lambda','Step Functions for orchestration','Lake Formation: governance and fine-grained access control','Cost optimisation: Savings Plans, Spot, storage tiers'] },
     { id:'git', name:'Git', skills:['rebase vs merge: differences and use cases','cherry-pick, stash, bisect: essential commands','Conflict resolution on a diverged branch','Git hooks: pre-commit, pre-push for linting and tests','Branch protection rules, CODEOWNERS, review strategies','Recovery after mistakes: reflog, reset, revert'] },
     { id:'bigquery', name:'BigQuery', skills:['Per-byte billing: best practices before running queries','Partitioning: by date, by column — pruning and cost impact','Clustering: up to 4 columns, column order matters','STRUCT and ARRAY: querying nested fields, UNNEST','Materialized Views: when they actually help','INFORMATION_SCHEMA.JOBS: audit and identify costly queries'] },
     { id:'snowflake', name:'Snowflake', skills:['Architecture: compute/storage separation','Virtual Warehouses: sizing, auto-suspend, multi-cluster','Micro-partitions and cluster keys: when to cluster','Streams and Tasks: CDC and automation','Snowpipe for continuous ingestion from S3 or GCS','Masking policies and row access policies for sensitive data'] },
@@ -323,8 +323,14 @@ function buildChips() {
   DATA[LANG].forEach(t => {
     const btn = document.createElement('button');
     btn.className = 'chip' + (ACTIVE === t.id ? ' on' : '');
-    btn.textContent = t.name;
     btn.dataset.id = t.id;
+    const logo = {
+      sql:'postgresql/336791', powerbi:'powerbi/F2C811', tableau:'tableau/E97627',
+      looker:'looker/4285F4', python:'python/3776AB', excel:'microsoftexcel/217346',
+      spark:'apachespark/E25A1C', airflow:'apacheairflow/017CEE', dbt:'dbt/FF694A',
+      git:'git/F05032', bigquery:'googlebigquery/4285F4', snowflake:'snowflake/29B5E8'
+    }[t.id] || t.id;
+    btn.innerHTML = '<img class="chip-logo" src="https://cdn.simpleicons.org/' + logo + '" width="16" height="16" alt="" onerror="this.style.display=\'none\'">' + t.name;
     btn.addEventListener('click', () => {
       ACTIVE = t.id;
       buildChips();
@@ -385,6 +391,9 @@ document.getElementById('cf').addEventListener('submit', function(e) {
     .then(r => { if(r.ok) document.getElementById('modal-inner').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="font-size:32px;margin-bottom:12px">✓</div><h3 style="margin-bottom:8px">${LANG==='fr'?'Demande envoyée':'Request sent'}</h3><p style="font-size:13px;color:var(--g500);margin-bottom:20px">${LANG==='fr'?'On vous recontacte sous 24h.':'We\'ll reply within 24h.'}</p><button class="btn-p" style="width:100%;padding:11px" onclick="closeModal()">${LANG==='fr'?'Fermer':'Close'}</button></div>`; })
     .catch(()=>{});
 });
+
+// ── NAV MOBILE ────────────────────────────────────────────────────────────────
+function toggleNav(){ document.getElementById('navLinks').classList.toggle('open'); document.getElementById('navToggle').classList.toggle('open'); }
 
 // ── COOKIES ───────────────────────────────────────────────────────────────────
 (function(){ if(localStorage.getItem('db_cookies')) document.getElementById('cookie-banner').classList.add('hidden'); })();
