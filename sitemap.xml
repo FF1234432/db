@@ -2,112 +2,92 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.databuilder.io/</loc>
+    <lastmod>2026-07-05</lastmod>
     <priority>1.0</priority>
-    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/produit.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/how.html</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/about.html</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/cgu.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/contact.html</loc>
+    <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/index.html</loc>
-    <priority>0.9</priority>
-    <changefreq>weekly</changefreq>
+    <loc>https://www.databuilder.io/blog/</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-sql.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/sql.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-power-bi.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/concevoir-test-technique-data.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-git.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/tests-techniques-ia.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-dbt.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/externaliser-entretiens-techniques.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-spark.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/questions-sql-entretien-par-niveau.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-airflow.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/take-home-vs-live.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-python-data.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/rh-sans-background-evaluer-data.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-tableau.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/signaux-forts-faibles-candidat-data.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-looker.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/evaluer-toute-la-stack-data.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-bigquery.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/evaluation-equitable-reduire-biais.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-snowflake.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-docker.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-linux-data.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-aws-data.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-power-apps.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-power-automate.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-dataiku.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.databuilder.io/blog/junior-confirme-senior-niveau-data.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <priority>0.8</priority>
   </url>
 </urlset>

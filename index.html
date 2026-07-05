@@ -89,6 +89,7 @@
 <nav>
   <a href="index.html" class="nav-logo">Data <b>Builder</b></a>
   <div class="nav-links" id="navLinks">
+    <a href="produit.html" data-i18n="nav-produit" style="background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;padding:5px 14px;border-radius:99px;font-weight:700">Produit</a>
     <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
     <a href="about.html" data-i18n="nav-about">À propos</a>
     <a href="blog/index.html" data-i18n="nav-blog">Blog</a>
@@ -127,6 +128,16 @@
     <div class="eval-q" data-i18n="eval-q">SUR QUELLE TECHNOLOGIE RECRUTEZ-VOUS ?</div>
     <div class="chips" id="chips"></div>
     <div id="panel-area"></div>
+  </div>
+</section>
+
+<!-- PRODUIT -->
+<section class="sect" style="background:var(--white);border-top:1px solid var(--border);">
+  <div class="sect-inner" style="text-align:center;">
+    <div class="s-label" data-i18n="prod-label">Produit</div>
+    <div class="s-title" data-i18n="prod-title">Évaluer une compétence sous tous ses angles</div>
+    <p class="s-sub" data-i18n="prod-sub">6 formats d'évaluation, 12 technologies — la méthode exacte que nous appliquons à vos entretiens techniques.</p>
+    <a href="produit.html" class="btn-p" data-i18n="prod-btn">Découvrir le produit</a>
   </div>
 </section>
 
@@ -231,7 +242,7 @@
 // ── i18n ──────────────────────────────────────────────────────────────────────
 const T = {
   fr: {
-    'nav-how':'Comment ça marche','nav-about':'À propos','nav-blog':'Blog','nav-cta':'Prendre rendez-vous',
+    'nav-how':'Comment ça marche','nav-about':'À propos','nav-blog':'Blog','nav-cta':'Prendre rendez-vous','nav-produit':'Produit','prod-label':'Produit','prod-title':"Évaluer une compétence sous tous ses angles",'prod-sub':"6 formats d'évaluation, 12 technologies — la méthode exacte que nous appliquons à vos entretiens techniques.",'prod-btn':'Découvrir le produit',
     'hero-eyebrow':'Évaluation technique data externalisée',
     'hero-h1':'Nous évaluons ce que vos équipes RH ne peuvent pas évaluer.',
     'hero-sub':'Des praticiens data conduisent les entretiens techniques à votre place. Rapport d\'évaluation détaillé sous 48h.',
@@ -257,7 +268,7 @@ const T = {
     'cookie-text':'🍪 Ce site utilise Google Analytics pour mesurer l\'audience.','cookie-link':'En savoir plus','cookie-refuse':'Refuser','cookie-accept':'Accepter',
   },
   en: {
-    'nav-how':'How it works','nav-about':'About','nav-blog':'Blog','nav-cta':'Book a call',
+    'nav-how':'How it works','nav-about':'About','nav-blog':'Blog','nav-cta':'Book a call','nav-produit':'Product','prod-label':'Product','prod-title':"Assess a skill from every angle",'prod-sub':"6 assessment formats, 12 technologies — the exact method we apply to your technical interviews.",'prod-btn':'Explore the product',
     'hero-eyebrow':'Outsourced data technical assessment',
     'hero-h1':'We assess what your HR teams can\'t assess.',
     'hero-sub':'Data practitioners conduct technical interviews on your behalf. Detailed assessment report within 48h.',

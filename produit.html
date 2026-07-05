@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Formats d'évaluation — Data Builder</title>
+<meta name="description" content="Une évaluation à plusieurs formats — question ouverte, QCM, lecture de code, mise en pratique, étude de cas — sur chacune de vos technologies : SQL, Python, Power BI, Tableau, Looker, Excel, Spark, Airflow, dbt, Git, BigQuery, Snowflake."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-Y0S9RGM2HD';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-Y0S9RGM2HD');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#4c1d95;--p-light:#6d28d9;--p-soft:#f5f0ff;--p-border:#e8dff7;--black:#0f0e0e;--white:#fff;--off:#faf9ff;--g300:#d1d5db;--g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--brown:#3a3a5e;--pill:99px;--card:16px;--sm:10px;--max:820px}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--off);color:var(--black);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+nav{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--p-border);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-logo{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--black)}
+.nav-logo b{color:var(--p-light)}
+.nav-links{display:flex;gap:26px}
+.nav-links a{font-size:14px;color:var(--g500);text-decoration:none;font-weight:450}
+.nav-links a:hover{color:var(--black)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.lang-btn{font-size:12px;font-weight:600;color:var(--g400);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px}
+.lang-btn.active{color:var(--p-light);font-weight:700}
+.btn-nav{background:var(--p);color:#fff;text-decoration:none;font-size:13px;font-weight:500;padding:9px 16px;border-radius:var(--pill);transition:opacity .15s}
+.btn-nav:hover{opacity:.88}
+
+.page-hero{max-width:var(--max);margin:0 auto;padding:56px 32px 6px;text-align:center}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--p-light);margin-bottom:12px}
+.page-hero h1{font-size:clamp(28px,4.4vw,42px);font-weight:700;letter-spacing:-.03em;line-height:1.12;margin-bottom:14px}
+.page-hero p{font-size:16px;color:var(--g500);line-height:1.65;max-width:600px;margin:0 auto}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:26px 32px 70px}
+
+.tech-label{text-align:center;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--g400);margin-bottom:12px}
+.tech-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:30px}
+.tech-pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--p-border);border-radius:99px;padding:8px 16px;font-size:13.5px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;transition:all .15s}
+.tech-pill:hover{border-color:#c4b5fd;color:var(--black)}
+.tech-pill.on{background:var(--p);border-color:var(--p);color:#fff}
+.tech-pill svg{flex-shrink:0;display:block}
+.tech-pill.on svg{filter:brightness(0) invert(1)}
+
+.overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin-bottom:8px}
+.fmt-card{text-align:left;background:#fff;border:1px solid var(--p-border);border-radius:14px;padding:16px 18px;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s,border-color .15s}
+.fmt-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px -14px rgba(76,29,149,.25);border-color:#c4b5fd}
+.fmt-card .n{font-size:12px;font-weight:700;color:var(--p-light);letter-spacing:.04em}
+.fmt-card h3{font-size:15px;font-weight:700;margin:7px 0 4px;letter-spacing:-.01em}
+.fmt-card p{font-size:12.5px;color:var(--g500);line-height:1.5}
+
+.fmt{scroll-margin-top:80px;margin-top:44px}
+.fmt-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.fmt-head .num{font-size:13px;font-weight:700;color:#fff;background:var(--p);min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.fmt-head h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.fmt-head .why{font-size:14.5px;color:var(--g500);line-height:1.55}
+
+.card{background:#fff;border:1px solid var(--p-border);border-radius:16px;padding:26px 26px 24px}
+.measure{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--p-light);background:var(--p-soft);border:1px solid var(--p-border);padding:5px 12px;border-radius:99px;margin-bottom:18px}
+
+.codeblock{background:#faf7ff;border:1px solid var(--p-border);border-radius:10px;padding:14px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;color:#3a3550;overflow-x:auto;margin:6px 0 16px;white-space:pre}
+.codeblock .kw{color:var(--p-light);font-weight:600}
+
+.res-cap{font-size:12px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.res-table{border-collapse:collapse;font-size:13px;margin:0 0 18px;font-family:ui-monospace,Menlo,monospace;width:100%}
+.res-table th{text-align:left;background:var(--p-soft);color:var(--p);font-weight:600;padding:8px 12px;border:1px solid var(--p-border);font-size:12px}
+.res-table td{padding:7px 12px;border:1px solid var(--p-border);color:var(--g600)}
+
+.quiz-prompt{font-weight:700;font-size:15px;margin-bottom:6px}
+.quiz-context{font-size:14px;color:var(--g500);line-height:1.6;margin-bottom:14px}
+.quiz-context code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:4px;font-size:12.5px}
+.q-label{font-weight:700;font-size:16px;margin:2px 0 14px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:grid;grid-template-columns:20px 1fr;gap:11px;align-items:start;padding:12px 14px;border:1px solid #eee;border-radius:10px;cursor:pointer;transition:background .12s,border-color .12s}
+.opt:hover{border-color:#c4b5fd}
+.opt input{margin-top:2px;accent-color:var(--p);width:16px;height:16px;cursor:pointer}
+.opt-text{font-size:14px;line-height:1.55;color:var(--g600)}
+.opt-text code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:5px;font-size:12.5px}
+.opt-text em{font-style:italic}
+.opt.is-true{background:#f0fdf4;border-color:#bbf7d0}
+.opt.is-false{background:#fef2f2;border-color:#fecaca}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.badge.ok{background:#dcfce7;color:#15803d}
+.badge.no{background:#fee2e2;color:#b91c1c}
+.expl{display:none;margin-top:9px;font-size:13px;line-height:1.6;color:var(--g500);border-left:2px solid var(--p-border);padding-left:11px}
+.expl code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:4px;font-size:12px}
+.card.show-expl .expl{display:block}
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn-check{background:var(--p);color:#fff;border:none;padding:10px 20px;border-radius:99px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-check:hover{opacity:.88}
+.btn-expl{background:#fff;color:var(--p);border:1px solid var(--p-border);padding:10px 20px;border-radius:99px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-expl:hover{border-color:#c4b5fd}
+.result{margin-top:14px;font-size:14px;font-weight:600;color:var(--p);display:none}
+.result.show{display:block}
+
+.schema-note{font-size:13px;color:var(--g500);line-height:1.6;background:#faf7ff;border:1px solid var(--p-border);border-radius:8px;padding:11px 13px;margin-bottom:8px}
+.schema-note code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+.acc-hint{font-size:13px;color:var(--g400);margin:0 0 14px;line-height:1.5}
+
+.acc{border:1px solid var(--p-border);border-radius:14px;overflow:hidden;background:#fff}
+.acc-item{border-bottom:1px solid var(--p-border)}
+.acc-item:last-child{border-bottom:none}
+.acc-head{display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;font-size:14.5px;font-weight:600}
+.acc-head:hover{background:var(--p-soft)}
+.acc-n{min-width:24px;height:24px;border-radius:50%;background:var(--p-soft);color:var(--p);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acc-head .chev{margin-left:auto;color:var(--g400);font-size:18px;transition:transform .18s}
+.acc-item.open .chev{transform:rotate(90deg)}
+.acc-body{display:none;padding:2px 18px 18px 54px}
+.acc-item.open .acc-body{display:block}
+.acc-body .codeblock{margin:6px 0 10px;font-size:12px}
+.acc-insight{font-size:13.5px;color:var(--g600);line-height:1.6}
+.acc-insight b{color:var(--p)}
+.acc-insight code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:4px;font-size:12px}
+
+.grid-title{font-size:13px;font-weight:700;color:var(--p);margin:20px 0 10px;text-transform:uppercase;letter-spacing:.04em}
+.axes{display:flex;flex-direction:column;gap:9px}
+.axis{display:grid;grid-template-columns:24px 1fr;gap:11px;align-items:start;font-size:13.5px;line-height:1.55;color:var(--g600)}
+.axis-n{min-width:24px;height:24px;border-radius:50%;background:var(--p-soft);color:var(--p);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.axis b{color:var(--black)}
+.acc-badge{background:var(--p-soft);color:var(--p);font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:8px}
+.tips{background:#faf7ff;border:1px solid var(--p-border);border-radius:8px;padding:12px 14px 10px;margin-bottom:12px}
+.tips-h{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--p-light);margin-bottom:8px}
+.tips ol{margin:0;padding-left:18px}
+.tips li{font-size:13.5px;line-height:1.6;color:var(--g600);margin-bottom:5px}
+.tips li code{background:#f1edfb;color:var(--p);padding:1px 5px;border-radius:4px;font-size:12px}
+.sol-btn{background:#fff;color:var(--p);border:1px solid var(--p-border);padding:8px 16px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.sol-btn:hover{border-color:#c4b5fd}
+.sol-body{margin-top:12px}
+.cta-box{background:var(--p);color:#fff;border-radius:16px;padding:34px;margin:48px 0 0;text-align:center}
+.cta-box h3{font-size:21px;font-weight:700;margin-bottom:8px}
+.cta-box p{color:#e9d5ff;margin-bottom:22px;font-size:15px}
+.cta-box a{display:inline-block;background:#fff;color:var(--p);padding:12px 26px;border-radius:99px;font-weight:600;text-decoration:none;font-size:14px;transition:transform .15s}
+.cta-box a:hover{transform:translateY(-2px)}
+
+footer{border-top:1px solid var(--p-border);padding:28px 32px}
+.footer-inner{max-width:960px;margin:0 auto;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.footer-links{display:flex;flex-wrap:wrap;gap:20px}
+.footer-links a{font-size:13px;color:var(--g500);text-decoration:none}
+.footer-links a:hover{color:var(--black)}
+.footer-copy{font-size:12px;color:var(--g300)}
+
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:#1a1a1a;color:#e5e7eb;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;border-top:1px solid #333}
+.cookie-banner.hidden{display:none}
+.cookie-text{flex:1;min-width:200px}
+.cookie-text a{color:#c4b5fd}
+.cookie-actions{display:flex;gap:8px}
+.cookie-accept{background:#4c1d95;color:#fff;border:none;padding:8px 18px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.cookie-refuse{background:transparent;color:#9ca3af;border:1px solid #4b5563;padding:8px 16px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+
+@media(max-width:560px){.nav-links{display:none}.page-hero,.wrap{padding-left:20px;padding-right:20px}.card{padding:20px}.acc-body{padding-left:18px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<nav>
+  <a href="index.html" class="nav-logo">Data <b>Builder</b></a>
+  <div class="nav-links">
+    <a href="produit.html" class="active" data-i18n="nav-produit" style="background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;padding:5px 14px;border-radius:99px;font-weight:700">Produit</a>
+    <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
+    <a href="about.html" data-i18n="nav-about">À propos</a>
+    <a href="blog/index.html" data-i18n="nav-blog">Blog</a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav" data-i18n="nav-cta">Prendre rendez-vous</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow" data-i18n="h-eyebrow">Formats d'évaluation</div>
+  <h1 data-i18n="h-h1">Évaluer une compétence sous tous ses angles</h1>
+  <p data-i18n="h-intro">Théorie, raisonnement, lecture de code, mise en pratique, analyse : chaque compétence est évaluée par un format dédié — sur chacune de vos technologies.</p>
+</div>
+
+<div class="wrap">
+  <div class="tech-label" data-i18n="tech-label">Sur quelle technologie recrutez-vous ?</div>
+  <div class="tech-bar" id="tech-bar"></div>
+
+  <div class="overview">
+    <button class="fmt-card" data-go="f-open"><div class="n">01</div><h3 data-i18n="fmt-open">Question ouverte</h3><p data-i18n="ovm-open">Fondamentaux</p></button>
+    <button class="fmt-card" data-go="f-mcq"><div class="n">02</div><h3 data-i18n="fmt-mcq">QCM</h3><p data-i18n="ovm-mcq">Raisonnement précis</p></button>
+    <button class="fmt-card" data-go="f-read"><div class="n">03</div><h3 data-i18n="fmt-read">Lecture de code</h3><p data-i18n="ovm-read">Lecture de code</p></button>
+    <button class="fmt-card" data-go="f-write"><div class="n">04</div><h3 data-i18n="fmt-write">Mise en pratique</h3><p data-i18n="ovm-write">Mise en pratique</p></button>
+    <button class="fmt-card" data-go="f-case"><div class="n">05</div><h3 data-i18n="fmt-case">De la donnée à la recommandation</h3><p data-i18n="ovm-case">Analyse et jugement</p></button>
+    <button class="fmt-card" data-go="f-reverse"><div class="n">06</div><h3 data-i18n="fmt-reverse">De la sortie au code</h3><p data-i18n="ovm-reverse">Raisonnement inverse</p></button>
+  </div>
+
+  <section class="fmt" id="f-open">
+    <div class="fmt-head"><div class="num">1</div><div>
+      <h2 data-i18n="fmt-open">Question ouverte</h2>
+      <div class="why" data-i18n="why-open">Évalue la maîtrise des fondamentaux : expliquer un concept clairement, sans le réciter. Rapide et révélateur.</div>
+    </div></div>
+    <div class="card" id="c-open"></div>
+  </section>
+
+  <section class="fmt" id="f-mcq">
+    <div class="fmt-head"><div class="num">2</div><div>
+      <h2 data-i18n="fmt-mcq">QCM</h2>
+      <div class="why" data-i18n="why-mcq">Évalue le raisonnement précis sur le comportement d'une requête, là où les approximations se révèlent.</div>
+    </div></div>
+    <div class="card" id="c-mcq"></div>
+  </section>
+
+  <section class="fmt" id="f-read">
+    <div class="fmt-head"><div class="num">3</div><div>
+      <h2 data-i18n="fmt-read">Lecture de code</h2>
+      <div class="why" data-i18n="why-read">Évalue la capacité à lire, comprendre et corriger du code écrit par d'autres — une compétence centrale au travail réel.</div>
+    </div></div>
+    <div class="card" id="c-read"></div>
+  </section>
+
+  <section class="fmt" id="f-write">
+    <div class="fmt-head"><div class="num">4</div><div>
+      <h2 data-i18n="fmt-write">Mise en pratique</h2>
+      <div class="why" data-i18n="why-write">Mise en situation, du niveau intermédiaire au niveau senior. On évalue la démarche et le traitement des cas limites, pas seulement le résultat.</div>
+    </div></div>
+    <div class="card" id="c-write"></div>
+  </section>
+
+  <section class="fmt" id="f-case">
+    <div class="fmt-head"><div class="num">5</div><div>
+      <h2 data-i18n="fmt-case">De la donnée à la recommandation</h2>
+      <div class="why" data-i18n="why-case">Un jeu de données et une question métier ouverte, sans réponse unique attendue. Ce format évalue le cadrage, le jugement et la capacité à transformer une analyse en recommandation actionnable — particulièrement pertinent pour les profils analyst et senior.</div>
+    </div></div>
+    <div class="card" id="c-case"></div>
+  </section>
+
+  <section class="fmt" id="f-reverse">
+    <div class="fmt-head"><div class="num">6</div><div>
+      <h2 data-i18n="fmt-reverse">De la sortie au code</h2>
+      <div class="why" data-i18n="why-reverse">À partir d'une sortie — un tableau de résultats —, retrouver la requête qui la produit. L'inverse de la lecture de code : on évalue la capacité à déduire une logique à partir d'un résultat, un réflexe clé de débogage et d'analyse.</div>
+    </div></div>
+    <div class="card" id="c-reverse"></div>
+  </section>
+
+  <div class="cta-box">
+    <h3 data-i18n="cta-h3">Le niveau d'exigence que nous appliquons à vos entretiens</h3>
+    <p data-i18n="cta-p">Un entretien technique data d'une heure, un rapport clair et détaillé sous 48 heures. Le premier entretien est offert.</p>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" data-i18n="cta-btn">📅 Réserver un appel</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="formats-evaluation.html" data-i18n="nav-produit">Produit</a>
+      <a href="how.html" data-i18n="nav-how">Comment ça marche</a>
+      <a href="about.html" data-i18n="nav-about">À propos</a>
+      <a href="cgu.html">CGU</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+    </div>
+    <div class="footer-copy">© 2025 Data Builder</div>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text"><span data-i18n="cookie-text">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span> <a href="cgu.html" data-i18n="cookie-link">En savoir plus</a></div>
+  <div class="cookie-actions">
+    <button class="cookie-refuse" onclick="refuseCookies()" data-i18n="cookie-refuse">Refuser</button>
+    <button class="cookie-accept" onclick="acceptCookies()" data-i18n="cookie-accept">Accepter</button>
+  </div>
+</div>
+
+<script>
+const T={
+fr:{'nav-produit':'Produit','nav-how':'Comment ça marche','nav-about':'À propos','nav-blog':'Blog','nav-cta':'Prendre rendez-vous',
+'h-eyebrow':"Formats d'évaluation",'h-h1':"Évaluer une compétence sous tous ses angles",'h-intro':"Théorie, raisonnement, lecture de code, mise en pratique, analyse : chaque compétence est évaluée par un format dédié — sur chacune de vos technologies.",
+'tech-label':'Sur quelle technologie recrutez-vous ?',
+'fmt-open':'Question ouverte','fmt-mcq':'QCM','fmt-read':'Lecture de code','fmt-write':'Mise en pratique',
+'ovm-open':'Fondamentaux','ovm-mcq':'Raisonnement précis','ovm-read':'Lecture de code','ovm-write':'Mise en pratique',
+'why-open':"Évalue la maîtrise des fondamentaux : expliquer un concept clairement, sans le réciter. Rapide et révélateur.",
+'why-mcq':"Évalue le raisonnement précis sur le comportement d'une requête, là où les approximations se révèlent.",
+'why-read':"Évalue la capacité à lire, comprendre et corriger du code écrit par d'autres — une compétence centrale au travail réel.",
+'why-write':"Mise en situation, du niveau intermédiaire au niveau senior. On évalue la démarche et le traitement des cas limites, pas seulement le résultat.",
+'m-open':'Mesure : maîtrise des fondamentaux','m-mcq':'Mesure : raisonnement précis','m-read':'Mesure : lecture de code','m-write':'Mesure : mise en pratique',
+'fmt-case':'De la donnée à la recommandation','ovm-case':'Analyse et jugement','why-case':"Un jeu de données et une question métier ouverte, sans réponse unique attendue. Ce format évalue le cadrage, le jugement et la capacité à transformer une analyse en recommandation actionnable — particulièrement pertinent pour les profils analyst et senior.",'m-case':'Mesure : cadrage, jugement et communication',
+'fmt-reverse':'De la sortie au code','ovm-reverse':'Raisonnement inverse','why-reverse':"À partir d'une sortie — un tableau de résultats —, retrouver la requête qui la produit. L'inverse de la lecture de code : on évalue la capacité à déduire une logique à partir d'un résultat, un réflexe clé de débogage et d'analyse.",'m-reverse':'Mesure : raisonnement inverse et débogage',
+'cta-h3':"Le niveau d'exigence que nous appliquons à vos entretiens",'cta-p':"Un entretien technique data d'une heure, un rapport clair et détaillé sous 48 heures. Le premier entretien est offert.",'cta-btn':'📅 Réserver un appel',
+'q-check':'Vérifier','q-expl':'Voir les explications','q-hide':'Masquer les explications','q-vrai':'Vrai','q-faux':'Faux','tips':'Étapes suggérées','see-sol':'Voir la solution','hide-sol':'Masquer la solution','guided':'Guidé','read-badge':'Lecture',
+'openhint':"On évalue la clarté de l'explication, formulée avec ses propres mots et illustrée d'un cas d'usage concret. Cliquez pour dérouler une réponse de référence.",
+'cookie-text':'🍪 Ce site utilise Google Analytics pour mesurer l\'audience.','cookie-link':'En savoir plus','cookie-refuse':'Refuser','cookie-accept':'Accepter'},
+en:{'nav-produit':'Product','nav-how':'How it works','nav-about':'About','nav-blog':'Blog','nav-cta':'Book a call',
+'h-eyebrow':'Assessment formats','h-h1':"Assessing a skill from every angle",'h-intro':"Theory, reasoning, code reading, hands-on practice, analysis: each skill is assessed through a dedicated format — on each of your technologies.",
+'tech-label':'Which technology are you hiring for?',
+'fmt-open':'Open question','fmt-mcq':'Multiple choice','fmt-read':'Code reading','fmt-write':'Hands-on',
+'ovm-open':'Fundamentals','ovm-mcq':'Precise reasoning','ovm-read':'Code reading','ovm-write':'Hands-on practice',
+'why-open':"Assesses command of the fundamentals: explaining a concept clearly, without reciting it. Quick and revealing.",
+'why-mcq':"Assesses precise reasoning about how a query behaves, where approximations surface.",
+'why-read':"Assesses the ability to read, understand and fix code written by others — a skill central to real work.",
+'why-write':"A practical scenario, from intermediate to senior level. We assess the approach and the handling of edge cases, not just the result.",
+'m-open':'Measures: command of the fundamentals','m-mcq':'Measures: precise reasoning','m-read':'Measures: reading code','m-write':'Measures: hands-on practice',
+'fmt-case':'From data to recommendation','ovm-case':'Analysis and judgment','why-case':"A dataset and an open business question, with no single expected answer. This format assesses framing, judgment and the ability to turn analysis into an actionable recommendation — particularly relevant for analyst and senior profiles.",'m-case':'Measures: framing, judgment and communication',
+'fmt-reverse':'From output to query','ovm-reverse':'Reverse reasoning','why-reverse':"From an output — a result table —, reconstruct the query that produces it. The inverse of code reading: it assesses the ability to infer logic from a result, a key debugging and analysis reflex.",'m-reverse':'Measures: reverse reasoning and debugging',
+'cta-h3':"The standard we apply to your interviews",'cta-p':"A one-hour technical data interview, with a clear, detailed report within 48 hours. The first interview is free.",'cta-btn':'📅 Book a call',
+'q-check':'Check','q-expl':'Show explanations','q-hide':'Hide explanations','q-vrai':'True','q-faux':'False','tips':'Suggested steps','see-sol':'Show the solution','hide-sol':'Hide the solution','guided':'Guided','read-badge':'Reading',
+'openhint':"We assess the clarity of the explanation, in their own words and illustrated with a concrete use case. Click to reveal a reference answer.",
+'cookie-text':'🍪 This site uses Google Analytics to measure audience.','cookie-link':'Learn more','cookie-refuse':'Decline','cookie-accept':'Accept'}};
+
+/* ===== Technos ===== */
+const TECHS=[['sql','SQL'],['pbi','Power BI'],['tableau','Tableau'],['looker','Looker'],['python','Python'],['excel','Excel'],['spark','Spark'],['airflow','Airflow'],['dbt','dbt'],['git','Git'],['bq','BigQuery'],['snow','Snowflake']];
+const CASE_TECHS=['sql','bq','snow','pbi','tableau','looker','python','excel'];
+let TECH='sql', LANG='fr';
+
+/* ===== Coloration selon la techno ===== */
+const HLSET={
+ sql:'SELECT|FROM|WHERE|GROUP|BY|HAVING|ORDER|DESC|ASC|AS|WITH|OVER|PARTITION|QUALIFY|COUNT|SUM|AVG|MIN|MAX|ROUND|DISTINCT|AND|OR|NOT|NULL|IS|LIMIT|ON|JOIN|LEFT|RIGHT|INNER|OUTER|CROSS|UNNEST|FLATTEN|LATERAL|SPLIT|DATE_TRUNC|FORMAT_DATE|APPROX_COUNT_DISTINCT|APPROX_QUANTILES|ROW_NUMBER|RANK|MONTH|AT|OFFSET|MERGE|INTO|USING|WHEN|MATCHED|THEN|UPDATE|SET|INSERT|VALUES|CREATE|TABLE|CLONE|NULLIF|LOWER',
+ dax:'CALCULATE|SUMX|SUM|DIVIDE|FILTER|ALL|ALLEXCEPT|ALLSELECTED|REMOVEFILTERS|KEEPFILTERS|VALUES|SAMEPERIODLASTYEAR|DATEADD|AVERAGE|AVERAGEX|COUNTROWS|DISTINCTCOUNT|RELATED|MAX|MIN|IF|VAR|RETURN|BLANK',
+ tableau:'SUM|AVG|COUNTD|IF|THEN|ELSEIF|ELSE|END|FIXED|INCLUDE|EXCLUDE|RUNNING_SUM|WINDOW_SUM|INDEX|RANK',
+ looker:'dimension|dimension_group|measure|explore|join|view|type|sql|label|filter|filters|derived_table|datagroup_trigger|access_filter|user_attribute|value_format_name|relationship|primary_key|yesno|count_distinct|number|sum|persist_for',
+ excel:'XLOOKUP|VLOOKUP|HLOOKUP|INDEX|MATCH|SUMIFS|SUMIF|SUMPRODUCT|COUNTIFS|COUNTIF|AVERAGEIFS|IFERROR|IFS|IF|LET|LAMBDA|SORT|FILTER|SUM|AVERAGE|SORTBY|UNIQUE',
+ python:'import|from|as|def|return|lambda|for|in|if|elif|else|not|and|or|None|True|False|with',
+ spark:'import|from|as|def|return|in|if|else|None|True|False|withColumn|groupBy|agg|orderBy|filter|select|join|Window|partitionBy|broadcast|row_number|desc|col|sum|alias|over|mode|write|parquet',
+ airflow:'with|as|def|return|import|from|DAG|task|schedule|start_date|catchup|datetime|default_args|retries|PythonOperator|BashOperator|overwrite|mode|write|parquet',
+ dbt:'with|select|from|where|as|max|SELECT|FROM|WHERE|GROUP|BY|JOIN|ON|AS|MAX|MIN|SUM|COUNT|LOWER|config|ref|source|materialized|is_incremental|this|models|tests|unique|not_null|incremental|view|table|ephemeral',
+ git:'git|checkout|pull|push|fetch|clone|commit|rebase|merge|reset|revert|stash|pop|cherry|pick|branch|log|status|add|main|origin|HEAD'
+};
+function hlKey(){const m={sql:'sql',bq:'sql',snow:'sql',dbt:'dbt',pbi:'dax',tableau:'tableau',looker:'looker',excel:'excel',python:'python',spark:'spark',airflow:'airflow',git:'git'};return m[TECH]||'sql';}
+function hl(code){return code.replace(new RegExp('\\b('+HLSET[hlKey()]+')\\b','g'),'<span class="kw">$1</span>');}
+
+/* ===== Contenu par techno ===== */
+const DATA={
+/* ---------------- SQL ---------------- */
+sql:{
+ open:[
+  {q:{fr:`À quoi sert HAVING ? En quoi diffère-t-il de WHERE ?`,en:`What is HAVING for? How does it differ from WHERE?`},
+   a:{fr:`<code>HAVING</code> filtre les <em>groupes</em> après <code>GROUP BY</code> (il accepte <code>COUNT(*) > 5</code>). <code>WHERE</code> filtre les lignes <em>avant</em> le regroupement et n'accepte pas d'agrégat. En bref : <code>WHERE</code> = lignes, <code>HAVING</code> = groupes.`,en:`<code>HAVING</code> filters <em>groups</em> after <code>GROUP BY</code> (it accepts <code>COUNT(*) > 5</code>). <code>WHERE</code> filters rows <em>before</em> grouping and can't take an aggregate. In short: <code>WHERE</code> = rows, <code>HAVING</code> = groups.`}},
+  {q:{fr:`Qu'est-ce qu'une fonction fenêtre (window function) ?`,en:`What is a window function?`},
+   a:{fr:`Elle calcule une valeur (somme, rang…) sur des lignes liées à la ligne courante <em>sans</em> écraser les lignes comme <code>GROUP BY</code>. On la reconnaît au <code>OVER (…)</code>. Ex : <code>SUM(montant) OVER (PARTITION BY client_id)</code>.`,en:`It computes a value (sum, rank…) over rows related to the current row <em>without</em> collapsing rows like <code>GROUP BY</code>. Spot it by <code>OVER (…)</code>. Ex: <code>SUM(montant) OVER (PARTITION BY client_id)</code>.`}},
+  {q:{fr:`Quel est l'ordre d'exécution d'une requête SQL ?`,en:`What is the execution order of a SQL query?`},
+   a:{fr:`Une requête ne s'exécute <em>pas</em> dans l'ordre où on l'écrit. L'ordre logique est : <code>FROM</code>/<code>JOIN</code> (constituer les données) → <code>WHERE</code> (filtrer les lignes) → <code>GROUP BY</code> (regrouper) → <code>HAVING</code> (filtrer les groupes) → <code>SELECT</code> (calculer colonnes et alias) → <code>DISTINCT</code> → <code>ORDER BY</code> (trier) → <code>LIMIT</code>. C'est pourquoi un alias créé dans le <code>SELECT</code> n'est pas utilisable dans le <code>WHERE</code>, et pourquoi <code>HAVING</code> filtre sur un agrégat alors que <code>WHERE</code> ne le peut pas.`,en:`A query does <em>not</em> run in the order you write it. The logical order is: <code>FROM</code>/<code>JOIN</code> (build the data) → <code>WHERE</code> (filter rows) → <code>GROUP BY</code> (group) → <code>HAVING</code> (filter groups) → <code>SELECT</code> (compute columns and aliases) → <code>DISTINCT</code> → <code>ORDER BY</code> (sort) → <code>LIMIT</code>. That's why an alias created in the <code>SELECT</code> can't be used in the <code>WHERE</code>, and why <code>HAVING</code> can filter on an aggregate while <code>WHERE</code> cannot.`}},
+  {q:{fr:`À quoi sert CASE WHEN ? Qu'est-ce que l'agrégation conditionnelle ?`,en:`What is CASE WHEN for? What is conditional aggregation?`},
+   a:{fr:`<code>CASE WHEN … THEN … ELSE … END</code> renvoie une valeur selon des conditions, ligne par ligne (un « si / sinon » en SQL). Sans <code>ELSE</code>, une ligne qui ne matche aucune branche renvoie <code>NULL</code>. Son usage le plus puissant est l'<strong>agrégation conditionnelle</strong> : glissé dans un <code>SUM</code> ou un <code>COUNT</code>, il crée des colonnes filtrées — <code>SUM(CASE WHEN statut='payée' THEN montant END)</code> donne le CA payé, façon tableau croisé, sans clause <code>PIVOT</code>. Piège classique : <code>COUNT(CASE WHEN c THEN 1 ELSE 0 END)</code> compte <em>tout</em> (0 n'est pas NULL), alors que <code>COUNT(CASE WHEN c THEN 1 END)</code> ne compte que les lignes vraies.`,en:`<code>CASE WHEN … THEN … ELSE … END</code> returns a value based on conditions, row by row (an SQL "if / else"). Without <code>ELSE</code>, a row matching no branch returns <code>NULL</code>. Its most powerful use is <strong>conditional aggregation</strong>: placed inside a <code>SUM</code> or <code>COUNT</code>, it builds filtered columns — <code>SUM(CASE WHEN statut='payée' THEN montant END)</code> gives paid revenue, like a cross-tab, without a <code>PIVOT</code> clause. Classic trap: <code>COUNT(CASE WHEN c THEN 1 ELSE 0 END)</code> counts <em>everything</em> (0 isn't NULL), whereas <code>COUNT(CASE WHEN c THEN 1 END)</code> counts only the true rows.`}},
+  {q:{fr:`Comment agréger une série temporelle (par mois, par semaine) ? À quoi sert DATE_TRUNC ?`,en:`How do you aggregate a time series (by month, by week)? What is DATE_TRUNC for?`},
+   a:{fr:`<code>DATE_TRUNC</code> ramène chaque date au début de sa période (mois, semaine, jour). En regroupant sur ce résultat, on obtient une série temporelle propre : <code>GROUP BY DATE_TRUNC(date_vente, MONTH)</code> donne une ligne par mois. Pour extraire une partie précise (année, jour de la semaine), on utilise <code>EXTRACT</code> ou <code>FORMAT_DATE</code>. La syntaxe varie selon le moteur : <code>DATE_TRUNC(date, MONTH)</code> en BigQuery/Snowflake, <code>DATE_TRUNC('month', date)</code> en PostgreSQL.`,en:`<code>DATE_TRUNC</code> snaps each date to the start of its period (month, week, day). Grouping on that gives a clean time series: <code>GROUP BY DATE_TRUNC(date_vente, MONTH)</code> yields one row per month. To pull a specific part (year, weekday), use <code>EXTRACT</code> or <code>FORMAT_DATE</code>. The syntax varies by engine: <code>DATE_TRUNC(date, MONTH)</code> in BigQuery/Snowflake, <code>DATE_TRUNC('month', date)</code> in PostgreSQL.`}},
+  {q:{fr:`Fonctions fenêtre avancées : ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, cadre ROWS BETWEEN, QUALIFY ?`,en:`Advanced window functions: ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, ROWS BETWEEN frame, QUALIFY?`},
+   a:{fr:`<strong>Classement</strong> : <code>ROW_NUMBER</code> numérote sans ex æquo (unique, choix arbitraire), <code>RANK</code> donne le même rang aux ex æquo puis saute (1, 2, 2, 4), <code>DENSE_RANK</code> ne saute pas (1, 2, 2, 3) ; pour un « top N par groupe » propre → <code>ROW_NUMBER</code>. <strong>Décalage</strong> : <code>LAG</code>/<code>LEAD</code> lisent la ligne précédente/suivante — idéal pour une évolution (mois vs mois précédent). <strong>Cadre</strong> : <code>ROWS BETWEEN … AND …</code> définit les lignes de la fenêtre (moyenne mobile sur 7 lignes, cumul…). <strong>Filtre</strong> : <code>QUALIFY</code> filtre sur une fonction fenêtre comme <code>HAVING</code> pour les agrégats — garder le 1er par groupe sans sous-requête (BigQuery, Snowflake, DuckDB).`,en:`<strong>Ranking</strong>: <code>ROW_NUMBER</code> numbers with no ties (unique, arbitrary pick), <code>RANK</code> gives ties the same rank then skips (1, 2, 2, 4), <code>DENSE_RANK</code> doesn't skip (1, 2, 2, 3); for a clean "top N per group" → <code>ROW_NUMBER</code>. <strong>Offset</strong>: <code>LAG</code>/<code>LEAD</code> read the previous/next row — ideal for a change (month vs previous month). <strong>Frame</strong>: <code>ROWS BETWEEN … AND …</code> defines the window's rows (7-row moving average, running total…). <strong>Filter</strong>: <code>QUALIFY</code> filters on a window function like <code>HAVING</code> for aggregates — keep the 1st per group without a subquery (BigQuery, Snowflake, DuckDB).`}},
+  {q:{fr:`À quoi servent ROLLUP, CUBE et GROUPING SETS ?`,en:`What are ROLLUP, CUBE and GROUPING SETS for?`},
+   a:{fr:`Ces extensions de <code>GROUP BY</code> calculent plusieurs niveaux d'agrégation en une requête. <code>ROLLUP(a, b, c)</code> construit une <strong>hiérarchie</strong> en retirant progressivement la colonne la plus à droite : <code>(a, b, c)</code>, puis <code>(a, b)</code>, puis <code>(a)</code>, puis le grand total <code>()</code>. Sur <code>ROLLUP(year, region, departement)</code> on obtient donc le détail, le sous-total par <code>(year, region)</code> et par <code>(year)</code> — mais <strong>pas</strong> les combinaisons hors hiérarchie (year + departement, ou region seule…). Pour <em>toutes</em> les combinaisons, c'est <code>CUBE</code>. <code>GROUPING SETS</code>, lui, laisse lister exactement les regroupements voulus. Les sous-totaux portent un <code>NULL</code> sur les colonnes non regroupées ; <code>GROUPING(col)</code> les distingue d'un vrai <code>NULL</code>.`,en:`These <code>GROUP BY</code> extensions compute several aggregation levels in one query. <code>ROLLUP(a, b, c)</code> builds a <strong>hierarchy</strong> by progressively dropping the rightmost column: <code>(a, b, c)</code>, then <code>(a, b)</code>, then <code>(a)</code>, then the grand total <code>()</code>. So <code>ROLLUP(year, region, department)</code> gives the detail, the subtotal by <code>(year, region)</code> and by <code>(year)</code> — but <strong>not</strong> the off-hierarchy combinations (year + department, or region alone…). For <em>every</em> combination, use <code>CUBE</code>. <code>GROUPING SETS</code> lets you list exactly the groupings you want. Subtotals carry a <code>NULL</code> on the non-grouped columns; <code>GROUPING(col)</code> distinguishes them from a real <code>NULL</code>.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Cette requête compte les ventes par produit et par tranche de montant de 10 €.',en:'This query counts sales per product and per €10 amount range.'},
+  code:`SELECT\n  produit,\n  montant / 10 AS tranche_montant,\n  COUNT(*)\nFROM ventes\nGROUP BY produit, tranche_montant`,
+  options:[
+   {c:true,fr:`La requête est valide (elle ne renvoie pas d'erreur).`,en:`The query is valid (won't throw an error).`,xf:`Vrai dans la plupart des moteurs qui acceptent un alias du SELECT dans le GROUP BY. En SQL strict / SQL Server, il faudrait répéter <code>montant / 10</code>.`,xe:`True in most engines that accept a SELECT alias in GROUP BY. In strict SQL / SQL Server you'd repeat <code>montant / 10</code>.`},
+   {c:true,fr:`Elle renverrait plus de lignes avec <code>montant</code> qu'avec <code>montant / 10</code>.`,en:`It would return more rows with <code>montant</code> than <code>montant / 10</code>.`,xf:`Diviser par 10 regroupe les montants ; le montant brut fait des groupes plus fins.`,xe:`Dividing by 10 buckets amounts; the raw amount makes finer groups.`},
+   {c:true,fr:`La sortie a autant de lignes que de combinaisons uniques (produit, tranche).`,en:`The output has as many rows as unique (product, bucket) combinations.`,xf:`C'est la définition du <code>GROUP BY</code>.`,xe:`That's the definition of <code>GROUP BY</code>.`},
+   {c:false,fr:`Elle contiendra <code>('Chaise', 6)</code> même si aucune chaise n'était à 60–69 €.`,en:`It will contain <code>('Chair', 6)</code> even if no chair was €60–69.`,xf:`Non : pas de ligne → pas de groupe.`,xe:`No: no row → no group.`},
+   {c:false,fr:`Chaque ligne aura un <code>produit</code> différent.`,en:`Every row has a different <code>produit</code>.`,xf:`Non : un produit se répète, une ligne par tranche.`,xe:`No: a product repeats, one row per bucket.`},
+   {c:false,fr:`La sortie peut contenir des groupes avec <code>COUNT</code> = 0.`,en:`The output can contain groups with <code>COUNT</code> = 0.`,xf:`Non : un groupe existe seulement s'il a au moins une ligne.`,xe:`No: a group exists only if it has at least one row.`},
+   {c:true,fr:`Elle resterait valide sans <code>produit</code> dans le <code>SELECT</code>.`,en:`It would stay valid without <code>produit</code> in the <code>SELECT</code>.`,xf:`On peut regrouper par une colonne sans l'afficher.`,xe:`You can group by a column without displaying it.`},
+   {c:false,fr:`Ajouter <code>client_id</code> au <code>SELECT</code> sans le grouper serait raisonnable.`,en:`Adding <code>client_id</code> to the <code>SELECT</code> without grouping it would be reasonable.`,xf:`Non : ni groupé ni agrégé → erreur en SQL strict, valeur arbitraire ailleurs.`,xe:`No: neither grouped nor aggregated → error in strict SQL, arbitrary value elsewhere.`}
+  ]
+ },
+ read:{
+  code:`SELECT\n  region,\n  COUNT(*) AS nb_ventes,\n  SUM(montant) AS ca_total\nFROM ventes\nWHERE statut = 'payée'\nGROUP BY region\nHAVING SUM(montant) > 10000\nORDER BY ca_total DESC`,
+  cap:{fr:'Sortie',en:'Output'},cols:['region','nb_ventes','ca_total'],
+  rows:[['Île-de-France','128','45 200'],['Auvergne-Rhône-Alpes','76','21 800'],['PACA','41','12 300']],
+  question:{fr:'Que renvoie cette requête ?',en:'What does this query return?'},
+  options:[
+   {c:true,fr:`Le CA et le nombre de ventes <em>payées</em> par région, limité aux régions > 10 000 € de CA, triées par CA décroissant.`,en:`Revenue and number of <em>paid</em> sales per region, limited to regions above €10,000, sorted by revenue descending.`,xf:`Exact : WHERE filtre les payées, GROUP BY agrège, HAVING filtre sur le CA, ORDER BY trie.`,xe:`Correct: WHERE keeps paid, GROUP BY aggregates, HAVING filters on revenue, ORDER BY sorts.`},
+   {c:false,fr:`Toutes les ventes par région, impayées comprises.`,en:`All sales per region, including unpaid.`,xf:`Non : <code>WHERE statut = 'payée'</code> exclut les impayées.`,xe:`No: <code>WHERE statut = 'payée'</code> excludes unpaid.`},
+   {c:false,fr:`Les régions ayant plus de 10 000 ventes.`,en:`Regions with more than 10,000 sales.`,xf:`Non : le HAVING porte sur <code>SUM(montant)</code>, pas le nombre.`,xe:`No: HAVING is on <code>SUM(montant)</code>, not the count.`},
+   {c:false,fr:`Le montant moyen par vente et par région.`,en:`The average amount per sale and region.`,xf:`Non : c'est <code>SUM</code>, pas <code>AVG</code>.`,xe:`No: it's <code>SUM</code>, not <code>AVG</code>.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Deux tables : <code>ventes(id, produit_id, client_id, montant, date_vente)</code> et <code>produits(id, nom, categorie)</code>.`,en:`Two tables: <code>ventes(id, produit_id, client_id, montant, date_vente)</code> and <code>produits(id, nom, categorie)</code>.`},
+  hint:{fr:`Essayez d'écrire la requête, puis dépliez pour comparer.`,en:`Try writing the query, then expand to compare.`},
+  items:[
+   {q:{fr:`Le panier moyen par client.`,en:`The average basket per customer.`},sql:`SELECT client_id,\n       ROUND(AVG(montant), 2) AS panier_moyen\nFROM ventes\nGROUP BY client_id`,note:{fr:`<code>AVG</code> par groupe, arrondi à 2 décimales.`,en:`<code>AVG</code> per group, rounded to 2 decimals.`}},
+   {q:{fr:`Le CA par catégorie de produit.`,en:`Revenue per product category.`},sql:`SELECT p.categorie,\n       SUM(v.montant) AS ca\nFROM ventes v\nJOIN produits p ON p.id = v.produit_id\nGROUP BY p.categorie\nORDER BY ca DESC`,note:{fr:`Jointure <code>ventes × produits</code>, puis agrégation.`,en:`Join <code>ventes × produits</code>, then aggregate.`}},
+   {q:{fr:`Les produits jamais vendus.`,en:`Products never sold.`},sql:`SELECT p.nom\nFROM produits p\nLEFT JOIN ventes v ON v.produit_id = p.id\nWHERE v.id IS NULL`,note:{fr:`<strong>Anti-jointure</strong> : LEFT JOIN puis filtre IS NULL.`,en:`<strong>Anti-join</strong>: LEFT JOIN then IS NULL filter.`}},
+   {q:{fr:`Les clients ayant acheté ≥ 3 fois, avec leur total.`,en:`Customers who bought ≥ 3 times, with their total.`},sql:`SELECT client_id,\n       COUNT(*) AS nb_ventes,\n       SUM(montant) AS total\nFROM ventes\nGROUP BY client_id\nHAVING COUNT(*) >= 3`,note:{fr:`Condition sur un agrégat → <code>HAVING</code>, pas <code>WHERE</code>.`,en:`Condition on an aggregate → <code>HAVING</code>, not <code>WHERE</code>.`}},
+   {q:{fr:`Le pourcentage de clients qui génère 80 % du chiffre d'affaires (analyse de Pareto).`,en:`The share of customers generating 80% of revenue (Pareto analysis).`},tips:{fr:[`Calculez d'abord le total par client, puis triez les clients du plus gros au plus petit.`,`Cumulez le CA au fil du classement et rapportez-le au CA global : <code>SUM(total) OVER (ORDER BY total DESC) * 1.0 / SUM(total) OVER ()</code>.`,`Repérez le rang où ce cumul atteint 80 %, puis rapportez-le au nombre total de clients.`],en:[`First compute each client's total, then sort clients from largest to smallest.`,`Accumulate revenue along the ranking and divide by the global total: <code>SUM(total) OVER (ORDER BY total DESC) * 1.0 / SUM(total) OVER ()</code>.`,`Find the rank where this running share reaches 80%, then divide it by the total number of clients.`]},sql:`WITH par_client AS (\n  SELECT client_id, SUM(montant) AS total\n  FROM ventes\n  GROUP BY client_id\n),\ncumul AS (\n  SELECT\n    SUM(total) OVER (ORDER BY total DESC) * 1.0 / SUM(total) OVER () AS pct_ca_cumule,\n    ROW_NUMBER() OVER (ORDER BY total DESC) AS rang,\n    COUNT(*) OVER () AS nb_clients\n  FROM par_client\n)\nSELECT ROUND(100.0 * MIN(rang) / MAX(nb_clients), 1) AS pct_clients\nFROM cumul\nWHERE pct_ca_cumule >= 0.8`,note:{fr:`Motif de <strong>Pareto (80/20)</strong> : on trie les clients par CA décroissant, on calcule la part de CA cumulée (fonction fenêtre), puis on repère le rang où elle atteint 80 %. Le résultat est ce rang rapporté au nombre de clients — une seule requête, avec des fenêtres imbriquées.`,en:`<strong>Pareto (80/20)</strong> pattern: sort clients by revenue descending, compute the running share of revenue (window function), then find the rank where it reaches 80%. The result is that rank over the number of clients — one query, with nested windows.`}},
+   {q:{fr:`Les clients dont le total d'achats dépasse la moyenne des totaux par client.`,en:`Customers whose total spend exceeds the average of per-customer totals.`},tips:{fr:[`Calculez d'abord le total par client : <code>SUM(montant)</code> avec <code>GROUP BY client_id</code>.`,`Rangez ce résultat dans une CTE : <code>WITH totaux AS (…)</code>.`,`Calculez la moyenne de ces totaux : <code>AVG(total)</code> sur la CTE.`,`Gardez les clients dont le total dépasse cette moyenne.`],en:[`First compute each client's total: <code>SUM(montant)</code> with <code>GROUP BY client_id</code>.`,`Store it in a CTE: <code>WITH totaux AS (…)</code>.`,`Compute the average of those totals: <code>AVG(total)</code> over the CTE.`,`Keep clients whose total exceeds that average.`]},sql:`WITH totaux AS (\n    SELECT client_id, SUM(montant) AS total\n    FROM ventes\n    GROUP BY client_id\n)\nSELECT client_id, total\nFROM totaux\nWHERE total > (SELECT AVG(total) FROM totaux)`,note:{fr:`Une seule CTE réutilisée deux fois : lister les totaux, puis en calculer la moyenne. On compare chaque ligne à un agrégat de l'ensemble, sans recalculer les totaux.`,en:`A single CTE reused twice: list the totals, then average them. Each row is compared to an aggregate of the whole, without recomputing the totals.`}},
+   {q:{fr:`Sur <code>commandes(quantity, price_per_unit, discount_code)</code> : le chiffre d'affaires total en appliquant la remise du code (DISCOUNT10 = −10 %, DISCOUNT20 = −20 %, sinon plein tarif).`,en:`On <code>commandes(quantity, price_per_unit, discount_code)</code>: total revenue applying the code's discount (DISCOUNT10 = −10%, DISCOUNT20 = −20%, otherwise full price).`},sql:`SELECT\n  SUM(\n    CASE\n      WHEN discount_code = 'DISCOUNT10' THEN quantity * price_per_unit * 0.9\n      WHEN discount_code = 'DISCOUNT20' THEN quantity * price_per_unit * 0.8\n      ELSE quantity * price_per_unit\n    END\n  ) AS total_revenue\nFROM commandes`,note:{fr:`Le <code>CASE</code> calcule le prix remisé ligne par ligne, <em>à l'intérieur</em> du <code>SUM</code> : une seule passe, sans sous-requête. L'<code>ELSE</code> couvre les commandes sans code (ou code inconnu) au plein tarif. Ajoutez <code>GROUP BY discount_code</code> pour le détail par code.`,en:`The <code>CASE</code> computes the discounted price row by row, <em>inside</em> the <code>SUM</code>: one pass, no subquery. The <code>ELSE</code> covers orders with no code (or unknown code) at full price. Add <code>GROUP BY discount_code</code> for a per-code breakdown.`}},
+   {q:{fr:`Le chiffre d'affaires par mois (série temporelle).`,en:`Revenue per month (time series).`},sql:`SELECT DATE_TRUNC(date_vente, MONTH) AS mois,\n       SUM(montant) AS ca\nFROM ventes\nGROUP BY mois\nORDER BY mois`,note:{fr:`<code>DATE_TRUNC</code> ramène chaque vente au 1er du mois → une ligne par mois, triée chronologiquement. En PostgreSQL : <code>DATE_TRUNC('month', date_vente)</code>.`,en:`<code>DATE_TRUNC</code> snaps each sale to the 1st of the month → one row per month, sorted chronologically. In PostgreSQL: <code>DATE_TRUNC('month', date_vente)</code>.`}},
+   {q:{fr:`Lecture — que renvoie cette requête ?`,en:`Reading — what does this query return?`},comp:true,code:`SELECT DATE_TRUNC(event_date, WEEK) AS semaine,\n       COUNT(DISTINCT user_id) AS actifs\nFROM events\nGROUP BY semaine\nORDER BY semaine`,note:{fr:`Le nombre d'<strong>utilisateurs uniques actifs par semaine</strong> (une série temporelle hebdomadaire). <code>DATE_TRUNC(event_date, WEEK)</code> regroupe les événements par semaine ; <code>COUNT(DISTINCT user_id)</code> dédoublonne : un utilisateur actif trois fois dans la semaine n'est compté qu'une fois.`,en:`The number of <strong>weekly active unique users</strong> (a weekly time series). <code>DATE_TRUNC(event_date, WEEK)</code> groups events by week; <code>COUNT(DISTINCT user_id)</code> de-duplicates: a user active three times in a week is counted once.`}},
+   {q:{fr:`Lecture — que renvoie cette requête, et que faut-il en conclure ?`,en:`Reading — what does this query return, and what should you conclude?`},comp:true,code:`SELECT FORMAT_DATE('%A', date_vente) AS jour_semaine,\n       AVG(montant) AS panier_moyen\nFROM ventes\nGROUP BY jour_semaine\nORDER BY panier_moyen DESC`,note:{fr:`Le panier moyen par <strong>jour de la semaine</strong>, du plus élevé au plus faible (<code>FORMAT_DATE('%A', …)</code> renvoie le nom du jour). Le vrai test est dans l'interprétation : si les valeurs sont très proches (p. ex. 1,69 à 1,75), désigner « le meilleur jour » n'a pas de sens — l'écart n'est pas significatif. Un profil senior signale que la différence relève du bruit avant de recommander quoi que ce soit. (Selon le moteur : <code>EXTRACT(DAYOFWEEK FROM date_vente)</code> en SQL standard.)`,en:`The average basket per <strong>day of week</strong>, highest to lowest (<code>FORMAT_DATE('%A', …)</code> returns the day name). The real test is the interpretation: if the values are very close (e.g. 1.69 to 1.75), naming "the best day" is meaningless — the gap isn't significant. A senior profile flags that the difference is noise before recommending anything. (Engine-dependent: <code>EXTRACT(DAYOFWEEK FROM date_vente)</code> in standard SQL.)`}}
+  ]
+ },
+ reverse:{
+  context:{fr:`Table <code>commandes(quantity, price_per_unit, discount_code)</code>. Codes rencontrés : <code>DISCOUNT10</code>, <code>DISCOUNT20</code>, <code>NULL</code>, <code>UNKNOWN</code>.`,en:`Table <code>commandes(quantity, price_per_unit, discount_code)</code>. Codes seen: <code>DISCOUNT10</code>, <code>DISCOUNT20</code>, <code>NULL</code>, <code>UNKNOWN</code>.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['discount_code','total_revenue'],
+  rows:[['NULL','232.0'],['DISCOUNT10','67.5'],['DISCOUNT20','16.0'],['UNKNOWN','16.0']],
+  question:{fr:`Quelle requête produit exactement cette sortie ?`,en:`Which query produces exactly this output?`},
+  sql:`SELECT discount_code,\n       SUM(\n         CASE\n           WHEN discount_code = 'DISCOUNT10' THEN quantity * price_per_unit * 0.9\n           WHEN discount_code = 'DISCOUNT20' THEN quantity * price_per_unit * 0.8\n           ELSE quantity * price_per_unit\n         END\n       ) AS total_revenue\nFROM commandes\nGROUP BY discount_code`,
+  note:{fr:`Les indices sont dans la sortie : <strong>une ligne par code</strong> (dont <code>NULL</code> et <code>UNKNOWN</code>) → <code>GROUP BY discount_code</code>. La colonne <code>total_revenue</code> applique une remise selon le code → un <code>CASE</code> dans le <code>SUM</code>. <code>NULL</code> et <code>UNKNOWN</code> tombent dans le <code>ELSE</code> (plein tarif), d'où leurs totaux non remisés.`,en:`The clues are in the output: <strong>one row per code</strong> (including <code>NULL</code> and <code>UNKNOWN</code>) → <code>GROUP BY discount_code</code>. The <code>total_revenue</code> column applies a per-code discount → a <code>CASE</code> inside the <code>SUM</code>. <code>NULL</code> and <code>UNKNOWN</code> fall into the <code>ELSE</code> (full price), hence their un-discounted totals.`}
+ }
+},
+
+/* ---------------- Power BI (DAX) — avancé ---------------- */
+pbi:{
+ open:[
+  {q:{fr:`Contexte de ligne vs contexte de filtre — qu'est-ce que la transition de contexte ?`,en:`Row context vs filter context — what is context transition?`},
+   a:{fr:`Le <strong>contexte de ligne</strong> existe dans les itérateurs (colonnes calculées, <code>SUMX</code>) : une ligne courante. Le <strong>contexte de filtre</strong> est l'ensemble des filtres appliqués. <code>CALCULATE</code> (ou une mesure référencée) déclenche la <em>transition de contexte</em> : la ligne courante devient un filtre équivalent — c'est ce qui rend <code>CALCULATE(SUM(...))</code> sensible à la ligne dans un <code>SUMX</code>.`,en:`<strong>Row context</strong> exists in iterators (calculated columns, <code>SUMX</code>): a current row. <strong>Filter context</strong> is the set of applied filters. <code>CALCULATE</code> (or a referenced measure) triggers <em>context transition</em>: the current row becomes an equivalent filter — that's why <code>CALCULATE(SUM(...))</code> is row-aware inside a <code>SUMX</code>.`}},
+  {q:{fr:`À quoi servent KEEPFILTERS et REMOVEFILTERS ?`,en:`What are KEEPFILTERS and REMOVEFILTERS for?`},
+   a:{fr:`Par défaut, un filtre dans <code>CALCULATE</code> <em>remplace</em> le filtre existant sur la même colonne. <code>KEEPFILTERS</code> le <em>combine</em> (intersection) au lieu de remplacer. <code>REMOVEFILTERS</code> (ex-<code>ALL</code>) enlève des filtres. Ils donnent un contrôle fin du contexte.`,en:`By default, a filter in <code>CALCULATE</code> <em>replaces</em> the existing filter on the same column. <code>KEEPFILTERS</code> <em>combines</em> it (intersection) instead. <code>REMOVEFILTERS</code> (formerly <code>ALL</code>) removes filters. They give fine-grained control of the context.`}},
+  {q:{fr:`Différence entre ALL, ALLEXCEPT et ALLSELECTED ?`,en:`ALL vs ALLEXCEPT vs ALLSELECTED?`},
+   a:{fr:`<code>ALL</code> retire tous les filtres d'une table/colonne. <code>ALLEXCEPT</code> retire tout <em>sauf</em> les colonnes citées. <code>ALLSELECTED</code> respecte la sélection utilisateur (slicers) tout en ignorant le contexte du visuel — idéal pour un « % du total visible ».`,en:`<code>ALL</code> removes all filters on a table/column. <code>ALLEXCEPT</code> removes everything <em>except</em> the named columns. <code>ALLSELECTED</code> respects the user's selection (slicers) while ignoring the visual's context — ideal for a "% of the visible total".`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Mesure DAX avec variables :',en:'DAX measure with variables:'},
+  code:`Marge % =\nVAR ca = [Total Ventes]\nVAR cout = [Total Cout]\nRETURN DIVIDE(ca - cout, ca)`,
+  options:[
+   {c:true,fr:`Les <code>VAR</code> sont évaluées une seule fois, dans le contexte de filtre courant.`,en:`The <code>VAR</code>s are evaluated once, in the current filter context.`,xf:`Une variable est calculée à sa définition puis réutilisée.`,xe:`A variable is computed at its definition then reused.`},
+   {c:true,fr:`<code>DIVIDE</code> évite l'erreur de division par zéro (renvoie BLANK).`,en:`<code>DIVIDE</code> avoids the divide-by-zero error (returns BLANK).`,xf:`C'est l'intérêt de DIVIDE face à l'opérateur /.`,xe:`That's DIVIDE's advantage over the / operator.`},
+   {c:false,fr:`Réécrire sans <code>VAR</code> changerait le résultat.`,en:`Rewriting without <code>VAR</code> would change the result.`,xf:`Non : même résultat ; les VAR améliorent lisibilité et perf.`,xe:`No: same result; VARs improve readability and performance.`},
+   {c:false,fr:`<code>ca</code> se recalcule à chaque utilisation de la variable.`,en:`<code>ca</code> is recomputed on each use of the variable.`,xf:`Non : une VAR est calculée une fois, puis réutilisée.`,xe:`No: a VAR is computed once, then reused.`}
+  ]
+ },
+ read:{
+  context:{fr:'Mesure DAX :',en:'DAX measure:'},
+  code:`Ventes cumulees =\nCALCULATE(\n    [Total Ventes],\n    FILTER(\n        ALL('Date'[Date]),\n        'Date'[Date] <= MAX('Date'[Date])\n    )\n)`,
+  question:{fr:'Que calcule cette mesure ?',en:'What does this measure compute?'},
+  options:[
+   {c:true,fr:`Le cumul des ventes depuis le début jusqu'à la date courante (running total).`,en:`The running total of sales from the start up to the current date.`,xf:`FILTER garde toutes les dates ≤ MAX du contexte → cumul.`,xe:`FILTER keeps all dates ≤ context MAX → running total.`},
+   {c:false,fr:`Les ventes de la date courante uniquement.`,en:`Only the current date's sales.`,xf:`Non : la condition est ≤, pas =.`,xe:`No: the condition is ≤, not =.`},
+   {c:false,fr:`Le total de toutes les ventes, constant.`,en:`The total of all sales, constant.`,xf:`Non : <code>MAX('Date'[Date])</code> dépend du contexte, donc le cumul progresse.`,xe:`No: <code>MAX('Date'[Date])</code> depends on context, so the total grows.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Modèle : <code>Ventes[Montant]</code>, <code>Ventes[Cout]</code>, table <code>Date[Date]</code> reliée.`,en:`Model: <code>Ventes[Montant]</code>, <code>Ventes[Cout]</code>, related <code>Date[Date]</code> table.`},
+  hint:{fr:`Écrivez la mesure DAX, puis dépliez.`,en:`Write the DAX measure, then expand.`},
+  items:[
+   {q:{fr:`Le taux de marge, robuste à la division par zéro.`,en:`Margin ratio, safe against divide-by-zero.`},sql:`Marge % = DIVIDE([Total Ventes] - [Total Cout], [Total Ventes])`,note:{fr:`<code>DIVIDE</code> gère le /0 (BLANK au lieu d'une erreur).`,en:`<code>DIVIDE</code> handles /0 (BLANK instead of an error).`}},
+   {q:{fr:`Les ventes cumulées (running total) par date.`,en:`Running total of sales by date.`},sql:`Ventes cumulees =\nCALCULATE([Total Ventes],\n    FILTER(ALL('Date'[Date]), 'Date'[Date] <= MAX('Date'[Date])))`,note:{fr:`Motif classique du cumul : <code>FILTER</code> + <code>ALL</code> + <code>MAX</code>.`,en:`Classic running-total pattern: <code>FILTER</code> + <code>ALL</code> + <code>MAX</code>.`}},
+   {q:{fr:`Le % du total en respectant les slicers.`,en:`% of total, respecting slicers.`},sql:`% Selection =\nDIVIDE([Total Ventes], CALCULATE([Total Ventes], ALLSELECTED()))`,note:{fr:`<code>ALLSELECTED</code> : total « visible » après slicers, pas total absolu.`,en:`<code>ALLSELECTED</code>: the "visible" total after slicers, not the absolute total.`}}
+  ]
+ }
+},
+
+/* ---------------- Tableau — avancé ---------------- */
+tableau:{
+ open:[
+  {q:{fr:`Ordre d'exécution : où se placent les filtres contextuels, les LOD FIXED et les table calculations ?`,en:`Order of operations: where do context filters, FIXED LODs and table calculations sit?`},
+   a:{fr:`Tableau applique : filtres d'extraction → source → <em>contextuels</em> → dimension → <code>FIXED</code> → <code>INCLUDE/EXCLUDE</code> → mesure → <em>table calculations</em>. D'où le fait que <code>FIXED</code> ignore les filtres de dimension normaux mais pas les filtres contextuels.`,en:`Tableau applies: extract → data source → <em>context</em> → dimension → <code>FIXED</code> → <code>INCLUDE/EXCLUDE</code> → measure → <em>table calculations</em>. That's why <code>FIXED</code> ignores normal dimension filters but not context filters.`}},
+  {q:{fr:`Différence entre une expression LOD et une table calculation ?`,en:`LOD expression vs table calculation?`},
+   a:{fr:`Une <strong>LOD</strong> est calculée dans la requête, à une granularité fixée, indépendante de la disposition du visuel. Une <strong>table calculation</strong> opère <em>après</em>, sur le tableau de résultats affiché (partitionnement/adressage). LOD = changer la granularité ; table calc = calcul relatif (running total, % of total, rank).`,en:`A <strong>LOD</strong> is computed in the query, at a set granularity, independent of the visual layout. A <strong>table calculation</strong> operates <em>after</em>, on the displayed result table (partitioning/addressing). LOD = change granularity; table calc = relative calc (running total, % of total, rank).`}},
+  {q:{fr:`INCLUDE vs EXCLUDE, avec un exemple ?`,en:`INCLUDE vs EXCLUDE, with an example?`},
+   a:{fr:`<code>INCLUDE</code> calcule à une granularité plus fine que la vue puis ré-agrège (ex : ventes moyennes par client, affichées par région). <code>EXCLUDE</code> calcule à une granularité plus grossière (ex : part d'une sous-catégorie dans sa catégorie).`,en:`<code>INCLUDE</code> computes at a finer granularity than the view then re-aggregates (e.g. average sales per customer, shown by region). <code>EXCLUDE</code> computes at a coarser granularity (e.g. a sub-category's share of its category).`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Table calculation :',en:'Table calculation:'},
+  code:`RUNNING_SUM(SUM([Ventes]))`,
+  options:[
+   {c:true,fr:`Elle calcule un cumul, dans l'ordre du partitionnement de la vue.`,en:`It computes a running total, in the view's partition order.`,xf:`RUNNING_SUM additionne progressivement selon l'adressage.`,xe:`RUNNING_SUM adds progressively along the addressing.`},
+   {c:true,fr:`Son résultat dépend de la disposition (dimensions, tri) du tableau.`,en:`Its result depends on the table layout (dimensions, sort).`,xf:`Une table calc opère sur le résultat affiché.`,xe:`A table calc operates on the displayed result.`},
+   {c:false,fr:`Elle donnerait le même résultat qu'un <code>{FIXED}</code>.`,en:`It would give the same result as a <code>{FIXED}</code>.`,xf:`Non : le FIXED calcule à une granularité fixe, pas sur l'affichage.`,xe:`No: FIXED computes at a fixed granularity, not on the display.`},
+   {c:false,fr:`Elle est insensible à l'ordre de tri des lignes.`,en:`It's insensitive to the row sort order.`,xf:`Non : un cumul dépend de l'ordre d'adressage.`,xe:`No: a running total depends on the addressing order.`}
+  ]
+ },
+ read:{
+  context:{fr:'Champ calculé, affiché par région :',en:'Calculated field, shown by region:'},
+  code:`{ INCLUDE [Client] : AVG([Ventes]) }`,
+  question:{fr:'Que calcule ce champ ?',en:'What does this field compute?'},
+  options:[
+   {c:true,fr:`La moyenne, par région, des ventes calculées d'abord par client (granularité plus fine que la vue).`,en:`The per-region average of sales first computed per customer (finer granularity than the view).`,xf:`INCLUDE ajoute [Client] à la granularité de calcul, puis ré-agrège par région.`,xe:`INCLUDE adds [Client] to the calc granularity, then re-aggregates by region.`},
+   {c:false,fr:`La moyenne des ventes par région, sans notion de client.`,en:`Average sales per region, ignoring customers.`,xf:`Non : INCLUDE force le passage par [Client].`,xe:`No: INCLUDE forces going through [Client].`},
+   {c:false,fr:`Le total des ventes par client.`,en:`Total sales per customer.`,xf:`Non : c'est une moyenne ré-agrégée, pas un total.`,xe:`No: it's a re-aggregated average, not a total.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Champs : <code>[Ventes]</code>, <code>[Profit]</code>, <code>[Client]</code>, <code>[Categorie]</code>, <code>[Sous-categorie]</code>.`,en:`Fields: <code>[Ventes]</code>, <code>[Profit]</code>, <code>[Client]</code>, <code>[Categorie]</code>, <code>[Sub-category]</code>.`},
+  hint:{fr:`Écrivez le champ calculé, puis dépliez.`,en:`Write the calculated field, then expand.`},
+  items:[
+   {q:{fr:`La part d'une sous-catégorie dans sa catégorie.`,en:`A sub-category's share of its category.`},sql:`SUM([Ventes]) / SUM({ EXCLUDE [Sous-categorie] : SUM([Ventes]) })`,note:{fr:`<code>EXCLUDE</code> remonte au niveau catégorie pour le dénominateur.`,en:`<code>EXCLUDE</code> rolls up to the category level for the denominator.`}},
+   {q:{fr:`Le rang des produits par ventes.`,en:`Products' rank by sales.`},sql:`RANK(SUM([Ventes]))`,note:{fr:`Table calculation ; le partitionnement définit le périmètre du classement.`,en:`Table calculation; the partitioning defines the ranking scope.`}},
+   {q:{fr:`Ventes moyennes par client, vues par région.`,en:`Average sales per customer, seen by region.`},sql:`{ INCLUDE [Client] : AVG([Ventes]) }`,note:{fr:`<code>INCLUDE</code> affine la granularité de calcul sous la vue.`,en:`<code>INCLUDE</code> refines the calc granularity below the view.`}}
+  ]
+ }
+},
+
+/* ---------------- Looker (LookML) — avancé ---------------- */
+looker:{
+ open:[
+  {q:{fr:`Différence entre une derived table SQL et une PDT (persistent derived table) ? À quoi sert un datagroup ?`,en:`SQL derived table vs PDT (persistent derived table)? What is a datagroup for?`},
+   a:{fr:`Une <em>derived table</em> est une sous-requête réutilisée comme view. Une <strong>PDT</strong> est <em>matérialisée</em> (stockée) et rafraîchie selon une stratégie (<code>datagroup_trigger</code> ou <code>persist_for</code>). Les <em>datagroups</em> pilotent aussi le cache. On les utilise pour la performance sur des calculs lourds.`,en:`A <em>derived table</em> is a subquery reused as a view. A <strong>PDT</strong> is <em>materialised</em> (stored) and refreshed by a strategy (<code>datagroup_trigger</code> or <code>persist_for</code>). <em>Datagroups</em> also drive caching. Used for performance on heavy calculations.`}},
+  {q:{fr:`Fanout : comment les « symmetric aggregates » le gèrent, et quand ça casse ?`,en:`Fan-out: how do symmetric aggregates handle it, and when does it break?`},
+   a:{fr:`Sur un join un-à-plusieurs, les lignes du côté « un » sont répétées → <code>SUM</code> double-compte. Looker utilise des <em>agrégats symétriques</em> (via des hash) pour <code>SUM/AVG/COUNT</code>. Mais ça ne couvre pas tout : certaines mesures (median, calculs complexes) peuvent rester faux — il faut alors restructurer.`,en:`On a one-to-many join, the "one" side's rows are repeated → <code>SUM</code> double-counts. Looker uses <em>symmetric aggregates</em> (via hashing) for <code>SUM/AVG/COUNT</code>. But it doesn't cover everything: some measures (median, complex calcs) can still be wrong — you then restructure.`}},
+  {q:{fr:`Différence entre sql_always_where, un filtre d'Explore et access_filter ?`,en:`sql_always_where vs an Explore filter vs access_filter?`},
+   a:{fr:`<code>sql_always_where</code> impose une condition non contournable (au niveau Explore). Un filtre d'Explore est choisi par l'utilisateur. <code>access_filter</code> filtre selon l'utilisateur (row-level security) via un <code>user_attribute</code>.`,en:`<code>sql_always_where</code> enforces a non-bypassable condition (at Explore level). An Explore filter is chosen by the user. <code>access_filter</code> filters per user (row-level security) via a <code>user_attribute</code>.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'measure avec un filtre :',en:'measure with a filter:'},
+  code:`measure: ventes_payees {\n  type: sum\n  sql: \${montant} ;;\n  filters: [statut: "payee"]\n}`,
+  options:[
+   {c:true,fr:`Elle ne somme que les lignes où <code>statut = "payee"</code>.`,en:`It sums only rows where <code>statut = "payee"</code>.`,xf:`Le paramètre <code>filters</code> restreint la measure.`,xe:`The <code>filters</code> parameter restricts the measure.`},
+   {c:true,fr:`Ce filtre s'applique en plus des filtres choisis dans l'Explore.`,en:`This filter applies on top of the Explore's filters.`,xf:`Les filtres de measure et d'Explore se combinent.`,xe:`Measure and Explore filters combine.`},
+   {c:false,fr:`C'est équivalent à un <code>sql_always_where</code> sur l'Explore.`,en:`It's equivalent to a <code>sql_always_where</code> on the Explore.`,xf:`Non : le filtre de measure ne concerne que cette mesure.`,xe:`No: the measure filter only affects this measure.`},
+   {c:false,fr:`Le filtre est ignoré si l'utilisateur ne filtre pas sur statut.`,en:`The filter is ignored if the user doesn't filter on statut.`,xf:`Non : <code>filters</code> s'applique toujours.`,xe:`No: <code>filters</code> always applies.`}
+  ]
+ },
+ read:{
+  context:{fr:'Bloc LookML :',en:'LookML block:'},
+  code:`measure: taux_conversion {\n  type: number\n  sql: 1.0 * \${commandes.count} / NULLIF(\${visites.count}, 0) ;;\n  value_format_name: percent_1\n}`,
+  question:{fr:'Que calcule cette measure ?',en:'What does this measure compute?'},
+  options:[
+   {c:true,fr:`Le taux de conversion (commandes / visites), protégé contre la division par zéro.`,en:`The conversion rate (orders / visits), guarded against divide-by-zero.`,xf:`<code>NULLIF(..., 0)</code> évite le /0 ; <code>percent_1</code> formate en %.`,xe:`<code>NULLIF(..., 0)</code> avoids /0; <code>percent_1</code> formats as %.`},
+   {c:false,fr:`Le nombre de commandes.`,en:`The number of orders.`,xf:`Non : c'est un ratio commandes/visites.`,xe:`No: it's an orders/visits ratio.`},
+   {c:false,fr:`Une dimension calculée par ligne.`,en:`A per-row calculated dimension.`,xf:`Non : <code>measure</code> + agrégats = mesure.`,xe:`No: <code>measure</code> + aggregates = a measure.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Une <code>view</code> ventes (<code>montant</code>, <code>profit</code>, <code>ventes</code>, <code>region</code>, <code>client_id</code>).`,en:`A ventes <code>view</code> (<code>montant</code>, <code>profit</code>, <code>ventes</code>, <code>region</code>, <code>client_id</code>).`},
+  hint:{fr:`Écrivez le bloc LookML, puis dépliez.`,en:`Write the LookML block, then expand.`},
+  items:[
+   {q:{fr:`Une measure « taux de marge » formatée en %.`,en:`A "margin ratio" measure formatted as %.`},sql:`measure: taux_marge {\n  type: number\n  sql: 1.0 * \${profit} / NULLIF(\${ventes}, 0) ;;\n  value_format_name: percent_1\n}`,note:{fr:`Ratio de deux measures + <code>NULLIF</code> contre le /0.`,en:`Ratio of two measures + <code>NULLIF</code> against /0.`}},
+   {q:{fr:`Une PDT matérialisée par datagroup.`,en:`A PDT materialised by datagroup.`},sql:`derived_table: {\n  sql: SELECT client_id, SUM(montant) AS ca\n       FROM ventes GROUP BY 1 ;;\n  datagroup_trigger: quotidien\n}`,note:{fr:`PDT rafraîchie selon le datagroup (performance).`,en:`PDT refreshed by the datagroup (performance).`}},
+   {q:{fr:`Un filtre de sécurité par utilisateur (RLS).`,en:`A per-user security filter (RLS).`},sql:`access_filter: {\n  field: ventes.region\n  user_attribute: region_autorisee\n}`,note:{fr:`<code>access_filter</code> = row-level security via <code>user_attribute</code>.`,en:`<code>access_filter</code> = row-level security via <code>user_attribute</code>.`}}
+  ]
+ }
+},
+
+/* ---------------- Python (pandas) — avancé ---------------- */
+python:{
+ reverse:{
+  context:{fr:`Un DataFrame <code>df</code> avec les colonnes <code>client</code> et <code>montant</code>.`,en:`A DataFrame <code>df</code> with columns <code>client</code> and <code>montant</code>.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['client','sum','mean'],
+  rows:[['Chris','72.0','24.00'],['Julie','64.99','21.66'],['Oussama','178.0','59.33']],
+  question:{fr:`Quel code pandas produit cette sortie ?`,en:`Which pandas code produces this output?`},
+  sql:`(df.groupby('client')['montant']\n   .agg(['sum', 'mean']))`,
+  note:{fr:`Deux colonnes agrégées (<code>sum</code> et <code>mean</code>) indexées par <code>client</code> → un <code>groupby('client')</code> sur <code>montant</code> avec <code>.agg(['sum','mean'])</code>.`,en:`Two aggregated columns (<code>sum</code> and <code>mean</code>) indexed by <code>client</code> → a <code>groupby('client')</code> on <code>montant</code> with <code>.agg(['sum','mean'])</code>.`}
+ },
+ open:[
+  {q:{fr:`Différence entre merge, join et concat en pandas ?`,en:`merge vs join vs concat in pandas?`},
+   a:{fr:`<code>merge</code> fait une jointure SQL-like sur des clés (colonnes). <code>join</code> joint sur l'index (raccourci). <code>concat</code> empile/juxtapose des DataFrames (<code>axis=0/1</code>) sans logique de clé. On prend <code>merge</code> pour des jointures relationnelles.`,en:`<code>merge</code> does a SQL-like join on keys (columns). <code>join</code> joins on the index (shortcut). <code>concat</code> stacks/juxtaposes DataFrames (<code>axis=0/1</code>) with no key logic. Use <code>merge</code> for relational joins.`}},
+  {q:{fr:`Chained indexing et SettingWithCopyWarning : de quoi s'agit-il ?`,en:`Chained indexing and SettingWithCopyWarning: what are they?`},
+   a:{fr:`Accéder puis assigner en deux crochets (<code>df[cond]['col'] = ...</code>) peut agir sur une copie, pas sur l'original → l'avertissement, et des modifications perdues. La bonne pratique : <code>df.loc[cond, 'col'] = ...</code> en une seule opération.`,en:`Accessing then assigning in two brackets (<code>df[cond]['col'] = ...</code>) can act on a copy, not the original → the warning, and lost changes. Best practice: <code>df.loc[cond, 'col'] = ...</code> in one operation.`}},
+  {q:{fr:`Différence entre apply, map et une opération vectorisée ?`,en:`apply vs map vs a vectorised operation?`},
+   a:{fr:`Les opérations <strong>vectorisées</strong> (Series/numpy) sont les plus rapides. <code>apply</code> exécute une fonction Python ligne/colonne (souple mais lent). <code>map</code> substitue élément par élément sur une Series. On préfère la vectorisation quand c'est possible.`,en:`<strong>Vectorised</strong> operations (Series/numpy) are fastest. <code>apply</code> runs a Python function per row/column (flexible but slow). <code>map</code> substitutes element-wise on a Series. Prefer vectorisation when possible.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Code pandas :',en:'pandas code:'},
+  code:`(df.groupby('client')['montant']\n   .agg(['sum', 'mean'])\n   .sort_values('sum', ascending=False))`,
+  options:[
+   {c:true,fr:`Il calcule la somme et la moyenne du montant par client.`,en:`It computes the sum and mean of amount per customer.`,xf:`agg(['sum','mean']) applique deux agrégats.`,xe:`agg(['sum','mean']) applies two aggregates.`},
+   {c:true,fr:`Le résultat est indexé par client, trié par somme décroissante.`,en:`The result is indexed by customer, sorted by sum descending.`,xf:`groupby met client en index ; sort_values trie par 'sum'.`,xe:`groupby indexes by customer; sort_values sorts by 'sum'.`},
+   {c:false,fr:`<code>agg(['sum','mean'])</code> renvoie une seule colonne.`,en:`<code>agg(['sum','mean'])</code> returns a single column.`,xf:`Non : deux colonnes, sum et mean.`,xe:`No: two columns, sum and mean.`},
+   {c:false,fr:`<code>sort_values</code> trie l'index client alphabétiquement.`,en:`<code>sort_values</code> sorts the customer index alphabetically.`,xf:`Non : il trie par la colonne 'sum'.`,xe:`No: it sorts by the 'sum' column.`}
+  ]
+ },
+ read:{
+  context:{fr:'Code pandas :',en:'pandas code:'},
+  code:`df['rang'] = (df.groupby('categorie')['ventes']\n                .rank(method='dense', ascending=False))`,
+  question:{fr:'Que calcule df[\'rang\'] ?',en:'What does df[\'rang\'] compute?'},
+  options:[
+   {c:true,fr:`Le rang de chaque produit par ventes, à l'intérieur de sa catégorie.`,en:`Each product's rank by sales, within its category.`,xf:`groupby('categorie') classe séparément par catégorie.`,xe:`groupby('categorie') ranks separately per category.`},
+   {c:false,fr:`Le rang global, toutes catégories confondues.`,en:`The global rank across all categories.`,xf:`Non : le groupby limite le classement à chaque catégorie.`,xe:`No: the groupby limits ranking to each category.`},
+   {c:false,fr:`La somme des ventes par catégorie.`,en:`The sum of sales per category.`,xf:`Non : c'est un rang, pas une somme.`,xe:`No: it's a rank, not a sum.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Un DataFrame <code>df</code> : colonnes <code>client, categorie, montant, date</code>.`,en:`A DataFrame <code>df</code>: columns <code>client, categorie, montant, date</code>.`},
+  hint:{fr:`Écrivez le code pandas, puis dépliez.`,en:`Write the pandas code, then expand.`},
+  items:[
+   {q:{fr:`Le CA par catégorie, trié décroissant.`,en:`Revenue per category, sorted descending.`},sql:`(df.groupby('categorie')['montant']\n   .sum()\n   .sort_values(ascending=False))`,note:{fr:`groupby + agrégation + tri.`,en:`groupby + aggregation + sort.`}},
+   {q:{fr:`Le top 3 des ventes par catégorie.`,en:`Top 3 sales per category.`},sql:`(df.sort_values('montant', ascending=False)\n   .groupby('categorie')\n   .head(3))`,note:{fr:`sort puis <code>groupby().head(n)</code> : top N par groupe.`,en:`sort then <code>groupby().head(n)</code>: top N per group.`}},
+   {q:{fr:`Le montant cumulé par client dans le temps.`,en:`Running total per customer over time.`},sql:`df['cumul'] = (df.sort_values('date')\n                 .groupby('client')['montant']\n                 .cumsum())`,note:{fr:`<code>cumsum()</code> par groupe = cumul (équivalent d'une window).`,en:`<code>cumsum()</code> per group = running total (window equivalent).`}}
+  ]
+ }
+},
+
+/* ---------------- Excel — avancé ---------------- */
+excel:{
+ reverse:{
+  context:{fr:`Table <code>Ventes(Région, Montant)</code>. La colonne Total est alignée sur une liste de régions.`,en:`Table <code>Ventes(Région, Montant)</code>. The Total column is aligned to a list of regions.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['Région','Total'],
+  rows:[['Nord','12 400'],['Sud','9 850'],['Est','7 200']],
+  question:{fr:`Quelle formule, recopiée en face de chaque région (A2, A3…), produit la colonne Total ?`,en:`Which formula, copied next to each region (A2, A3…), produces the Total column?`},
+  sql:`=SUMIFS(Ventes[Montant], Ventes[Région], A2)`,
+  note:{fr:`Un total par région aligné sur une liste → une somme conditionnelle <code>SUMIFS</code> qui additionne les montants dont la région correspond à la cellule de gauche (<code>A2</code>), recopiée vers le bas.`,en:`A per-region total aligned to a list → a conditional sum <code>SUMIFS</code> adding amounts whose region matches the cell on the left (<code>A2</code>), copied downward.`}
+ },
+ open:[
+  {q:{fr:`Formule à débordement (spill) vs ancienne matricielle (CSE) ? À quoi sert le # ?`,en:`Dynamic spill formula vs legacy array (CSE)? What is the # for?`},
+   a:{fr:`Une formule qui renvoie plusieurs valeurs « déborde » (spill) automatiquement dans les cellules voisines — plus besoin de <code>Ctrl+Maj+Entrée</code> des anciennes formules. On référence une plage débordée avec <code>#</code> (ex. <code>A2#</code>). <code>@</code> force l'intersection implicite (une seule valeur).`,en:`A formula returning several values "spills" automatically into neighbouring cells — no more <code>Ctrl+Shift+Enter</code> of legacy formulas. Reference a spilled range with <code>#</code> (e.g. <code>A2#</code>). <code>@</code> forces implicit intersection (a single value).`}},
+  {q:{fr:`LET et LAMBDA : à quoi servent-ils ?`,en:`LET and LAMBDA: what are they for?`},
+   a:{fr:`<code>LET</code> nomme des calculs intermédiaires dans une formule (lisibilité, perf : calculé une fois). <code>LAMBDA</code> crée une fonction réutilisable sans VBA, qu'on nomme dans le gestionnaire de noms et qu'on peut rendre récursive.`,en:`<code>LET</code> names intermediate calcs inside a formula (readability, perf: computed once). <code>LAMBDA</code> creates a reusable function without VBA, named in the name manager and can be recursive.`}},
+  {q:{fr:`SUMPRODUCT vs une somme conditionnelle : quand l'utiliser ?`,en:`SUMPRODUCT vs a conditional sum: when to use it?`},
+   a:{fr:`<code>SUMPRODUCT</code> multiplie des plages élément par élément puis somme ; avec des conditions booléennes (<code>plage=critère</code>), il fait des sommes/comptes multi-critères, y compris là où <code>SUMIFS</code> ne suffit pas (conditions calculées, OU logique). Plus souple, moins lisible.`,en:`<code>SUMPRODUCT</code> multiplies ranges element-wise then sums; with boolean conditions (<code>range=criteria</code>), it does multi-criteria sums/counts, even where <code>SUMIFS</code> can't (computed conditions, logical OR). More flexible, less readable.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Formule (tableaux dynamiques) :',en:'Formula (dynamic arrays):'},
+  code:`=SORT(FILTER(A2:B100, B2:B100>1000), 2, -1)`,
+  options:[
+   {c:true,fr:`<code>FILTER</code> garde les lignes où la colonne B dépasse 1000.`,en:`<code>FILTER</code> keeps rows where column B exceeds 1000.`,xf:`FILTER filtre selon la condition booléenne.`,xe:`FILTER keeps rows matching the boolean condition.`},
+   {c:true,fr:`<code>SORT</code> trie le résultat par la 2e colonne en décroissant.`,en:`<code>SORT</code> sorts the result by the 2nd column descending.`,xf:`Le 3e argument -1 = ordre décroissant.`,xe:`The 3rd argument -1 = descending order.`},
+   {c:true,fr:`Le résultat « déborde » sur plusieurs cellules automatiquement.`,en:`The result "spills" over several cells automatically.`,xf:`Les fonctions dynamiques débordent sans manipulation.`,xe:`Dynamic functions spill with no extra step.`},
+   {c:false,fr:`Il faut valider en <code>Ctrl+Maj+Entrée</code>.`,en:`You must confirm with <code>Ctrl+Shift+Enter</code>.`,xf:`Non : plus nécessaire avec les tableaux dynamiques.`,xe:`No: no longer needed with dynamic arrays.`}
+  ]
+ },
+ read:{
+  context:{fr:'Formule :',en:'Formula:'},
+  code:`=LET(marge, Ventes-Couts, taux, marge/Ventes, taux)`,
+  question:{fr:'Que fait cette formule ?',en:'What does this formula do?'},
+  options:[
+   {c:true,fr:`Elle calcule le taux de marge en nommant des étapes intermédiaires (marge, taux).`,en:`It computes the margin ratio by naming intermediate steps (marge, taux).`,xf:`<code>LET</code> définit des variables locales puis renvoie la dernière.`,xe:`<code>LET</code> defines local variables then returns the last one.`},
+   {c:false,fr:`Elle additionne Ventes et Coûts.`,en:`It adds Sales and Costs.`,xf:`Non : elle calcule (Ventes-Coûts)/Ventes.`,xe:`No: it computes (Sales-Costs)/Sales.`},
+   {c:false,fr:`Elle crée une fonction réutilisable.`,en:`It creates a reusable function.`,xf:`Non : ça, ce serait <code>LAMBDA</code>. <code>LET</code> nomme des variables locales.`,xe:`No: that would be <code>LAMBDA</code>. <code>LET</code> names local variables.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Une table <code>Ventes</code> (Montant, Région) et une table <code>Clients</code> (Nom, CA).`,en:`A <code>Ventes</code> table (Amount, Region) and a <code>Clients</code> table (Name, Revenue).`},
+  hint:{fr:`Écrivez la formule, puis dépliez.`,en:`Write the formula, then expand.`},
+  items:[
+   {q:{fr:`La somme des ventes « Nord » ET > 1000 €.`,en:`Sum of sales "North" AND > €1000.`},sql:`=SUMIFS(Ventes[Montant], Ventes[Region], "Nord", Ventes[Montant], ">1000")`,note:{fr:`<code>SUMIFS</code> enchaîne les paires plage/critère (ET logique).`,en:`<code>SUMIFS</code> chains range/criteria pairs (logical AND).`}},
+   {q:{fr:`La liste triée des clients au CA > 5000 (spill).`,en:`Sorted list of customers with revenue > 5000 (spill).`},sql:`=SORT(FILTER(Clients[Nom], Clients[CA]>5000))`,note:{fr:`<code>FILTER</code> + <code>SORT</code> : résultat dynamique qui déborde.`,en:`<code>FILTER</code> + <code>SORT</code>: dynamic result that spills.`}},
+   {q:{fr:`Le taux de marge lisible avec LET.`,en:`A readable margin ratio with LET.`},sql:`=LET(marge, [@Ventes]-[@Couts], marge/[@Ventes])`,note:{fr:`<code>LET</code> nomme les étapes : lisible et calculé une fois.`,en:`<code>LET</code> names the steps: readable and computed once.`}}
+  ]
+ }
+},
+
+/* ---------------- Spark (PySpark) — avancé ---------------- */
+spark:{
+ reverse:{
+  context:{fr:`Un DataFrame <code>df(categorie, produit, ventes)</code>, <code>F</code> = pyspark.sql.functions.`,en:`A DataFrame <code>df(categorie, produit, ventes)</code>, <code>F</code> = pyspark.sql.functions.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['categorie','produit','ventes','r'],
+  rows:[['A','P1','500','1'],['A','P2','420','2'],['B','P3','380','1']],
+  question:{fr:`Quel code PySpark produit cette sortie (top 2 par catégorie) ?`,en:`Which PySpark code produces this output (top 2 per category)?`},
+  sql:`w = Window.partitionBy("categorie").orderBy(F.desc("ventes"))\ndf.withColumn("r", F.row_number().over(w)).filter("r <= 2")`,
+  note:{fr:`La colonne <code>r</code> repart à 1 dans chaque catégorie → une fonction fenêtre <code>row_number()</code> partitionnée par <code>categorie</code>, triée par <code>ventes</code> décroissantes, puis filtrée à <code>r &lt;= 2</code>.`,en:`The <code>r</code> column restarts at 1 in each category → a <code>row_number()</code> window partitioned by <code>categorie</code>, ordered by <code>ventes</code> descending, then filtered to <code>r &lt;= 2</code>.`}
+ },
+ open:[
+  {q:{fr:`Transformations vs actions ? Qu'est-ce que l'évaluation paresseuse (lazy) ?`,en:`Transformations vs actions? What is lazy evaluation?`},
+   a:{fr:`Les <strong>transformations</strong> (<code>select, filter, join, groupBy</code>) sont <em>paresseuses</em> : elles construisent un plan sans l'exécuter. Une <strong>action</strong> (<code>count, collect, write, show</code>) déclenche le calcul. Spark peut ainsi optimiser le plan global avant exécution.`,en:`<strong>Transformations</strong> (<code>select, filter, join, groupBy</code>) are <em>lazy</em>: they build a plan without running it. An <strong>action</strong> (<code>count, collect, write, show</code>) triggers execution. Spark can thus optimise the whole plan first.`}},
+  {q:{fr:`Qu'est-ce qu'un shuffle ? Pourquoi c'est coûteux ? Le skew ?`,en:`What is a shuffle? Why is it costly? What about skew?`},
+   a:{fr:`Un <strong>shuffle</strong> redistribue les données entre partitions/nœuds (lors d'un <code>groupBy</code>, <code>join</code>, <code>repartition</code>). Coûteux : réseau + disque. Un <em>skew</em> (clé très déséquilibrée) surcharge une partition ; on l'atténue par salting, broadcast join ou repartitionnement.`,en:`A <strong>shuffle</strong> redistributes data across partitions/nodes (on <code>groupBy</code>, <code>join</code>, <code>repartition</code>). Costly: network + disk. A <em>skew</em> (very unbalanced key) overloads one partition; mitigate with salting, broadcast join or repartitioning.`}},
+  {q:{fr:`Broadcast join : quand et pourquoi ?`,en:`Broadcast join: when and why?`},
+   a:{fr:`Quand une table est petite, on la <em>diffuse</em> (broadcast) à tous les exécuteurs pour éviter le shuffle de la grande table. Le join coûteux devient une jointure locale. Au-delà d'une taille seuil, ce n'est plus rentable.`,en:`When a table is small, you <em>broadcast</em> it to all executors to avoid shuffling the big table. The costly join becomes a local join. Beyond a size threshold, it's no longer worth it.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Code PySpark (F = pyspark.sql.functions) :',en:'PySpark code (F = pyspark.sql.functions):'},
+  code:`(df.groupBy("client")\n   .agg(F.sum("montant").alias("ca"))\n   .orderBy(F.desc("ca")))`,
+  options:[
+   {c:true,fr:`Il agrège le CA par client, trié décroissant.`,en:`It aggregates revenue per customer, sorted descending.`,xf:`groupBy + sum, puis orderBy desc.`,xe:`groupBy + sum, then orderBy desc.`},
+   {c:true,fr:`Le <code>groupBy</code> déclenchera un shuffle à l'exécution.`,en:`The <code>groupBy</code> will trigger a shuffle at execution.`,xf:`Regrouper par clé redistribue les données.`,xe:`Grouping by key redistributes data.`},
+   {c:false,fr:`<code>orderBy</code> s'exécute immédiatement, avant les transformations.`,en:`<code>orderBy</code> runs immediately, before the transformations.`,xf:`Non : tout est lazy jusqu'à une action.`,xe:`No: everything is lazy until an action.`},
+   {c:false,fr:`Le résultat est déjà matérialisé après cette ligne.`,en:`The result is already materialised after this line.`,xf:`Non : il faut une action (show/collect/write).`,xe:`No: an action is needed (show/collect/write).`}
+  ]
+ },
+ read:{
+  context:{fr:'Code PySpark :',en:'PySpark code:'},
+  code:`w = Window.partitionBy("categorie").orderBy(F.desc("ventes"))\ndf.withColumn("rang", F.row_number().over(w)) \\\n  .filter(F.col("rang") <= 3)`,
+  question:{fr:'Que fait ce code ?',en:'What does this code do?'},
+  options:[
+   {c:true,fr:`Il garde le top 3 des lignes par ventes dans chaque catégorie.`,en:`It keeps the top 3 rows by sales in each category.`,xf:`row_number sur une fenêtre partitionnée + filtre rang ≤ 3.`,xe:`row_number over a partitioned window + rank ≤ 3 filter.`},
+   {c:false,fr:`Il trie simplement par ventes décroissantes.`,en:`It just sorts by sales descending.`,xf:`Non : il classe puis coupe à 3 par catégorie.`,xe:`No: it ranks then cuts to 3 per category.`},
+   {c:false,fr:`Il calcule la somme des ventes par catégorie.`,en:`It computes the sum of sales per category.`,xf:`Non : c'est un classement, pas une somme.`,xe:`No: it's a ranking, not a sum.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Un DataFrame <code>df</code> (client, categorie, montant), <code>F</code> = pyspark.sql.functions.`,en:`A DataFrame <code>df</code> (client, categorie, montant), <code>F</code> = pyspark.sql.functions.`},
+  hint:{fr:`Écrivez le code PySpark, puis dépliez.`,en:`Write the PySpark code, then expand.`},
+  items:[
+   {q:{fr:`Le CA par catégorie, trié décroissant.`,en:`Revenue per category, sorted descending.`},sql:`(df.groupBy("categorie")\n   .agg(F.sum("montant").alias("ca"))\n   .orderBy(F.desc("ca")))`,note:{fr:`groupBy + agg ; provoque un shuffle.`,en:`groupBy + agg; causes a shuffle.`}},
+   {q:{fr:`Le top 3 des produits par catégorie (window).`,en:`Top 3 products per category (window).`},sql:`w = Window.partitionBy("categorie").orderBy(F.desc("montant"))\ndf.withColumn("r", F.row_number().over(w)).filter("r <= 3")`,note:{fr:`<code>Window</code> + <code>row_number</code> : top N par groupe.`,en:`<code>Window</code> + <code>row_number</code>: top N per group.`}},
+   {q:{fr:`Joindre une petite table de référence sans shuffle.`,en:`Join a small reference table without a shuffle.`},sql:`df.join(F.broadcast(ref), "categorie_id")`,note:{fr:`<code>broadcast()</code> diffuse la petite table, évite le shuffle.`,en:`<code>broadcast()</code> ships the small table, avoids the shuffle.`}}
+  ]
+ }
+},
+
+/* ---------------- Airflow — avancé ---------------- */
+airflow:{
+ open:[
+  {q:{fr:`schedule_interval, logical_date (ex execution_date) et catchup : quelle différence ?`,en:`schedule_interval, logical_date (formerly execution_date) and catchup: what's the difference?`},
+   a:{fr:`<code>schedule_interval</code> = la fréquence. La <strong>logical_date</strong> est la date de la <em>période traitée</em>, pas l'heure réelle d'exécution. Avec <code>catchup=True</code>, Airflow rattrape toutes les périodes passées depuis <code>start_date</code> ; <code>catchup=False</code> ne lance que la dernière.`,en:`<code>schedule_interval</code> = the frequency. The <strong>logical_date</strong> is the date of the <em>processed period</em>, not the actual run time. With <code>catchup=True</code>, Airflow backfills every past period since <code>start_date</code>; <code>catchup=False</code> only runs the latest.`}},
+  {q:{fr:`Pourquoi l'idempotence d'une tâche est-elle cruciale ?`,en:`Why is task idempotence crucial?`},
+   a:{fr:`Une tâche doit produire le même résultat si on la rejoue (retry, backfill) : on écrit par partition/date (<code>logical_date</code>), on <em>remplace</em> plutôt qu'on ajoute. Sinon un rejeu duplique les données. C'est la base d'un pipeline fiable.`,en:`A task must produce the same result when replayed (retry, backfill): write by partition/date (<code>logical_date</code>), <em>overwrite</em> rather than append. Otherwise a rerun duplicates data. It's the foundation of a reliable pipeline.`}},
+  {q:{fr:`XCom, pools et dépendances : à quoi servent-ils ?`,en:`XCom, pools and dependencies: what are they for?`},
+   a:{fr:`<code>XCom</code> passe de petites valeurs entre tâches. Les <em>pools</em> limitent la concurrence sur une ressource. Les dépendances (<code>&gt;&gt;</code>, <code>&lt;&lt;</code>, ou TaskFlow) définissent l'ordre du DAG. Pour de gros volumes, on passe par un stockage externe, pas XCom.`,en:`<code>XCom</code> passes small values between tasks. <em>Pools</em> limit concurrency on a resource. Dependencies (<code>&gt;&gt;</code>, <code>&lt;&lt;</code>, or TaskFlow) define the DAG order. For large volumes, use external storage, not XCom.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Extrait de DAG :',en:'DAG snippet:'},
+  code:`with DAG("etl", schedule="@daily",\n         start_date=datetime(2024,1,1),\n         catchup=False) as dag:\n    extract >> transform >> load`,
+  options:[
+   {c:true,fr:`Le DAG s'exécute une fois par jour.`,en:`The DAG runs once a day.`,xf:`schedule="@daily".`,xe:`schedule="@daily".`},
+   {c:true,fr:`<code>catchup=False</code> évite de rattraper toutes les journées passées.`,en:`<code>catchup=False</code> avoids backfilling every past day.`,xf:`Sans ça, Airflow lancerait un run par jour depuis 2024.`,xe:`Without it, Airflow would run one per day since 2024.`},
+   {c:true,fr:`<code>load</code> ne démarre qu'après le succès de <code>transform</code>.`,en:`<code>load</code> starts only after <code>transform</code> succeeds.`,xf:`Les <code>&gt;&gt;</code> imposent l'ordre.`,xe:`The <code>&gt;&gt;</code> set the order.`},
+   {c:false,fr:`Les trois tâches s'exécutent en parallèle.`,en:`All three tasks run in parallel.`,xf:`Non : elles sont séquentielles.`,xe:`No: they are sequential.`}
+  ]
+ },
+ read:{
+  context:{fr:'Tâche (TaskFlow API) :',en:'Task (TaskFlow API):'},
+  code:`@task\ndef charger(ds=None):\n    ecrire(partition=ds)   # ds = logical_date (YYYY-MM-DD)`,
+  question:{fr:'Pourquoi écrire par partition=ds ?',en:'Why write by partition=ds?'},
+  options:[
+   {c:true,fr:`Pour rendre la tâche idempotente : un rejeu réécrit la même partition sans doublon.`,en:`To make the task idempotent: a rerun overwrites the same partition with no duplicates.`,xf:`Écrire par date de période garantit un rejeu propre.`,xe:`Writing by period date guarantees a clean rerun.`},
+   {c:false,fr:`Pour accélérer l'exécution en parallèle.`,en:`To speed up parallel execution.`,xf:`Non : l'objectif est l'idempotence, pas la vitesse.`,xe:`No: the goal is idempotence, not speed.`},
+   {c:false,fr:`Parce que ds est un identifiant aléatoire.`,en:`Because ds is a random id.`,xf:`Non : ds est la date logique de la période.`,xe:`No: ds is the period's logical date.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Un DAG Airflow (TaskFlow API), <code>ds</code> = date logique.`,en:`An Airflow DAG (TaskFlow API), <code>ds</code> = logical date.`},
+  hint:{fr:`Écrivez le code, puis dépliez.`,en:`Write the code, then expand.`},
+  items:[
+   {q:{fr:`Un DAG quotidien sans rattrapage.`,en:`A daily DAG without backfill.`},sql:`with DAG("etl", schedule="@daily",\n         start_date=datetime(2024,1,1),\n         catchup=False) as dag:\n    extract >> transform >> load`,note:{fr:`<code>catchup=False</code> : pas de backfill involontaire.`,en:`<code>catchup=False</code>: no accidental backfill.`}},
+   {q:{fr:`Une tâche idempotente par date.`,en:`An idempotent task by date.`},sql:`@task\ndef load(ds=None):\n    df.write.mode("overwrite").parquet(f"/data/{ds}")`,note:{fr:`<code>overwrite</code> par partition <code>ds</code> → rejouable sans doublon.`,en:`<code>overwrite</code> per partition <code>ds</code> → replayable, no duplicates.`}},
+   {q:{fr:`Enchaîner les tâches.`,en:`Chain the tasks.`},sql:`extract() >> transform() >> load()`,note:{fr:`Les dépendances définissent l'ordre du DAG.`,en:`Dependencies define the DAG order.`}}
+  ]
+ }
+},
+
+/* ---------------- dbt — avancé ---------------- */
+dbt:{
+ open:[
+  {q:{fr:`Matérialisations : view, table, incremental, ephemeral — quelle différence ?`,en:`Materialisations: view, table, incremental, ephemeral — what's the difference?`},
+   a:{fr:`<code>view</code> crée une vue (pas de stockage). <code>table</code> matérialise entièrement à chaque run. <code>incremental</code> n'ajoute/merge que le nouveau (gros volumes). <code>ephemeral</code> n'existe pas en base : elle est injectée en CTE dans les modèles qui la référencent.`,en:`<code>view</code> creates a view (no storage). <code>table</code> fully materialises each run. <code>incremental</code> only inserts/merges new rows (large volumes). <code>ephemeral</code> doesn't exist in the DB: it's inlined as a CTE in referencing models.`}},
+  {q:{fr:`À quoi servent ref() et source() ? Pourquoi pas du SQL en dur ?`,en:`What are ref() and source() for? Why not hard-coded SQL?`},
+   a:{fr:`<code>ref('modele')</code> crée une dépendance entre modèles : dbt construit le DAG, gère l'ordre et les schémas/environnements. <code>source()</code> référence une table brute déclarée. Écrire les noms en dur casse le lignage et la portabilité.`,en:`<code>ref('model')</code> creates a dependency between models: dbt builds the DAG, handles order and schemas/environments. <code>source()</code> references a declared raw table. Hard-coding names breaks lineage and portability.`}},
+  {q:{fr:`Tests, snapshots et le pattern staging / marts ?`,en:`Tests, snapshots and the staging / marts pattern?`},
+   a:{fr:`dbt teste les modèles (<code>unique</code>, <code>not_null</code>, <code>relationships</code>…). Les <em>snapshots</em> capturent l'historique (SCD type 2). Architecture classique : sources → <em>staging</em> (nettoyage 1:1) → intermediate → <em>marts</em> (modèles métier).`,en:`dbt tests models (<code>unique</code>, <code>not_null</code>, <code>relationships</code>…). <em>Snapshots</em> capture history (SCD type 2). Classic architecture: sources → <em>staging</em> (1:1 cleanup) → intermediate → <em>marts</em> (business models).`}},
+  {q:{fr:`Quelles conventions de nommage rendent un projet dbt lisible et maintenable ?`,en:`Which naming conventions keep a dbt project readable and maintainable?`},
+   a:{fr:`Un socle de conventions garde le projet lisible : modèles au pluriel (<code>customers</code>, <code>orders</code>), chacun avec une clé primaire <code>&lt;objet&gt;_id</code> (ex. <code>customer_id</code>) en type texte. Tout en <code>snake_case</code>, sans abréviations. Booléens préfixés <code>is_</code>/<code>has_</code>, horodatages <code>&lt;événement&gt;_at</code> en UTC, dates <code>&lt;événement&gt;_date</code>, verbes au passé (<code>created</code>, <code>updated</code>). Montants en décimal (<code>19.99</code>, pas des centimes). On emploie le vocabulaire métier plutôt que celui de la source, et on ordonne les colonnes par type : ids, chaînes, numériques, booléens, dates, timestamps.`,en:`A set of conventions keeps the project readable: pluralised models (<code>customers</code>, <code>orders</code>), each with a primary key <code>&lt;object&gt;_id</code> (e.g. <code>customer_id</code>) as a string. Everything in <code>snake_case</code>, no abbreviations. Booleans prefixed <code>is_</code>/<code>has_</code>, timestamps <code>&lt;event&gt;_at</code> in UTC, dates <code>&lt;event&gt;_date</code>, past-tense verbs (<code>created</code>, <code>updated</code>). Amounts in decimal (<code>19.99</code>, not cents). Use business vocabulary over source naming, and order columns by type: ids, strings, numerics, booleans, dates, timestamps.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Modèle dbt :',en:'dbt model:'},
+  code:`{{ config(materialized='incremental') }}\nselect * from {{ ref('stg_orders') }}\n{% if is_incremental() %}\nwhere ordered_at > (select max(ordered_at) from {{ this }})\n{% endif %}`,
+  options:[
+   {c:true,fr:`Au 1er run, dbt construit la table entière ; ensuite, il n'ajoute que le nouveau.`,en:`On the 1st run, dbt builds the full table; then it only adds the new rows.`,xf:`C'est le comportement d'un modèle incremental.`,xe:`That's the behaviour of an incremental model.`},
+   {c:true,fr:`<code>{{ this }}</code> désigne la table du modèle elle-même.`,en:`<code>{{ this }}</code> refers to the model's own table.`,xf:`On lit le <code>max(ordered_at)</code> déjà chargé.`,xe:`It reads the already-loaded <code>max(ordered_at)</code>.`},
+   {c:true,fr:`<code>ref('stg_orders')</code> crée une dépendance dans le DAG dbt.`,en:`<code>ref('stg_orders')</code> creates a dependency in the dbt DAG.`,xf:`ref pilote l'ordre de construction.`,xe:`ref drives the build order.`},
+   {c:false,fr:`Le bloc <code>{% if is_incremental() %}</code> s'exécute aussi au premier run.`,en:`The <code>{% if is_incremental() %}</code> block also runs on the first run.`,xf:`Non : is_incremental() est faux au 1er run (table absente).`,xe:`No: is_incremental() is false on the 1st run (table absent).`}
+  ]
+ },
+ read:{
+  context:{fr:'Modèle staging (couche stg) :',en:'Staging model (stg layer):'},
+  code:`with source as (\n    select * from {{ source('ecom', 'raw_orders') }}\n),\nrenamed as (\n    select\n        id       as order_id,\n        customer as customer_id,\n        status   as order_status,\n        (amount_cents / 100.0)::float as order_amount,\n        is_paid,\n        created_at\n    from source\n)\nselect * from renamed`,
+  question:{fr:'Quel est l\'intérêt principal de ce modèle ?',en:'What is this model\'s main purpose?'},
+  options:[
+   {c:true,fr:`Une couche staging 1:1 qui renomme selon les conventions (clés en <code>&lt;objet&gt;_id</code>, centimes → décimal, <code>snake_case</code>) sans logique métier.`,en:`A 1:1 staging layer renaming to conventions (keys as <code>&lt;object&gt;_id</code>, cents → decimal, <code>snake_case</code>) with no business logic.`,xf:`Le pattern <code>source → renamed</code> isole le nettoyage et le nommage de la source.`,xe:`The <code>source → renamed</code> pattern isolates cleaning and renaming from the source.`},
+   {c:false,fr:`Un mart métier qui agrège les commandes par client.`,en:`A business mart aggregating orders per customer.`,xf:`Non : aucune agrégation, c'est du staging.`,xe:`No: no aggregation, it's staging.`},
+   {c:false,fr:`Il garde les montants en centimes pour rester fidèle à la source.`,en:`It keeps amounts in cents to stay faithful to the source.`,xf:`Non : il convertit justement les centimes en décimal (<code>/ 100.0</code>).`,xe:`No: it converts cents to decimal (<code>/ 100.0</code>).`}
+  ]
+ },
+ write:{
+  schema:{fr:`Source <code>ecom.raw_orders</code> (colonnes brutes : <code>id, customer, status, amount_cents, is_paid, created_at</code>).`,en:`Source <code>ecom.raw_orders</code> (raw columns: <code>id, customer, status, amount_cents, is_paid, created_at</code>).`},
+  hint:{fr:`Écrivez le modèle / le YAML, puis dépliez.`,en:`Write the model / YAML, then expand.`},
+  items:[
+   {q:{fr:`Un modèle staging propre, aux conventions dbt.`,en:`A clean staging model, following dbt conventions.`},sql:`with\n\nsource as (\n    select * from {{ source('ecom', 'raw_orders') }}\n),\n\nrenamed as (\n    select\n        -- ids\n        id       as order_id,\n        customer as customer_id,\n        -- strings\n        status   as order_status,\n        -- numerics\n        (amount_cents / 100.0)::float as order_amount,\n        -- booleans\n        is_paid,\n        -- timestamps\n        created_at\n    from source\n)\n\nselect * from renamed`,note:{fr:`Pattern <code>source → renamed</code> ; clés en <code>&lt;objet&gt;_id</code>, centimes → décimal, colonnes groupées et ordonnées par type.`,en:`<code>source → renamed</code> pattern; keys as <code>&lt;object&gt;_id</code>, cents → decimal, columns grouped and ordered by type.`}},
+   {q:{fr:`Un modèle incrémental.`,en:`An incremental model.`},sql:`{{ config(materialized='incremental') }}\nselect * from {{ ref('stg_orders') }}\n{% if is_incremental() %}\nwhere ordered_at > (select max(ordered_at) from {{ this }})\n{% endif %}`,note:{fr:`<code>incremental</code> : ne traite que le nouveau après le 1er run.`,en:`<code>incremental</code>: only processes new rows after the 1st run.`}},
+   {q:{fr:`Des tests unique / not_null (schema.yml).`,en:`unique / not_null tests (schema.yml).`},sql:`models:\n  - name: stg_orders\n    columns:\n      - name: order_id\n        tests: [unique, not_null]`,note:{fr:`Tests déclaratifs sur la clé primaire <code>order_id</code>.`,en:`Declarative tests on the <code>order_id</code> primary key.`}}
+  ]
+ }
+},
+
+
+/* ---------------- Git — avancé ---------------- */
+git:{
+ open:[
+  {q:{fr:`Différence entre merge et rebase ? Quand éviter le rebase ?`,en:`merge vs rebase? When to avoid rebase?`},
+   a:{fr:`<code>merge</code> crée un commit de fusion et préserve l'historique. <code>rebase</code> rejoue tes commits au-dessus d'une autre branche → historique linéaire, mais réécrit les commits (nouveaux hash). Règle d'or : ne pas rebaser une branche déjà partagée/publique.`,en:`<code>merge</code> creates a merge commit and preserves history. <code>rebase</code> replays your commits on top of another branch → linear history, but rewrites commits (new hashes). Golden rule: don't rebase an already shared/public branch.`}},
+  {q:{fr:`reset --soft / --mixed / --hard, et revert : quelles différences ?`,en:`reset --soft / --mixed / --hard, and revert: what's the difference?`},
+   a:{fr:`<code>reset --soft</code> déplace HEAD en gardant l'index et le travail ; <code>--mixed</code> (défaut) garde le travail mais vide l'index ; <code>--hard</code> jette tout. <code>reset</code> réécrit l'historique local. <code>revert</code> crée un nouveau commit qui annule un commit — sûr sur une branche partagée.`,en:`<code>reset --soft</code> moves HEAD keeping the index and working tree; <code>--mixed</code> (default) keeps the work but clears the index; <code>--hard</code> discards everything. <code>reset</code> rewrites local history. <code>revert</code> creates a new commit that undoes a commit — safe on a shared branch.`}},
+  {q:{fr:`À quoi servent cherry-pick et git stash ?`,en:`What are cherry-pick and git stash for?`},
+   a:{fr:`<code>cherry-pick</code> applique un commit précis d'une autre branche sur la branche courante. <code>stash</code> met de côté temporairement les modifications non commitées pour changer de contexte, puis les réapplique.`,en:`<code>cherry-pick</code> applies a specific commit from another branch onto the current one. <code>stash</code> temporarily shelves uncommitted changes to switch context, then reapplies them.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Situation :',en:'Situation:'},
+  code:`git checkout main\ngit pull\ngit checkout ma-branche\ngit rebase main`,
+  options:[
+   {c:true,fr:`Les commits de ma-branche sont rejoués au-dessus de main à jour.`,en:`ma-branche's commits are replayed on top of an up-to-date main.`,xf:`C'est ce que fait rebase main.`,xe:`That's what rebase main does.`},
+   {c:true,fr:`Les hash des commits rebasés changent.`,en:`The rebased commits' hashes change.`,xf:`rebase réécrit les commits.`,xe:`rebase rewrites the commits.`},
+   {c:false,fr:`L'historique de main est modifié par ce rebase.`,en:`main's history is modified by this rebase.`,xf:`Non : seul l'historique de ma-branche est réécrit.`,xe:`No: only ma-branche's history is rewritten.`},
+   {c:false,fr:`C'est sans risque même si ma-branche est déjà partagée.`,en:`It's safe even if ma-branche is already shared.`,xf:`Non : rebaser une branche partagée pose problème aux autres.`,xe:`No: rebasing a shared branch causes problems for others.`}
+  ]
+ },
+ read:{
+  context:{fr:'Commande :',en:'Command:'},
+  code:`git revert a1b2c3d`,
+  question:{fr:'Que fait cette commande ?',en:'What does this command do?'},
+  options:[
+   {c:true,fr:`Elle crée un nouveau commit qui annule les changements de a1b2c3d.`,en:`It creates a new commit that undoes a1b2c3d's changes.`,xf:`revert = commit inverse, l'historique est préservé.`,xe:`revert = inverse commit, history is preserved.`},
+   {c:false,fr:`Elle supprime définitivement le commit de l'historique.`,en:`It permanently deletes the commit from history.`,xf:`Non : ça, ce serait <code>reset --hard</code>.`,xe:`No: that would be <code>reset --hard</code>.`},
+   {c:false,fr:`Elle fusionne a1b2c3d dans la branche.`,en:`It merges a1b2c3d into the branch.`,xf:`Non : elle en inverse l'effet.`,xe:`No: it reverses its effect.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Un dépôt Git avec une branche <code>main</code> et des branches de travail.`,en:`A Git repo with a <code>main</code> branch and working branches.`},
+  hint:{fr:`Écrivez la commande, puis dépliez.`,en:`Write the command, then expand.`},
+  items:[
+   {q:{fr:`Annuler un commit déjà poussé, sans réécrire l'historique.`,en:`Undo an already-pushed commit, without rewriting history.`},sql:`git revert <hash>`,note:{fr:`<code>revert</code> = nouveau commit inverse ; sûr sur une branche partagée.`,en:`<code>revert</code> = new inverse commit; safe on a shared branch.`}},
+   {q:{fr:`Reprendre un seul commit d'une autre branche.`,en:`Take a single commit from another branch.`},sql:`git cherry-pick <hash>`,note:{fr:`Applique un commit précis sur la branche courante.`,en:`Applies a specific commit onto the current branch.`}},
+   {q:{fr:`Mettre de côté son travail pour changer de branche.`,en:`Shelve your work to switch branches.`},sql:`git stash\ngit checkout autre-branche\ngit stash pop`,note:{fr:`<code>stash</code> range puis réapplique les modifs non commitées.`,en:`<code>stash</code> shelves then reapplies uncommitted changes.`}}
+  ]
+ }
+}
+,
+
+/* ---------------- BigQuery — avancé ---------------- */
+bq:{
+ reverse:{
+  context:{fr:`Table <code>articles(id, tags)</code> où <code>tags</code> est une chaîne du type <code>'python|sql|bigquery'</code>.`,en:`Table <code>articles(id, tags)</code> where <code>tags</code> is a string like <code>'python|sql|bigquery'</code>.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['tag','n'],
+  rows:[['sql','12'],['python','9'],['bigquery','5']],
+  question:{fr:`Quelle requête BigQuery produit cette sortie ?`,en:`Which BigQuery query produces this output?`},
+  sql:`SELECT tag, COUNT(*) AS n\nFROM articles, UNNEST(SPLIT(tags, '|')) AS tag\nGROUP BY tag\nORDER BY n DESC`,
+  note:{fr:`Une ligne par tag <em>individuel</em> → la chaîne a été éclatée : <code>SPLIT</code> la transforme en ARRAY, <code>UNNEST</code> la déplie en lignes, puis on compte par tag.`,en:`One row per <em>individual</em> tag → the string was exploded: <code>SPLIT</code> turns it into an ARRAY, <code>UNNEST</code> unfolds it into rows, then we count per tag.`}
+ },
+ open:[
+  {q:{fr:`Qu'est-ce qui détermine le coût d'une requête BigQuery ? Comment le réduire ?`,en:`What determines a BigQuery query's cost? How to reduce it?`},
+   a:{fr:`Le coût dépend des <strong>octets lus</strong> (colonnes × partitions scannées), pas des lignes renvoyées. <code>SELECT *</code> lit tout ; sélectionner les colonnes utiles, filtrer sur la colonne de partition et clusteriser réduisent les octets scannés. Vues matérialisées et cache aident aussi.`,en:`Cost depends on <strong>bytes read</strong> (columns × partitions scanned), not rows returned. <code>SELECT *</code> reads everything; selecting needed columns, filtering on the partition column and clustering cut the scanned bytes. Materialised views and cache help too.`}},
+  {q:{fr:`Différence entre ARRAY et STRUCT ? Comment parcourir un ARRAY<STRUCT> ?`,en:`ARRAY vs STRUCT? How to iterate an ARRAY<STRUCT>?`},
+   a:{fr:`Un <code>STRUCT</code> regroupe plusieurs champs nommés (un enregistrement) ; un <code>ARRAY</code> est une liste. Un <code>ARRAY&lt;STRUCT&gt;</code> (champ répété d'enregistrements) se parcourt avec <code>UNNEST</code> : <code>FROM t, UNNEST(t.items) AS item</code>, puis <code>item.champ</code>.`,en:`A <code>STRUCT</code> groups several named fields (a record); an <code>ARRAY</code> is a list. An <code>ARRAY&lt;STRUCT&gt;</code> (repeated record field) is iterated with <code>UNNEST</code>: <code>FROM t, UNNEST(t.items) AS item</code>, then <code>item.field</code>.`}},
+  {q:{fr:`À quoi sert le cadre ROWS BETWEEN d'une fonction fenêtre ? Et APPROX_QUANTILES ?`,en:`What is a window's ROWS BETWEEN frame for? And APPROX_QUANTILES?`},
+   a:{fr:`Le cadre (<code>ROWS/RANGE BETWEEN</code>) définit quelles lignes entrent dans la fenêtre — ex. une moyenne mobile sur 7 jours. <code>APPROX_QUANTILES</code> estime des quantiles (médiane, percentiles) à moindre coût sur gros volumes.`,en:`The frame (<code>ROWS/RANGE BETWEEN</code>) defines which rows enter the window — e.g. a 7-day moving average. <code>APPROX_QUANTILES</code> estimates quantiles (median, percentiles) cheaply at scale.`}},
+  {q:{fr:`Fonctions fenêtre avancées : ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, QUALIFY ?`,en:`Advanced window functions: ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, QUALIFY?`},a:{fr:`<strong>Classement</strong> : <code>ROW_NUMBER</code> (unique, sans ex æquo), <code>RANK</code> (même rang puis saute : 1, 2, 2, 4), <code>DENSE_RANK</code> (ne saute pas : 1, 2, 2, 3). <strong>Décalage</strong> : <code>LAG</code>/<code>LEAD</code> comparent à la ligne précédente/suivante (évolution). <strong>Filtre</strong> : BigQuery gère <code>QUALIFY</code> nativement — <code>QUALIFY ROW_NUMBER() OVER (PARTITION BY … ORDER BY …) = 1</code> pour le top 1 par groupe, sans sous-requête.`,en:`<strong>Ranking</strong>: <code>ROW_NUMBER</code> (unique, no ties), <code>RANK</code> (ties share a rank then skip: 1, 2, 2, 4), <code>DENSE_RANK</code> (no skip: 1, 2, 2, 3). <strong>Offset</strong>: <code>LAG</code>/<code>LEAD</code> compare to the previous/next row (change). <strong>Filter</strong>: BigQuery supports <code>QUALIFY</code> natively — <code>QUALIFY ROW_NUMBER() OVER (PARTITION BY … ORDER BY …) = 1</code> for top 1 per group, no subquery.`}},
+{q:{fr:`ROLLUP, CUBE et GROUPING SETS en BigQuery ?`,en:`ROLLUP, CUBE and GROUPING SETS in BigQuery?`},a:{fr:`BigQuery supporte ces extensions de <code>GROUP BY</code>. <code>ROLLUP(a, b)</code> retire progressivement la colonne la plus à droite : <code>(a, b)</code>, <code>(a)</code>, grand total. <code>CUBE(a, b)</code> génère toutes les combinaisons. <code>GROUPING SETS</code> liste exactement les regroupements. On écrit <code>GROUP BY ROLLUP(annee, region)</code> ; <code>GROUPING(col)</code> distingue un sous-total d'un vrai <code>NULL</code>.`,en:`BigQuery supports these <code>GROUP BY</code> extensions. <code>ROLLUP(a, b)</code> progressively drops the rightmost column: <code>(a, b)</code>, <code>(a)</code>, grand total. <code>CUBE(a, b)</code> generates every combination. <code>GROUPING SETS</code> lists exactly the groupings. You write <code>GROUP BY ROLLUP(year, region)</code>; <code>GROUPING(col)</code> tells a subtotal from a real <code>NULL</code>.`}},
+{q:{fr:`Construire une série temporelle en BigQuery (DATE_TRUNC, fuseau) ?`,en:`Build a time series in BigQuery (DATE_TRUNC, time zone)?`},a:{fr:`<code>DATE_TRUNC(date, MONTH)</code> (ou <code>TIMESTAMP_TRUNC</code> pour un timestamp) ramène chaque date au début de sa période → une série propre par <code>GROUP BY</code>. Jour de la semaine : <code>FORMAT_DATE('%A', date)</code>. Sur des timestamps, précisez le fuseau : <code>TIMESTAMP_TRUNC(ts, DAY, 'Europe/Paris')</code> pour éviter les décalages de minuit.`,en:`<code>DATE_TRUNC(date, MONTH)</code> (or <code>TIMESTAMP_TRUNC</code> for a timestamp) snaps each date to the start of its period → a clean series with <code>GROUP BY</code>. Weekday: <code>FORMAT_DATE('%A', date)</code>. On timestamps, set the time zone: <code>TIMESTAMP_TRUNC(ts, DAY, 'Europe/Paris')</code> to avoid midnight shifts.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Données imbriquées (items = ARRAY<STRUCT>) :',en:'Nested data (items = ARRAY<STRUCT>):'},
+  code:`SELECT o.id, item.sku, item.qty\nFROM commandes o,\n     UNNEST(o.items) AS item\nWHERE item.qty > 1`,
+  options:[
+   {c:true,fr:`<code>UNNEST(o.items)</code> déplie le tableau d'items en une ligne par item.`,en:`<code>UNNEST(o.items)</code> unfolds the items array into one row per item.`,xf:`UNNEST aplatit le champ répété.`,xe:`UNNEST flattens the repeated field.`},
+   {c:true,fr:`<code>item.sku</code> accède à un champ du STRUCT de chaque item.`,en:`<code>item.sku</code> accesses a field of each item's STRUCT.`,xf:`Notation pointée sur le STRUCT déplié.`,xe:`Dot notation on the unnested STRUCT.`},
+   {c:false,fr:`Sans UNNEST, on pourrait filtrer <code>WHERE o.items.qty > 1</code>.`,en:`Without UNNEST, you could filter <code>WHERE o.items.qty > 1</code>.`,xf:`Non : il faut d'abord déplier l'ARRAY.`,xe:`No: you must unfold the ARRAY first.`},
+   {c:true,fr:`Une commande à 3 items produit jusqu'à 3 lignes (selon le filtre).`,en:`A 3-item order yields up to 3 rows (depending on the filter).`,xf:`Une ligne par item retenu.`,xe:`One row per kept item.`}
+  ]
+ },
+ read:{
+  context:{fr:'Requête BigQuery :',en:'BigQuery query:'},
+  code:`SELECT date, ventes,\n       AVG(ventes) OVER (\n         ORDER BY date\n         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n       ) AS moyenne_7j\nFROM daily`,
+  question:{fr:'Que calcule moyenne_7j ?',en:'What does moyenne_7j compute?'},
+  options:[
+   {c:true,fr:`Une moyenne mobile sur 7 jours (la ligne courante + les 6 précédentes).`,en:`A 7-day moving average (the current row + the 6 preceding).`,xf:`Le cadre ROWS limite la fenêtre à 7 lignes.`,xe:`The ROWS frame limits the window to 7 rows.`},
+   {c:false,fr:`La moyenne de toutes les ventes.`,en:`The average of all sales.`,xf:`Non : le cadre borne la fenêtre.`,xe:`No: the frame bounds the window.`},
+   {c:false,fr:`Le cumul des ventes.`,en:`The running total of sales.`,xf:`Non : c'est AVG, pas une somme cumulée.`,xe:`No: it's AVG, not a running sum.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Table <code>daily(date, ventes)</code> et <code>commandes(id, items ARRAY<STRUCT>)</code>.`,en:`Table <code>daily(date, ventes)</code> and <code>commandes(id, items ARRAY<STRUCT>)</code>.`},
+  hint:{fr:`Écrivez la requête BigQuery, puis dépliez.`,en:`Write the BigQuery query, then expand.`},
+  items:[
+   {q:{fr:`La moyenne mobile 7 jours des ventes.`,en:`The 7-day moving average of sales.`},sql:`SELECT date,\n       AVG(ventes) OVER (ORDER BY date\n         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS ma7\nFROM daily`,note:{fr:`Cadre <code>ROWS BETWEEN</code> : fenêtre glissante.`,en:`<code>ROWS BETWEEN</code> frame: sliding window.`}},
+   {q:{fr:`La médiane approximative du panier.`,en:`The approximate median basket.`},sql:`SELECT APPROX_QUANTILES(montant, 2)[OFFSET(1)] AS mediane\nFROM ventes`,note:{fr:`<code>APPROX_QUANTILES(x, 2)[OFFSET(1)]</code> = médiane approx.`,en:`<code>APPROX_QUANTILES(x, 2)[OFFSET(1)]</code> = approx median.`}},
+   {q:{fr:`Aplatir un ARRAY<STRUCT> d'items.`,en:`Flatten an ARRAY<STRUCT> of items.`},sql:`SELECT o.id, item.sku, item.qty\nFROM commandes o, UNNEST(o.items) AS item`,note:{fr:`<code>UNNEST</code> d'un champ répété d'enregistrements.`,en:`<code>UNNEST</code> of a repeated record field.`}},
+   {q:{fr:`Le pourcentage de clients qui génère 80 % du CA (Pareto).`,en:`The share of customers generating 80% of revenue (Pareto).`},tips:{fr:[`Total par client, puis tri décroissant.`,`Part de CA cumulée avec une fonction fenêtre : <code>SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER ()</code> — en BigQuery, <code>/</code> renvoie un FLOAT.`,`Rang au seuil de 80 %, rapporté au nombre de clients.`],en:[`Total per client, then sort descending.`,`Running revenue share with a window function: <code>SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER ()</code> — in BigQuery, <code>/</code> returns a FLOAT.`,`Rank at the 80% threshold, over the number of clients.`]},sql:`WITH par_client AS (\n  SELECT client_id, SUM(montant) AS total\n  FROM ventes\n  GROUP BY client_id\n)\nSELECT ROUND(100 * MIN(rang) / MAX(nb), 1) AS pct_clients\nFROM (\n  SELECT\n    SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER () AS pct_cumule,\n    ROW_NUMBER() OVER (ORDER BY total DESC) AS rang,\n    COUNT(*) OVER () AS nb\n  FROM par_client\n)\nWHERE pct_cumule >= 0.8`,note:{fr:`Motif de <strong>Pareto (80/20)</strong> : cumul de CA trié rapporté au total (fenêtres imbriquées), puis rang au seuil de 80 %. En BigQuery la division renvoie un FLOAT — pas de piège d'entiers.`,en:`<strong>Pareto (80/20)</strong>: sorted running revenue over the total (nested windows), then rank at the 80% threshold. In BigQuery division returns a FLOAT — no integer-division trap.`}},
+{q:{fr:`Le chiffre d'affaires par mois (série temporelle).`,en:`Revenue per month (time series).`},sql:`SELECT DATE_TRUNC(date_vente, MONTH) AS mois,\n       SUM(montant) AS ca\nFROM ventes\nGROUP BY mois\nORDER BY mois`,note:{fr:`<code>DATE_TRUNC(date, MONTH)</code> en BigQuery → une ligne par mois, triée chronologiquement.`,en:`<code>DATE_TRUNC(date, MONTH)</code> in BigQuery → one row per month, sorted chronologically.`}},
+{q:{fr:`Lecture — que renvoie cette requête ?`,en:`Reading — what does this query return?`},comp:true,code:`SELECT DATE_TRUNC(event_date, WEEK) AS semaine,\n       COUNT(DISTINCT user_id) AS actifs\nFROM events\nGROUP BY semaine\nORDER BY semaine`,note:{fr:`Le nombre d'<strong>utilisateurs uniques actifs par semaine</strong>. <code>DATE_TRUNC(event_date, WEEK)</code> regroupe par semaine ; <code>COUNT(DISTINCT user_id)</code> dédoublonne les utilisateurs.`,en:`The number of <strong>weekly active unique users</strong>. <code>DATE_TRUNC(event_date, WEEK)</code> groups by week; <code>COUNT(DISTINCT user_id)</code> de-duplicates users.`}}
+  ]
+ }
+},
+
+/* ---------------- Snowflake — avancé ---------------- */
+snow:{
+ reverse:{
+  context:{fr:`Table <code>events(v VARIANT)</code> ; <code>v</code> contient <code>client.pays</code> et un tableau <code>sessions</code>.`,en:`Table <code>events(v VARIANT)</code>; <code>v</code> holds <code>client.pays</code> and a <code>sessions</code> array.`},
+  cap:{fr:`Sortie à reproduire`,en:`Output to reproduce`},
+  cols:['pays','n'],
+  rows:[['FR','340'],['US','210'],['DE','95']],
+  question:{fr:`Quelle requête Snowflake produit cette sortie ?`,en:`Which Snowflake query produces this output?`},
+  sql:`SELECT v:client:pays::string AS pays, COUNT(*) AS n\nFROM events, LATERAL FLATTEN(input => v:sessions)\nGROUP BY pays\nORDER BY n DESC`,
+  note:{fr:`Le compte se fait au niveau des <em>sessions</em>, une ligne par pays → il faut déplier le tableau JSON avec <code>LATERAL FLATTEN</code>, puis grouper sur <code>pays</code> extrait du VARIANT (<code>::string</code>).`,en:`Counting happens at the <em>session</em> level, one row per country → unfold the JSON array with <code>LATERAL FLATTEN</code>, then group on <code>pays</code> extracted from the VARIANT (<code>::string</code>).`}
+ },
+ open:[
+  {q:{fr:`Zero-copy cloning : qu'est-ce que c'est, à quoi ça sert ?`,en:`Zero-copy cloning: what is it, what's it for?`},
+   a:{fr:`<code>CLONE</code> crée une copie logique instantanée d'une table/schéma/base sans dupliquer le stockage (métadonnées partagées, copie-sur-écriture). Idéal pour des environnements de test/dev identiques à la prod, sans coût de stockage initial.`,en:`<code>CLONE</code> creates an instant logical copy of a table/schema/database without duplicating storage (shared metadata, copy-on-write). Ideal for test/dev environments identical to prod, with no initial storage cost.`}},
+  {q:{fr:`Séparation stockage / compute : virtual warehouses ? multi-cluster ?`,en:`Storage / compute separation: virtual warehouses? multi-cluster?`},
+   a:{fr:`Le stockage et le calcul sont indépendants. Un <em>virtual warehouse</em> est un cluster de calcul qu'on dimensionne (tailles T-shirt) et qu'on suspend pour ne pas payer à vide. En <em>multi-cluster</em>, il s'étend automatiquement pour absorber la concurrence.`,en:`Storage and compute are independent. A <em>virtual warehouse</em> is a compute cluster you size (T-shirt sizes) and suspend to avoid paying when idle. In <em>multi-cluster</em>, it scales out automatically to absorb concurrency.`}},
+  {q:{fr:`MERGE (upsert) : à quoi ça sert ?`,en:`MERGE (upsert): what's it for?`},
+   a:{fr:`<code>MERGE</code> fait un <em>upsert</em> : selon qu'une ligne source correspond ou non à la cible, on met à jour (<code>WHEN MATCHED</code>) ou on insère (<code>WHEN NOT MATCHED</code>). Central pour synchroniser une table à partir d'un flux (CDC).`,en:`<code>MERGE</code> does an <em>upsert</em>: depending on whether a source row matches the target, it updates (<code>WHEN MATCHED</code>) or inserts (<code>WHEN NOT MATCHED</code>). Central to syncing a table from a stream (CDC).`}},
+  {q:{fr:`Fonctions fenêtre avancées : ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, QUALIFY ?`,en:`Advanced window functions: ROW_NUMBER vs RANK vs DENSE_RANK, LAG/LEAD, QUALIFY?`},a:{fr:`<strong>Classement</strong> : <code>ROW_NUMBER</code> (unique), <code>RANK</code> (même rang puis saute : 1, 2, 2, 4), <code>DENSE_RANK</code> (ne saute pas : 1, 2, 2, 3). <strong>Décalage</strong> : <code>LAG</code>/<code>LEAD</code> comparent à la ligne précédente/suivante. <strong>Filtre</strong> : Snowflake gère <code>QUALIFY</code> nativement — <code>QUALIFY ROW_NUMBER() OVER (PARTITION BY … ORDER BY …) = 1</code> garde la 1re ligne par groupe sans sous-requête.`,en:`<strong>Ranking</strong>: <code>ROW_NUMBER</code> (unique), <code>RANK</code> (ties share a rank then skip: 1, 2, 2, 4), <code>DENSE_RANK</code> (no skip: 1, 2, 2, 3). <strong>Offset</strong>: <code>LAG</code>/<code>LEAD</code> compare to the previous/next row. <strong>Filter</strong>: Snowflake supports <code>QUALIFY</code> natively — <code>QUALIFY ROW_NUMBER() OVER (PARTITION BY … ORDER BY …) = 1</code> keeps the 1st row per group, no subquery.`}},
+{q:{fr:`ROLLUP, CUBE et GROUPING SETS en Snowflake ?`,en:`ROLLUP, CUBE and GROUPING SETS in Snowflake?`},a:{fr:`Snowflake supporte ces extensions de <code>GROUP BY</code>. <code>ROLLUP(a, b)</code> retire progressivement la colonne la plus à droite (détail, sous-total <code>(a)</code>, grand total). <code>CUBE(a, b)</code> génère toutes les combinaisons. <code>GROUPING SETS</code> liste les regroupements voulus ; <code>GROUPING(col)</code> repère les lignes de sous-total.`,en:`Snowflake supports these <code>GROUP BY</code> extensions. <code>ROLLUP(a, b)</code> progressively drops the rightmost column (detail, subtotal <code>(a)</code>, grand total). <code>CUBE(a, b)</code> generates every combination. <code>GROUPING SETS</code> lists the desired groupings; <code>GROUPING(col)</code> flags the subtotal rows.`}},
+{q:{fr:`Construire une série temporelle en Snowflake (DATE_TRUNC) ?`,en:`Build a time series in Snowflake (DATE_TRUNC)?`},a:{fr:`<code>DATE_TRUNC('month', date_vente)</code> ramène chaque date au début de la période → une série propre par <code>GROUP BY</code>. Jour de la semaine : <code>DAYNAME(date)</code> ; numéro du jour : <code>DATE_PART('dow', date)</code>. Pour un fuseau, <code>CONVERT_TIMEZONE</code> avant de tronquer.`,en:`<code>DATE_TRUNC('month', date_vente)</code> snaps each date to the start of the period → a clean series with <code>GROUP BY</code>. Weekday: <code>DAYNAME(date)</code>; day number: <code>DATE_PART('dow', date)</code>. For a time zone, <code>CONVERT_TIMEZONE</code> before truncating.`}}
+ ],
+ mcq:{
+  prompt:{fr:'Cochez toutes les affirmations vraies.',en:'Check all the statements that are true.'},
+  context:{fr:'Requête semi-structurée (v = VARIANT) :',en:'Semi-structured query (v = VARIANT):'},
+  code:`SELECT v:client:pays::string AS pays,\n       COUNT(*) AS n\nFROM events,\n     LATERAL FLATTEN(input => v:sessions)\nGROUP BY pays`,
+  options:[
+   {c:true,fr:`<code>FLATTEN</code> déplie le tableau <code>v:sessions</code> en une ligne par session.`,en:`<code>FLATTEN</code> unfolds <code>v:sessions</code> into one row per session.`,xf:`FLATTEN est l'équivalent d'UNNEST pour le VARIANT.`,xe:`FLATTEN is the VARIANT equivalent of UNNEST.`},
+   {c:true,fr:`<code>v:client:pays::string</code> extrait et caste un champ imbriqué.`,en:`<code>v:client:pays::string</code> extracts and casts a nested field.`,xf:`Notation : chemin par <code>:</code> puis cast <code>::string</code>.`,xe:`Notation: path via <code>:</code> then cast <code>::string</code>.`},
+   {c:false,fr:`<code>GROUP BY pays</code> est impossible sur un champ issu de VARIANT.`,en:`<code>GROUP BY pays</code> is impossible on a VARIANT-derived field.`,xf:`Non : une fois casté/aliasé, il se groupe normalement.`,xe:`No: once cast/aliased, it groups normally.`},
+   {c:false,fr:`Le nombre de lignes est identique à celui de la table events.`,en:`The row count equals that of the events table.`,xf:`Non : FLATTEN multiplie les lignes par le nombre de sessions.`,xe:`No: FLATTEN multiplies rows by the number of sessions.`}
+  ]
+ },
+ read:{
+  context:{fr:'Requête Snowflake :',en:'Snowflake query:'},
+  code:`MERGE INTO clients c\nUSING flux f ON c.id = f.id\nWHEN MATCHED THEN UPDATE SET c.email = f.email\nWHEN NOT MATCHED THEN INSERT (id, email) VALUES (f.id, f.email)`,
+  question:{fr:'Que fait cette requête ?',en:'What does this query do?'},
+  options:[
+   {c:true,fr:`Un upsert : met à jour l'email des clients existants, insère les nouveaux.`,en:`An upsert: updates existing customers' emails, inserts the new ones.`,xf:`WHEN MATCHED → update, WHEN NOT MATCHED → insert.`,xe:`WHEN MATCHED → update, WHEN NOT MATCHED → insert.`},
+   {c:false,fr:`Elle supprime les clients absents du flux.`,en:`It deletes customers missing from the stream.`,xf:`Non : aucun DELETE ici.`,xe:`No: there's no DELETE here.`},
+   {c:false,fr:`Elle remplace toute la table clients.`,en:`It replaces the whole clients table.`,xf:`Non : elle agit ligne à ligne selon la correspondance.`,xe:`No: it acts row by row based on the match.`}
+  ]
+ },
+ write:{
+  schema:{fr:`Tables <code>ventes</code>, <code>clients(id, email)</code>, <code>flux(id, email)</code>, <code>events(v VARIANT)</code>.`,en:`Tables <code>ventes</code>, <code>clients(id, email)</code>, <code>flux(id, email)</code>, <code>events(v VARIANT)</code>.`},
+  hint:{fr:`Écrivez la requête Snowflake, puis dépliez.`,en:`Write the Snowflake query, then expand.`},
+  items:[
+   {q:{fr:`Cloner la prod pour un test (zero-copy).`,en:`Clone prod for a test (zero-copy).`},sql:`CREATE TABLE ventes_test CLONE ventes`,note:{fr:`Clone instantané, sans duplication de stockage.`,en:`Instant clone, no storage duplication.`}},
+   {q:{fr:`Upsert d'un flux dans la table cible.`,en:`Upsert a stream into the target table.`},sql:`MERGE INTO clients c\nUSING flux f ON c.id = f.id\nWHEN MATCHED THEN UPDATE SET c.email = f.email\nWHEN NOT MATCHED THEN INSERT (id, email) VALUES (f.id, f.email)`,note:{fr:`<code>MERGE</code> = update + insert conditionnels.`,en:`<code>MERGE</code> = conditional update + insert.`}},
+   {q:{fr:`Parser un tableau JSON de sessions.`,en:`Parse a JSON array of sessions.`},sql:`SELECT e.id, s.value:duree::number AS duree\nFROM events e, LATERAL FLATTEN(input => e.v:sessions) s`,note:{fr:`<code>LATERAL FLATTEN</code> + accès <code>:champ</code> + cast.`,en:`<code>LATERAL FLATTEN</code> + <code>:field</code> access + cast.`}},
+   {q:{fr:`Le pourcentage de clients qui génère 80 % du CA (Pareto).`,en:`The share of customers generating 80% of revenue (Pareto).`},tips:{fr:[`Total par client, puis tri décroissant.`,`Part de CA cumulée : <code>SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER ()</code>.`,`Rang au seuil de 80 %, rapporté au nombre de clients.`],en:[`Total per client, then sort descending.`,`Running revenue share: <code>SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER ()</code>.`,`Rank at the 80% threshold, over the number of clients.`]},sql:`WITH par_client AS (\n  SELECT client_id, SUM(montant) AS total\n  FROM ventes\n  GROUP BY client_id\n)\nSELECT ROUND(100 * MIN(rang) / MAX(nb), 1) AS pct_clients\nFROM (\n  SELECT\n    SUM(total) OVER (ORDER BY total DESC) / SUM(total) OVER () AS pct_cumule,\n    ROW_NUMBER() OVER (ORDER BY total DESC) AS rang,\n    COUNT(*) OVER () AS nb\n  FROM par_client\n)\nWHERE pct_cumule >= 0.8`,note:{fr:`Motif de <strong>Pareto (80/20)</strong> : cumul de CA trié rapporté au total (fonctions fenêtre), puis rang au seuil de 80 %.`,en:`<strong>Pareto (80/20)</strong>: sorted running revenue over the total (window functions), then rank at the 80% threshold.`}},
+{q:{fr:`Le chiffre d'affaires par mois (série temporelle).`,en:`Revenue per month (time series).`},sql:`SELECT DATE_TRUNC('month', date_vente) AS mois,\n       SUM(montant) AS ca\nFROM ventes\nGROUP BY mois\nORDER BY mois`,note:{fr:`<code>DATE_TRUNC('month', …)</code> en Snowflake → une ligne par mois, triée chronologiquement.`,en:`<code>DATE_TRUNC('month', …)</code> in Snowflake → one row per month, sorted chronologically.`}},
+{q:{fr:`Lecture — que renvoie cette requête ?`,en:`Reading — what does this query return?`},comp:true,code:`SELECT *\nFROM commandes\nQUALIFY ROW_NUMBER() OVER (\n  PARTITION BY client_id ORDER BY date_commande DESC\n) = 1`,note:{fr:`La <strong>dernière commande de chaque client</strong>. <code>QUALIFY</code> filtre sur la fonction fenêtre : on garde la ligne de rang 1 (la plus récente) par client, sans sous-requête.`,en:`Each customer's <strong>latest order</strong>. <code>QUALIFY</code> filters on the window function: keep the rank-1 (most recent) row per customer, without a subquery.`}}
+  ]
+ }
+}
+};
+
+/* ===== Rendu ===== */
+function accHTML(items){
+ let h='';
+ items.forEach((it,i)=>{
+  let body, badge='';
+  if(it.a){
+   body=`<div class="acc-insight">${it.a[LANG]}</div>`;
+  }else if(it.tips){
+   badge=`<span class="acc-badge">${T[LANG]['guided']}</span>`;
+   const steps=it.tips[LANG].map(x=>`<li>${x}</li>`).join('');
+   body=`<div class="tips"><div class="tips-h">${T[LANG]['tips']}</div><ol>${steps}</ol></div>`
+       +`<button class="sol-btn" type="button">${T[LANG]['see-sol']}</button>`
+       +`<div class="sol-body" style="display:none"><div class="codeblock">${hl(it.sql)}</div><div class="acc-insight">${it.note[LANG]}</div></div>`;
+  }else if(it.comp){
+   badge=`<span class="acc-badge">${T[LANG]['read-badge']}</span>`;
+   body=`<div class="codeblock">${hl(it.code)}</div>`
+       +`<button class="sol-btn" type="button">${T[LANG]['see-sol']}</button>`
+       +`<div class="sol-body" style="display:none"><div class="acc-insight">${it.note[LANG]}</div></div>`;
+  }else{
+   body=`<div class="codeblock">${hl(it.sql)}</div><div class="acc-insight">${it.note[LANG]}</div>`;
+  }
+  h+=`<div class="acc-item"><div class="acc-head"><span class="acc-n">${i+1}</span>${it.q[LANG]}${badge}<span class="chev">\u203A</span></div><div class="acc-body">${body}</div></div>`;
+ });
+ return h;
+}
+function bindAcc(root){
+ root.querySelectorAll('.acc-head').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+ root.querySelectorAll('.sol-btn').forEach(b=>b.addEventListener('click',e=>{
+  e.stopPropagation();
+  const body=b.nextElementSibling;
+  const shown=body.style.display!=='none';
+  body.style.display=shown?'none':'block';
+  b.textContent=shown?T[LANG]['see-sol']:T[LANG]['hide-sol'];
+ }));
+}
+
+function renderOpen(){
+ const d=DATA[TECH].open;
+ const card=document.getElementById('c-open');
+ card.innerHTML=`<div class="measure">${T[LANG]['m-open']}</div><div class="acc-hint">${T[LANG]['openhint']}</div><div class="acc">${accHTML(d)}</div>`;
+ bindAcc(card);
+}
+function renderWrite(){
+ const d=DATA[TECH].write;
+ const card=document.getElementById('c-write');
+ card.innerHTML=`<div class="measure">${T[LANG]['m-write']}</div><div class="schema-note">${d.schema[LANG]}</div><div class="acc-hint">${d.hint[LANG]}</div><div class="acc">${accHTML(d.items)}</div>`;
+ bindAcc(card);
+}
+function renderMcq(){
+ const d=DATA[TECH].mcq;
+ let opts='';
+ d.options.forEach((o,i)=>{opts+=`<label class="opt" data-i="${i}"><input type="checkbox"><span class="opt-text">${o[LANG]}<span class="badge-slot"></span><span class="expl">${LANG==='fr'?o.xf:o.xe}</span></span></label>`;});
+ const card=document.getElementById('c-mcq');card.className='card';
+ card.innerHTML=`<div class="measure">${T[LANG]['m-mcq']}</div><div class="quiz-prompt">${d.prompt[LANG]}</div><div class="quiz-context">${d.context[LANG]}</div><div class="codeblock">${hl(d.code)}</div><div class="opts">${opts}</div><div class="actions"><button class="btn-check">${T[LANG]['q-check']}</button><button class="btn-expl">${T[LANG]['q-expl']}</button></div><div class="result"></div>`;
+ const check=card.querySelector('.btn-check'),expl=card.querySelector('.btn-expl'),result=card.querySelector('.result');
+ check.addEventListener('click',()=>{
+  let good=0;
+  card.querySelectorAll('.opt').forEach((opt,i)=>{
+   const truth=d.options[i].c,checked=opt.querySelector('input').checked;
+   opt.classList.remove('is-true','is-false');opt.classList.add(truth?'is-true':'is-false');
+   const right=(checked===truth);if(right)good++;
+   opt.querySelector('.badge-slot').innerHTML=`<span class="badge ${right?'ok':'no'}">${truth?T[LANG]['q-vrai']:T[LANG]['q-faux']}</span>`;
+  });
+  result.textContent=(LANG==='fr'?`Vous avez ${good}/${d.options.length} bonnes réponses.`:`You got ${good}/${d.options.length} correct.`);
+  result.classList.add('show');card.classList.add('show-expl');expl.textContent=T[LANG]['q-hide'];
+ });
+ expl.addEventListener('click',()=>{const on=card.classList.toggle('show-expl');expl.textContent=on?T[LANG]['q-hide']:T[LANG]['q-expl'];});
+}
+function renderRead(){
+ const d=DATA[TECH].read;
+ let table='';
+ if(d.cols&&d.rows){
+  let head='';d.cols.forEach(c=>head+=`<th>${c}</th>`);
+  let body='';d.rows.forEach(r=>{body+='<tr>'+r.map(v=>`<td>${v}</td>`).join('')+'</tr>';});
+  table=`<div class="res-cap">${d.cap?d.cap[LANG]:'Sortie'}</div><table class="res-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+ }
+ const ctx=d.context?`<div class="quiz-context">${d.context[LANG]}</div>`:'';
+ let opts='';
+ d.options.forEach((o,i)=>{opts+=`<label class="opt" data-i="${i}"><input type="radio" name="read-choice"><span class="opt-text">${o[LANG]}<span class="expl">${LANG==='fr'?o.xf:o.xe}</span></span></label>`;});
+ const card=document.getElementById('c-read');card.className='card';
+ card.innerHTML=`<div class="measure">${T[LANG]['m-read']}</div>${ctx}<div class="codeblock">${hl(d.code)}</div>${table}<div class="q-label">${d.question[LANG]}</div><div class="opts">${opts}</div><div class="actions"><button class="btn-check">${T[LANG]['q-check']}</button></div><div class="result"></div>`;
+ const check=card.querySelector('.btn-check'),result=card.querySelector('.result');
+ check.addEventListener('click',()=>{
+  let picked=-1;card.querySelectorAll('.opt input').forEach((inp,i)=>{if(inp.checked)picked=i;});
+  if(picked<0){result.textContent=(LANG==='fr'?'Choisissez une réponse.':'Pick an answer.');result.classList.add('show');return;}
+  card.querySelectorAll('.opt').forEach((opt,i)=>{opt.classList.remove('is-true','is-false');if(d.options[i].c)opt.classList.add('is-true');else if(i===picked)opt.classList.add('is-false');});
+  card.classList.add('show-expl');
+  const ok=d.options[picked].c;
+  result.textContent=ok?(LANG==='fr'?'Bonne réponse !':'Correct!'):(LANG==='fr'?'Pas tout à fait — voir en vert la bonne réponse.':'Not quite — the correct answer is highlighted in green.');
+  result.classList.add('show');
+ });
+}
+const CASE={
+ fr:{
+  intro:`Ce format ne comporte pas de réponse unique. À partir d'un extrait de données et d'une question métier ouverte, on évalue la démarche de raisonnement. Il est transverse : il mesure le jugement, indépendamment de la technologie.`,
+  cap:`Extrait fourni — CA par segment et canal (k€)`,
+  cols:['segment','canal','T3','T4'],
+  rows:[['Pro','Grands comptes','320','210'],['Pro','PME','180','185'],['Standard','Direct','140','145'],['Standard','Web','90','95']],
+  prompt:`« Le chiffre d'affaires du segment Pro recule ce trimestre. » À partir de ce jeu de données — d'autres tables sont disponibles sur demande —, qu'analysez-vous et que recommandez-vous ?`,
+  revealHint:`Dépliez pour comparer une approche superficielle et une approche rigoureuse.`,
+  reveal:[
+   {q:{fr:`Approche superficielle`},a:{fr:`Se contente de constater la baisse du chiffre d'affaires Pro et propose une action générique (« relancer les commerciaux »), sans décomposition ni chiffrage. Le chiffre agrégé est pris tel quel : ni la période, ni la concentration, ni la qualité des données ne sont interrogées.`}},
+   {q:{fr:`Approche rigoureuse`},a:{fr:`<b>Décompose</b> : la baisse provient entièrement des Grands comptes (320 → 210, soit −34 %), tandis que la PME reste stable. Vérifie s'il s'agit d'un <b>client unique</b> (concentration), d'un décalage de facturation ou d'une perte réelle ; formule des hypothèses testables, chiffre l'impact, puis propose une recommandation <b>priorisée</b> (sécuriser les deux ou trois comptes à risque) en explicitant ses <b>limites</b> (un seul trimestre, saisonnalité non vérifiée).`}}
+  ],
+  gridTitle:`Grille d'évaluation en 5 axes`,
+  grid:[
+   {t:`Cadrage & hypothèses`,d:`reformule le problème et pose des hypothèses avant d'agir.`},
+   {t:`Choix de méthode`,d:`décompose au bon niveau (segment × canal × temps) et identifie ce qui reste à vérifier.`},
+   {t:`Rigueur`,d:`chiffre, vérifie la qualité des données, distingue corrélation et cause.`},
+   {t:`Hiérarchisation`,d:`priorise selon l'impact et l'effort, sans se perdre dans le détail.`},
+   {t:`Communication`,d:`une recommandation claire et argumentée, avec ses limites.`}
+  ]
+ },
+ en:{
+  intro:`This format has no single right answer. From a data extract and an open business question, we assess the reasoning process. It is cross-cutting: it measures judgment, independently of the technology.`,
+  cap:`Provided extract — revenue by segment and channel (k€)`,
+  cols:['segment','channel','Q3','Q4'],
+  rows:[['Pro','Key accounts','320','210'],['Pro','SMB','180','185'],['Standard','Direct','140','145'],['Standard','Web','90','95']],
+  prompt:`"The Pro segment's revenue is declining this quarter." From this dataset — other tables are available on request — what do you analyse, and what do you recommend?`,
+  revealHint:`Expand to compare a superficial approach with a rigorous one.`,
+  reveal:[
+   {q:{en:`Superficial approach`},a:{en:`Merely notes the drop in Pro revenue and proposes a generic action ("push the sales team"), with no decomposition or quantification. The aggregate is taken at face value: neither the period, the concentration, nor data quality are examined.`}},
+   {q:{en:`Rigorous approach`},a:{en:`<b>Decomposes</b>: the drop comes entirely from Key accounts (320 → 210, i.e. −34%), while SMB remains stable. Checks whether it's a <b>single client</b> (concentration), a billing shift or a real loss; forms testable hypotheses, quantifies the impact, then proposes a <b>prioritised</b> recommendation (secure the two or three at-risk accounts) while stating its <b>limits</b> (one quarter, seasonality unchecked).`}}
+  ],
+  gridTitle:`Evaluation rubric — 5 axes`,
+  grid:[
+   {t:`Framing & hypotheses`,d:`reframes the problem and states hypotheses before acting.`},
+   {t:`Method`,d:`decomposes at the right level (segment × channel × time) and identifies what remains to be checked.`},
+   {t:`Rigour`,d:`quantifies, checks data quality, separates correlation from cause.`},
+   {t:`Prioritisation`,d:`prioritises by impact and effort, without getting lost in detail.`},
+   {t:`Communication`,d:`a clear, well-argued recommendation, with its limits.`}
+  ]
+ }
+};
+function renderCase(){
+ const secC=document.getElementById('f-case');
+ const cardC=document.querySelector('.fmt-card[data-go="f-case"]');
+ if(!CASE_TECHS.includes(TECH)){if(secC)secC.style.display='none';if(cardC)cardC.style.display='none';return;}
+ if(secC)secC.style.display='';if(cardC)cardC.style.display='';
+ const c=CASE[LANG];
+ const head=c.cols.map(x=>`<th>${x}</th>`).join('');
+ const body=c.rows.map(r=>'<tr>'+r.map(v=>`<td>${v}</td>`).join('')+'</tr>').join('');
+ const grid=c.grid.map((g,i)=>`<div class="axis"><span class="axis-n">${i+1}</span><div><b>${g.t}</b> — ${g.d}</div></div>`).join('');
+ const card=document.getElementById('c-case');
+ card.innerHTML=`<div class="measure">${T[LANG]['m-case']}</div>`
+  +`<div class="quiz-context">${c.intro}</div>`
+  +`<div class="res-cap">${c.cap}</div><table class="res-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
+  +`<div class="q-label" style="margin-top:8px">${c.prompt}</div>`
+  +`<div class="acc-hint">${c.revealHint}</div><div class="acc">${accHTML(c.reveal)}</div>`
+  +`<div class="grid-title">${c.gridTitle}</div><div class="axes">${grid}</div>`;
+ bindAcc(card);
+}
+function renderReverse(){
+ const d=DATA[TECH].reverse;
+ const sec=document.getElementById('f-reverse');
+ const card06=document.querySelector('.fmt-card[data-go="f-reverse"]');
+ if(!d){if(sec)sec.style.display='none';if(card06)card06.style.display='none';return;}
+ if(sec)sec.style.display='';if(card06)card06.style.display='';
+ const head=d.cols.map(c=>`<th>${c}</th>`).join('');
+ const body=d.rows.map(r=>'<tr>'+r.map(v=>`<td>${v}</td>`).join('')+'</tr>').join('');
+ const card=document.getElementById('c-reverse');
+ card.innerHTML=`<div class="measure">${T[LANG]['m-reverse']}</div>`
+  +`<div class="quiz-context">${d.context[LANG]}</div>`
+  +`<div class="res-cap">${d.cap[LANG]}</div><table class="res-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
+  +`<div class="q-label" style="margin-top:8px">${d.question[LANG]}</div>`
+  +`<button class="sol-btn" type="button">${T[LANG]['see-sol']}</button>`
+  +`<div class="sol-body" style="display:none"><div class="codeblock">${hl(d.sql)}</div><div class="acc-insight">${d.note[LANG]}</div></div>`;
+ const b=card.querySelector('.sol-btn');
+ b.addEventListener('click',()=>{const bd=b.nextElementSibling;const shown=bd.style.display!=='none';bd.style.display=shown?'none':'block';b.textContent=shown?T[LANG]['see-sol']:T[LANG]['hide-sol'];});
+}
+function renumber(){
+ let i=1;
+ document.querySelectorAll('.overview .fmt-card').forEach(c=>{if(c.style.display!=='none'){const n=c.querySelector('.n');if(n)n.textContent=('0'+i).slice(-2);i++;}});
+ let j=1;
+ document.querySelectorAll('.fmt').forEach(sec=>{if(sec.style.display!=='none'){const num=sec.querySelector('.num');if(num)num.textContent=String(j);j++;}});
+}
+function renderAll(){renderOpen();renderMcq();renderRead();renderWrite();renderCase();renderReverse();renumber();}
+
+/* ===== Barre de technos ===== */
+const ICONS={
+ sql:`<svg viewBox="0 0 16 16" width="15" height="15"><ellipse cx="8" cy="3.4" rx="5" ry="1.9" fill="#336791"/><path d="M3 3.4v9.2c0 1.05 2.24 1.9 5 1.9s5-.85 5-1.9V3.4" fill="none" stroke="#336791" stroke-width="1.5"/><path d="M3 8c0 1.05 2.24 1.9 5 1.9s5-.85 5-1.9" fill="none" stroke="#336791" stroke-width="1.3"/></svg>`,
+ pbi:`<svg viewBox="0 0 16 16" width="14" height="14"><rect x="2" y="8" width="3" height="6" rx="1" fill="#F2C811"/><rect x="6.5" y="4" width="3" height="10" rx="1" fill="#E1A200"/><rect x="11" y="1.5" width="3" height="12.5" rx="1" fill="#F2C811"/></svg>`,
+ tableau:`<svg viewBox="0 0 16 16" width="14" height="14"><rect x="7.1" y="1" width="1.8" height="14" fill="#1F77B4"/><rect x="1" y="7.1" width="14" height="1.8" fill="#E8762C"/><g fill="#7099C6"><rect x="3.4" y="3.6" width="1.5" height="3.6"/><rect x="11.1" y="3.6" width="1.5" height="3.6"/><rect x="3.4" y="8.8" width="1.5" height="3.6"/><rect x="11.1" y="8.8" width="1.5" height="3.6"/></g></svg>`,
+ looker:`<svg viewBox="0 0 16 16" width="14" height="14"><circle cx="6.2" cy="9.8" r="3.9" fill="none" stroke="#4A57C4" stroke-width="1.8"/><path d="M9 7 L14.2 1.8" stroke="#4A57C4" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+ python:`<svg viewBox="0 0 16 16" width="14" height="14"><path d="M7.6 1.3c-2 0-2.4.9-2.4 2v1.4h3v.6H4.1c-1.2 0-2.1.8-2.1 2.6s.7 2.5 2 2.5h1V9c0-1.3 1-2.3 2.5-2.3h2.4c1 0 1.6-.6 1.6-1.5V3.3c0-1-.6-2-3-2z" fill="#3776AB"/><circle cx="6" cy="3.2" r=".65" fill="#fff"/><path d="M8.4 14.7c2 0 2.4-.9 2.4-2v-1.4h-3v-.6h3.9c1.2 0 2.1-.8 2.1-2.6s-.7-2.5-2-2.5h-1V7c0 1.3-1 2.3-2.5 2.3H5.9c-1 0-1.6.6-1.6 1.5v2.9c0 1 .6 2 3 2z" fill="#FFD343"/><circle cx="10" cy="12.8" r=".65" fill="#fff"/></svg>`,
+ excel:`<svg viewBox="0 0 16 16" width="14" height="14"><rect x="1.5" y="1.5" width="13" height="13" rx="2.4" fill="#1D6F42"/><path d="M5.2 5 L10.8 11 M10.8 5 L5.2 11" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>`,
+ spark:`<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1 L9.2 6.6 L14.8 8 L9.2 9.4 L8 15 L6.8 9.4 L1.2 8 L6.8 6.6 Z" fill="#E25A1C"/></svg>`,
+ airflow:`<svg viewBox="0 0 16 16" width="14" height="14"><g fill="#017CEE"><path d="M8 8 V1.2 A6.8 6.8 0 0 1 12.8 3.2 Z"/><path d="M8 8 H14.8 A6.8 6.8 0 0 1 12.8 12.8 Z"/><path d="M8 8 V14.8 A6.8 6.8 0 0 1 3.2 12.8 Z"/><path d="M8 8 H1.2 A6.8 6.8 0 0 1 3.2 3.2 Z"/></g></svg>`,
+ dbt:`<svg viewBox="0 0 16 16" width="14" height="14"><circle cx="8" cy="8" r="6.4" fill="#FF694A"/><path d="M8 4.6 V11.4 M4.6 8 H11.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" transform="rotate(45 8 8)"/></svg>`,
+ git:`<svg viewBox="0 0 16 16" width="14" height="14"><g stroke="#F05032" stroke-width="1.5" fill="#F05032"><line x1="4.2" y1="3" x2="4.2" y2="13"/><path d="M4.2 6 C4.2 9 6 9.5 9.6 9.5" fill="none"/><circle cx="4.2" cy="2.9" r="1.7"/><circle cx="4.2" cy="13.1" r="1.7"/><circle cx="10.6" cy="9.5" r="1.7"/></g></svg>`,
+ bq:`<svg viewBox="0 0 16 16" width="14" height="14"><circle cx="6.8" cy="6.8" r="4.8" fill="none" stroke="#4285F4" stroke-width="1.7"/><line x1="10.5" y1="10.5" x2="14.4" y2="14.4" stroke="#4285F4" stroke-width="1.9" stroke-linecap="round"/><g fill="#4285F4"><rect x="4.8" y="6.6" width="1.2" height="3"/><rect x="6.7" y="4.9" width="1.2" height="4.7"/><rect x="8.6" y="6" width="1.2" height="3.6"/></g></svg>`,
+ snow:`<svg viewBox="0 0 16 16" width="14" height="14"><g stroke="#29B5E8" stroke-width="1.4" stroke-linecap="round"><line x1="8" y1="1.6" x2="8" y2="14.4"/><line x1="2.5" y1="4.8" x2="13.5" y2="11.2"/><line x1="2.5" y1="11.2" x2="13.5" y2="4.8"/></g><g stroke="#29B5E8" stroke-width="1.1" stroke-linecap="round"><path d="M8 3.4 L6.6 2 M8 3.4 L9.4 2 M8 12.6 L6.6 14 M8 12.6 L9.4 14"/></g></svg>`
+};
+function buildTechBar(){
+ const bar=document.getElementById('tech-bar');
+ bar.innerHTML=TECHS.map(([id,label])=>`<button class="tech-pill${id===TECH?' on':''}" data-tech="${id}">${ICONS[id]||''}<span>${label}</span></button>`).join('');
+ bar.querySelectorAll('.tech-pill').forEach(b=>b.addEventListener('click',()=>{
+  TECH=b.dataset.tech;
+  bar.querySelectorAll('.tech-pill').forEach(x=>x.classList.toggle('on',x.dataset.tech===TECH));
+  renderAll();
+ }));
+}
+
+document.querySelectorAll('.fmt-card').forEach(c=>c.addEventListener('click',()=>{
+ const el=document.getElementById(c.dataset.go);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}));
+
+function setLang(l){
+ LANG=l;document.documentElement.lang=l;
+ document.getElementById('btn-fr').classList.toggle('active',l==='fr');
+ document.getElementById('btn-en').classList.toggle('active',l==='en');
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[l][k]!==undefined)el.innerHTML=T[l][k];});
+ renderAll();
+}
+
+buildTechBar();
+setLang('fr');
+(function(){if(localStorage.getItem('db_cookies'))document.getElementById('cookie-banner').classList.add('hidden');})();
+function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');if(typeof loadGA==='function')loadGA();}
+function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
+</script>
+</body>
+</html>
