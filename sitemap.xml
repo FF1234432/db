@@ -6,137 +6,57 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/produit.html</loc>
+    <loc>https://www.databuilder.io/produit</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/how.html</loc>
+    <loc>https://www.databuilder.io/how</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/about.html</loc>
+    <loc>https://www.databuilder.io/about</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/cgu.html</loc>
+    <loc>https://www.databuilder.io/cgu</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/contact.html</loc>
+    <loc>https://www.databuilder.io/contact</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/</loc>
+    <loc>https://www.databuilder.io/blog</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/sql.html</loc>
+    <loc>https://www.databuilder.io/blog/test-technique-sql-data</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/concevoir-test-technique-data.html</loc>
+    <loc>https://www.databuilder.io/blog/test-technique-python-data</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/tests-techniques-ia.html</loc>
+    <loc>https://www.databuilder.io/blog/test-technique-spark-data</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/externaliser-entretiens-techniques.html</loc>
+    <loc>https://www.databuilder.io/blog/test-technique-dbt-data</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/questions-sql-entretien-par-niveau.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/take-home-vs-live.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/rh-sans-background-evaluer-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/signaux-forts-faibles-candidat-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-toute-la-stack-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluation-equitable-reduire-biais.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/junior-confirme-senior-niveau-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/qcm-utile-ou-depasse.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/penser-a-voix-haute.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/duree-entretien-technique.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/recruter-data-analyst.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/recruter-data-engineer.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/cout-mauvais-recrutement-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/reduire-time-to-hire-data.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/experience-candidat-evaluation.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/payer-take-home.html</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/recruter-analytics-engineer-dbt.html</loc>
+    <loc>https://www.databuilder.io/blog/sql</loc>
     <lastmod>2026-07-05</lastmod>
     <priority>0.8</priority>
   </url>
