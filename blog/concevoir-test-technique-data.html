@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Comment concevoir un test technique data qui prédit vraiment la performance — Data Builder</title>
+<meta name="description" content="Un bon test technique data ne mesure pas ce qu'un candidat a mémorisé, mais comment il raisonne. Voici les 5 principes d'une évaluation qui prédit la réussite au poste."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../styles.css"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+  <a href="../index.html" class="nav-logo">Data <b>Builder</b></a>
+  <div class="nav-links" id="navLinks">
+    <a href="../produit.html" style="background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;padding:5px 14px;border-radius:99px;font-weight:700"><span data-t="fr">Produit</span><span data-t="en">Product</span></a>
+    <a href="../how.html"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
+    <a href="../about.html"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
+    <a href="index.html" class="active">Blog</a>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-mobile"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-desktop"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="page-hero">
+  <div style="font-size:13px;margin-bottom:16px;"><a href="index.html" style="color:var(--g400);text-decoration:none;">← Blog</a></div>
+  <div class="eyebrow"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></div>
+  <h1><span data-t="fr">Comment concevoir un test technique data qui prédit vraiment la performance</span><span data-t="en">How to design a technical data test that actually predicts performance</span></h1>
+  <p><span data-t="fr">Beaucoup d'entretiens techniques data reposent encore sur des questions pièges ou des exercices déconnectés du travail réel. Le résultat : on écarte de bons profils, on en recrute d'autres qui « récitent » bien mais bloquent dès qu'une situation sort du script. Un test technique n'a qu'un objectif : <strong>prédire la performance future au poste</strong>. Voici comment le concevoir.</span><span data-t="en">Many technical data interviews still rely on trick questions or exercises disconnected from real work. The result: strong profiles get rejected, while others who "recite" well but freeze the moment a situation goes off-script get hired. A technical test has one job: <strong>to predict future performance in the role</strong>. Here's how to design one.</span></p>
+</div>
+<div class="page-body">
+  <h2><span data-t="fr">1. Partez du poste, pas d'une liste de mots-clés</span><span data-t="en">1. Start from the role, not a keyword list</span></h2>
+  <p><span data-t="fr">Avant d'écrire la moindre question, listez ce que la personne fera vraiment au quotidien : écrire des requêtes d'analyse, déboguer un pipeline, transformer une demande floue en tableau de bord, présenter une recommandation. Vos exercices doivent refléter ces situations. Un test truffé de mots-clés à cocher (« connaît-il les CTE ? les fenêtres ? ») mesure du vocabulaire, pas de la compétence.</span><span data-t="en">Before writing a single question, list what the person will actually do day to day: write analytical queries, debug a pipeline, turn a vague request into a dashboard, present a recommendation. Your exercises should mirror those situations. A test packed with boxes to tick ("do they know CTEs? window functions?") measures vocabulary, not skill.</span></p>
+  <h2><span data-t="fr">2. Testez plusieurs facettes, pas une seule</span><span data-t="en">2. Test several facets, not just one</span></h2>
+  <p><span data-t="fr">Un candidat peut écrire une requête correcte sans savoir l'expliquer — ou l'inverse. Ce sont des compétences distinctes. Une évaluation solide croise plusieurs formats : une <strong>question ouverte</strong> (sait-il expliquer un concept simplement ?), de la <strong>lecture de code</strong> (comprend-il ce qu'écrivent les autres ?), de la <strong>mise en pratique</strong> (écrit-il une requête juste ?) et une <strong>étude de cas ouverte</strong> (sait-il transformer une analyse en décision ?). Chaque format éclaire une facette différente.</span><span data-t="en">A candidate can write a correct query without being able to explain it — or the reverse. These are distinct skills. A solid assessment combines formats: an <strong>open question</strong> (can they explain a concept simply?), <strong>code reading</strong> (do they understand what others write?), <strong>hands-on practice</strong> (do they write a correct query?), and an <strong>open case study</strong> (can they turn analysis into a decision?). Each format reveals a different facet.</span></p>
+  <h2><span data-t="fr">3. Utilisez des données réalistes, voire un peu « sales »</span><span data-t="en">3. Use realistic — even slightly "messy" — data</span></h2>
+  <p><span data-t="fr">Les datasets d'exercice trop propres masquent une compétence essentielle : l'instinct qualité de données. Introduisez des valeurs manquantes, des doublons, une colonne mal nommée. Vous verrez immédiatement qui vérifie ses données avant de conclure — un réflexe qui sépare les profils fiables des autres.</span><span data-t="en">Overly clean practice datasets hide a key skill: data-quality instinct. Add missing values, duplicates, a badly named column. You'll immediately see who checks their data before concluding — a reflex that separates reliable profiles from the rest.</span></p>
+  <h2><span data-t="fr">4. Évaluez le raisonnement, pas seulement la réponse</span><span data-t="en">4. Assess the reasoning, not just the answer</span></h2>
+  <p><span data-t="fr">Deux candidats peuvent donner la même réponse ; seul le raisonnement les distingue. Faites <strong>penser à voix haute</strong>, demandez « pourquoi ce choix ? », « quelles sont les limites ? ». Et surtout, notez avec une <strong>grille explicite</strong> (cadrage, méthode, rigueur, priorisation, communication) plutôt qu'au feeling — sinon vous récompensez l'assurance, pas la justesse.</span><span data-t="en">Two candidates can give the same answer; only the reasoning tells them apart. Have them <strong>think out loud</strong>, ask "why this choice?", "what are the limits?". And crucially, score with an <strong>explicit rubric</strong> (framing, method, rigour, prioritisation, communication) rather than on gut feel — otherwise you reward confidence, not correctness.</span></p>
+  <h2><span data-t="fr">5. Calibrez la difficulté au niveau visé</span><span data-t="en">5. Calibrate difficulty to the target level</span></h2>
+  <p><span data-t="fr">La même question posée à un junior et à un senior ne mesure pas la même chose. Pour un senior, on attend qu'il anticipe les cas limites, questionne les hypothèses, chiffre l'impact. Pour un junior, on regarde les fondamentaux et la capacité à progresser avec un indice. Un test non calibré produit du bruit.</span><span data-t="en">The same question asked of a junior and a senior doesn't measure the same thing. From a senior, you expect them to anticipate edge cases, question assumptions, quantify impact. From a junior, you look at fundamentals and the ability to progress with a hint. An uncalibrated test produces noise.</span></p>
+  <h2><span data-t="fr">En résumé</span><span data-t="en">In short</span></h2>
+  <p><span data-t="fr">Un test technique qui prédit la performance est ancré dans le poste, multi-facettes, réaliste, centré sur le raisonnement et calibré au niveau. C'est exigeant à construire — et encore plus à faire passer de façon cohérente, entretien après entretien.</span><span data-t="en">A test that predicts performance is grounded in the role, multi-faceted, realistic, reasoning-centred and level-calibrated. It's demanding to build — and even harder to run consistently, interview after interview.</span></p>
+</div>
+<div class="cta-section">
+  <h2><span data-t="fr">Vous recrutez un profil data ?</span><span data-t="en">Hiring a data profile?</span></h2>
+  <p><span data-t="fr">Data Builder mène vos entretiens techniques et vous livre un rapport clair et détaillé sous 48h. Le premier entretien est offert.</span><span data-t="en">Data Builder runs your technical interviews and delivers a clear, detailed report within 48h. The first interview is free.</span></p>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-w">📅 <span data-t="fr">Réserver un appel</span><span data-t="en">Book a call</span></a>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="../how.html"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
+      <a href="../about.html"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
+      <a href="../cgu.html">CGU</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+    </div>
+    <div class="footer-copy">© 2025 Data Builder</div>
+  </div>
+</footer>
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">
+    <span data-t="fr">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span>
+    <span data-t="en">🍪 This site uses Google Analytics to measure audience.</span>
+    <a href="../cgu.html"><span data-t="fr">En savoir plus</span><span data-t="en">Learn more</span></a>
+  </div>
+  <div class="cookie-actions">
+    <button class="cookie-refuse" onclick="refuseCookies()"><span data-t="fr">Refuser</span><span data-t="en">Decline</span></button>
+    <button class="cookie-accept" onclick="acceptCookies()"><span data-t="fr">Accepter</span><span data-t="en">Accept</span></button>
+  </div>
+</div>
+<script>
+function setLang(l){document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');try{localStorage.setItem('db_lang',l);}catch(e){}}
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');document.getElementById('navToggle').classList.toggle('open');}
+(function(){try{var l=localStorage.getItem('db_lang');if(l==='fr'||l==='en')setLang(l);}catch(e){}})();
+(function(){if(localStorage.getItem('db_cookies'))document.getElementById('cookie-banner').classList.add('hidden');})();
+function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');loadGA();}
+function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
+</script>
+</body>
+</html>

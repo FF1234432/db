@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="google-site-verification" content="8SZrzJYllqiYbBtWCOoWmnLdrpN3F_ME8ZpR8RX4bxI"/>
+<title>Les questions SQL que je pose en entretien data — Data Builder</title>
+<meta name="description" content="8 questions SQL réelles posées en entretien technique data, du junior au lead, avec ce que nous évaluons et une réponse de référence."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../styles.css"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Data <b>Builder</b></a>
+  <div class="nav-links" id="navLinks">
+    <a href="../produit.html" style="background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;padding:5px 14px;border-radius:99px;font-weight:700"><span data-t="fr">Produit</span><span data-t="en">Product</span></a>
+    <a href="../how.html"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
+    <a href="../about.html"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
+    <a href="index.html" class="active">Blog</a>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-mobile"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
+  </div>
+  <div class="nav-right">
+    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-desktop"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div style="font-size:13px;margin-bottom:16px;"><a href="index.html" style="color:var(--g400);text-decoration:none;">← <span data-t="fr">Blog</span><span data-t="en">Blog</span></a></div>
+  <div class="eyebrow">SQL</div>
+  <h1><span data-t="fr">Les questions SQL que je pose en entretien data</span><span data-t="en">The SQL questions I ask in data interviews</span></h1>
+  <p>
+    <span data-t="fr">8 questions réelles, du junior au lead. Pour chacune : la question, ce que je cherche à évaluer, et une réponse de référence. Le but n'est jamais de piéger — c'est de voir comment le candidat raisonne.</span>
+    <span data-t="en">8 real questions, from junior to lead. For each: the question, what I'm looking to assess, and a model answer. The goal is never to trick anyone — it's to see how the candidate reasons.</span>
+  </p>
+</div>
+
+<div class="page-body">
+
+  <div class="q-nav">
+    <a href="#junior">Junior</a>
+    <a href="#confirme"><span data-t="fr">Confirmé</span><span data-t="en">Mid</span></a>
+    <a href="#senior">Senior</a>
+    <a href="#lead">Lead / Staff</a>
+  </div>
+
+  <!-- ============ JUNIOR ============ -->
+  <h2 id="junior">Junior</h2>
+
+  <div class="q-block">
+    <span class="q-level lvl-junior">Junior</span>
+    <div class="q-text">
+      <span data-t="fr">Quelle est la différence entre un <code>INNER JOIN</code> et un <code>LEFT JOIN</code> ? Donne un cas où le résultat change.</span>
+      <span data-t="en">What's the difference between an <code>INNER JOIN</code> and a <code>LEFT JOIN</code>? Give a case where the result changes.</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> comprend-il la conservation des lignes de la table de gauche et le comportement des <code>NULL</code> ? Le piège du filtre dans le <code>WHERE</code> sépare vraiment les profils.</span>
+      <span data-t="en"><strong>What I assess:</strong> do they understand that left-table rows are preserved, and how <code>NULL</code>s behave? The "filter in the <code>WHERE</code>" trap really separates candidates.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr"><code>INNER JOIN</code> ne renvoie que les lignes qui ont une correspondance des deux côtés. <code>LEFT JOIN</code> garde toutes les lignes de la table de gauche et complète avec <code>NULL</code> quand il n'y a pas de correspondance à droite.</p>
+        <p data-t="en"><code>INNER JOIN</code> returns only rows that match on both sides. <code>LEFT JOIN</code> keeps every row from the left table and fills with <code>NULL</code> when there's no match on the right.</p>
+        <p data-t="fr">Exemple : lister tous les clients et leur nombre de commandes. Avec <code>INNER JOIN</code>, les clients sans commande disparaissent ; avec <code>LEFT JOIN</code>, ils apparaissent avec un total à 0.</p>
+        <p data-t="en">Example: list all customers and their order count. With <code>INNER JOIN</code>, customers with no order disappear; with <code>LEFT JOIN</code>, they show up with a count of 0.</p>
+        <p data-t="fr"><strong>Le piège que j'attends :</strong> mettre une condition sur la table de droite dans le <code>WHERE</code> transforme silencieusement un <code>LEFT JOIN</code> en <code>INNER JOIN</code>. La condition doit aller dans le <code>ON</code>.</p>
+        <p data-t="en"><strong>The trap I'm watching for:</strong> putting a condition on the right table in the <code>WHERE</code> silently turns a <code>LEFT JOIN</code> back into an <code>INNER JOIN</code>. The condition belongs in the <code>ON</code>.</p>
+<pre><code>-- Casse le LEFT JOIN (clients sans commande perdus)
+SELECT c.id, COUNT(o.id)
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.status = 'paid'      -- filtre après jointure
+GROUP BY c.id;
+
+-- Correct : la condition va dans le ON
+SELECT c.id, COUNT(o.id)
+FROM customers c
+LEFT JOIN orders o
+  ON o.customer_id = c.id AND o.status = 'paid'
+GROUP BY c.id;</code></pre>
+      </div>
+    </details>
+  </div>
+
+  <div class="q-block">
+    <span class="q-level lvl-junior">Junior</span>
+    <div class="q-text">
+      <span data-t="fr"><code>WHERE</code> ou <code>HAVING</code> : où filtres-tu, et pourquoi ?</span>
+      <span data-t="en"><code>WHERE</code> or <code>HAVING</code>: where do you filter, and why?</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> la distinction avant / après agrégation, et une idée de l'ordre logique d'exécution d'une requête.</span>
+      <span data-t="en"><strong>What I assess:</strong> the before / after aggregation distinction, and a sense of a query's logical execution order.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr"><code>WHERE</code> filtre les lignes <em>avant</em> l'agrégation ; <code>HAVING</code> filtre <em>après</em>, sur le résultat des fonctions d'agrégat. L'ordre logique : <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</code>.</p>
+        <p data-t="en"><code>WHERE</code> filters rows <em>before</em> aggregation; <code>HAVING</code> filters <em>after</em>, on the aggregate results. Logical order: <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</code>.</p>
+        <p data-t="fr">Conséquence : <code>HAVING COUNT(*) > 5</code> est valide, mais <code>WHERE COUNT(*) > 5</code> ne l'est pas. Bonne pratique : mettre le maximum de conditions dans le <code>WHERE</code> — moins de lignes à agréger, requête plus rapide.</p>
+        <p data-t="en">So <code>HAVING COUNT(*) > 5</code> is valid, but <code>WHERE COUNT(*) > 5</code> isn't. Best practice: push as much as possible into the <code>WHERE</code> — fewer rows to aggregate means a faster query.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ CONFIRMÉ ============ -->
+  <h2 id="confirme"><span data-t="fr">Confirmé</span><span data-t="en">Mid-level</span></h2>
+
+  <div class="q-block">
+    <span class="q-level lvl-confirme"><span data-t="fr">Confirmé</span><span data-t="en">Mid</span></span>
+    <div class="q-text">
+      <span data-t="fr">Table <code>events(user_id, event_type, created_at)</code>. Garde uniquement le dernier événement par utilisateur.</span>
+      <span data-t="en">Table <code>events(user_id, event_type, created_at)</code>. Keep only the latest event per user.</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> maîtrise des window functions, et le choix de <code>ROW_NUMBER</code> plutôt que <code>RANK</code> pour garantir une seule ligne même en cas d'égalité de date.</span>
+      <span data-t="en"><strong>What I assess:</strong> command of window functions, and choosing <code>ROW_NUMBER</code> over <code>RANK</code> to guarantee a single row even on tied timestamps.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+<pre><code>SELECT user_id, event_type, created_at
+FROM (
+  SELECT *,
+         ROW_NUMBER() OVER (
+           PARTITION BY user_id
+           ORDER BY created_at DESC
+         ) AS rn
+  FROM events
+) t
+WHERE rn = 1;</code></pre>
+        <p data-t="fr"><code>ROW_NUMBER</code> garantit une ligne par utilisateur, même si deux événements ont la même date. Si on veut au contraire <em>toutes</em> les lignes ex-æquo, on prend <code>RANK</code>. Sur BigQuery ou Snowflake, <code>QUALIFY rn = 1</code> évite la sous-requête.</p>
+        <p data-t="en"><code>ROW_NUMBER</code> guarantees one row per user, even if two events share the same timestamp. If you actually want <em>all</em> tied rows, use <code>RANK</code> instead. On BigQuery or Snowflake, <code>QUALIFY rn = 1</code> removes the subquery.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="q-block">
+    <span class="q-level lvl-confirme"><span data-t="fr">Confirmé</span><span data-t="en">Mid</span></span>
+    <div class="q-text">
+      <span data-t="fr"><code>ROW_NUMBER</code>, <code>RANK</code>, <code>DENSE_RANK</code> : quelle différence sur un jeu avec des égalités ?</span>
+      <span data-t="en"><code>ROW_NUMBER</code>, <code>RANK</code>, <code>DENSE_RANK</code>: what's the difference on data with ties?</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> la compréhension fine du classement — beaucoup les confondent en les récitant.</span>
+      <span data-t="en"><strong>What I assess:</strong> a precise understanding of ranking — many recite them but mix them up.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr">Sur les valeurs <code>[100, 90, 90, 80]</code> :</p>
+        <p data-t="en">On the values <code>[100, 90, 90, 80]</code>:</p>
+<pre><code>valeur   ROW_NUMBER   RANK   DENSE_RANK
+ 100         1          1         1
+  90         2          2         2
+  90         3          2         2
+  80         4          4         3</code></pre>
+        <p data-t="fr"><code>ROW_NUMBER</code> numérote sans égalité (utile pour dédupliquer). <code>RANK</code> saute après une égalité (classement « sportif »). <code>DENSE_RANK</code> ne saute pas (top-N de valeurs distinctes).</p>
+        <p data-t="en"><code>ROW_NUMBER</code> numbers with no ties (great for deduplication). <code>RANK</code> skips after a tie (a "sports" ranking). <code>DENSE_RANK</code> doesn't skip (top-N of distinct values).</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ SENIOR ============ -->
+  <h2 id="senior">Senior</h2>
+
+  <div class="q-block">
+    <span class="q-level lvl-senior">Senior</span>
+    <div class="q-text">
+      <span data-t="fr">Renvoie le top 3 des produits par catégorie selon le chiffre d'affaires.</span>
+      <span data-t="en">Return the top 3 products per category by revenue.</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> combiner agrégation, window function et filtre proprement — et anticiper la question des performances.</span>
+      <span data-t="en"><strong>What I assess:</strong> combining aggregation, a window function and a filter cleanly — and anticipating the performance question.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+<pre><code>WITH sales AS (
+  SELECT category, product_id, SUM(amount) AS revenue
+  FROM order_items
+  GROUP BY category, product_id
+)
+SELECT category, product_id, revenue
+FROM (
+  SELECT *,
+         ROW_NUMBER() OVER (
+           PARTITION BY category
+           ORDER BY revenue DESC
+         ) AS rk
+  FROM sales
+) t
+WHERE rk <= 3
+ORDER BY category, revenue DESC;</code></pre>
+        <p data-t="fr">On agrège d'abord le CA par produit, puis on classe à l'intérieur de chaque catégorie. J'attends une discussion : <code>ROW_NUMBER</code> vs <code>RANK</code> selon qu'on veut départager les CA identiques, et l'intérêt d'un index sur <code>(category, amount)</code>.</p>
+        <p data-t="en">First aggregate revenue per product, then rank within each category. I expect a discussion: <code>ROW_NUMBER</code> vs <code>RANK</code> depending on how tied revenues should be handled, and the value of an index on <code>(category, amount)</code>.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="q-block">
+    <span class="q-level lvl-senior">Senior</span>
+    <div class="q-text">
+      <span data-t="fr">Calcule la rétention mensuelle : parmi les utilisateurs actifs un mois M, combien reviennent en M+1 ?</span>
+      <span data-t="en">Compute monthly retention: of the users active in month M, how many come back in M+1?</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> le raisonnement sur les cohortes et les dates, et la conscience du coût des <code>DISTINCT</code>.</span>
+      <span data-t="en"><strong>What I assess:</strong> reasoning about cohorts and dates, and awareness of the cost of <code>DISTINCT</code>.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr">On construit l'ensemble des couples (utilisateur, mois actif), puis on relie chaque mois au mois suivant :</p>
+        <p data-t="en">Build the set of (user, active month) pairs, then link each month to the next one:</p>
+<pre><code>WITH active AS (
+  SELECT DISTINCT user_id,
+         DATE_TRUNC('month', created_at) AS m
+  FROM events
+)
+SELECT a.m AS cohort_month,
+       COUNT(DISTINCT a.user_id) AS active_m,
+       COUNT(DISTINCT b.user_id) AS retained_m1,
+       ROUND(COUNT(DISTINCT b.user_id) * 100.0
+             / COUNT(DISTINCT a.user_id), 1) AS retention_pct
+FROM active a
+LEFT JOIN active b
+  ON b.user_id = a.user_id
+ AND b.m = a.m + INTERVAL '1 month'
+GROUP BY a.m
+ORDER BY a.m;</code></pre>
+        <p data-t="fr">La syntaxe de date dépend du moteur (<code>DATE_TRUNC</code>, <code>DATEADD</code>…). Un senior signale le coût des <code>DISTINCT</code> et propose de pré-agréger, voire de matérialiser la table <code>active</code>.</p>
+        <p data-t="en">Date syntax depends on the engine (<code>DATE_TRUNC</code>, <code>DATEADD</code>…). A senior flags the cost of the <code>DISTINCT</code>s and suggests pre-aggregating, or even materialising the <code>active</code> table.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ LEAD ============ -->
+  <h2 id="lead">Lead / Staff</h2>
+
+  <div class="q-block">
+    <span class="q-level lvl-lead">Lead / Staff</span>
+    <div class="q-text">
+      <span data-t="fr">Une requête tourne en 40 s en production. Comment tu diagnostiques, et par où tu commences ?</span>
+      <span data-t="en">A query runs in 40s in production. How do you diagnose it, and where do you start?</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> une méthode, pas juste du code. Le réflexe « mesurer avant d'optimiser » et le vocabulaire du plan d'exécution.</span>
+      <span data-t="en"><strong>What I assess:</strong> a method, not just code. The "measure before optimising" reflex and the vocabulary of the execution plan.</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr">Une bonne réponse suit une méthode :</p>
+        <p data-t="en">A good answer follows a method:</p>
+        <p data-t="fr">1. <strong>Lire le plan</strong> (<code>EXPLAIN ANALYZE</code>) : repérer les scans complets sur grosses tables, les <em>nested loops</em> coûteux, et les écarts entre lignes estimées et réelles (statistiques obsolètes).<br>
+        2. <strong>Sargabilité</strong> : une fonction sur la colonne filtrée (<code>WHERE DATE(created_at) = …</code>) empêche l'usage d'un index. Réécrire en <code>created_at >= … AND created_at < …</code>.<br>
+        3. <strong>Index</strong> manquants sur les colonnes de jointure et de filtre.<br>
+        4. <strong>Réduire tôt</strong> : filtrer avant de joindre, éviter <code>SELECT *</code>.<br>
+        5. Si la requête est récurrente : envisager partitionnement ou table matérialisée.</p>
+        <p data-t="en">1. <strong>Read the plan</strong> (<code>EXPLAIN ANALYZE</code>): spot full scans on large tables, expensive nested loops, and gaps between estimated and actual rows (stale statistics).<br>
+        2. <strong>Sargability</strong>: a function on the filtered column (<code>WHERE DATE(created_at) = …</code>) prevents index use. Rewrite as <code>created_at >= … AND created_at < …</code>.<br>
+        3. Missing <strong>indexes</strong> on join and filter columns.<br>
+        4. <strong>Reduce early</strong>: filter before joining, avoid <code>SELECT *</code>.<br>
+        5. If the query is recurring: consider partitioning or a materialised table.</p>
+        <p data-t="fr">Le drapeau rouge, c'est le candidat qui ajoute des index à l'aveugle sans regarder le plan.</p>
+        <p data-t="en">The red flag is a candidate who adds indexes blindly without ever looking at the plan.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="q-block">
+    <span class="q-level lvl-lead">Lead / Staff</span>
+    <div class="q-text">
+      <span data-t="fr">Modélise une dimension à historisation lente (SCD Type 2). Qu'est-ce que ça change dans les requêtes ?</span>
+      <span data-t="en">Model a slowly changing dimension (SCD Type 2). What does it change in your queries?</span>
+    </div>
+    <div class="q-eval">
+      <span data-t="fr"><strong>Ce que j'évalue :</strong> une vision modélisation, pas seulement de la syntaxe. Sait-il pourquoi et quand historiser ?</span>
+      <span data-t="en"><strong>What I assess:</strong> a modelling perspective, not just syntax. Do they know why and when to keep history?</span>
+    </div>
+    <details class="answer">
+      <summary><span data-t="fr">Réponse de référence</span><span data-t="en">Model answer</span></summary>
+      <div class="answer-body">
+        <p data-t="fr">Une SCD Type 2 conserve l'historique : à chaque changement, on ajoute une <em>nouvelle</em> ligne avec des colonnes <code>valid_from</code>, <code>valid_to</code> (ou <code>NULL</code> pour la version courante) et souvent un flag <code>is_current</code>.</p>
+        <p data-t="en">An SCD Type 2 preserves history: on each change you insert a <em>new</em> row with <code>valid_from</code>, <code>valid_to</code> columns (or <code>NULL</code> for the current version) and often an <code>is_current</code> flag.</p>
+        <p data-t="fr">Clé technique vs clé métier : la table de faits pointe vers la <em>surrogate key</em> de la version valide au moment de l'événement. Dans les requêtes, on joint sur l'intervalle :</p>
+        <p data-t="en">Surrogate key vs business key: the fact table points to the surrogate key of the version valid at event time. In queries, you join on the interval:</p>
+<pre><code>SELECT f.*, d.segment
+FROM fact_sales f
+JOIN dim_customer d
+  ON d.customer_bk = f.customer_bk
+ AND f.sale_date >= d.valid_from
+ AND f.sale_date <  COALESCE(d.valid_to, DATE '9999-12-31');</code></pre>
+        <p data-t="fr">Ça permet de répondre à « quel était le segment du client <em>au moment de l'achat</em> » plutôt qu'aujourd'hui. Points de vigilance : fuseaux horaires, idempotence du chargement, et l'explosion du volume si les changements sont fréquents.</p>
+        <p data-t="en">This answers "what was the customer's segment <em>at purchase time</em>" rather than today. Watch out for: time zones, load idempotency, and volume blow-up if changes are frequent.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="cta-box">
+    <h3><span data-t="fr">Vous recrutez sur SQL ?</span><span data-t="en">Hiring for SQL?</span></h3>
+    <p><span data-t="fr">On fait passer ces entretiens à votre place et on vous livre un rapport d'évaluation détaillé sous 48h. Premier entretien gratuit.</span><span data-t="en">We run these interviews for you and deliver a detailed assessment report within 48h. First interview free.</span></p>
+    <div class="cta-box-actions">
+      <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-calendly">📅 <span data-t="fr">Réserver un appel</span><span data-t="en">Book a call</span></a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="../how.html"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
+      <a href="../about.html"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
+      <a href="../cgu.html">CGU</a>
+      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+    </div>
+    <div class="footer-copy">© 2025 Data Builder</div>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">
+    <span data-t="fr">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span>
+    <span data-t="en">🍪 This site uses Google Analytics to measure audience.</span>
+    <a href="../cgu.html"><span data-t="fr">En savoir plus</span><span data-t="en">Learn more</span></a>
+  </div>
+  <div class="cookie-actions">
+    <button class="cookie-refuse" onclick="refuseCookies()"><span data-t="fr">Refuser</span><span data-t="en">Decline</span></button>
+    <button class="cookie-accept" onclick="acceptCookies()"><span data-t="fr">Accepter</span><span data-t="en">Accept</span></button>
+  </div>
+</div>
+
+<script>
+function setLang(l){document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');try{localStorage.setItem('db_lang',l);}catch(e){}}
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');document.getElementById('navToggle').classList.toggle('open');}
+(function(){try{var l=localStorage.getItem('db_lang');if(l==='fr'||l==='en')setLang(l);}catch(e){}})();
+(function(){if(localStorage.getItem('db_cookies'))document.getElementById('cookie-banner').classList.add('hidden');})();
+function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');loadGA();}
+function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
+</script>
+</body>
+</html>
