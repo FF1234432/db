@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique dbt : ce qu'on évalue vraiment en entretien — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien technique dbt : matérialisations, ref/sources, tests, incrémental et snapshots, structure — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-dbt-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique dbt</span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique dbt : ce qu'on évalue vraiment en entretien</h1>
+<p class="ai">dbt est devenu le standard de la couche de transformation dans la stack data moderne. Mais « faire du dbt » va de lancer <code>dbt run</code> sur des modèles copiés-collés à concevoir un projet modulaire, testé, documenté et gouverné. L'écart de niveau est immense — voici comment le mesurer.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#mat">Modélisation et matérialisations</a></li><li><a href="#ref">ref() et sources</a></li><li><a href="#test">Tests et qualité</a></li><li><a href="#inc">Incrémental et snapshots</a></li><li><a href="#str">Structure et conventions</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>dbt (data build tool) a industrialisé la transformation de la donnée : versionnée, testée, documentée, exécutée dans un DAG. Sur le papier, tout le monde « connaît dbt ». En entretien, l'écart se creuse vite entre celui qui empile des modèles et celui qui conçoit une couche analytique maintenable. Voici les cinq dimensions que nous évaluons, et les signaux qui trient les profils.</p>
+
+<h2 id="mat"><span class="sn">1</span>Modélisation et matérialisations</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment choisissez-vous entre une vue, une table et un modèle incrémental — et pourquoi ?</p></div>
+<p>C'est la première ligne de partage. Un profil solide justifie chaque choix par le coût de reconstruction, la fréquence de lecture et la volumétrie, pas par habitude.</p>
+<ul>
+<li><strong><code>view</code></strong> — recalculée à chaque requête, zéro stockage : idéale pour la couche de <em>staging</em>.</li>
+<li><strong><code>table</code></strong> — matérialisée, rapide à lire mais coûteuse à reconstruire : pour les <em>marts</em> souvent consommés.</li>
+<li><strong><code>incremental</code></strong> — ne traite que les nouvelles lignes : indispensable dès que la reconstruction complète devient prohibitive.</li>
+<li><strong><code>ephemeral</code></strong> — jamais matérialisée, inlinée en CTE dans les modèles qui l'utilisent.</li>
+</ul>
+<div class="cl"><p><strong>Bon réflexe :</strong> vue par défaut, table pour les marts très lus, incrémental seulement quand le coût le justifie. Matérialiser tout en table « pour aller vite » est un signal de méconnaissance des coûts.</p></div>
+
+<h2 id="ref"><span class="sn">2</span>ref() et sources</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi ne faut-il jamais écrire un nom de table en dur dans un modèle ?</p></div>
+<ul>
+<li><strong><code>ref()</code></strong> — référence un autre modèle et construit automatiquement le graphe de dépendances (DAG).</li>
+<li><strong><code>source()</code></strong> — déclare et documente les tables brutes en entrée du projet.</li>
+<li><strong>Lineage</strong> — dbt sait dans quel ordre construire, et ce qui casse en aval quand un modèle change.</li>
+<li><strong><code>source freshness</code></strong> — détecte une source qui n'est plus alimentée avant que le rapport ne soit faux.</li>
+</ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui code un nom de table en dur (<code>from analytics.orders</code>) casse le lineage et l'ordonnancement. C'est le premier réflexe qui distingue un utilisateur de dbt d'un simple exécutant de SQL.</p></div>
+
+<h2 id="test"><span class="sn">3</span>Tests et qualité</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment garantissez-vous la fiabilité de ce que consomment les analystes en aval ?</p></div>
+<ul>
+<li><strong>Tests génériques</strong> : <code>unique</code>, <code>not_null</code>, <code>accepted_values</code>, <code>relationships</code> — déclaratifs, dans le YAML.</li>
+<li><strong>Tests singuliers</strong> : une requête SQL qui doit renvoyer zéro ligne pour passer.</li>
+<li><strong>Paquets</strong> : <code>dbt-utils</code>, <code>dbt-expectations</code> pour des assertions avancées (unicité composite, distribution, fraîcheur).</li>
+<li><strong>Contrats et versions de modèles</strong> (dbt 1.5+) — figer le schéma d'un modèle consommé par d'autres équipes.</li>
+</ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un projet sans tests est un projet dont personne ne connaît la fiabilité. En production, c'est un drapeau rouge — surtout si le candidat n'a pas de réponse à « comment sauriez-vous qu'une clé est dupliquée ? ».</p></div>
+
+<h2 id="inc"><span class="sn">4</span>Incrémental et snapshots</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous une table de faits volumineuse, et l'historisation d'une dimension qui change ?</p></div>
+<div class="cb"><code>{{ config(materialized='incremental', unique_key='order_id') }}
+
+select * from {{ ref('stg_orders') }}
+{% if is_incremental() %}
+  where updated_at &gt; (select max(updated_at) from {{ this }})
+{% endif %}</code></div>
+<ul>
+<li><strong><code>is_incremental()</code> + <code>unique_key</code></strong> — ne traiter que le delta, en re-fusionnant proprement les lignes modifiées.</li>
+<li><strong>Stratégies</strong> : <code>append</code>, <code>merge</code>, <code>delete+insert</code>, <code>insert_overwrite</code> — le bon choix dépend du moteur et de la donnée.</li>
+<li><strong>Le piège des <em>late-arriving data</em></strong> — prévoir une fenêtre de rattrapage plutôt qu'un simple <code>max()</code>.</li>
+<li><strong><code>snapshots</code></strong> — capturer l'historique d'une dimension (SCD type 2) sans réécrire la logique à la main.</li>
+</ul>
+
+<h2 id="str"><span class="sn">5</span>Structure, conventions et documentation</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment organisez-vous un projet dbt destiné à durer et à être repris par une équipe ?</p></div>
+<ul>
+<li><strong>Couches</strong> : <em>staging</em> (1:1 avec les sources, renommage et typage), <em>intermediate</em> (logique réutilisable), <em>marts</em> (modèles métier).</li>
+<li><strong>Conventions de nommage</strong> : <code>stg_</code>, <code>int_</code>, <code>fct_</code>, <code>dim_</code> — la cohérence prime sur le goût personnel.</li>
+<li><strong>Macros et packages</strong> pour factoriser la logique répétée.</li>
+<li><strong>Documentation et <code>exposures</code></strong> — un projet qui se documente lui-même et déclare ses usages en aval.</li>
+<li><strong>CI/CD</strong> : <em>slim CI</em> avec <code>state:modified</code> pour ne (re)construire et tester que ce qui change.</li>
+</ul>
+<div class="cl"><p><strong>Bon réflexe :</strong> un senior parle de conventions d'équipe et de CI avant de parler de syntaxe. La maintenabilité, pas la virtuosité, fait la différence à l'échelle.</p></div>
+
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Matérialisations de base, <code>ref</code>/<code>source</code>, tests génériques</td><td>Écrit un modèle propre, ajoute <code>unique</code>/<code>not_null</code></td><td>Code un nom de table en dur</td></tr>
+<tr><td><span class="bd bm">Confirmé</span></td><td>Incrémental, macros, packages, structure en couches</td><td>A construit une couche marts testée et documentée</td><td>Ne sait pas quand utiliser <code>incremental</code></td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Snapshots (SCD2), contrats, CI slim, performance et coûts</td><td>A mis en place l'historisation et la CI <code>state:modified</code></td><td>Ne teste pas ses modèles</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Gouvernance, mesh / multi-projets, standards d'équipe</td><td>A défini les conventions et le lineage cross-équipes</td><td>Ne peut pas expliquer <code>view</code> vs <code>table</code> vs <code>incremental</code></td></tr>
+</tbody></table>
+</div>
+</div></div>
+
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>dbt technical interview</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">dbt technical interview: what we really assess</h1>
+<p class="ai">dbt has become the standard transformation layer of the modern data stack. But "doing dbt" ranges from running <code>dbt run</code> on copy-pasted models to designing a modular, tested, documented and governed project. The gap in level is huge — here's how to measure it.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#mat">Modelling and materializations</a></li><li><a href="#ref">ref() and sources</a></li><li><a href="#test">Tests and quality</a></li><li><a href="#inc">Incremental and snapshots</a></li><li><a href="#str">Structure and conventions</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>dbt (data build tool) industrialized data transformation: versioned, tested, documented, run in a DAG. On paper, everyone "knows dbt". In an interview, the gap widens fast between someone who stacks models and someone who designs a maintainable analytics layer. Here are the five dimensions we assess, and the signals that sort candidates.</p>
+
+<h2 id="mat"><span class="sn">1</span>Modelling and materializations</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you choose between a view, a table and an incremental model — and why?</p></div>
+<p>This is the first dividing line. A strong profile justifies each choice by rebuild cost, read frequency and volume, not by habit.</p>
+<ul>
+<li><strong><code>view</code></strong> — recomputed on every query, zero storage: ideal for the <em>staging</em> layer.</li>
+<li><strong><code>table</code></strong> — materialized, fast to read but expensive to rebuild: for often-consumed <em>marts</em>.</li>
+<li><strong><code>incremental</code></strong> — processes only new rows: essential once a full rebuild becomes prohibitive.</li>
+<li><strong><code>ephemeral</code></strong> — never materialized, inlined as a CTE in the models that use it.</li>
+</ul>
+<div class="cl"><p><strong>Good reflex:</strong> view by default, table for heavily-read marts, incremental only when cost justifies it. Materializing everything as a table "to go fast" signals a lack of cost awareness.</p></div>
+
+<h2 id="ref"><span class="sn">2</span>ref() and sources</h2>
+<div class="sq"><div class="sl">Key question</div><p>Why should you never hard-code a table name in a model?</p></div>
+<ul>
+<li><strong><code>ref()</code></strong> — references another model and automatically builds the dependency graph (DAG).</li>
+<li><strong><code>source()</code></strong> — declares and documents the raw input tables of the project.</li>
+<li><strong>Lineage</strong> — dbt knows the build order, and what breaks downstream when a model changes.</li>
+<li><strong><code>source freshness</code></strong> — detects a source that stopped loading before the report goes wrong.</li>
+</ul>
+<div class="cl"><p><strong>Warning signal:</strong> a candidate who hard-codes a table name (<code>from analytics.orders</code>) breaks lineage and scheduling. It's the first reflex that separates a dbt user from a mere SQL executor.</p></div>
+
+<h2 id="test"><span class="sn">3</span>Tests and quality</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you guarantee the reliability of what analysts consume downstream?</p></div>
+<ul>
+<li><strong>Generic tests</strong>: <code>unique</code>, <code>not_null</code>, <code>accepted_values</code>, <code>relationships</code> — declarative, in YAML.</li>
+<li><strong>Singular tests</strong>: a SQL query that must return zero rows to pass.</li>
+<li><strong>Packages</strong>: <code>dbt-utils</code>, <code>dbt-expectations</code> for advanced assertions (composite uniqueness, distribution, freshness).</li>
+<li><strong>Model contracts and versions</strong> (dbt 1.5+) — freeze the schema of a model consumed by other teams.</li>
+</ul>
+<div class="cl"><p><strong>Warning signal:</strong> a project without tests is a project whose reliability nobody knows. In production it's a red flag — especially if the candidate has no answer to "how would you know a key is duplicated?".</p></div>
+
+<h2 id="inc"><span class="sn">4</span>Incremental and snapshots</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you handle a large fact table, and the historization of a changing dimension?</p></div>
+<div class="cb"><code>{{ config(materialized='incremental', unique_key='order_id') }}
+
+select * from {{ ref('stg_orders') }}
+{% if is_incremental() %}
+  where updated_at &gt; (select max(updated_at) from {{ this }})
+{% endif %}</code></div>
+<ul>
+<li><strong><code>is_incremental()</code> + <code>unique_key</code></strong> — process only the delta, cleanly merging changed rows.</li>
+<li><strong>Strategies</strong>: <code>append</code>, <code>merge</code>, <code>delete+insert</code>, <code>insert_overwrite</code> — the right one depends on the engine and the data.</li>
+<li><strong>The <em>late-arriving data</em> trap</strong> — plan a catch-up window rather than a naive <code>max()</code>.</li>
+<li><strong><code>snapshots</code></strong> — capture a dimension's history (SCD type 2) without hand-rolling the logic.</li>
+</ul>
+
+<h2 id="str"><span class="sn">5</span>Structure, conventions and documentation</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you organize a dbt project meant to last and be picked up by a team?</p></div>
+<ul>
+<li><strong>Layers</strong>: <em>staging</em> (1:1 with sources, renaming and typing), <em>intermediate</em> (reusable logic), <em>marts</em> (business models).</li>
+<li><strong>Naming conventions</strong>: <code>stg_</code>, <code>int_</code>, <code>fct_</code>, <code>dim_</code> — consistency beats personal taste.</li>
+<li><strong>Macros and packages</strong> to factor out repeated logic.</li>
+<li><strong>Documentation and <code>exposures</code></strong> — a project that documents itself and declares its downstream uses.</li>
+<li><strong>CI/CD</strong>: <em>slim CI</em> with <code>state:modified</code> to (re)build and test only what changes.</li>
+</ul>
+<div class="cl"><p><strong>Good reflex:</strong> a senior talks about team conventions and CI before syntax. Maintainability, not virtuosity, makes the difference at scale.</p></div>
+
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>GO signal</th><th>NO-GO</th></tr></thead><tbody>
+<tr><td><span class="bd bj">Junior</span></td><td>Basic materializations, <code>ref</code>/<code>source</code>, generic tests</td><td>Writes a clean model, adds <code>unique</code>/<code>not_null</code></td><td>Hard-codes a table name</td></tr>
+<tr><td><span class="bd bm">Mid-level</span></td><td>Incremental, macros, packages, layered structure</td><td>Has built a tested, documented marts layer</td><td>Doesn't know when to use <code>incremental</code></td></tr>
+<tr><td><span class="bd bs">Senior</span></td><td>Snapshots (SCD2), contracts, slim CI, performance and cost</td><td>Has set up historization and <code>state:modified</code> CI</td><td>Doesn't test their models</td></tr>
+<tr><td><span class="bd bl">Lead</span></td><td>Governance, mesh / multi-project, team standards</td><td>Has defined conventions and cross-team lineage</td><td>Can't explain <code>view</code> vs <code>table</code> vs <code>incremental</code></td></tr>
+</tbody></table>
+</div>
+</div></div>
+
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+
+<script>
+var _L='fr';
+var T={fr:{title:"Test technique dbt : ce qu'on évalue vraiment en entretien",desc:"Les 5 dimensions d'un entretien technique dbt : matérialisations, ref/sources, tests, incrémental et snapshots, structure — avec une grille GO/NO-GO par niveau."},
+       en:{title:"dbt technical interview: what we really assess",desc:"The 5 dimensions of a dbt technical interview: materializations, ref/sources, tests, incremental and snapshots, structure — with a GO/NO-GO level grid."}};
+function setLang(l){
+  _L=l;
+  document.getElementById('btn-fr').classList.toggle('active',l==='fr');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('body-fr').style.display=l==='fr'?'':'none';
+  document.getElementById('body-en').style.display=l==='en'?'':'none';
+  document.documentElement.lang=l;
+  document.title=T[l].title+' — Data Builder';
+  var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;
+  document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});
+  try{localStorage.setItem('db_lang',l)}catch(e){}
+}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>
