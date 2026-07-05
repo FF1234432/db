@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Python pour la data : ce qu'on évalue vraiment — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien Python data : pandas, nettoyage, code de qualité, APIs et performance — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-python-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique Python pour la data </span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Python pour la data : ce qu'on évalue vraiment</h1>
+<p class="ai">Python est le couteau suisse de la data. Mais l'écart est immense entre empiler des <code>apply</code> et écrire un pipeline vectorisé, testé et robuste en production. Voici ce qu'on évalue vraiment.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Data Analyst / Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#pd">pandas : manipulation</a></li><li><a href="#clean">Nettoyage et qualité des données</a></li><li><a href="#code">Code de qualité</a></li><li><a href="#api">APIs et entrées/sorties</a></li><li><a href="#perf">Performance et volumétrie</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>« Faire du Python » en data, c'est surtout manipuler de la donnée proprement et écrire du code qui tient en production. On regarde autant la rigueur que la connaissance de la syntaxe. Cinq dimensions.</p>
+<h2 id="pd"><span class="sn">1</span>pandas : manipulation</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment agréger et joindre deux DataFrames proprement — et pourquoi éviter une boucle for sur les lignes ?</p></div>
+<ul><li><code>merge</code>/<code>join</code> en maîtrisant le type (inner/left) et les clés.</li><li><code>groupby().agg()</code> avec plusieurs agrégats nommés.</li><li>Vectorisation plutôt que <code>iterrows</code>/<code>apply</code> ligne à ligne (10 à 100× plus rapide).</li><li>Gestion des <code>dtypes</code> et de la mémoire (categorical, downcast).</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> boucler avec <code>iterrows</code> pour une opération vectorisable révèle une méconnaissance du coût — signal faible sur de vrais volumes.</p></div>
+<h2 id="clean"><span class="sn">2</span>Nettoyage et qualité des données</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>On vous donne un CSV sale (NA, doublons, types incohérents). Comment le fiabilisez-vous ?</p></div>
+<ul><li>Valeurs manquantes : diagnostiquer avant de <code>dropna</code>/<code>fillna</code> à l'aveugle.</li><li>Doublons : détecter avec <code>duplicated</code>, comprendre la granularité attendue.</li><li>Types et dates : <code>astype</code>, <code>to_datetime</code>, fuseaux horaires.</li><li>Valeurs aberrantes : les repérer, décider quoi en faire (garder/écarter) et le documenter.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> conclure sans avoir vérifié NA et doublons est le réflexe qui distingue un profil fragile d'un profil fiable.</p></div>
+<h2 id="code"><span class="sn">3</span>Code de qualité</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment structurez-vous un script data pour qu'il tienne en production et soit repris par l'équipe ?</p></div>
+<ul><li>Fonctions et classes réutilisables plutôt qu'un long script monolithique.</li><li>Exceptions ciblées et <em>logging</em> structuré plutôt que des <code>print</code>.</li><li>Tests unitaires : <code>pytest</code>, fixtures, cas limites.</li><li>Configuration et secrets hors du code (variables d'environnement, gestionnaire de secrets).</li></ul>
+<h2 id="api"><span class="sn">4</span>APIs et entrées/sorties</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment récupérez-vous des données d'une API paginée de façon robuste ?</p></div>
+<div class="cb"><code>for page in range(1, n+1):
+    r = session.get(url, params={'page': page}, timeout=10)
+    r.raise_for_status()          # échoue vite et clairement
+    rows += r.json()['data']
+    time.sleep(backoff)           # respecter le rate limit</code></div>
+<ul><li>Pagination + <em>retry</em> avec <em>backoff</em> exponentiel sur les erreurs transitoires.</li><li><code>timeout</code> systématique et gestion du <em>rate limit</em>.</li><li>Authentification propre (token, refresh) sans secret en dur.</li><li>Formats de sortie : Parquet plutôt que CSV pour la donnée volumineuse.</li></ul>
+<h2 id="perf"><span class="sn">5</span>Performance et volumétrie</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Le dataset ne tient plus en mémoire. Que faites-vous ?</p></div>
+<ul><li>Réduire l'empreinte : <code>dtypes</code> économes, colonnes utiles seulement, <code>categorical</code>.</li><li>Traitement par lots (<em>chunking</em>) plutôt que tout charger d'un coup.</li><li>Passer à un moteur adapté : DuckDB / Polars en local, Spark à l'échelle.</li><li>Savoir <em>quand</em> quitter pandas est un marqueur de séniorité.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>pandas de base, lecture/écriture de fichiers</td><td>Agrège et joint proprement, vérifie ses données</td><td>Boucle for pour une opération vectorisable</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Vectorisation, nettoyage, fonctions, tests</td><td>Écrit du code testé, gère les cas limites</td><td>Ne teste rien et abuse des print</td></tr><tr><td><span class="bd bs">Senior</span></td><td>APIs robustes, logging, perf/volumétrie</td><td>Sait quand quitter pandas, sécurise les secrets</td><td>Met des secrets en dur dans le code</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture de pipelines, standards, packaging</td><td>Définit les conventions et l'outillage d'équipe</td><td>Ne peut pas expliquer un choix d'architecture</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Python technical interview for data</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">Python technical interview for data: what we really assess</h1>
+<p class="ai">Python is the data Swiss army knife. But the gap is huge between stacking <code>apply</code> calls and writing a vectorized, tested, production-robust pipeline. Here's what we really assess.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Data Analyst / Data Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#pd">pandas: manipulation</a></li><li><a href="#clean">Data cleaning and quality</a></li><li><a href="#code">Quality code</a></li><li><a href="#api">APIs and I/O</a></li><li><a href="#perf">Performance and volume</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>‘Doing Python’ in data mostly means handling data cleanly and writing code that survives production. We look at rigour as much as syntax knowledge. Five dimensions.</p>
+<h2 id="pd"><span class="sn">1</span>pandas: manipulation</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you aggregate and join two DataFrames cleanly — and why avoid a for loop over rows?</p></div>
+<ul><li><code>merge</code>/<code>join</code>, mastering the type (inner/left) and the keys.</li><li><code>groupby().agg()</code> with several named aggregates.</li><li>Vectorization over row-wise <code>iterrows</code>/<code>apply</code> (10–100× faster).</li><li>Managing <code>dtypes</code> and memory (categorical, downcast).</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> looping with <code>iterrows</code> for a vectorizable operation reveals a lack of cost awareness — a weak signal on real volumes.</p></div>
+<h2 id="clean"><span class="sn">2</span>Data cleaning and quality</h2>
+<div class="sq"><div class="sl">Key question</div><p>You're given a messy CSV (NAs, duplicates, inconsistent types). How do you make it reliable?</p></div>
+<ul><li>Missing values: diagnose before blindly <code>dropna</code>/<code>fillna</code>.</li><li>Duplicates: detect with <code>duplicated</code>, understand the expected granularity.</li><li>Types and dates: <code>astype</code>, <code>to_datetime</code>, time zones.</li><li>Outliers: spot them, decide what to do (keep/remove) and document it.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> concluding without checking NAs and duplicates is the reflex that separates a fragile profile from a reliable one.</p></div>
+<h2 id="code"><span class="sn">3</span>Quality code</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you structure a data script so it survives production and can be picked up by the team?</p></div>
+<ul><li>Reusable functions and classes rather than one long monolithic script.</li><li>Targeted exceptions and structured <em>logging</em> rather than <code>print</code>.</li><li>Unit tests: <code>pytest</code>, fixtures, edge cases.</li><li>Config and secrets out of the code (env vars, secret manager).</li></ul>
+<h2 id="api"><span class="sn">4</span>APIs and I/O</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you fetch data from a paginated API robustly?</p></div>
+<div class="cb"><code>for page in range(1, n+1):
+    r = session.get(url, params={'page': page}, timeout=10)
+    r.raise_for_status()          # échoue vite et clairement
+    rows += r.json()['data']
+    time.sleep(backoff)           # respecter le rate limit</code></div>
+<ul><li>Pagination + <em>retry</em> with exponential <em>backoff</em> on transient errors.</li><li>Systematic <code>timeout</code> and <em>rate limit</em> handling.</li><li>Clean auth (token, refresh) with no hard-coded secret.</li><li>Output formats: Parquet over CSV for large data.</li></ul>
+<h2 id="perf"><span class="sn">5</span>Performance and volume</h2>
+<div class="sq"><div class="sl">Key question</div><p>The dataset no longer fits in memory. What do you do?</p></div>
+<ul><li>Reduce footprint: lean <code>dtypes</code>, only useful columns, <code>categorical</code>.</li><li>Batch processing (<em>chunking</em>) rather than loading everything at once.</li><li>Move to a fitting engine: DuckDB / Polars locally, Spark at scale.</li><li>Knowing <em>when</em> to leave pandas is a seniority marker.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Basic pandas, file read/write</td><td>Aggregates and joins cleanly, checks the data</td><td>for loop for a vectorizable operation</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Vectorization, cleaning, functions, tests</td><td>Writes tested code, handles edge cases</td><td>Tests nothing and overuses print</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Robust APIs, logging, perf/volume</td><td>Knows when to leave pandas, secures secrets</td><td>Hard-codes secrets in the code</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Pipeline architecture, standards, packaging</td><td>Defines team conventions and tooling</td><td>Can't justify an architecture choice</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test technique Python pour la data : ce qu'on évalue vraiment",desc:"Les 5 dimensions d'un entretien Python data : pandas, nettoyage, code de qualité, APIs et performance — avec une grille GO/NO-GO par niveau."},en:{title:'Python technical interview for data: what we really assess',desc:'The 5 dimensions of a Python data interview: pandas, cleaning, quality code, APIs and performance — with a GO/NO-GO level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

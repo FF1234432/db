@@ -1,211 +1,138 @@
 <!DOCTYPE html>
 <html lang="fr" data-lang="fr">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="google-site-verification" content="8SZrzJYllqiYbBtWCOoWmnLdrpN3F_ME8ZpR8RX4bxI"/>
-<title>Blog — Data Builder</title>
-<meta name="description" content="Le blog Data Builder : guides pour évaluer et recruter des profils data, et les questions de nos entretiens techniques."/>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzRjMWQ5NSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5EQjwvdGV4dD48L3N2Zz4="/>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Blog — Guides techniques data | Data Builder</title>
+<meta name="description" content="Guides techniques pour évaluer les compétences data en entretien : SQL, Python, Spark, dbt… Par niveau, avec grille GO/NO-GO."/>
+<link rel="canonical" href="https://www.databuilder.io/blog"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="../styles.css"/>
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+
+.hero2{max-width:var(--mx);margin:0 auto;padding:56px 32px 8px}
+.hlab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:12px}
+.htit{font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.12;margin-bottom:14px}
+.hsub{font-size:18px;color:var(--g5);max-width:560px;line-height:1.6}
+.grid{max-width:var(--mx);margin:0 auto;padding:36px 32px 80px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.gc{display:block;background:var(--wh);border:1px solid var(--pb);border-radius:var(--rc);padding:24px;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.gc:hover{transform:translateY(-3px);border-color:#c4b5fd;box-shadow:0 10px 30px -12px rgba(76,29,149,.25)}
+.gt{display:inline-block;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:99px;border:1px solid var(--pb)}
+.gti{font-size:18px;font-weight:700;color:var(--bk);margin:14px 0 8px;line-height:1.3;letter-spacing:-.01em}
+.gd{font-size:14px;color:var(--g5);line-height:1.6;margin-bottom:14px}
+.gl{font-size:13px;font-weight:600;color:var(--pul)}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <nav>
-  <a href="/" class="nav-logo">Data <b>Builder</b></a>
-  <div class="nav-links" id="navLinks">
-    <a href="/produit" style="background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;padding:5px 14px;border-radius:99px;font-weight:700"><span data-t="fr">Produit</span><span data-t="en">Product</span></a>
-    <a href="/how"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
-    <a href="/about"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
-    <a href="/blog" class="active">Blog</a>
-    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-mobile"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
-  </div>
-  <div class="nav-right">
-    <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">FR</button>
-    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
-    <a href="https://calendly.com/data-builder/30min" target="_blank" class="btn-nav nav-cta-desktop"><span data-t="fr">Prendre rendez-vous</span><span data-t="en">Book a call</span></a>
-    <button class="nav-toggle" id="navToggle" aria-label="Menu" onclick="toggleNav()"><span></span><span></span><span></span></button>
-  </div>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
 </nav>
-<div class="page-hero">
-  <div style="font-size:13px;margin-bottom:16px;"><a href="/" style="color:var(--g400);text-decoration:none;">← <span data-t="fr">Accueil</span><span data-t="en">Home</span></a></div>
-  <div class="eyebrow">Blog</div>
-  <h1><span data-t="fr">Recruter en data, sans compromis</span><span data-t="en">Hiring in data, without compromise</span></h1>
-  <p>
-    <span data-t="fr">Des guides concrets pour évaluer et recruter des profils data — et les vraies questions de nos entretiens techniques, expliquées par niveau.</span>
-    <span data-t="en">Practical guides to assessing and hiring data profiles — and the real questions from our technical interviews, broken down by level.</span>
-  </p>
+<div class="hero2">
+  <div class="hlab">Blog</div>
+  <h1 class="htit" data-fr="Guides techniques data" data-en="Data technical guides">Guides techniques data</h1>
+  <p class="hsub" data-fr="Ce qu'on évalue vraiment en entretien technique data — par techno et par niveau, avec une grille GO/NO-GO pour vos recrutements." data-en="What we really assess in data technical interviews — by technology and by level, with a GO/NO-GO grid for your hiring.">Ce qu'on évalue vraiment en entretien technique data — par techno et par niveau, avec une grille GO/NO-GO pour vos recrutements.</p>
 </div>
-<div class="page-body">
-  <div class="blog-list">
-
-    <a href="/blog/concevoir-test-technique-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Comment concevoir un test technique data qui prédit vraiment la performance</span><span data-t="en">How to design a technical data test that actually predicts performance</span></h3>
-      <p><span data-t="fr">Un bon test technique data ne mesure pas ce qu'un candidat a mémorisé, mais comment il raisonne. Voici les 5 principes d'une évaluation qui prédit la réussite au poste.</span><span data-t="en">A good technical data test doesn't measure what a candidate memorised, but how they reason. Here are the 5 principles of an assessment that predicts on-the-job success.</span></p>
+<div class="grid">
+    <a href="/blog/test-technique-sql-data" class="gc">
+      <span class="gt">SQL</span>
+      <div class="gti" data-fr="Test technique SQL : ce qu'on évalue vraiment" data-en="SQL technical interview: what we really assess">Test technique SQL : ce qu'on évalue vraiment</div>
+      <div class="gd" data-fr="Agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance. Par niveau, avec grille GO/NO-GO." data-en="Aggregations, joins, window functions, query reading and performance. By level, with a GO/NO-GO grid.">Agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance. Par niveau, avec grille GO/NO-GO.</div>
+      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
     </a>
-
-    <a href="/blog/tests-techniques-ia" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Tests techniques data à l'ère de l'IA : garder un signal fiable</span><span data-t="en">Technical data tests in the age of AI: keeping a reliable signal</span></h3>
-      <p><span data-t="fr">Les assistants IA résolvent la plupart des exercices SQL et Python en secondes. Le test à la maison a perdu son pouvoir de discrimination. Voici comment continuer à évaluer réellement un candidat data.</span><span data-t="en">AI assistants solve most SQL and Python exercises in seconds. The take-home test has lost its discriminating power. Here's how to keep genuinely assessing a data candidate.</span></p>
+    <a href="/blog/test-technique-python-data" class="gc">
+      <span class="gt">Python</span>
+      <div class="gti" data-fr="Test technique Python : ce qu'on évalue vraiment" data-en="Python technical interview: what we really assess">Test technique Python : ce qu'on évalue vraiment</div>
+      <div class="gd" data-fr="pandas, nettoyage, code de qualité, APIs robustes, performance. Par niveau, avec grille GO/NO-GO." data-en="pandas, cleaning, quality code, robust APIs, performance. By level, with a GO/NO-GO grid.">pandas, nettoyage, code de qualité, APIs robustes, performance. Par niveau, avec grille GO/NO-GO.</div>
+      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
     </a>
-
-    <a href="/blog/externaliser-entretiens-techniques" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Faut-il externaliser vos entretiens techniques data ?</span><span data-t="en">Should you outsource your technical data interviews?</span></h3>
-      <p><span data-t="fr">Externaliser l'entretien technique data gagne du terrain. Coût des entretiens internes, cohérence, objectivité : voici quand c'est pertinent, et ce qu'il faut exiger d'un prestataire.</span><span data-t="en">Outsourcing the technical data interview is gaining ground. Cost of internal interviews, consistency, objectivity: here's when it makes sense, and what to require from a provider.</span></p>
+    <a href="/blog/test-technique-spark-data" class="gc">
+      <span class="gt">Spark</span>
+      <div class="gti" data-fr="Test technique Spark : ce qu'on évalue vraiment" data-en="Spark technical interview: what we really assess">Test technique Spark : ce qu'on évalue vraiment</div>
+      <div class="gd" data-fr="Modèle d'exécution, shuffle, jointures, fenêtres et performance distribuée. Par niveau, avec grille GO/NO-GO." data-en="Execution model, shuffle, joins, windows and distributed performance. By level, with a GO/NO-GO grid.">Modèle d'exécution, shuffle, jointures, fenêtres et performance distribuée. Par niveau, avec grille GO/NO-GO.</div>
+      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
     </a>
-
-    <a href="/blog/questions-sql-entretien-par-niveau" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Quelles questions SQL poser en entretien data (par niveau)</span><span data-t="en">Which SQL questions to ask in a data interview (by level)</span></h3>
-      <p><span data-t="fr">Quelles questions SQL poser en entretien data, du junior au senior — et surtout ce que chacune révèle vraiment sur le candidat.</span><span data-t="en">Which SQL questions to ask in a data interview, from junior to senior — and above all what each one really reveals about the candidate.</span></p>
+    <a href="/blog/test-technique-dbt-data" class="gc">
+      <span class="gt">dbt</span>
+      <div class="gti" data-fr="Test technique dbt : ce qu'on évalue vraiment" data-en="dbt technical interview: what we really assess">Test technique dbt : ce qu'on évalue vraiment</div>
+      <div class="gd" data-fr="Matérialisations, ref/sources, tests, incrémental et snapshots, structure. Par niveau, avec grille GO/NO-GO." data-en="Materializations, ref/sources, tests, incremental and snapshots, structure. By level, with a GO/NO-GO grid.">Matérialisations, ref/sources, tests, incrémental et snapshots, structure. Par niveau, avec grille GO/NO-GO.</div>
+      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
     </a>
-
-    <a href="/blog/take-home-vs-live" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Test à la maison ou entretien technique en live : lequel choisir ?</span><span data-t="en">Take-home test vs live technical interview: which to choose?</span></h3>
-      <p><span data-t="fr">Test à la maison (take-home) ou entretien technique en live : avantages, limites, et comment choisir selon votre contexte de recrutement data.</span><span data-t="en">Take-home test or live technical interview: pros, limits, and how to choose based on your data hiring context.</span></p>
-    </a>
-
-    <a href="/blog/rh-sans-background-evaluer-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">RH sans background data : comment évaluer un candidat data</span><span data-t="en">Non-technical recruiter: how to assess a data candidate</span></h3>
-      <p><span data-t="fr">Vous recrutez un profil data sans être technique ? Voici comment évaluer sérieusement un candidat, sans savoir coder.</span><span data-t="en">Hiring a data profile without being technical yourself? Here's how to seriously assess a candidate, without knowing how to code.</span></p>
-    </a>
-
-    <a href="/blog/signaux-forts-faibles-candidat-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Signaux forts et signaux faibles chez un candidat data</span><span data-t="en">Strong and weak signals in a data candidate</span></h3>
-      <p><span data-t="fr">Les signaux qui distinguent un excellent candidat data d'un profil fragile en entretien technique — au-delà de la bonne réponse.</span><span data-t="en">The signals that separate an excellent data candidate from a fragile profile in a technical interview — beyond the correct answer.</span></p>
-    </a>
-
-    <a href="/blog/evaluer-toute-la-stack-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Évaluer toute la stack : SQL, Python, BI, dbt — quoi tester</span><span data-t="en">Assessing the whole stack: SQL, Python, BI, dbt — what to test</span></h3>
-      <p><span data-t="fr">SQL, Python, BI, dbt, cloud : quoi tester sur chaque brique de la stack data, sans transformer l'entretien en marathon.</span><span data-t="en">SQL, Python, BI, dbt, cloud: what to test on each layer of the data stack, without turning the interview into a marathon.</span></p>
-    </a>
-
-    <a href="/blog/evaluation-equitable-reduire-biais" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Construire une évaluation technique équitable (et réduire les biais)</span><span data-t="en">Building a fair technical assessment (and reducing bias)</span></h3>
-      <p><span data-t="fr">Comment rendre votre évaluation technique data plus équitable et réduire les biais de recrutement, sans baisser l'exigence.</span><span data-t="en">How to make your technical data assessment fairer and reduce hiring bias, without lowering the bar.</span></p>
-    </a>
-
-    <a href="/blog/junior-confirme-senior-niveau-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Junior, confirmé, senior : définir le niveau d'un profil data</span><span data-t="en">Junior, mid, senior: defining a data profile's level</span></h3>
-      <p><span data-t="fr">Junior, confirmé, senior : ce que chaque niveau signifie vraiment pour un profil data, au-delà des années d'expérience.</span><span data-t="en">Junior, mid, senior: what each level really means for a data profile, beyond years of experience.</span></p>
-    </a>
-
-    <a href="/blog/qcm-utile-ou-depasse" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Le QCM en entretien data : utile ou dépassé ?</span><span data-t="en">The MCQ in data interviews: useful or outdated?</span></h3>
-      <p><span data-t="fr">Le QCM en entretien data : ce qu'il mesure vraiment, ses angles morts, et comment bien l'utiliser à l'ère de l'IA.</span><span data-t="en">The MCQ in data interviews: what it really measures, its blind spots, and how to use it well in the AI era.</span></p>
-    </a>
-
-    <a href="/blog/penser-a-voix-haute" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Faire penser à voix haute : le format qui révèle le raisonnement</span><span data-t="en">Thinking out loud: the format that reveals reasoning</span></h3>
-      <p><span data-t="fr">Faire penser à voix haute en entretien technique : le format simple qui révèle le raisonnement réel d'un candidat data.</span><span data-t="en">Thinking out loud in a technical interview: the simple format that reveals a data candidate's real reasoning.</span></p>
-    </a>
-
-    <a href="/blog/duree-entretien-technique" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Combien de temps doit durer un entretien technique data ?</span><span data-t="en">How long should a technical data interview last?</span></h3>
-      <p><span data-t="fr">Combien de temps doit durer un entretien technique data ? Le bon équilibre entre signal fiable et respect du candidat.</span><span data-t="en">How long should a technical data interview last? The right balance between a reliable signal and respecting the candidate.</span></p>
-    </a>
-
-    <a href="/blog/recruter-data-analyst" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Recruter un data analyst : quoi tester, quoi ignorer</span><span data-t="en">Hiring a data analyst: what to test, what to ignore</span></h3>
-      <p><span data-t="fr">Recruter un data analyst : les compétences à tester en priorité, et celles qu'il est inutile — voire contre-productif — d'évaluer.</span><span data-t="en">Hiring a data analyst: the skills to test first, and those it's pointless — even counterproductive — to assess.</span></p>
-    </a>
-
-    <a href="/blog/recruter-data-engineer" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Recruter un data engineer : les compétences qui comptent vraiment</span><span data-t="en">Hiring a data engineer: the skills that truly matter</span></h3>
-      <p><span data-t="fr">Recruter un data engineer : les compétences qui comptent vraiment, au-delà de la liste d'outils du CV.</span><span data-t="en">Hiring a data engineer: the skills that truly matter, beyond the tool list on the résumé.</span></p>
-    </a>
-
-    <a href="/blog/cout-mauvais-recrutement-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Le coût réel d'un mauvais recrutement data</span><span data-t="en">The real cost of a bad data hire</span></h3>
-      <p><span data-t="fr">Le coût réel d'un mauvais recrutement data : bien plus que le salaire, et comment le réduire en amont.</span><span data-t="en">The real cost of a bad data hire: far more than salary, and how to reduce it upfront.</span></p>
-    </a>
-
-    <a href="/blog/reduire-time-to-hire-data" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Réduire le time-to-hire sur les profils data</span><span data-t="en">Reducing time-to-hire for data profiles</span></h3>
-      <p><span data-t="fr">Réduire le time-to-hire sur les profils data sans sacrifier la qualité de l'évaluation technique.</span><span data-t="en">Reduce time-to-hire for data profiles without sacrificing the quality of the technical assessment.</span></p>
-    </a>
-
-    <a href="/blog/experience-candidat-evaluation" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Améliorer l'expérience candidat pendant l'évaluation technique</span><span data-t="en">Improving the candidate experience during technical assessment</span></h3>
-      <p><span data-t="fr">Améliorer l'expérience candidat pendant l'évaluation technique data — pour évaluer mieux et attirer les meilleurs profils.</span><span data-t="en">Improve the candidate experience during data technical assessment — to assess better and attract the best profiles.</span></p>
-    </a>
-
-    <a href="/blog/payer-take-home" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Faut-il payer les candidats pour un take-home ?</span><span data-t="en">Should you pay candidates for a take-home?</span></h3>
-      <p><span data-t="fr">Faut-il payer les candidats pour un take-home data ? Les arguments pour, contre, et une alternative plus fiable.</span><span data-t="en">Should you pay candidates for a data take-home? The arguments for, against, and a more reliable alternative.</span></p>
-    </a>
-
-    <a href="/blog/recruter-analytics-engineer-dbt" class="blog-card">
-      <span class="blog-tag"><span data-t="fr">Recrutement</span><span data-t="en">Hiring</span></span>
-      <h3><span data-t="fr">Recruter un analytics engineer (dbt) : le nouveau profil clé</span><span data-t="en">Hiring an analytics engineer (dbt): the new key profile</span></h3>
-      <p><span data-t="fr">Recruter un analytics engineer : le profil qui relie data engineering et analyse, et ce qu'il faut tester (dbt en tête).</span><span data-t="en">Hiring an analytics engineer: the profile that bridges data engineering and analysis, and what to test (dbt first).</span></p>
-    </a>
-
-    <a href="/blog/sql" class="blog-card">
-      <span class="blog-tag">SQL</span>
-      <h3><span data-t="fr">Les questions SQL que je pose en entretien data</span><span data-t="en">The SQL questions I ask in data interviews</span></h3>
-      <p><span data-t="fr">8 questions du junior au lead : jointures, window functions, top-N par groupe, rétention, diagnostic de requêtes lentes. Avec réponses de référence.</span><span data-t="en">8 questions from junior to lead: joins, window functions, top-N per group, retention, diagnosing slow queries. With model answers.</span></p>
-      <div class="blog-meta"><span data-t="fr">8 questions · Junior → Lead</span><span data-t="en">8 questions · Junior → Lead</span></div>
-    </a>
-
-    <div class="blog-card soon">
-      <span class="blog-tag">Python</span>
-      <h3><span data-t="fr">Les questions Python — bientôt</span><span data-t="en">Python questions — coming soon</span></h3>
-      <p><span data-t="fr">Pandas, POO appliquée à la data, tests, appels API. En préparation.</span><span data-t="en">Pandas, OOP for data, testing, API calls. In the works.</span></p>
-    </div>
-
-  </div>
 </div>
-<footer>
-  <div class="footer-inner">
-    <div class="footer-links">
-      <a href="/how"><span data-t="fr">Comment ça marche</span><span data-t="en">How it works</span></a>
-      <a href="/about"><span data-t="fr">À propos</span><span data-t="en">About</span></a>
-      <a href="/cgu">CGU</a>
-      <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
-    </div>
-    <div class="footer-copy">© 2025 Data Builder</div>
-  </div>
-</footer>
-<div class="cookie-banner" id="cookie-banner">
-  <div class="cookie-text">
-    <span data-t="fr">🍪 Ce site utilise Google Analytics pour mesurer l'audience.</span>
-    <span data-t="en">🍪 This site uses Google Analytics to measure audience.</span>
-    <a href="/cgu"><span data-t="fr">En savoir plus</span><span data-t="en">Learn more</span></a>
-  </div>
-  <div class="cookie-actions">
-    <button class="cookie-refuse" onclick="refuseCookies()"><span data-t="fr">Refuser</span><span data-t="en">Decline</span></button>
-    <button class="cookie-accept" onclick="acceptCookies()"><span data-t="fr">Accepter</span><span data-t="en">Accept</span></button>
-  </div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
 </div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
 <script>
-function setLang(l){document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');try{localStorage.setItem('db_lang',l);}catch(e){}}
-function toggleNav(){document.getElementById('navLinks').classList.toggle('open');document.getElementById('navToggle').classList.toggle('open');}
-(function(){try{var l=localStorage.getItem('db_lang');if(l==='fr'||l==='en')setLang(l);}catch(e){}})();
-(function(){if(localStorage.getItem('db_cookies'))document.getElementById('cookie-banner').classList.add('hidden');})();
-function acceptCookies(){localStorage.setItem('db_cookies','accepted');document.getElementById('cookie-banner').classList.add('hidden');loadGA();}
-function refuseCookies(){localStorage.setItem('db_cookies','refused');document.getElementById('cookie-banner').classList.add('hidden');}
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.documentElement.lang=l;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
 </script>
 </body>
 </html>

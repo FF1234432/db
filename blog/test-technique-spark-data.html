@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Spark : ce qu'on évalue vraiment en entretien — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien Spark : modèle d'exécution, shuffle, jointures, fonctions fenêtre et performance — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-spark-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique Spark </span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Spark : ce qu'on évalue vraiment en entretien</h1>
+<p class="ai">Spark reste la référence du traitement distribué. Mais entre lancer un <code>groupBy</code> et diagnostiquer un <em>skew</em> qui fait exploser un job, l'écart de niveau est considérable. Voici ce qu'on évalue.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>11 min de lecture</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#exec">Modèle d'exécution</a></li><li><a href="#shuffle">Shuffle et partitionnement</a></li><li><a href="#join">Jointures et optimisation</a></li><li><a href="#win">Fonctions fenêtre et agrégations</a></li><li><a href="#perf">Performance et production</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Spark récompense ceux qui comprennent ce qui se passe <em>sous</em> l'API : lazy evaluation, shuffle, partitionnement. Un profil solide raisonne en coût de calcul distribué, pas en lignes de code. Cinq dimensions.</p>
+<h2 id="exec"><span class="sn">1</span>Modèle d'exécution</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Différence entre une transformation et une action — et pourquoi ça change tout ?</p></div>
+<ul><li><strong>Lazy evaluation</strong> : les transformations construisent un plan, rien ne s'exécute avant une action.</li><li>Le <strong>DAG</strong> est découpé en <em>jobs</em> → <em>stages</em> → <em>tasks</em>.</li><li>Les <em>stages</em> sont séparés par les <strong>shuffles</strong>.</li><li>Comprendre ça, c'est pouvoir lire le Spark UI et anticiper les coûts.</li></ul>
+<h2 id="shuffle"><span class="sn">2</span>Shuffle et partitionnement</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Qu'est-ce qu'un shuffle, et pourquoi c'est le nerf de la performance Spark ?</p></div>
+<ul><li>Transformations <em>narrow</em> (map, filter) vs <em>wide</em> (groupBy, join) qui déclenchent un shuffle.</li><li><code>repartition</code> (shuffle, augmente) vs <code>coalesce</code> (sans shuffle, réduit).</li><li>Le <strong>skew</strong> : une clé sur-représentée qui sature une tâche.</li><li>Choisir le nombre de partitions selon le volume et les cœurs disponibles.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui ne sait pas ce qu'est un shuffle ne pourra jamais optimiser un job Spark — éliminatoire sur un poste d'ingénierie.</p></div>
+<h2 id="join"><span class="sn">3</span>Jointures et optimisation</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment joindre efficacement une grosse table de faits avec une petite table de référence ?</p></div>
+<div class="cb"><code>from pyspark.sql import functions as F
+big.join(F.broadcast(small), 'key')   # évite le shuffle de la grosse table</code></div>
+<ul><li><strong>Broadcast join</strong> : diffuser la petite table pour éviter un shuffle coûteux.</li><li><strong>Sort-merge join</strong> par défaut sur deux grosses tables.</li><li>Gérer le <em>skew</em> de jointure (salting, ou <em>skew join</em> d'AQE).</li><li><strong>AQE</strong> (Adaptive Query Execution) ajuste le plan à l'exécution.</li></ul>
+<h2 id="win"><span class="sn">4</span>Fonctions fenêtre et agrégations</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment obtenez-vous le top-N par catégorie en PySpark ?</p></div>
+<div class="cb"><code>from pyspark.sql import Window, functions as F
+w = Window.partitionBy('categorie').orderBy(F.desc('ventes'))
+df.withColumn('r', F.row_number().over(w)).filter('r <= 3')</code></div>
+<ul><li><code>Window.partitionBy(...).orderBy(...)</code> pour classements et cumuls.</li><li><code>groupBy().agg()</code> pour les agrégats distribués.</li><li>Préférer les <strong>fonctions natives</strong> aux <strong>UDF Python</strong> (coûteuses, hors optimiseur).</li><li>Pandas UDF (vectorisées) quand une UDF est inévitable.</li></ul>
+<h2 id="perf"><span class="sn">5</span>Performance et production</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Un job Spark est lent ou tombe en OOM. Par quoi commencez-vous ?</p></div>
+<ul><li>Lire le <strong>Spark UI</strong> : stages longs, <em>skew</em>, <em>spill</em> disque.</li><li><code>cache</code>/<code>persist</code> à bon escient (réutilisation, pas systématique).</li><li>Formats colonnes (Parquet) + <em>partition pruning</em> pour lire moins.</li><li>Dimensionner exécuteurs et mémoire ; éviter la collecte massive au driver.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>DataFrame API, transformations de base</td><td>Écrit un groupBy/join correct, distingue transfo/action</td><td>Collecte tout au driver (collect)</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Shuffle, partitionnement, broadcast join, fenêtres</td><td>Explique un shuffle, utilise un broadcast join</td><td>Ne sait pas ce qu'est un shuffle</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Skew, AQE, tuning mémoire, Spark UI</td><td>Diagnostique un skew et un spill dans le Spark UI</td><td>Abuse des UDF Python sans mesurer le coût</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture distribuée, coûts cluster, standards</td><td>Optimise le coût/perf global, fixe les bonnes pratiques</td><td>Ne peut pas expliquer le découpage jobs/stages/tasks</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Spark technical interview</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">Spark technical interview: what we really assess</h1>
+<p class="ai">Spark is still the reference for distributed processing. But between running a <code>groupBy</code> and diagnosing a <em>skew</em> that blows up a job, the gap in level is considerable. Here's what we assess.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>11 min read</span><span>·</span><span>Data Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#exec">Execution model</a></li><li><a href="#shuffle">Shuffle and partitioning</a></li><li><a href="#join">Joins and optimization</a></li><li><a href="#win">Window functions and aggregations</a></li><li><a href="#perf">Performance and production</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>Spark rewards those who understand what happens <em>under</em> the API: lazy evaluation, shuffle, partitioning. A strong profile reasons in distributed compute cost, not lines of code. Five dimensions.</p>
+<h2 id="exec"><span class="sn">1</span>Execution model</h2>
+<div class="sq"><div class="sl">Key question</div><p>Difference between a transformation and an action — and why it changes everything?</p></div>
+<ul><li><strong>Lazy evaluation</strong>: transformations build a plan, nothing runs until an action.</li><li>The <strong>DAG</strong> is split into <em>jobs</em> → <em>stages</em> → <em>tasks</em>.</li><li><em>Stages</em> are separated by <strong>shuffles</strong>.</li><li>Understanding this means being able to read the Spark UI and anticipate costs.</li></ul>
+<h2 id="shuffle"><span class="sn">2</span>Shuffle and partitioning</h2>
+<div class="sq"><div class="sl">Key question</div><p>What is a shuffle, and why is it the crux of Spark performance?</p></div>
+<ul><li><em>Narrow</em> transformations (map, filter) vs <em>wide</em> (groupBy, join) that trigger a shuffle.</li><li><code>repartition</code> (shuffle, increases) vs <code>coalesce</code> (no shuffle, reduces).</li><li><strong>Skew</strong>: an over-represented key that saturates one task.</li><li>Choosing the number of partitions by volume and available cores.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who doesn't know what a shuffle is will never optimize a Spark job — disqualifying for an engineering role.</p></div>
+<h2 id="join"><span class="sn">3</span>Joins and optimization</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you efficiently join a large fact table with a small reference table?</p></div>
+<div class="cb"><code>from pyspark.sql import functions as F
+big.join(F.broadcast(small), 'key')   # évite le shuffle de la grosse table</code></div>
+<ul><li><strong>Broadcast join</strong>: broadcast the small table to avoid a costly shuffle.</li><li><strong>Sort-merge join</strong> by default on two large tables.</li><li>Handle join <em>skew</em> (salting, or AQE's <em>skew join</em>).</li><li><strong>AQE</strong> (Adaptive Query Execution) adjusts the plan at runtime.</li></ul>
+<h2 id="win"><span class="sn">4</span>Window functions and aggregations</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you get the top-N per category in PySpark?</p></div>
+<div class="cb"><code>from pyspark.sql import Window, functions as F
+w = Window.partitionBy('categorie').orderBy(F.desc('ventes'))
+df.withColumn('r', F.row_number().over(w)).filter('r <= 3')</code></div>
+<ul><li><code>Window.partitionBy(...).orderBy(...)</code> for rankings and running totals.</li><li><code>groupBy().agg()</code> for distributed aggregates.</li><li>Prefer <strong>native functions</strong> to <strong>Python UDFs</strong> (costly, outside the optimizer).</li><li>Pandas UDFs (vectorized) when a UDF is unavoidable.</li></ul>
+<h2 id="perf"><span class="sn">5</span>Performance and production</h2>
+<div class="sq"><div class="sl">Key question</div><p>A Spark job is slow or hits OOM. Where do you start?</p></div>
+<ul><li>Read the <strong>Spark UI</strong>: long stages, <em>skew</em>, disk <em>spill</em>.</li><li><code>cache</code>/<code>persist</code> wisely (reuse, not by default).</li><li>Columnar formats (Parquet) + <em>partition pruning</em> to read less.</li><li>Size executors and memory; avoid massive collects to the driver.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>DataFrame API, basic transformations</td><td>Writes a correct groupBy/join, tells transform from action</td><td>Collects everything to the driver (collect)</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Shuffle, partitioning, broadcast join, windows</td><td>Explains a shuffle, uses a broadcast join</td><td>Doesn't know what a shuffle is</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Skew, AQE, memory tuning, Spark UI</td><td>Diagnoses skew and spill in the Spark UI</td><td>Overuses Python UDFs without measuring cost</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Distributed architecture, cluster cost, standards</td><td>Optimizes overall cost/perf, sets best practices</td><td>Can't explain the jobs/stages/tasks breakdown</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test technique Spark : ce qu'on évalue vraiment en entretien",desc:"Les 5 dimensions d'un entretien Spark : modèle d'exécution, shuffle, jointures, fonctions fenêtre et performance — avec une grille GO/NO-GO par niveau."},en:{title:'Spark technical interview: what we really assess',desc:'The 5 dimensions of a Spark interview: execution model, shuffle, joins, window functions and performance — with a GO/NO-GO level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

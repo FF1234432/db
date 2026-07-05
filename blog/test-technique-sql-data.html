@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique SQL pour la data : ce qu'on évalue vraiment en entretien — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien SQL data : agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-sql-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique SQL pour la data </span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique SQL pour la data : ce qu'on évalue vraiment en entretien</h1>
+<p class="ai">SQL reste le langage central de la data. Mais « savoir faire du SQL » va d'un <code>SELECT ... WHERE</code> à une requête analytique avec fenêtres imbriquées et diagnostic de performance. Voici comment mesurer l'écart réel.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Data Analyst / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#agg">Agrégations et GROUP BY</a></li><li><a href="#join">Jointures</a></li><li><a href="#win">Fonctions fenêtre</a></li><li><a href="#read">Lecture de requête et esprit critique</a></li><li><a href="#perf">Performance</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>SQL est le meilleur prédicteur global du niveau data : un profil solide en SQL l'est presque toujours ailleurs. En entretien, l'écart se creuse vite entre celui qui écrit un GROUP BY et celui qui raisonne sur un plan d'exécution. Voici les cinq dimensions que nous évaluons.</p>
+<h2 id="agg"><span class="sn">1</span>Agrégations et GROUP BY</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre WHERE et HAVING, et quand utiliser l'un ou l'autre ?</p></div>
+<ul><li><code>WHERE</code> filtre les lignes avant l'agrégation ; <code>HAVING</code> filtre après, sur le résultat d'un agrégat.</li><li>Agrégats conditionnels : <code>CASE</code> dans <code>SUM</code>, ou <code>COUNT(*) FILTER (WHERE ...)</code>.</li><li>Extensions <code>GROUPING SETS</code>, <code>ROLLUP</code>, <code>CUBE</code> pour des sous-totaux en une passe.</li><li>Pièges des <code>NULL</code> dans les agrégats (<code>COUNT(col)</code> ignore les NULL, pas <code>COUNT(*)</code>).</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui met une condition d'agrégat dans le <code>WHERE</code> (ou qui confond <code>WHERE</code> et <code>HAVING</code>) révèle une compréhension de surface.</p></div>
+<h2 id="join"><span class="sn">2</span>Jointures</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Décrivez les types de jointures, et donnez un cas où une LEFT JOIN change le résultat d'un COUNT.</p></div>
+<ul><li><code>INNER</code> / <code>LEFT</code> / <code>RIGHT</code> / <code>FULL</code> — savoir laquelle conserve les lignes non appariées.</li><li>Anti-jointure (<code>LEFT JOIN ... WHERE b.id IS NULL</code>) pour « ce qui n'existe pas en face ».</li><li>Auto-jointure pour comparer des lignes d'une même table (hiérarchies, doublons).</li><li>Le <strong>fan-out</strong> : une jointure 1-N qui duplique les lignes et double les montants sommés.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ne pas repérer qu'une jointure 1-N gonfle un <code>SUM</code> est une erreur qui fausse des rapports en production.</p></div>
+<h2 id="win"><span class="sn">3</span>Fonctions fenêtre</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>QUALIFY est au PARTITION BY ce que HAVING est au GROUP BY. Expliquez.</p></div>
+<div class="cb"><code>SELECT client_id, order_id, amount,
+       ROW_NUMBER() OVER (PARTITION BY client_id
+                          ORDER BY order_date DESC) AS rn
+FROM orders
+QUALIFY rn = 1</code></div>
+<ul><li>Classement : <code>ROW_NUMBER</code> (unique), <code>RANK</code> (saute), <code>DENSE_RANK</code> (ne saute pas).</li><li>Décalage : <code>LAG</code>/<code>LEAD</code> pour comparer à la ligne précédente/suivante.</li><li>Cumuls : <code>SUM() OVER (ORDER BY ...)</code> ; cadre <code>ROWS BETWEEN</code> pour moyennes mobiles.</li><li><code>QUALIFY</code> filtre sur une fonction fenêtre sans sous-requête (BigQuery, Snowflake, DuckDB).</li></ul>
+<h2 id="read"><span class="sn">4</span>Lecture de requête et esprit critique</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>On vous donne une requête et un résultat surprenant. Comment procédez-vous avant de conclure ?</p></div>
+<ul><li>Lire le résultat <em>et</em> la donnée : un <code>COUNT</code> qui sur-compte trahit souvent un fan-out.</li><li>Distinguer un vrai signal d'un écart non significatif (bruit) avant de recommander.</li><li>Vérifier les <code>NULL</code>, les doublons et la granularité de la table.</li><li>Reformuler l'intention métier de la requête, pas seulement sa syntaxe.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> prendre un chiffre agrégé pour argent comptant, sans le questionner, est un signal faible caractéristique.</p></div>
+<h2 id="perf"><span class="sn">5</span>Performance</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Une requête est lente sur un gros volume. Par quoi commencez-vous ?</p></div>
+<ul><li>Lire le <strong>plan d'exécution</strong> (<code>EXPLAIN</code>) : scans, jointures, tris coûteux.</li><li>Réduire la donnée lue : éviter <code>SELECT *</code>, filtrer tôt, prédicats sargables.</li><li>Index / clustering / partitionnement adaptés au filtre et à la jointure.</li><li>Sur les entrepôts colonnes (BigQuery, Snowflake) : penser en colonnes scannées et coût, pas en index.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>SELECT, WHERE, GROUP BY, jointures simples</td><td>Écrit un GROUP BY correct, explique WHERE vs HAVING</td><td>Met une condition d'agrégat dans le WHERE</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Fonctions fenêtre, CTE, anti-jointures, agrégats conditionnels</td><td>Écrit un top-N par groupe, repère un fan-out</td><td>Ne sait pas différencier ROW_NUMBER, RANK, DENSE_RANK</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimisation, plans d'exécution, Pareto/cumuls, QUALIFY</td><td>Lit un plan, questionne un résultat surprenant</td><td>Prend un chiffre agrégé pour argent comptant</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Modélisation, conventions, coûts à l'échelle</td><td>Arbitre coût/perf, fixe des standards d'équipe</td><td>Ne peut pas expliquer pourquoi une requête est lente</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>SQL technical interview for data</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">SQL technical interview for data: what we really assess</h1>
+<p class="ai">SQL is still the core language of data. But ‘knowing SQL’ ranges from a <code>SELECT ... WHERE</code> to an analytical query with nested windows and performance diagnosis. Here's how to measure the real gap.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Data Analyst / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#agg">Aggregations and GROUP BY</a></li><li><a href="#join">Joins</a></li><li><a href="#win">Window functions</a></li><li><a href="#read">Query reading and critical thinking</a></li><li><a href="#perf">Performance</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>SQL is the best overall predictor of data level: a profile strong in SQL almost always is elsewhere too. In an interview, the gap widens fast between someone who writes a GROUP BY and someone who reasons about an execution plan. Here are the five dimensions we assess.</p>
+<h2 id="agg"><span class="sn">1</span>Aggregations and GROUP BY</h2>
+<div class="sq"><div class="sl">Key question</div><p>What is the difference between WHERE and HAVING, and when do you use each?</p></div>
+<ul><li><code>WHERE</code> filters rows before aggregation; <code>HAVING</code> filters after, on an aggregate result.</li><li>Conditional aggregates: <code>CASE</code> inside <code>SUM</code>, or <code>COUNT(*) FILTER (WHERE ...)</code>.</li><li><code>GROUPING SETS</code>, <code>ROLLUP</code>, <code>CUBE</code> extensions for subtotals in one pass.</li><li><code>NULL</code> traps in aggregates (<code>COUNT(col)</code> skips NULLs, <code>COUNT(*)</code> doesn't).</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who puts an aggregate condition in <code>WHERE</code> (or confuses <code>WHERE</code> and <code>HAVING</code>) reveals surface understanding.</p></div>
+<h2 id="join"><span class="sn">2</span>Joins</h2>
+<div class="sq"><div class="sl">Key question</div><p>Describe the join types, and give a case where a LEFT JOIN changes the result of a COUNT.</p></div>
+<ul><li><code>INNER</code> / <code>LEFT</code> / <code>RIGHT</code> / <code>FULL</code> — knowing which keeps unmatched rows.</li><li>Anti-join (<code>LEFT JOIN ... WHERE b.id IS NULL</code>) for ‘what has no match’.</li><li>Self-join to compare rows of the same table (hierarchies, duplicates).</li><li><strong>Fan-out</strong>: a 1-N join that duplicates rows and doubles summed amounts.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> failing to spot that a 1-N join inflates a <code>SUM</code> is a mistake that corrupts production reports.</p></div>
+<h2 id="win"><span class="sn">3</span>Window functions</h2>
+<div class="sq"><div class="sl">Key question</div><p>QUALIFY is to window functions what HAVING is to GROUP BY. Explain.</p></div>
+<div class="cb"><code>SELECT client_id, order_id, amount,
+       ROW_NUMBER() OVER (PARTITION BY client_id
+                          ORDER BY order_date DESC) AS rn
+FROM orders
+QUALIFY rn = 1</code></div>
+<ul><li>Ranking: <code>ROW_NUMBER</code> (unique), <code>RANK</code> (skips), <code>DENSE_RANK</code> (doesn't skip).</li><li>Offset: <code>LAG</code>/<code>LEAD</code> to compare to the previous/next row.</li><li>Running totals: <code>SUM() OVER (ORDER BY ...)</code>; <code>ROWS BETWEEN</code> frame for moving averages.</li><li><code>QUALIFY</code> filters on a window function without a subquery (BigQuery, Snowflake, DuckDB).</li></ul>
+<h2 id="read"><span class="sn">4</span>Query reading and critical thinking</h2>
+<div class="sq"><div class="sl">Key question</div><p>You're given a query and a surprising result. What do you do before concluding?</p></div>
+<ul><li>Read the result <em>and</em> the data: a <code>COUNT</code> that over-counts often reveals a fan-out.</li><li>Tell a real signal from a non-significant difference (noise) before recommending anything.</li><li>Check <code>NULL</code>s, duplicates and the table granularity.</li><li>Restate the business intent of the query, not just its syntax.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> taking an aggregate figure at face value, without questioning it, is a characteristic weak signal.</p></div>
+<h2 id="perf"><span class="sn">5</span>Performance</h2>
+<div class="sq"><div class="sl">Key question</div><p>A query is slow on a large volume. Where do you start?</p></div>
+<ul><li>Read the <strong>execution plan</strong> (<code>EXPLAIN</code>): scans, joins, costly sorts.</li><li>Reduce data read: avoid <code>SELECT *</code>, filter early, sargable predicates.</li><li>Indexes / clustering / partitioning matching the filter and join.</li><li>On columnar warehouses (BigQuery, Snowflake): think in scanned columns and cost, not indexes.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>SELECT, WHERE, GROUP BY, simple joins</td><td>Writes a correct GROUP BY, explains WHERE vs HAVING</td><td>Puts an aggregate condition in WHERE</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Window functions, CTEs, anti-joins, conditional aggregates</td><td>Writes a top-N per group, spots a fan-out</td><td>Can't tell ROW_NUMBER, RANK, DENSE_RANK apart</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimization, execution plans, Pareto/running totals, QUALIFY</td><td>Reads a plan, questions a surprising result</td><td>Takes an aggregate figure at face value</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Modelling, conventions, cost at scale</td><td>Balances cost/perf, sets team standards</td><td>Can't explain why a query is slow</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test technique SQL pour la data : ce qu'on évalue vraiment en entretien",desc:"Les 5 dimensions d'un entretien SQL data : agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance — avec une grille GO/NO-GO par niveau."},en:{title:'SQL technical interview for data: what we really assess',desc:'The 5 dimensions of a SQL data interview: aggregations, joins, window functions, query reading and performance — with a GO/NO-GO level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>
