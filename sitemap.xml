@@ -3,141 +3,655 @@
   <url>
     <loc>https://www.databuilder.io/</loc>
     <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/produit</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/how</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/about</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/cgu</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/contact</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/sql</loc>
+    <loc>https://www.databuilder.io/blog/6-erreurs-qui-font-rater-recrutement-data</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/evaluer-candidat-sql-sans-etre-technique</loc>
+    <loc>https://www.databuilder.io/blog/7-competences-bon-data-engineer</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/airflow-orchestration-version-recruteur</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/bigquery-ce-que-ca-change-poste-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/bigquery-vs-snowflake-recrutement</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/candidat-data-qui-survend-piege-entretien</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/certifications-data-valeur</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/certifications-power-bi-ne-prouvent-pas-competence</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/competences-cles-data-analyst</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/data-analyst-engineer-analytics-engineer-qui-fait-quoi</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/data-scientist-vs-ml-engineer</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/dbt-explique-recruteurs-analytics-engineering</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/dbt-vs-sql-classique-niveau-candidat</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/erreurs-recrutement-sql-sans-tester</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/evaluer-candidat-python-data-sans-etre-technique</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/evaluer-consultant-power-bi</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-candidat-sql-sans-etre-technique</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-competence-tableau</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/verifier-excel-avance-cv</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-profil-spark</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/juger-maitrise-airflow-data-engineer</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-niveau-dbt-cv</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/evaluer-competence-git-recruteur</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-experience-bigquery-recruteur</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/evaluer-competences-snowflake-recruteur</loc>
-    <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/evaluer-competence-looker</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-sql-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-competence-tableau</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-python-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-competences-snowflake-recruteur</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-spark-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-consultant-power-bi</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-dbt-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-experience-bigquery-recruteur</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-bigquery-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-niveau-dbt-cv</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.databuilder.io/blog/test-technique-snowflake-data</loc>
+    <loc>https://www.databuilder.io/blog/evaluer-profil-spark</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/eviter-biais-evaluation-technique-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/excel-data-quand-suffisant</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/excel-sql-python-niveau-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/exercice-dax-entretien-power-bi-reponses</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/exercice-dbt-cte-vers-staging-mart</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/exercice-pandas-entretien-cas-realiste-reponses</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/exercice-sql-debugger-requete-lente-test-live</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/externaliser-tests-techniques-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/fiche-poste-analytics-engineer-dbt-bigquery</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/fiche-poste-consultant-snowflake</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/fiche-poste-data-analyst-modele</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/fiche-poste-data-engineer-template</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/fiche-poste-data-scientist-ce-quil-faut-mettre</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/git-non-developpeurs-pourquoi-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/grille-evaluation-technique-objective-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/juger-maitrise-airflow-data-engineer</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/lire-portfolio-github-candidat-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/looker-lookml-pourquoi-different</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/niveau-sql-junior-confirme-senior-lire-cv</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/offre-bi-developer-tableau-looker</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/offre-data-engineer-spark-modele</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/pair-programming-vs-take-home-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/power-bi-explique-rh</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/power-bi-vs-tableau-vs-looker-guide-recruteur</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/profil-analytics-engineer-reperer</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/python-data-explique-recruteur</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-airflow</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-bigquery</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-dbt</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-looker</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-power-bi</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-python-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-snowflake</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-spark</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-sql</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/questions-entretien-tableau</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/recruteur-non-technique-expert-externe-duo</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/red-flags-cv-data-engineer</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/rediger-offre-data-attire-bons-candidats</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/reduire-time-to-hire-data-guide</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/senior-python-vs-junior-deguise</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/snowflake-comprendre-pourquoi-tout-le-monde-en-parle</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/soft-skills-profils-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/spark-explique-simplement-recruteurs</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/spark-vs-pandas-comprendre-difference-entretien</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/sql-explique-aux-recruteurs</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/sql-ou-python-quelle-competence-poste</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/sql</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/structurer-entretien-technique-data-sans-etre-ingenieur</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/tableau-guide-recruteur-non-technique</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/take-home-test-data-pourquoi-candidats-abandonnent</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-airflow-concevoir-dag-pipeline-quotidien</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-bigquery-optimiser-requete-couteuse</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-dbt-refactorer-modele-ecrire-tests</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-excel-avance-cas-intermediaire-vs-expert</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-git-merge-conflict-resoudre-live</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-lookml-modeliser-explore-senior</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-power-bi-cle-en-main-dashboard</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-power-bi-dashboard-jeu-donnees-fourni</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-python-nettoyer-csv-casse-45min-grille</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-snowflake-warehousing-maitrise-couts</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-spark-traitement-distribue-pieges-performance</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-sql-junior-5-requetes-30min-corrige</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-sql-senior-modelisation-optimisation</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-tableau-brief-dataviz-criteres-evaluation</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/test-technique-airflow-data</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-analytics-engineer-dbt-sql-modelisation</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-bigquery-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-data-analyst-sql-dataviz-1h</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-data-engineer-sql-python-pipeline-2h</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-dbt-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/test-technique-git-data</loc>
     <lastmod>2026-07-06</lastmod>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-python-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-snowflake-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-spark-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-sql-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-vs-entretien-live-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/verifier-excel-avance-cv</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
