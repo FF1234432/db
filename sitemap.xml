@@ -2,62 +2,107 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.databuilder.io/</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/produit</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/how</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/about</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/cgu</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/contact</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-sql-data</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-python-data</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-spark-data</loc>
-    <lastmod>2026-07-05</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.databuilder.io/blog/test-technique-dbt-data</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.databuilder.io/blog/sql</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/evaluer-candidat-sql-sans-etre-technique</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/evaluer-candidat-python-data-sans-etre-technique</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/evaluer-consultant-power-bi</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/evaluer-competence-tableau</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/evaluer-competence-looker</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-sql-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-python-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-spark-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-dbt-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-bigquery-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-snowflake-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-airflow-data</loc>
+    <lastmod>2026-07-06</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.databuilder.io/blog/test-technique-git-data</loc>
+    <lastmod>2026-07-06</lastmod>
     <priority>0.8</priority>
   </url>
 </urlset>
