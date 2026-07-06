@@ -37,8 +37,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-
 .sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
 .sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
 .sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
-.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
-.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
 .lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
 .lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
 .lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
@@ -96,11 +96,11 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <div class="cl"><p><strong>Signal d'alerte :</strong> ne pas repérer qu'une jointure 1-N gonfle un <code>SUM</code> est une erreur qui fausse des rapports en production.</p></div>
 <h2 id="win"><span class="sn">3</span>Fonctions fenêtre</h2>
 <div class="sq"><div class="sl">Question discriminante</div><p>QUALIFY est au PARTITION BY ce que HAVING est au GROUP BY. Expliquez.</p></div>
-<div class="cb"><code>SELECT client_id, order_id, amount,
-       ROW_NUMBER() OVER (PARTITION BY client_id
-                          ORDER BY order_date DESC) AS rn
-FROM orders
-QUALIFY rn = 1</code></div>
+<div class="cb"><code><span class="kw">SELECT</span> client_id, order_id, amount,
+       <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> client_id
+                          <span class="kw">ORDER BY</span> order_date <span class="kw">DESC</span>) <span class="kw">AS</span> rn
+<span class="kw">FROM</span> orders
+<span class="kw">QUALIFY</span> rn = 1</code></div>
 <ul><li>Classement : <code>ROW_NUMBER</code> (unique), <code>RANK</code> (saute), <code>DENSE_RANK</code> (ne saute pas).</li><li>Décalage : <code>LAG</code>/<code>LEAD</code> pour comparer à la ligne précédente/suivante.</li><li>Cumuls : <code>SUM() OVER (ORDER BY ...)</code> ; cadre <code>ROWS BETWEEN</code> pour moyennes mobiles.</li><li><code>QUALIFY</code> filtre sur une fonction fenêtre sans sous-requête (BigQuery, Snowflake, DuckDB).</li></ul>
 <h2 id="read"><span class="sn">4</span>Lecture de requête et esprit critique</h2>
 <div class="sq"><div class="sl">Question discriminante</div><p>On vous donne une requête et un résultat surprenant. Comment procédez-vous avant de conclure ?</p></div>
@@ -131,11 +131,11 @@ QUALIFY rn = 1</code></div>
 <div class="cl"><p><strong>Warning signal :</strong> failing to spot that a 1-N join inflates a <code>SUM</code> is a mistake that corrupts production reports.</p></div>
 <h2 id="win"><span class="sn">3</span>Window functions</h2>
 <div class="sq"><div class="sl">Key question</div><p>QUALIFY is to window functions what HAVING is to GROUP BY. Explain.</p></div>
-<div class="cb"><code>SELECT client_id, order_id, amount,
-       ROW_NUMBER() OVER (PARTITION BY client_id
-                          ORDER BY order_date DESC) AS rn
-FROM orders
-QUALIFY rn = 1</code></div>
+<div class="cb"><code><span class="kw">SELECT</span> client_id, order_id, amount,
+       <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> client_id
+                          <span class="kw">ORDER BY</span> order_date <span class="kw">DESC</span>) <span class="kw">AS</span> rn
+<span class="kw">FROM</span> orders
+<span class="kw">QUALIFY</span> rn = 1</code></div>
 <ul><li>Ranking: <code>ROW_NUMBER</code> (unique), <code>RANK</code> (skips), <code>DENSE_RANK</code> (doesn't skip).</li><li>Offset: <code>LAG</code>/<code>LEAD</code> to compare to the previous/next row.</li><li>Running totals: <code>SUM() OVER (ORDER BY ...)</code>; <code>ROWS BETWEEN</code> frame for moving averages.</li><li><code>QUALIFY</code> filters on a window function without a subquery (BigQuery, Snowflake, DuckDB).</li></ul>
 <h2 id="read"><span class="sn">4</span>Query reading and critical thinking</h2>
 <div class="sq"><div class="sl">Key question</div><p>You're given a query and a surprising result. What do you do before concluding?</p></div>

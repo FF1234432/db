@@ -37,8 +37,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-
 .sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
 .sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
 .sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
-.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
-.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
 .lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
 .lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
 .lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
@@ -95,15 +95,15 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 <ul><li><strong>Zero-copy clone</strong> — cloner une base/table instantanément, sans coût de stockage initial.</li><li><strong>Time Travel</strong> — interroger ou restaurer des données passées (jusqu'à 90 j).</li><li><code>UNDROP</code> pour récupérer un objet supprimé par erreur.</li><li>Fail-safe pour la récupération d'urgence côté Snowflake.</li></ul>
 <h2 id="variant"><span class="sn">3</span>VARIANT et semi-structuré</h2>
 <div class="sq"><div class="sl">Question discriminante</div><p>Comment interrogez-vous du JSON stocké en VARIANT ?</p></div>
-<div class="cb"><code>SELECT v:client:pays::string AS pays, COUNT(*) AS n
-FROM events, LATERAL FLATTEN(input => v:sessions)
-GROUP BY pays</code></div>
+<div class="cb"><code><span class="kw">SELECT</span> v:client:pays::string <span class="kw">AS</span> pays, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> n
+<span class="kw">FROM</span> events, LATERAL FLATTEN(input => v:sessions)
+<span class="kw">GROUP BY</span> pays</code></div>
 <ul><li><code>VARIANT</code> — stocker du JSON semi-structuré nativement.</li><li>Notation par points (<code>v:champ</code>) et cast (<code>::string</code>).</li><li><code>LATERAL FLATTEN</code> pour déplier un tableau imbriqué.</li><li>Savoir quand normaliser plutôt que tout garder en VARIANT.</li></ul>
 <h2 id="merge"><span class="sn">4</span>MERGE et chargement de données</h2>
 <div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous un upsert (insert + update) et l'ingestion continue ?</p></div>
-<div class="cb"><code>MERGE INTO clients c USING maj m ON c.id = m.id
-WHEN MATCHED THEN UPDATE SET c.email = m.email
-WHEN NOT MATCHED THEN INSERT (id, email) VALUES (m.id, m.email)</code></div>
+<div class="cb"><code><span class="kw">MERGE</span> <span class="kw">INTO</span> clients c USING maj m <span class="kw">ON</span> c.id = m.id
+<span class="kw">WHEN</span> <span class="kw">MATCHED</span> <span class="kw">THEN</span> <span class="kw">UPDATE</span> <span class="kw">SET</span> c.email = m.email
+<span class="kw">WHEN</span> <span class="kw">NOT</span> <span class="kw">MATCHED</span> <span class="kw">THEN</span> <span class="kw">INSERT</span> (id, email) <span class="kw">VALUES</span> (m.id, m.email)</code></div>
 <ul><li><code>MERGE</code> — upsert en une instruction (central au CDC).</li><li><code>COPY INTO</code> + Snowpipe pour l'ingestion depuis un stage.</li><li><strong>Streams</strong> (capture de changements) + <strong>Tasks</strong> (orchestration).</li><li>Idempotence du chargement pour éviter les doublons.</li></ul>
 <h2 id="cost"><span class="sn">5</span>Coûts et optimisation</h2>
 <div class="sq"><div class="sl">Question discriminante</div><p>La facture Snowflake grimpe. Par quoi commencez-vous ?</p></div>
@@ -129,15 +129,15 @@ WHEN NOT MATCHED THEN INSERT (id, email) VALUES (m.id, m.email)</code></div>
 <ul><li><strong>Zero-copy clone</strong> — clone a database/table instantly, with no initial storage cost.</li><li><strong>Time Travel</strong> — query or restore past data (up to 90 days).</li><li><code>UNDROP</code> to recover an object dropped by mistake.</li><li>Fail-safe for emergency recovery on Snowflake's side.</li></ul>
 <h2 id="variant"><span class="sn">3</span>VARIANT and semi-structured</h2>
 <div class="sq"><div class="sl">Key question</div><p>How do you query JSON stored in VARIANT?</p></div>
-<div class="cb"><code>SELECT v:client:pays::string AS pays, COUNT(*) AS n
-FROM events, LATERAL FLATTEN(input => v:sessions)
-GROUP BY pays</code></div>
+<div class="cb"><code><span class="kw">SELECT</span> v:client:pays::string <span class="kw">AS</span> pays, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> n
+<span class="kw">FROM</span> events, LATERAL FLATTEN(input => v:sessions)
+<span class="kw">GROUP BY</span> pays</code></div>
 <ul><li><code>VARIANT</code> — store semi-structured JSON natively.</li><li>Dot notation (<code>v:field</code>) and cast (<code>::string</code>).</li><li><code>LATERAL FLATTEN</code> to unfold a nested array.</li><li>Knowing when to normalize rather than keep everything in VARIANT.</li></ul>
 <h2 id="merge"><span class="sn">4</span>MERGE and data loading</h2>
 <div class="sq"><div class="sl">Key question</div><p>How do you handle an upsert (insert + update) and continuous ingestion?</p></div>
-<div class="cb"><code>MERGE INTO clients c USING maj m ON c.id = m.id
-WHEN MATCHED THEN UPDATE SET c.email = m.email
-WHEN NOT MATCHED THEN INSERT (id, email) VALUES (m.id, m.email)</code></div>
+<div class="cb"><code><span class="kw">MERGE</span> <span class="kw">INTO</span> clients c USING maj m <span class="kw">ON</span> c.id = m.id
+<span class="kw">WHEN</span> <span class="kw">MATCHED</span> <span class="kw">THEN</span> <span class="kw">UPDATE</span> <span class="kw">SET</span> c.email = m.email
+<span class="kw">WHEN</span> <span class="kw">NOT</span> <span class="kw">MATCHED</span> <span class="kw">THEN</span> <span class="kw">INSERT</span> (id, email) <span class="kw">VALUES</span> (m.id, m.email)</code></div>
 <ul><li><code>MERGE</code> — upsert in one statement (central to CDC).</li><li><code>COPY INTO</code> + Snowpipe for ingestion from a stage.</li><li><strong>Streams</strong> (change capture) + <strong>Tasks</strong> (orchestration).</li><li>Idempotent loading to avoid duplicates.</li></ul>
 <h2 id="cost"><span class="sn">5</span>Cost and optimization</h2>
 <div class="sq"><div class="sl">Key question</div><p>The Snowflake bill is climbing. Where do you start?</p></div>
