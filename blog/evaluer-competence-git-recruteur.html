@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Git en entretien data : ce que le recruteur doit vérifier — Data Builder</title>
+<meta name="description" content="Git n'est pas réservé aux développeurs : pour la data, versionner et collaborer proprement change la fiabilité d'une équipe. Signaux, red flags, question et grille."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/evaluer-competence-git-recruteur"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Git en entretien data </span></div>
+<div class="at">Recruter en data</div>
+<h1 class="ah">Git en entretien data : ce que le recruteur doit vérifier</h1>
+<p class="ai">Git passe souvent inaperçu au recrutement data — on le suppose acquis. C'est une erreur : un profil data qui ne maîtrise pas Git ralentit toute l'équipe et met la production en risque (secrets exposés, code écrasé). Or on peut vérifier les bons réflexes sans être soi-même développeur. Voici comment.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & recruteurs · tout profil data</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#role">À quoi sert Git en data</a></li><li><a href="#green">Les signaux d'un bon réflexe Git</a></li><li><a href="#red">Les red flags à repérer</a></li><li><a href="#ask">La question à poser (sans être technique)</a></li><li><a href="#expert">Quand faire appel à un expert</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>En data, Git sert à <strong>versionner et collaborer</strong> sur du SQL, des modèles dbt et des notebooks. Ce qui compte n'est pas la virtuosité, mais les bons réflexes de sécurité et de travail en équipe — et là, un seul mauvais réflexe (commit sur <code>main</code>, secret dans le repo) est un vrai signal.</p>
+<h2 id="role"><span class="sn">1</span>À quoi sert Git en data</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Demandez : « À quoi vous sert Git dans votre travail data ? »</p></div>
+<p>Git permet de garder l'historique du code, de travailler à plusieurs sans s'écraser, et de revenir en arrière en cas d'erreur. En data, il sécurise le SQL, les transformations dbt et les notebooks — tout ce qui, sans versioning, devient vite un chaos ingérable. Un bon candidat relie Git à la fiabilité de l'équipe.</p>
+<ul><li>Versionner le code : SQL, modèles dbt, notebooks — garder l'historique.</li><li>Collaborer à plusieurs sans écraser le travail des autres.</li><li>Revenir en arrière proprement en cas d'erreur.</li><li>Faire relire son code avant de le fusionner (revue de code).</li><li>Garder les <strong>secrets et les données</strong> hors du dépôt.</li></ul>
+<h2 id="green"><span class="sn">2</span>Les signaux d'un bon réflexe Git</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Écoutez comment il travaille en équipe, pas les commandes qu'il connaît.</p></div>
+<p>La maîtrise de Git en data se voit dans l'hygiène de travail : branches, revues, pas de secret dans le repo. Un bon profil en parle comme d'une évidence, parce qu'il a déjà vu ce qui arrive quand ces règles ne sont pas respectées.</p>
+<ul><li>Il travaille en <strong>branches</strong> et ouvre des <em>pull requests</em>, jamais directement sur <code>main</code>.</li><li>Il parle de <strong>revue de code</strong> comme d'un réflexe d'équipe.</li><li>Il versionne son SQL et ses modèles dbt, pas seulement du « code applicatif ».</li><li>Il sait qu'on ne met <strong>jamais</strong> de secret ni de données dans un dépôt.</li><li>Il sait revenir en arrière proprement (sans effacer le travail des autres).</li></ul>
+<h2 id="red"><span class="sn">3</span>Les red flags à repérer</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Repérables sans savoir coder.</p></div>
+<p>Les mauvais réflexes Git sont dangereux parce qu'ils touchent la sécurité et le travail des autres. Ils se repèrent facilement dès qu'on demande au candidat comment il collabore.</p>
+<ul><li>Il commit directement sur <code>main</code> sans branche ni revue.</li><li>Il a déjà mis (ou ne voit pas le problème à mettre) un <strong>secret ou des données</strong> dans un dépôt.</li><li>Il ne connaît que « git push » et panique dès qu'il y a un conflit.</li><li>Il ne travaille jamais en branches ni en revue de code.</li><li>Il ne versionne pas son SQL/ses transformations (« je garde ça sur mon poste »).</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui ne voit pas de problème à committer un mot de passe ou un fichier de données dans un dépôt représente un vrai risque de sécurité — c'est un signal fort, quel que soit son niveau technique par ailleurs.</p></div>
+<h2 id="ask"><span class="sn">4</span>La question à poser (sans être technique)</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>« Comment travaillez-vous à plusieurs sur le même code sans vous marcher dessus ? »</p></div>
+<p>Cette question révèle l'hygiène de travail. Un bon profil décrit des branches, des revues et une <code>main</code> protégée. Un profil faible répond « on se prévient » ou n'a pas de méthode — signe qu'il n'a pas travaillé dans une équipe structurée.</p>
+<ul><li>Un bon profil décrit branches, pull requests et revue de code.</li><li>Il mentionne une <code>main</code> protégée et des règles d'équipe.</li><li>Il montre qu'il pense sécurité (pas de secret dans le repo).</li><li>Une absence de méthode révèle un travail solitaire, non structuré.</li></ul>
+<h2 id="expert"><span class="sn">5</span>Quand faire appel à un expert</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Il y a une limite claire à ce qu'un recruteur non technique peut trancher seul.</p></div>
+<p>Les signaux et la question ci-dessus vous permettent d'écarter les profils qui surjouent et de repérer les bons candidats. Mais confirmer finement un niveau Git — surtout sur un poste senior ou un profil rare — demande un regard technique. C'est là qu'un entretien mené par un expert fait la différence.</p>
+<ul><li>Vous hésitez entre deux candidats et l'enjeu (séniorité, salaire) est élevé.</li><li>Personne en interne ne peut évaluer techniquement la compétence en question.</li><li>Vous voulez un rapport objectif, comparable d'un candidat à l'autre.</li><li>Vous recrutez en volume et voulez fiabiliser votre présélection.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>commit, push, pull, branches, PR</td><td>Travaille en branches, ouvre des PR</td><td>Commit directement sur main</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Merge/rebase, résolution de conflits, revue</td><td>Décrit une méthode de collaboration claire</td><td>Panique au premier conflit</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Historique propre, CI, sécurité du dépôt</td><td>Protège les secrets, versionne SQL/dbt</td><td>Committe des secrets ou des données</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Conventions d'équipe, règles de protection</td><td>Définit le workflow et forme l'équipe</td><td>N'a aucune règle de collaboration</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Git in a data interview</span></div>
+<div class="at">Data hiring</div>
+<h1 class="ah">Git in a data interview: what the recruiter should check</h1>
+<p class="ai">Git often goes unchecked in data hiring — it's assumed. That's a mistake: a data profile who doesn't master Git slows the whole team and risks production (exposed secrets, overwritten code). Yet you can check the right reflexes without being a developer yourself. Here's how.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & recruiters · any data profile</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#role">What Git is for in data</a></li><li><a href="#green">Signals of good Git reflexes</a></li><li><a href="#red">The red flags to spot</a></li><li><a href="#ask">The question to ask (without being technical)</a></li><li><a href="#expert">When to bring in an expert</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>In data, Git is used to <strong>version and collaborate</strong> on SQL, dbt models and notebooks. What matters isn't virtuosity, but the right safety and teamwork reflexes — and there, a single bad reflex (committing to <code>main</code>, a secret in the repo) is a real signal.</p>
+<h2 id="role"><span class="sn">1</span>What Git is for in data</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Ask: ‘What do you use Git for in your data work?’</p></div>
+<p>Git keeps the history of code, lets several people work without overwriting each other, and lets you roll back on error. In data, it secures SQL, dbt transformations and notebooks — everything that, without versioning, quickly becomes unmanageable chaos. A good candidate ties Git to team reliability.</p>
+<ul><li>Version code: SQL, dbt models, notebooks — keep the history.</li><li>Collaborate without overwriting others' work.</li><li>Roll back cleanly on error.</li><li>Get code reviewed before merging (code review).</li><li>Keep <strong>secrets and data</strong> out of the repository.</li></ul>
+<h2 id="green"><span class="sn">2</span>Signals of good Git reflexes</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Listen to how they work in a team, not the commands they know.</p></div>
+<p>Git mastery in data shows in work hygiene: branches, reviews, no secrets in the repo. A good profile talks about it as obvious, because they've seen what happens when these rules aren't followed.</p>
+<ul><li>They work in <strong>branches</strong> and open <em>pull requests</em>, never directly on <code>main</code>.</li><li>They talk about <strong>code review</strong> as a team reflex.</li><li>They version their SQL and dbt models, not only ‘application code’.</li><li>They know you <strong>never</strong> put secrets or data in a repo.</li><li>They know how to roll back cleanly (without erasing others' work).</li></ul>
+<h2 id="red"><span class="sn">3</span>The red flags to spot</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Spottable without coding.</p></div>
+<p>Bad Git reflexes are dangerous because they touch security and others' work. They're easy to spot the moment you ask how the candidate collaborates.</p>
+<ul><li>They commit straight to <code>main</code> with no branch or review.</li><li>They've put (or see no problem putting) a <strong>secret or data</strong> in a repo.</li><li>They only know ‘git push’ and panic at the first conflict.</li><li>They never work in branches or code review.</li><li>They don't version their SQL/transformations (‘I keep that on my machine’).</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who sees no problem committing a password or a data file to a repo is a real security risk — that's a strong signal, whatever their technical level otherwise.</p></div>
+<h2 id="ask"><span class="sn">4</span>The question to ask (without being technical)</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>‘How do you work with others on the same code without stepping on each other?’</p></div>
+<p>This question reveals work hygiene. A good profile describes branches, reviews and a protected <code>main</code>. A weak profile answers ‘we tell each other’ or has no method — a sign they haven't worked in a structured team.</p>
+<ul><li>A strong profile describes branches, pull requests and code review.</li><li>They mention a protected <code>main</code> and team rules.</li><li>They show they think security (no secrets in the repo).</li><li>A lack of method reveals solitary, unstructured work.</li></ul>
+<h2 id="expert"><span class="sn">5</span>When to bring in an expert</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>There's a clear limit to what a non-technical recruiter can decide alone.</p></div>
+<p>The signals and question above let you filter out inflated profiles and spot good candidates. But finely confirming a Git level — especially for a senior role or a rare profile — needs a technical eye. That's where an expert-led interview makes the difference.</p>
+<ul><li>You hesitate between two candidates and the stakes (seniority, salary) are high.</li><li>No one in-house can technically assess the skill in question.</li><li>You want an objective report, comparable from one candidate to the next.</li><li>You're hiring at volume and want to make your shortlisting reliable.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>commit, push, pull, branches, PR</td><td>Works in branches, opens PRs</td><td>Commits directly to main</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Merge/rebase, conflict resolution, review</td><td>Describes a clear collaboration method</td><td>Panics at the first conflict</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Clean history, CI, repo security</td><td>Protects secrets, versions SQL/dbt</td><td>Commits secrets or data</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Team conventions, protection rules</td><td>Defines the workflow and trains the team</td><td>Has no collaboration rules</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Git en entretien data : ce que le recruteur doit vérifier',desc:"Git n'est pas réservé aux développeurs : pour la data, versionner et collaborer proprement change la fiabilité d'une équipe. Signaux, red flags, question et grille."},en:{title:'Git in a data interview: what the recruiter should check',desc:"Git isn't just for developers: for data, versioning and collaborating cleanly changes a team's reliability. Signals, red flags, question and grid."}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

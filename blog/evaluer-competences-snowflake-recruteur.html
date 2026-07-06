@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Compétences Snowflake : comment séparer le vrai du buzzword — Data Builder</title>
+<meta name="description" content="Snowflake attire les buzzwords. Comment juger une vraie expérience, sans être technique : signaux, red flags, la question à poser et une grille par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/evaluer-competences-snowflake-recruteur"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Compétences Snowflake </span></div>
+<div class="at">Recruter en data</div>
+<h1 class="ah">Compétences Snowflake : comment séparer le vrai du buzzword</h1>
+<p class="ai">Snowflake est très demandé, donc très présent sur les CV — souvent au-delà de l'expérience réelle. Comme BigQuery, sa particularité est économique : il sépare stockage et calcul, et se facture en « crédits ». Un profil qui ignore cette logique de coût n'a probablement qu'effleuré l'outil. Voici comment faire le tri sans être technique.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & recruteurs · profils Snowflake</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#role">À quoi sert Snowflake (et sa particularité)</a></li><li><a href="#green">Les signaux d'un vrai profil Snowflake</a></li><li><a href="#red">Les red flags à repérer</a></li><li><a href="#ask">La question à poser (sans être technique)</a></li><li><a href="#expert">Quand faire appel à un expert</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>La vraie compétence Snowflake ne se lit pas dans le mot sur un CV, mais dans la compréhension de sa <strong>logique de coût</strong> (stockage/calcul séparés, crédits) et de ses fonctionnalités uniques. Un candidat qui n'en parle jamais reste au niveau « j'ai fait des requêtes ».</p>
+<h2 id="role"><span class="sn">1</span>À quoi sert Snowflake (et sa particularité)</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Demandez : « Qu'est-ce qui distingue Snowflake d'une base de données classique ? »</p></div>
+<p>Snowflake est un entrepôt de données cloud qui sépare le stockage (les données) du calcul (les « warehouses » qu'on allume à la demande). On paie le calcul en crédits, à l'usage. Cette séparation et cette facturation sont le cœur du sujet : un bon candidat les explique naturellement.</p>
+<ul><li>C'est un <strong>entrepôt cloud</strong> : du SQL sur de gros volumes, sans infrastructure à gérer.</li><li>Il <strong>sépare stockage et calcul</strong> : on allume un « warehouse » à la demande.</li><li>On paie le calcul en <strong>crédits</strong>, à l'usage — d'où l'importance de la maîtrise des coûts.</li><li>Des fonctionnalités uniques : clone « zéro-copie », <em>time travel</em> (revenir dans le passé).</li><li>Un bon profil parle coûts et fonctionnalités concrètes, pas juste « Snowflake ».</li></ul>
+<h2 id="green"><span class="sn">2</span>Les signaux d'un vrai profil Snowflake</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Écoutez s'il parle de crédits, de warehouses et de fonctionnalités concrètes.</p></div>
+<p>Une vraie expérience Snowflake laisse des traces : on a forcément dû dimensionner un warehouse, surveiller des crédits, ou utiliser un clone pour tester. Ces détails concrets distinguent l'expérience réelle du name-dropping.</p>
+<ul><li>Il parle de <strong>warehouses</strong>, d'<code>auto-suspend</code> et de maîtrise des crédits.</li><li>Il cite des fonctionnalités concrètes (clone zéro-copie, time travel).</li><li>Il a géré de vrais volumes et sait donner un ordre de grandeur.</li><li>Il fait le lien entre l'usage et la facture (crédits).</li><li>Il a une anecdote d'optimisation de coût ou de performance.</li></ul>
+<h2 id="red"><span class="sn">3</span>Les red flags à repérer</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Repérables sans connaître Snowflake.</p></div>
+<p>Snowflake étant un mot très valorisé, il est souvent ajouté après un usage minimal. Le décalage se voit dès qu'on gratte au-delà du « j'ai fait des requêtes Snowflake ».</p>
+<ul><li>Il ne dit rien de plus que « j'ai fait des requêtes sur Snowflake ».</li><li>Il ne connaît ni les warehouses, ni la logique de crédits.</li><li>Il ne cite aucune fonctionnalité concrète propre à Snowflake.</li><li>Il ne fait jamais le lien entre l'usage et le coût.</li><li>Il gonfle une courte expérience en « expertise Snowflake ».</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui parle de Snowflake sans jamais mentionner les warehouses ni les crédits n'a probablement fait que passer quelques requêtes — le buzzword dépasse l'expérience réelle.</p></div>
+<h2 id="ask"><span class="sn">4</span>La question à poser (sans être technique)</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>« Qu'est-ce qui rend Snowflake différent, et comment maîtrise-t-on ses coûts ? »</p></div>
+<p>Cette double question teste à la fois la compréhension de l'outil et la conscience du coût. Un vrai profil explique la séparation stockage/calcul et parle de dimensionner les warehouses et de l'auto-suspend. Un profil gonflé reste vague sur les deux.</p>
+<ul><li>Un bon profil explique la séparation stockage/calcul avec ses mots.</li><li>Il parle de dimensionner les warehouses et de l'<code>auto-suspend</code>.</li><li>Il cite une fonctionnalité concrète (clone, time travel) et un usage.</li><li>Rester vague sur les coûts révèle une expérience superficielle.</li></ul>
+<h2 id="expert"><span class="sn">5</span>Quand faire appel à un expert</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Il y a une limite claire à ce qu'un recruteur non technique peut trancher seul.</p></div>
+<p>Les signaux et la question ci-dessus vous permettent d'écarter les profils qui surjouent et de repérer les bons candidats. Mais confirmer finement un niveau Snowflake — surtout sur un poste senior ou un profil rare — demande un regard technique. C'est là qu'un entretien mené par un expert fait la différence.</p>
+<ul><li>Vous hésitez entre deux candidats et l'enjeu (séniorité, salaire) est élevé.</li><li>Personne en interne ne peut évaluer techniquement la compétence en question.</li><li>Vous voulez un rapport objectif, comparable d'un candidat à l'autre.</li><li>Vous recrutez en volume et voulez fiabiliser votre présélection.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Écrit des requêtes SQL sur Snowflake</td><td>Sait naviguer et sortir un résultat</td><td>Ignore warehouses et crédits</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Warehouses, auto-suspend, fonctionnalités clés</td><td>Cite clone/time travel, pense aux crédits</td><td>Reste au « j'ai fait des requêtes »</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimisation coûts, clustering, fonctionnalités avancées</td><td>Réduit une facture, explique une hausse de crédits</td><td>Ne relie jamais usage et coût</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture multi-warehouse, gouvernance</td><td>Définit sizing et standards de coût</td><td>Buzzword sans expérience réelle</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Snowflake skills</span></div>
+<div class="at">Data hiring</div>
+<h1 class="ah">Snowflake skills: how to separate the real from the buzzword</h1>
+<p class="ai">Snowflake is in high demand, so very present on résumés — often beyond real experience. Like BigQuery, its specificity is economic: it separates storage and compute, and bills in ‘credits’. A profile who ignores this cost logic has probably only skimmed the tool. Here's how to sort them without being technical.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & recruiters · Snowflake profiles</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#role">What Snowflake is for (and its specificity)</a></li><li><a href="#green">Signals of a real Snowflake profile</a></li><li><a href="#red">The red flags to spot</a></li><li><a href="#ask">The question to ask (without being technical)</a></li><li><a href="#expert">When to bring in an expert</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>Real Snowflake skill isn't in the word on a résumé, but in understanding its <strong>cost logic</strong> (separated storage/compute, credits) and its unique features. A candidate who never mentions it stays at ‘I ran some queries’.</p>
+<h2 id="role"><span class="sn">1</span>What Snowflake is for (and its specificity)</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Ask: ‘What sets Snowflake apart from a classic database?’</p></div>
+<p>Snowflake is a cloud data warehouse that separates storage (the data) from compute (the ‘warehouses’ you spin up on demand). You pay compute in credits, by usage. This separation and billing are the heart of the topic: a good candidate explains them naturally.</p>
+<ul><li>It's a <strong>cloud warehouse</strong>: SQL on large volumes, no infrastructure to manage.</li><li>It <strong>separates storage and compute</strong>: you spin up a ‘warehouse’ on demand.</li><li>You pay compute in <strong>credits</strong>, by usage — hence the importance of cost control.</li><li>Unique features: ‘zero-copy’ clone, <em>time travel</em> (go back in time).</li><li>A good profile talks cost and concrete features, not just ‘Snowflake’.</li></ul>
+<h2 id="green"><span class="sn">2</span>Signals of a real Snowflake profile</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Listen for whether they mention credits, warehouses and concrete features.</p></div>
+<p>Real Snowflake experience leaves traces: you've had to size a warehouse, watch credits, or use a clone to test. These concrete details separate real experience from name-dropping.</p>
+<ul><li>They mention <strong>warehouses</strong>, <code>auto-suspend</code> and credit control.</li><li>They cite concrete features (zero-copy clone, time travel).</li><li>They've handled real volumes and can give an order of magnitude.</li><li>They link usage to the bill (credits).</li><li>They have a cost- or performance-optimization anecdote.</li></ul>
+<h2 id="red"><span class="sn">3</span>The red flags to spot</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Spottable without knowing Snowflake.</p></div>
+<p>Snowflake being a highly valued word, it's often added after minimal use. The gap shows the moment you scratch beyond ‘I ran Snowflake queries’.</p>
+<ul><li>They say nothing more than ‘I ran queries on Snowflake’.</li><li>They know neither warehouses nor the credit logic.</li><li>They cite no concrete feature specific to Snowflake.</li><li>They never link usage to cost.</li><li>They inflate a short experience into ‘Snowflake expertise’.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who talks Snowflake without ever mentioning warehouses or credits has probably only run a few queries — the buzzword outruns the real experience.</p></div>
+<h2 id="ask"><span class="sn">4</span>The question to ask (without being technical)</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>‘What makes Snowflake different, and how do you control its cost?’</p></div>
+<p>This two-part question tests both understanding of the tool and cost-awareness. A real profile explains the storage/compute split and talks about sizing warehouses and auto-suspend. An inflated profile stays vague on both.</p>
+<ul><li>A strong profile explains the storage/compute split in their own words.</li><li>They talk about sizing warehouses and <code>auto-suspend</code>.</li><li>They cite a concrete feature (clone, time travel) and a use case.</li><li>Staying vague on cost reveals superficial experience.</li></ul>
+<h2 id="expert"><span class="sn">5</span>When to bring in an expert</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>There's a clear limit to what a non-technical recruiter can decide alone.</p></div>
+<p>The signals and question above let you filter out inflated profiles and spot good candidates. But finely confirming a Snowflake level — especially for a senior role or a rare profile — needs a technical eye. That's where an expert-led interview makes the difference.</p>
+<ul><li>You hesitate between two candidates and the stakes (seniority, salary) are high.</li><li>No one in-house can technically assess the skill in question.</li><li>You want an objective report, comparable from one candidate to the next.</li><li>You're hiring at volume and want to make your shortlisting reliable.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Writes SQL queries on Snowflake</td><td>Can navigate and produce a result</td><td>Ignores warehouses and credits</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Warehouses, auto-suspend, key features</td><td>Cites clone/time travel, thinks credits</td><td>Stays at ‘I ran queries’</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Cost optimization, clustering, advanced features</td><td>Cuts a bill, explains a credit rise</td><td>Never links usage to cost</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Multi-warehouse architecture, governance</td><td>Defines sizing and cost standards</td><td>Buzzword with no real experience</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Compétences Snowflake : comment séparer le vrai du buzzword',desc:'Snowflake attire les buzzwords. Comment juger une vraie expérience, sans être technique : signaux, red flags, la question à poser et une grille par niveau.'},en:{title:'Snowflake skills: how to separate the real from the buzzword',desc:'Snowflake attracts buzzwords. How to judge real experience, without being technical: signals, red flags, the question to ask and a level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

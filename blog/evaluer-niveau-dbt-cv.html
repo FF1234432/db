@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>dbt sur un CV : comment évaluer le niveau réel du candidat — Data Builder</title>
+<meta name="description" content="dbt est le profil analytics engineer le plus recherché. Comment distinguer un vrai niveau d'un simple « j'ai écrit des modèles » : signaux, red flags, question et grille."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/evaluer-niveau-dbt-cv"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>dbt sur un CV </span></div>
+<div class="at">Recruter en data</div>
+<h1 class="ah">dbt sur un CV : comment évaluer le niveau réel du candidat</h1>
+<p class="ai">dbt est devenu un incontournable de la data moderne, et le profil « analytics engineer » qui va avec est très recherché — donc cher et facile à sur-vendre. Or « faire du dbt » va de « j'ai écrit quelques modèles » à « je conçois une couche de transformation testée et documentée ». Voici comment mesurer l'écart sans être technique.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Cible : RH & recruteurs · profils dbt / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#role">À quoi sert dbt</a></li><li><a href="#green">Les signaux d'un bon profil dbt</a></li><li><a href="#red">Les red flags à repérer</a></li><li><a href="#ask">La question à poser (sans être technique)</a></li><li><a href="#expert">Quand faire appel à un expert</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>La valeur d'un profil dbt n'est pas d'écrire du SQL, mais de rendre la donnée <strong>fiable, testée et documentée</strong> pour toute l'entreprise. Un candidat qui ne parle jamais de tests ni de documentation reste au niveau « je transforme de la donnée », pas « je la rends fiable ».</p>
+<h2 id="role"><span class="sn">1</span>À quoi sert dbt</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Demandez : « Qu'est-ce que dbt apporte de plus qu'écrire du SQL directement ? »</p></div>
+<p>dbt sert à transformer la donnée brute en modèles propres, <strong>testés et documentés</strong>, versionnés et exécutés dans le bon ordre. Sa valeur n'est pas le SQL lui-même, mais la fiabilité et la maintenabilité qu'il apporte à la couche analytique. Un bon candidat met ça en avant, pas la syntaxe.</p>
+<ul><li>dbt transforme la donnée brute en <strong>modèles propres</strong>, versionnés et ordonnés.</li><li>Il ajoute des <strong>tests</strong> et de la <strong>documentation</strong> — la vraie valeur.</li><li>Il construit un graphe de dépendances (lineage) : ce qui casse en aval est visible.</li><li>C'est le cœur du métier d'<strong>analytics engineer</strong>, à mi-chemin entre analyse et ingénierie.</li><li>Un bon profil parle fiabilité et maintenabilité, pas juste SQL.</li></ul>
+<h2 id="green"><span class="sn">2</span>Les signaux d'un bon profil dbt</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Les mots à écouter : tests, sources, documentation, structure.</p></div>
+<p>Un vrai analytics engineer pense à ceux qui consomment ses données en aval. Il parle de fiabilité, de non-régression et de projet maintenable. Ce souci de l'aval est le meilleur marqueur de niveau.</p>
+<ul><li>Il parle spontanément de <strong>tests</strong> (unicité, non-nul, cohérence).</li><li>Il évoque les <strong>sources</strong>, le <code>ref()</code> et le lineage, pas des tables en dur.</li><li>Il structure son projet en couches (staging, marts) et documente.</li><li>Il se soucie de ne pas casser ce qui est en aval quand un modèle change.</li><li>Il connaît les matérialisations (vue, table, incrémental) et quand les utiliser.</li></ul>
+<h2 id="red"><span class="sn">3</span>Les red flags à repérer</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Repérables sans connaître dbt.</p></div>
+<p>Comme dbt est à la mode, beaucoup l'ajoutent après un usage superficiel. Le décalage se voit dès qu'on demande comment ils garantissent la fiabilité de leurs modèles.</p>
+<ul><li>Il a « écrit des modèles » mais n'a jamais parlé de tests.</li><li>Il ne connaît pas les matérialisations (vue vs table vs incrémental).</li><li>Il confond dbt et « écrire du SQL » sans en voir la valeur ajoutée.</li><li>Il code des noms de tables en dur (casse le lineage).</li><li>Il ne parle jamais de documentation ni de ce qui consomme ses données.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui « fait du dbt » mais ne teste ni ne documente ses modèles n'apporte pas la fiabilité qui justifie ce profil — il fait du SQL, pas de l'analytics engineering.</p></div>
+<h2 id="ask"><span class="sn">4</span>La question à poser (sans être technique)</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>« Comment garantissez-vous que vos modèles dbt ne cassent pas ce qui est en aval ? »</p></div>
+<p>Cette question va droit à la valeur réelle du profil. Un bon candidat parlera de tests, de documentation et de la façon dont il gère les changements sans casser les rapports en aval. Un profil faible n'aura pas de réponse structurée.</p>
+<ul><li>Un bon profil décrit des <strong>tests</strong> automatiques sur ses modèles.</li><li>Il parle de documentation et de communication avec les consommateurs en aval.</li><li>Il explique comment il déploie un changement sans tout casser.</li><li>L'absence de réponse structurée révèle un usage superficiel de dbt.</li></ul>
+<h2 id="expert"><span class="sn">5</span>Quand faire appel à un expert</h2>
+<div class="sq"><div class="sl">À demander au candidat</div><p>Il y a une limite claire à ce qu'un recruteur non technique peut trancher seul.</p></div>
+<p>Les signaux et la question ci-dessus vous permettent d'écarter les profils qui surjouent et de repérer les bons candidats. Mais confirmer finement un niveau dbt — surtout sur un poste senior ou un profil rare — demande un regard technique. C'est là qu'un entretien mené par un expert fait la différence.</p>
+<ul><li>Vous hésitez entre deux candidats et l'enjeu (séniorité, salaire) est élevé.</li><li>Personne en interne ne peut évaluer techniquement la compétence en question.</li><li>Vous voulez un rapport objectif, comparable d'un candidat à l'autre.</li><li>Vous recrutez en volume et voulez fiabiliser votre présélection.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Écrit des modèles simples, comprend ref/sources</td><td>Ajoute des tests de base (unicité, non-nul)</td><td>Code un nom de table en dur</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Structure en couches, tests, matérialisations</td><td>A construit une couche marts testée et documentée</td><td>A écrit des modèles sans aucun test</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Incrémental, snapshots, CI, performance</td><td>Garantit la non-régression en aval</td><td>Ne sait pas quand utiliser incremental</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Gouvernance, conventions d'équipe, mesh</td><td>Définit standards et lineage cross-équipes</td><td>Confond dbt et écrire du SQL</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>dbt on a résumé</span></div>
+<div class="at">Data hiring</div>
+<h1 class="ah">dbt on a résumé: how to assess the candidate's real level</h1>
+<p class="ai">dbt has become a staple of modern data, and the ‘analytics engineer’ profile that comes with it is highly sought — so expensive and easy to oversell. Yet ‘doing dbt’ ranges from ‘I wrote a few models’ to ‘I design a tested, documented transformation layer’. Here's how to measure the gap without being technical.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>For: HR & recruiters · dbt / Analytics Engineer profiles</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#role">What dbt is for</a></li><li><a href="#green">Signals of a strong dbt profile</a></li><li><a href="#red">The red flags to spot</a></li><li><a href="#ask">The question to ask (without being technical)</a></li><li><a href="#expert">When to bring in an expert</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>A dbt profile's value isn't writing SQL, but making data <strong>reliable, tested and documented</strong> for the whole company. A candidate who never mentions tests or documentation stays at ‘I transform data’, not ‘I make it reliable’.</p>
+<h2 id="role"><span class="sn">1</span>What dbt is for</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Ask: ‘What does dbt add over writing SQL directly?’</p></div>
+<p>dbt turns raw data into clean models that are <strong>tested and documented</strong>, versioned and run in the right order. Its value isn't SQL itself, but the reliability and maintainability it brings to the analytics layer. A good candidate highlights that, not the syntax.</p>
+<ul><li>dbt turns raw data into <strong>clean models</strong>, versioned and ordered.</li><li>It adds <strong>tests</strong> and <strong>documentation</strong> — the real value.</li><li>It builds a dependency graph (lineage): what breaks downstream is visible.</li><li>It's the core of the <strong>analytics engineer</strong> role, between analysis and engineering.</li><li>A good profile talks reliability and maintainability, not just SQL.</li></ul>
+<h2 id="green"><span class="sn">2</span>Signals of a strong dbt profile</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>The words to listen for: tests, sources, documentation, structure.</p></div>
+<p>A real analytics engineer thinks about those who consume their data downstream. They talk reliability, non-regression and a maintainable project. That care for the downstream is the best level marker.</p>
+<ul><li>They spontaneously mention <strong>tests</strong> (uniqueness, not-null, consistency).</li><li>They mention <strong>sources</strong>, <code>ref()</code> and lineage, not hard-coded tables.</li><li>They structure the project in layers (staging, marts) and document.</li><li>They care about not breaking downstream when a model changes.</li><li>They know materializations (view, table, incremental) and when to use them.</li></ul>
+<h2 id="red"><span class="sn">3</span>The red flags to spot</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>Spottable without knowing dbt.</p></div>
+<p>Because dbt is trendy, many add it after superficial use. The gap shows the moment you ask how they guarantee the reliability of their models.</p>
+<ul><li>They ‘wrote models’ but never mention tests.</li><li>They don't know materializations (view vs table vs incremental).</li><li>They confuse dbt with ‘writing SQL’ without seeing the added value.</li><li>They hard-code table names (breaks lineage).</li><li>They never mention documentation or what consumes their data.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who ‘does dbt’ but neither tests nor documents their models doesn't bring the reliability that justifies this profile — they do SQL, not analytics engineering.</p></div>
+<h2 id="ask"><span class="sn">4</span>The question to ask (without being technical)</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>‘How do you make sure your dbt models don't break what's downstream?’</p></div>
+<p>This question goes straight to the profile's real value. A good candidate will talk tests, documentation and how they manage changes without breaking downstream reports. A weak profile won't have a structured answer.</p>
+<ul><li>A strong profile describes automatic <strong>tests</strong> on their models.</li><li>They mention documentation and talking to downstream consumers.</li><li>They explain how they ship a change without breaking everything.</li><li>The lack of a structured answer reveals superficial dbt use.</li></ul>
+<h2 id="expert"><span class="sn">5</span>When to bring in an expert</h2>
+<div class="sq"><div class="sl">Ask the candidate</div><p>There's a clear limit to what a non-technical recruiter can decide alone.</p></div>
+<p>The signals and question above let you filter out inflated profiles and spot good candidates. But finely confirming a dbt level — especially for a senior role or a rare profile — needs a technical eye. That's where an expert-led interview makes the difference.</p>
+<ul><li>You hesitate between two candidates and the stakes (seniority, salary) are high.</li><li>No one in-house can technically assess the skill in question.</li><li>You want an objective report, comparable from one candidate to the next.</li><li>You're hiring at volume and want to make your shortlisting reliable.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Writes simple models, understands ref/sources</td><td>Adds basic tests (uniqueness, not-null)</td><td>Hard-codes a table name</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Layered structure, tests, materializations</td><td>Built a tested, documented marts layer</td><td>Wrote models with no tests</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Incremental, snapshots, CI, performance</td><td>Guarantees downstream non-regression</td><td>Doesn't know when to use incremental</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Governance, team conventions, mesh</td><td>Sets standards and cross-team lineage</td><td>Confuses dbt with writing SQL</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'dbt sur un CV : comment évaluer le niveau réel du candidat',desc:"dbt est le profil analytics engineer le plus recherché. Comment distinguer un vrai niveau d'un simple « j'ai écrit des modèles » : signaux, red flags, question et grille."},en:{title:"dbt on a résumé: how to assess the candidate's real level",desc:'dbt is the most sought-after analytics-engineer profile. How to tell a real level from a mere ‘I wrote some models’: signals, red flags, question and grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>
