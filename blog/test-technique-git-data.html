@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Git pour la data : ce qu'on évalue vraiment — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien Git : branches, merge vs rebase, annuler proprement, conflits et travail en équipe — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-git-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique Git pour la data </span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Git pour la data : ce qu'on évalue vraiment</h1>
+<p class="ai">Git n'est pas qu'un outil de développeur : versionner du SQL, du dbt et des notebooks change la fiabilité d'une équipe data. L'écart se creuse vite entre celui qui commit sur <code>main</code> et celui qui maîtrise un vrai workflow de revue. Voici ce qu'on évalue.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Data Engineer / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#branch">Branches et workflow</a></li><li><a href="#rebase">Merge vs rebase</a></li><li><a href="#undo">Annuler proprement</a></li><li><a href="#conflict">Conflits et historique</a></li><li><a href="#team">Bonnes pratiques en équipe data</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Un profil data qui ne maîtrise pas Git ralentit toute l'équipe et met la production en risque. On évalue moins la virtuosité que les bons réflexes et la sécurité. Cinq dimensions.</p>
+<h2 id="branch"><span class="sn">1</span>Branches et workflow</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Décrivez un workflow de branches sain pour une équipe data.</p></div>
+<ul><li>Branches de fonctionnalité + <code>main</code> protégée, jamais de commit direct sur <code>main</code>.</li><li>Pull/Merge Requests pour la revue de code avant fusion.</li><li>Trunk-based vs Gitflow selon la taille et le rythme de l'équipe.</li><li>Branches courtes pour limiter les conflits.</li></ul>
+<h2 id="rebase"><span class="sn">2</span>Merge vs rebase</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Quelle est la différence entre merge et rebase, et quand utiliser l'un plutôt que l'autre ?</p></div>
+<ul><li><code>merge</code> — préserve l'historique réel, crée un commit de fusion.</li><li><code>rebase</code> — linéarise l'historique en rejouant les commits.</li><li><code>rebase -i</code> pour nettoyer ses commits <em>avant</em> la revue.</li><li>Ne jamais rebaser une branche déjà partagée avec d'autres.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un <code>git push --force</code> sur une branche partagée (surtout <code>main</code>) peut effacer le travail des autres — c'est éliminatoire.</p></div>
+<h2 id="undo"><span class="sn">3</span>Annuler proprement</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment annulez-vous un commit déjà poussé sur une branche partagée ?</p></div>
+<ul><li><code>git revert</code> — sûr et public : crée un commit qui annule (n'efface rien).</li><li><code>git reset</code> — pour du <em>local</em> non partagé uniquement.</li><li><code>git cherry-pick</code> pour reprendre un commit précis ailleurs.</li><li><code>git reflog</code> pour retrouver un état perdu.</li></ul>
+<h2 id="conflict"><span class="sn">4</span>Conflits et historique</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous un conflit de fusion et gardez-vous un historique lisible ?</p></div>
+<ul><li>Comprendre un conflit et le résoudre à la main sans casser la logique.</li><li>Commits <strong>atomiques</strong> avec des messages clairs.</li><li><code>.gitignore</code> propre (données, secrets, artefacts hors du repo).</li><li><code>git blame</code>/<code>log</code> pour comprendre le contexte d'un changement.</li></ul>
+<h2 id="team"><span class="sn">5</span>Bonnes pratiques en équipe data</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Pourquoi Git est-il déterminant pour un profil data en particulier ?</p></div>
+<ul><li>Versionner SQL, modèles dbt et notebooks — reproductibilité et revue.</li><li>Intégration à la CI/CD (tests dbt, linting) déclenchée sur PR.</li><li>Revue de code : améliorer la qualité et diffuser la connaissance.</li><li>Aucune donnée ni secret dans le repo, jamais.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> committer des identifiants ou un fichier de données dans le repo est un incident de sécurité — un réflexe à bannir absolument.</p></div>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>commit, push, pull, branches, PR</td><td>Travaille en branches, ouvre des PR</td><td>Commit directement sur main</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Merge/rebase, revert, résolution de conflits</td><td>Choisit revert plutôt que reset sur du partagé</td><td>Force-push sur une branche partagée</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Historique propre, CI/CD, sécurité du repo</td><td>Maintient un historique lisible, protège les secrets</td><td>Committe des secrets ou des données</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Conventions d'équipe, stratégie de branches, revue</td><td>Définit le workflow et les règles de protection</td><td>N'a aucune politique de revue ni de protection de main</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Git technical interview for data</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">Git technical interview for data: what we really assess</h1>
+<p class="ai">Git isn't just a developer tool: versioning SQL, dbt and notebooks changes a data team's reliability. The gap widens fast between someone who commits to <code>main</code> and someone who masters a real review workflow. Here's what we assess.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>Data Engineer / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#branch">Branches and workflow</a></li><li><a href="#rebase">Merge vs rebase</a></li><li><a href="#undo">Undoing cleanly</a></li><li><a href="#conflict">Conflicts and history</a></li><li><a href="#team">Best practices in a data team</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>A data profile who doesn't master Git slows the whole team and risks production. We assess good reflexes and safety more than virtuosity. Five dimensions.</p>
+<h2 id="branch"><span class="sn">1</span>Branches and workflow</h2>
+<div class="sq"><div class="sl">Key question</div><p>Describe a healthy branching workflow for a data team.</p></div>
+<ul><li>Feature branches + protected <code>main</code>, never a direct commit to <code>main</code>.</li><li>Pull/Merge Requests for code review before merging.</li><li>Trunk-based vs Gitflow depending on team size and cadence.</li><li>Short-lived branches to limit conflicts.</li></ul>
+<h2 id="rebase"><span class="sn">2</span>Merge vs rebase</h2>
+<div class="sq"><div class="sl">Key question</div><p>What's the difference between merge and rebase, and when do you use each?</p></div>
+<ul><li><code>merge</code> — preserves the real history, creates a merge commit.</li><li><code>rebase</code> — linearizes history by replaying commits.</li><li><code>rebase -i</code> to clean up commits <em>before</em> review.</li><li>Never rebase a branch already shared with others.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a <code>git push --force</code> on a shared branch (especially <code>main</code>) can erase others' work — that's disqualifying.</p></div>
+<h2 id="undo"><span class="sn">3</span>Undoing cleanly</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you undo a commit already pushed to a shared branch?</p></div>
+<ul><li><code>git revert</code> — safe and public: creates a commit that undoes it (erases nothing).</li><li><code>git reset</code> — for <em>local</em>, unshared work only.</li><li><code>git cherry-pick</code> to bring a specific commit elsewhere.</li><li><code>git reflog</code> to recover a lost state.</li></ul>
+<h2 id="conflict"><span class="sn">4</span>Conflicts and history</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you handle a merge conflict and keep a readable history?</p></div>
+<ul><li>Understand a conflict and resolve it by hand without breaking the logic.</li><li><strong>Atomic</strong> commits with clear messages.</li><li>Clean <code>.gitignore</code> (data, secrets, artifacts out of the repo).</li><li><code>git blame</code>/<code>log</code> to understand the context of a change.</li></ul>
+<h2 id="team"><span class="sn">5</span>Best practices in a data team</h2>
+<div class="sq"><div class="sl">Key question</div><p>Why is Git decisive for a data profile in particular?</p></div>
+<ul><li>Version SQL, dbt models and notebooks — reproducibility and review.</li><li>CI/CD integration (dbt tests, linting) triggered on PR.</li><li>Code review: improve quality and spread knowledge.</li><li>No data and no secrets in the repo, ever.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> committing credentials or a data file to the repo is a security incident — a reflex to ban outright.</p></div>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>commit, push, pull, branches, PR</td><td>Works in branches, opens PRs</td><td>Commits directly to main</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Merge/rebase, revert, conflict resolution</td><td>Chooses revert over reset on shared work</td><td>Force-pushes a shared branch</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Clean history, CI/CD, repo security</td><td>Keeps a readable history, protects secrets</td><td>Commits secrets or data</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Team conventions, branch strategy, review</td><td>Defines the workflow and protection rules</td><td>Has no review policy or main protection</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test technique Git pour la data : ce qu'on évalue vraiment",desc:"Les 5 dimensions d'un entretien Git : branches, merge vs rebase, annuler proprement, conflits et travail en équipe — avec une grille GO/NO-GO par niveau."},en:{title:'Git technical interview for data: what we really assess',desc:'The 5 dimensions of a Git interview: branches, merge vs rebase, undoing cleanly, conflicts and teamwork — with a GO/NO-GO level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

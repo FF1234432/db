@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Snowflake : ce qu'on évalue vraiment en entretien — Data Builder</title>
+<meta name="description" content="Les 5 dimensions d'un entretien Snowflake : warehouses, cloning/time travel, VARIANT, MERGE et coûts — avec une grille GO/NO-GO par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-snowflake-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:5px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique Snowflake </span></div>
+<div class="at">Guide recrutement data</div>
+<h1 class="ah">Test technique Snowflake : ce qu'on évalue vraiment en entretien</h1>
+<p class="ai">Snowflake sépare stockage et compute, et facture au temps de calcul (crédits). L'écart se creuse entre celui qui lance un warehouse surdimensionné en continu et celui qui optimise le coût sans sacrifier la performance. Voici ce qu'on évalue.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Data Engineer / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#wh">Séparation stockage / compute</a></li><li><a href="#clone">Zero-copy cloning et Time Travel</a></li><li><a href="#variant">VARIANT et semi-structuré</a></li><li><a href="#merge">MERGE et chargement de données</a></li><li><a href="#cost">Coûts et optimisation</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>La force de Snowflake, c'est la séparation stockage/compute et des fonctionnalités uniques (clone zéro-copie, time travel). Un profil solide sait s'en servir pour aller vite <em>et</em> maîtriser les coûts. Cinq dimensions.</p>
+<h2 id="wh"><span class="sn">1</span>Séparation stockage / compute</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Expliquez les virtual warehouses et le multi-cluster. Comment évitez-vous de gaspiller des crédits ?</p></div>
+<ul><li>Un <strong>warehouse</strong> est du compute indépendant du stockage, dimensionnable (XS→XL…).</li><li><code>auto_suspend</code> / <code>auto_resume</code> pour ne payer que l'usage réel.</li><li>Multi-cluster pour absorber la concurrence, pas pour accélérer une requête.</li><li>Dimensionner selon la charge : plus gros ≠ toujours mieux ni moins cher.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> laisser un gros warehouse actif en permanence pour de petites requêtes brûle des crédits inutilement.</p></div>
+<h2 id="clone"><span class="sn">2</span>Zero-copy cloning et Time Travel</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment testez-vous sur des données de prod sans les dupliquer, et comment récupérez-vous une table effacée ?</p></div>
+<ul><li><strong>Zero-copy clone</strong> — cloner une base/table instantanément, sans coût de stockage initial.</li><li><strong>Time Travel</strong> — interroger ou restaurer des données passées (jusqu'à 90 j).</li><li><code>UNDROP</code> pour récupérer un objet supprimé par erreur.</li><li>Fail-safe pour la récupération d'urgence côté Snowflake.</li></ul>
+<h2 id="variant"><span class="sn">3</span>VARIANT et semi-structuré</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment interrogez-vous du JSON stocké en VARIANT ?</p></div>
+<div class="cb"><code>SELECT v:client:pays::string AS pays, COUNT(*) AS n
+FROM events, LATERAL FLATTEN(input => v:sessions)
+GROUP BY pays</code></div>
+<ul><li><code>VARIANT</code> — stocker du JSON semi-structuré nativement.</li><li>Notation par points (<code>v:champ</code>) et cast (<code>::string</code>).</li><li><code>LATERAL FLATTEN</code> pour déplier un tableau imbriqué.</li><li>Savoir quand normaliser plutôt que tout garder en VARIANT.</li></ul>
+<h2 id="merge"><span class="sn">4</span>MERGE et chargement de données</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>Comment gérez-vous un upsert (insert + update) et l'ingestion continue ?</p></div>
+<div class="cb"><code>MERGE INTO clients c USING maj m ON c.id = m.id
+WHEN MATCHED THEN UPDATE SET c.email = m.email
+WHEN NOT MATCHED THEN INSERT (id, email) VALUES (m.id, m.email)</code></div>
+<ul><li><code>MERGE</code> — upsert en une instruction (central au CDC).</li><li><code>COPY INTO</code> + Snowpipe pour l'ingestion depuis un stage.</li><li><strong>Streams</strong> (capture de changements) + <strong>Tasks</strong> (orchestration).</li><li>Idempotence du chargement pour éviter les doublons.</li></ul>
+<h2 id="cost"><span class="sn">5</span>Coûts et optimisation</h2>
+<div class="sq"><div class="sl">Question discriminante</div><p>La facture Snowflake grimpe. Par quoi commencez-vous ?</p></div>
+<ul><li>Analyser le <strong>Query Profile</strong> : spilling, scans, partitions.</li><li>Ajuster la taille des warehouses et l'auto-suspend.</li><li>Clés de clustering sur les grosses tables très filtrées.</li><li>Exploiter le cache de résultats (requêtes identiques gratuites).</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>SQL Snowflake, warehouses, chargement simple</td><td>Comprend séparation stockage/compute, auto-suspend</td><td>Laisse un gros warehouse actif en permanence</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Clone, time travel, VARIANT/FLATTEN, MERGE</td><td>Clone pour tester, interroge du JSON, fait un upsert</td><td>Duplique des données au lieu d'un zero-copy clone</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Streams/tasks, clustering, optimisation coûts</td><td>Analyse un Query Profile, réduit la facture</td><td>Ne sait pas expliquer une hausse de crédits</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture multi-warehouse, gouvernance</td><td>Définit le dimensionnement et les standards de coût</td><td>N'a aucune stratégie de maîtrise des coûts</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Snowflake technical interview</span></div>
+<div class="at">Data hiring guide</div>
+<h1 class="ah">Snowflake technical interview: what we really assess</h1>
+<p class="ai">Snowflake separates storage and compute, and bills on compute time (credits). The gap widens between someone who runs an oversized warehouse 24/7 and someone who optimizes cost without sacrificing performance. Here's what we assess.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Data Engineer / Analytics Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#wh">Storage / compute separation</a></li><li><a href="#clone">Zero-copy cloning and Time Travel</a></li><li><a href="#variant">VARIANT and semi-structured</a></li><li><a href="#merge">MERGE and data loading</a></li><li><a href="#cost">Cost and optimization</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>Snowflake's strength is the storage/compute split and unique features (zero-copy clone, time travel). A strong profile uses them to move fast <em>and</em> control cost. Five dimensions.</p>
+<h2 id="wh"><span class="sn">1</span>Storage / compute separation</h2>
+<div class="sq"><div class="sl">Key question</div><p>Explain virtual warehouses and multi-cluster. How do you avoid wasting credits?</p></div>
+<ul><li>A <strong>warehouse</strong> is compute independent of storage, sizable (XS→XL…).</li><li><code>auto_suspend</code> / <code>auto_resume</code> to pay only for real usage.</li><li>Multi-cluster to absorb concurrency, not to speed up a single query.</li><li>Size by workload: bigger ≠ always better or cheaper.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> leaving a large warehouse running 24/7 for small queries burns credits needlessly.</p></div>
+<h2 id="clone"><span class="sn">2</span>Zero-copy cloning and Time Travel</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you test on prod data without duplicating it, and how do you recover a dropped table?</p></div>
+<ul><li><strong>Zero-copy clone</strong> — clone a database/table instantly, with no initial storage cost.</li><li><strong>Time Travel</strong> — query or restore past data (up to 90 days).</li><li><code>UNDROP</code> to recover an object dropped by mistake.</li><li>Fail-safe for emergency recovery on Snowflake's side.</li></ul>
+<h2 id="variant"><span class="sn">3</span>VARIANT and semi-structured</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you query JSON stored in VARIANT?</p></div>
+<div class="cb"><code>SELECT v:client:pays::string AS pays, COUNT(*) AS n
+FROM events, LATERAL FLATTEN(input => v:sessions)
+GROUP BY pays</code></div>
+<ul><li><code>VARIANT</code> — store semi-structured JSON natively.</li><li>Dot notation (<code>v:field</code>) and cast (<code>::string</code>).</li><li><code>LATERAL FLATTEN</code> to unfold a nested array.</li><li>Knowing when to normalize rather than keep everything in VARIANT.</li></ul>
+<h2 id="merge"><span class="sn">4</span>MERGE and data loading</h2>
+<div class="sq"><div class="sl">Key question</div><p>How do you handle an upsert (insert + update) and continuous ingestion?</p></div>
+<div class="cb"><code>MERGE INTO clients c USING maj m ON c.id = m.id
+WHEN MATCHED THEN UPDATE SET c.email = m.email
+WHEN NOT MATCHED THEN INSERT (id, email) VALUES (m.id, m.email)</code></div>
+<ul><li><code>MERGE</code> — upsert in one statement (central to CDC).</li><li><code>COPY INTO</code> + Snowpipe for ingestion from a stage.</li><li><strong>Streams</strong> (change capture) + <strong>Tasks</strong> (orchestration).</li><li>Idempotent loading to avoid duplicates.</li></ul>
+<h2 id="cost"><span class="sn">5</span>Cost and optimization</h2>
+<div class="sq"><div class="sl">Key question</div><p>The Snowflake bill is climbing. Where do you start?</p></div>
+<ul><li>Analyze the <strong>Query Profile</strong>: spilling, scans, partitions.</li><li>Adjust warehouse sizes and auto-suspend.</li><li>Clustering keys on large, heavily filtered tables.</li><li>Leverage the result cache (identical queries are free).</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Snowflake SQL, warehouses, simple loading</td><td>Understands storage/compute split, auto-suspend</td><td>Leaves a large warehouse running 24/7</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Clone, time travel, VARIANT/FLATTEN, MERGE</td><td>Clones to test, queries JSON, does an upsert</td><td>Duplicates data instead of a zero-copy clone</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Streams/tasks, clustering, cost optimization</td><td>Analyzes a Query Profile, cuts the bill</td><td>Can't explain a rise in credits</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Multi-warehouse architecture, governance</td><td>Sets sizing and cost standards</td><td>Has no cost-control strategy</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test technique Snowflake : ce qu'on évalue vraiment en entretien",desc:"Les 5 dimensions d'un entretien Snowflake : warehouses, cloning/time travel, VARIANT, MERGE et coûts — avec une grille GO/NO-GO par niveau."},en:{title:'Snowflake technical interview: what we really assess',desc:'The 5 dimensions of a Snowflake interview: warehouses, cloning/time travel, VARIANT, MERGE and cost — with a GO/NO-GO level grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 <html lang="fr" data-lang="fr">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Blog — Guides techniques data | Data Builder</title>
-<meta name="description" content="Guides techniques pour évaluer les compétences data en entretien : SQL, Python, Spark, dbt… Par niveau, avec grille GO/NO-GO."/>
+<title>Blog — Recruter en data | Data Builder</title>
+<meta name="description" content="Guides pour recruter et évaluer des profils data — pour RH, cabinets de chasse et recruteurs techniques. Plus des guides techniques par techno et par niveau."/>
 <link rel="canonical" href="https://www.databuilder.io/blog"/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -37,7 +37,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-
 .sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
 .sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
 .cb{background:#1e1e2e;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
-.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#cdd6f4;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}
 .lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
 .lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
 .lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
@@ -64,13 +64,16 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 .hero2{max-width:var(--mx);margin:0 auto;padding:56px 32px 8px}
 .hlab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:12px}
 .htit{font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.12;margin-bottom:14px}
-.hsub{font-size:18px;color:var(--g5);max-width:560px;line-height:1.6}
-.grid{max-width:var(--mx);margin:0 auto;padding:36px 32px 80px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.gc{display:block;background:var(--wh);border:1px solid var(--pb);border-radius:var(--rc);padding:24px;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.hsub{font-size:18px;color:var(--g5);max-width:600px;line-height:1.6}
+.sec{max-width:var(--mx);margin:0 auto;padding:24px 32px 0}
+.sech{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.secs{font-size:14px;color:var(--g5);margin-bottom:4px}
+.grid{max-width:var(--mx);margin:0 auto;padding:16px 32px 40px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.gc{display:block;background:var(--wh);border:1px solid var(--pb);border-radius:var(--rc);padding:22px;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 .gc:hover{transform:translateY(-3px);border-color:#c4b5fd;box-shadow:0 10px 30px -12px rgba(76,29,149,.25)}
 .gt{display:inline-block;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:99px;border:1px solid var(--pb)}
-.gti{font-size:18px;font-weight:700;color:var(--bk);margin:14px 0 8px;line-height:1.3;letter-spacing:-.01em}
-.gd{font-size:14px;color:var(--g5);line-height:1.6;margin-bottom:14px}
+.gti{font-size:17px;font-weight:700;color:var(--bk);margin:14px 0 8px;line-height:1.3}
+.gd{font-size:14px;color:var(--g5);line-height:1.55;margin-bottom:12px}
 .gl{font-size:13px;font-weight:600;color:var(--pul)}
 @media(max-width:640px){.grid{grid-template-columns:1fr}}
 </style>
@@ -91,34 +94,27 @@ footer{border-top:1px solid var(--pb);padding:28px 32px}
 </nav>
 <div class="hero2">
   <div class="hlab">Blog</div>
-  <h1 class="htit" data-fr="Guides techniques data" data-en="Data technical guides">Guides techniques data</h1>
-  <p class="hsub" data-fr="Ce qu'on évalue vraiment en entretien technique data — par techno et par niveau, avec une grille GO/NO-GO pour vos recrutements." data-en="What we really assess in data technical interviews — by technology and by level, with a GO/NO-GO grid for your hiring.">Ce qu'on évalue vraiment en entretien technique data — par techno et par niveau, avec une grille GO/NO-GO pour vos recrutements.</p>
+  <h1 class="htit" data-fr="Recruter en data, sans compromis" data-en="Hiring in data, without compromise">Recruter en data, sans compromis</h1>
+  <p class="hsub" data-fr="Des guides concrets pour évaluer et recruter des profils data — pour RH, cabinets de chasse et recruteurs techniques." data-en="Practical guides to assess and hire data profiles — for HR, headhunters and technical recruiters.">Des guides concrets pour évaluer et recruter des profils data — pour RH, cabinets de chasse et recruteurs techniques.</p>
 </div>
+<div class="sec"><div class="sech" data-fr="Recruter en data" data-en="Hiring in data">Recruter en data</div><div class="secs" data-fr="Évaluer un profil sans être technique — signaux, red flags et questions à poser." data-en="Assess a profile without being technical — signals, red flags and questions to ask.">Évaluer un profil sans être technique — signaux, red flags et questions à poser.</div></div>
 <div class="grid">
-    <a href="/blog/test-technique-sql-data" class="gc">
-      <span class="gt">SQL</span>
-      <div class="gti" data-fr="Test technique SQL : ce qu'on évalue vraiment" data-en="SQL technical interview: what we really assess">Test technique SQL : ce qu'on évalue vraiment</div>
-      <div class="gd" data-fr="Agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance. Par niveau, avec grille GO/NO-GO." data-en="Aggregations, joins, window functions, query reading and performance. By level, with a GO/NO-GO grid.">Agrégations, jointures, fonctions fenêtre, lecture de requêtes et performance. Par niveau, avec grille GO/NO-GO.</div>
-      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
-    </a>
-    <a href="/blog/test-technique-python-data" class="gc">
-      <span class="gt">Python</span>
-      <div class="gti" data-fr="Test technique Python : ce qu'on évalue vraiment" data-en="Python technical interview: what we really assess">Test technique Python : ce qu'on évalue vraiment</div>
-      <div class="gd" data-fr="pandas, nettoyage, code de qualité, APIs robustes, performance. Par niveau, avec grille GO/NO-GO." data-en="pandas, cleaning, quality code, robust APIs, performance. By level, with a GO/NO-GO grid.">pandas, nettoyage, code de qualité, APIs robustes, performance. Par niveau, avec grille GO/NO-GO.</div>
-      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
-    </a>
-    <a href="/blog/test-technique-spark-data" class="gc">
-      <span class="gt">Spark</span>
-      <div class="gti" data-fr="Test technique Spark : ce qu'on évalue vraiment" data-en="Spark technical interview: what we really assess">Test technique Spark : ce qu'on évalue vraiment</div>
-      <div class="gd" data-fr="Modèle d'exécution, shuffle, jointures, fenêtres et performance distribuée. Par niveau, avec grille GO/NO-GO." data-en="Execution model, shuffle, joins, windows and distributed performance. By level, with a GO/NO-GO grid.">Modèle d'exécution, shuffle, jointures, fenêtres et performance distribuée. Par niveau, avec grille GO/NO-GO.</div>
-      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
-    </a>
-    <a href="/blog/test-technique-dbt-data" class="gc">
-      <span class="gt">dbt</span>
-      <div class="gti" data-fr="Test technique dbt : ce qu'on évalue vraiment" data-en="dbt technical interview: what we really assess">Test technique dbt : ce qu'on évalue vraiment</div>
-      <div class="gd" data-fr="Matérialisations, ref/sources, tests, incrémental et snapshots, structure. Par niveau, avec grille GO/NO-GO." data-en="Materializations, ref/sources, tests, incremental and snapshots, structure. By level, with a GO/NO-GO grid.">Matérialisations, ref/sources, tests, incrémental et snapshots, structure. Par niveau, avec grille GO/NO-GO.</div>
-      <div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div>
-    </a>
+    <a href="/blog/evaluer-candidat-sql-sans-etre-technique" class="gc"><span class="gt">SQL</span><div class="gti" data-fr="Évaluer un candidat SQL sans être technique" data-en="Assess a SQL candidate without being technical">Évaluer un candidat SQL sans être technique</div><div class="gd" data-fr="Signaux verts, red flags et la question à poser pour juger un profil SQL sans coder." data-en="Green signals, red flags and the question to ask to judge a SQL profile without coding.">Signaux verts, red flags et la question à poser pour juger un profil SQL sans coder.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/evaluer-candidat-python-data-sans-etre-technique" class="gc"><span class="gt">Python</span><div class="gti" data-fr="Juger le niveau réel d'un profil Python data" data-en="Judge a Python data profile's real level">Juger le niveau réel d'un profil Python data</div><div class="gd" data-fr="Distinguer un vrai profil Python data d'un CV surjoué, sans coder soi-même." data-en="Tell a real Python data profile from an inflated résumé, without coding yourself.">Distinguer un vrai profil Python data d'un CV surjoué, sans coder soi-même.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/evaluer-consultant-power-bi" class="gc"><span class="gt">Power BI</span><div class="gti" data-fr="Évaluer un consultant Power BI" data-en="Assess a Power BI consultant">Évaluer un consultant Power BI</div><div class="gd" data-fr="Au-delà des jolis graphiques : modèle de données, mesures DAX et fiabilité des chiffres." data-en="Beyond pretty charts: data model, DAX measures and reliable numbers.">Au-delà des jolis graphiques : modèle de données, mesures DAX et fiabilité des chiffres.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/evaluer-competence-tableau" class="gc"><span class="gt">Tableau</span><div class="gti" data-fr="Vérifier la maîtrise de Tableau" data-en="Check real Tableau mastery">Vérifier la maîtrise de Tableau</div><div class="gd" data-fr="Distinguer « sait ouvrir Tableau » de « sait raconter une donnée »." data-en="Tell ‘can open Tableau’ from ‘can tell a data story’.">Distinguer « sait ouvrir Tableau » de « sait raconter une donnée ».</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/evaluer-competence-looker" class="gc"><span class="gt">Looker</span><div class="gti" data-fr="Évaluer une compétence Looker (rare)" data-en="Assess a (rare) Looker skill">Évaluer une compétence Looker (rare)</div><div class="gd" data-fr="Distinguer un vrai modélisateur LookML d'un simple utilisateur — et éviter le piège Looker Studio." data-en="Tell a real LookML modeler from a mere user — and dodge the Looker Studio trap.">Distinguer un vrai modélisateur LookML d'un simple utilisateur — et éviter le piège Looker Studio.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+</div>
+<div class="sec"><div class="sech" data-fr="Guides techniques" data-en="Technical guides">Guides techniques</div><div class="secs" data-fr="Ce qu'on évalue vraiment par techno et par niveau, avec grille GO/NO-GO." data-en="What we really assess by tech and by level, with a GO/NO-GO grid.">Ce qu'on évalue vraiment par techno et par niveau, avec grille GO/NO-GO.</div></div>
+<div class="grid">
+    <a href="/blog/test-technique-sql-data" class="gc"><span class="gt">SQL</span><div class="gti" data-fr="Test technique SQL : ce qu'on évalue" data-en="Technical interview SQL">Test technique SQL : ce qu'on évalue</div><div class="gd" data-fr="Agrégations, jointures, fonctions fenêtre, performance." data-en="Aggregations, joins, window functions, performance.">Agrégations, jointures, fonctions fenêtre, performance.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-python-data" class="gc"><span class="gt">Python</span><div class="gti" data-fr="Test technique Python : ce qu'on évalue" data-en="Technical interview Python">Test technique Python : ce qu'on évalue</div><div class="gd" data-fr="pandas, nettoyage, code de qualité, APIs, performance." data-en="pandas, cleaning, quality code, APIs, performance.">pandas, nettoyage, code de qualité, APIs, performance.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-spark-data" class="gc"><span class="gt">Spark</span><div class="gti" data-fr="Test technique Spark : ce qu'on évalue" data-en="Technical interview Spark">Test technique Spark : ce qu'on évalue</div><div class="gd" data-fr="Modèle d'exécution, shuffle, jointures, performance distribuée." data-en="Execution model, shuffle, joins, distributed performance.">Modèle d'exécution, shuffle, jointures, performance distribuée.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-dbt-data" class="gc"><span class="gt">dbt</span><div class="gti" data-fr="Test technique dbt : ce qu'on évalue" data-en="Technical interview dbt">Test technique dbt : ce qu'on évalue</div><div class="gd" data-fr="Matérialisations, ref/sources, tests, incrémental, structure." data-en="Materializations, ref/sources, tests, incremental, structure.">Matérialisations, ref/sources, tests, incrémental, structure.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-bigquery-data" class="gc"><span class="gt">BigQuery</span><div class="gti" data-fr="Test technique BigQuery : ce qu'on évalue" data-en="Technical interview BigQuery">Test technique BigQuery : ce qu'on évalue</div><div class="gd" data-fr="Coûts, partitionnement, données imbriquées, optimisation." data-en="Cost, partitioning, nested data, optimization.">Coûts, partitionnement, données imbriquées, optimisation.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-snowflake-data" class="gc"><span class="gt">Snowflake</span><div class="gti" data-fr="Test technique Snowflake : ce qu'on évalue" data-en="Technical interview Snowflake">Test technique Snowflake : ce qu'on évalue</div><div class="gd" data-fr="Warehouses, cloning/time travel, VARIANT, MERGE, coûts." data-en="Warehouses, cloning/time travel, VARIANT, MERGE, cost.">Warehouses, cloning/time travel, VARIANT, MERGE, coûts.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-airflow-data" class="gc"><span class="gt">Airflow</span><div class="gti" data-fr="Test technique Airflow : ce qu'on évalue" data-en="Technical interview Airflow">Test technique Airflow : ce qu'on évalue</div><div class="gd" data-fr="DAGs, dépendances, idempotence, XComs, production." data-en="DAGs, dependencies, idempotence, XComs, production.">DAGs, dépendances, idempotence, XComs, production.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
+    <a href="/blog/test-technique-git-data" class="gc"><span class="gt">Git</span><div class="gti" data-fr="Test technique Git : ce qu'on évalue" data-en="Technical interview Git">Test technique Git : ce qu'on évalue</div><div class="gd" data-fr="Branches, merge vs rebase, annuler proprement, équipe." data-en="Branches, merge vs rebase, undoing cleanly, teamwork.">Branches, merge vs rebase, annuler proprement, équipe.</div><div class="gl" data-fr="Lire le guide →" data-en="Read the guide →">Lire le guide →</div></a>
 </div>
 <footer><div class="fi">
 <div class="fl">
