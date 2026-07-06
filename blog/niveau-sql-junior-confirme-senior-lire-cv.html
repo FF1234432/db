@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Junior, confirmé, senior en SQL : comment lire un CV — Data Builder</title>
+<meta name="description" content="Une grille de lecture pour situer le niveau SQL réel d'un candidat à partir de son CV — et pourquoi seule une vérification confirme ce que le CV suggère."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/niveau-sql-junior-confirme-senior-lire-cv"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Junior, confirmé, senior en SQL </span></div>
+<div class="at">Compétences & séniorité</div>
+<h1 class="ah">Junior, confirmé, senior en SQL : comment lire un CV</h1>
+<p class="ai">« SQL » sur un CV ne dit presque rien du niveau : c'est la compétence la plus universelle et la plus sur-vendue de la data. Voici une grille de lecture pour situer un profil junior, confirmé ou senior à partir des indices du CV — en gardant en tête que le CV <em>suggère</em>, seul un test <em>confirme</em>.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & recruteurs · profils SQL</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#indices">Les indices qui trahissent le niveau</a></li><li><a href="#verifier">Ce que le CV ne peut pas prouver</a></li><li><a href="#utiliser">Utiliser la grille pour prioriser</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>On ne lit pas le mot « SQL » mais ce qu'il y a autour : le type de tâches décrites, les volumes, le vocabulaire employé. Ces indices permettent de pré-situer un niveau — utile pour prioriser vos entretiens.</p>
+<h2 id="indices"><span class="sn">1</span>Les indices qui trahissent le niveau</h2>
+<div class="sq"><div class="sl">À retenir</div><p>Regardez les verbes et les objets, pas le mot « SQL » seul.</p></div>
+<p>Un CV junior décrit des tâches d'extraction simples ; un CV senior parle d'optimisation, de modélisation et d'impact. Le vocabulaire est un bon révélateur, à condition de le croiser avec des exemples concrets.</p>
+<ul><li>Junior : « extractions », « reporting », « requêtes » sur des périmètres simples.</li><li>Confirmé : jointures complexes, fonctions fenêtre, automatisation citées avec un cas.</li><li>Senior : optimisation, gros volumes, modélisation, impact métier chiffré.</li><li>Méfiance : une liste de mots-clés sans aucun contexte gonfle souvent le niveau.</li></ul>
+<h2 id="verifier"><span class="sn">2</span>Ce que le CV ne peut pas prouver</h2>
+<div class="sq"><div class="sl">À retenir</div><p>Le CV suggère un niveau ; il ne le démontre jamais.</p></div>
+<p>Deux candidats peuvent écrire exactement la même ligne SQL sur leur CV avec des niveaux réels très différents. Le raisonnement, la propreté du code et l'esprit critique ne se lisent pas sur papier — ils s'observent.</p>
+<ul><li>Le raisonnement (comment il aborde un problème) est invisible sur un CV.</li><li>La propreté et la lisibilité du code ne se devinent pas.</li><li>L'esprit critique sur les données ne s'écrit pas dans une expérience.</li><li>Un même intitulé recouvre des réalités très différentes selon les entreprises.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un CV bien rédigé peut faire passer un profil confirmé pour un senior ; c'est un entretien technique structuré, pas le CV, qui tranche réellement le niveau.</p></div>
+<h2 id="utiliser"><span class="sn">3</span>Utiliser la grille pour prioriser</h2>
+<div class="sq"><div class="sl">À retenir</div><p>La lecture du CV sert à ordonner vos entretiens, pas à décider.</p></div>
+<p>La bonne façon d'utiliser cette grille : pré-situer les candidats pour concentrer votre temps d'entretien là où l'enjeu est le plus fort, puis confirmer le niveau réel par un test adapté au poste.</p>
+<ul><li>Classez les CV par niveau <em>probable</em> pour prioriser vos créneaux.</li><li>Adaptez la difficulté du test au niveau visé par le poste.</li><li>Ne rejetez pas un profil atypique sur la seule base du CV.</li><li>Confirmez toujours le niveau par une évaluation concrète.</li></ul>
+<h2 id="niv"><span class="sn">4</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Requêtes simples, reporting, extractions</td><td>Explique clairement ses extractions</td><td>Ne donne aucun exemple concret</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Jointures, fonctions fenêtre, automatisation</td><td>Illustre chaque compétence par un cas</td><td>Aligne des mots-clés sans contexte</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimisation, modélisation, impact métier</td><td>Chiffre l'impact de son travail</td><td>Confond ancienneté et séniorité</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Standards, montée en compétence de l'équipe</td><td>Sait vulgariser et transmettre</td><td>Ne sait pas expliquer à un non-technique</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Junior, mid, senior in SQL</span></div>
+<div class="at">Skills & seniority</div>
+<h1 class="ah">Junior, mid, senior in SQL: how to read a résumé</h1>
+<p class="ai">‘SQL’ on a résumé says almost nothing about the level: it's the most universal and most oversold data skill. Here's a reading grid to place a junior, mid or senior profile from résumé clues — bearing in mind the résumé <em>suggests</em>, only a test <em>confirms</em>.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & recruiters · SQL profiles</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#indices">The clues that reveal the level</a></li><li><a href="#verifier">What the résumé can't prove</a></li><li><a href="#utiliser">Use the grid to prioritize</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>You don't read the word ‘SQL’ but what surrounds it: the type of tasks described, the volumes, the vocabulary used. These clues let you pre-place a level — useful to prioritize your interviews.</p>
+<h2 id="indices"><span class="sn">1</span>The clues that reveal the level</h2>
+<div class="sq"><div class="sl">Key point</div><p>Look at the verbs and objects, not the word ‘SQL’ alone.</p></div>
+<p>A junior résumé describes simple extraction tasks; a senior one talks optimization, modelling and impact. Vocabulary is a good tell, provided you cross it with concrete examples.</p>
+<ul><li>Junior: ‘extracts’, ‘reporting’, ‘queries’ on simple scopes.</li><li>Mid: complex joins, window functions, automation cited with a case.</li><li>Senior: optimization, large volumes, modelling, quantified business impact.</li><li>Caution: a keyword list with no context often inflates the level.</li></ul>
+<h2 id="verifier"><span class="sn">2</span>What the résumé can't prove</h2>
+<div class="sq"><div class="sl">Key point</div><p>The résumé suggests a level; it never proves it.</p></div>
+<p>Two candidates can write the exact same SQL line on their résumé with very different real levels. Reasoning, code cleanliness and critical thinking don't show on paper — they're observed.</p>
+<ul><li>Reasoning (how they tackle a problem) is invisible on a résumé.</li><li>Code cleanliness and readability can't be guessed.</li><li>Critical thinking about data isn't written in an experience line.</li><li>The same job title covers very different realities across companies.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a well-written résumé can pass a mid profile off as senior; it's a structured technical interview, not the résumé, that truly settles the level.</p></div>
+<h2 id="utiliser"><span class="sn">3</span>Use the grid to prioritize</h2>
+<div class="sq"><div class="sl">Key point</div><p>Résumé reading is for ordering your interviews, not for deciding.</p></div>
+<p>The right way to use this grid: pre-place candidates to focus your interview time where the stakes are highest, then confirm the real level with a role-appropriate test.</p>
+<ul><li>Sort résumés by <em>likely</em> level to prioritize your slots.</li><li>Adapt the test difficulty to the level targeted by the role.</li><li>Don't reject an atypical profile on the résumé alone.</li><li>Always confirm the level with a concrete assessment.</li></ul>
+<h2 id="niv"><span class="sn">4</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Simple queries, reporting, extracts</td><td>Clearly explains their extracts</td><td>Gives no concrete example</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Joins, window functions, automation</td><td>Illustrates each skill with a case</td><td>Lists keywords with no context</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimization, modelling, business impact</td><td>Quantifies the impact of their work</td><td>Confuses tenure with seniority</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Standards, upskilling the team</td><td>Can popularize and transmit</td><td>Can't explain to a non-technical person</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Junior, confirmé, senior en SQL : comment lire un CV',desc:"Une grille de lecture pour situer le niveau SQL réel d'un candidat à partir de son CV — et pourquoi seule une vérification confirme ce que le CV suggère."},en:{title:'Junior, mid, senior in SQL: how to read a résumé',desc:"A reading grid to place a candidate's real SQL level from their résumé — and why only a check confirms what the résumé suggests."}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Pair-programming vs exercice à emporter : le match pour la data — Data Builder</title>
+<meta name="description" content="Deux formats d'évaluation pratique s'opposent : le pair-programming en direct et l'exercice à emporter. Forces, limites, et pourquoi le live tire son épingle du jeu à l'ère de l'IA."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/pair-programming-vs-take-home-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Pair-programming vs exercice à emporter </span></div>
+<div class="at">Process de recrutement</div>
+<h1 class="ah">Pair-programming vs exercice à emporter : le match pour la data</h1>
+<p class="ai">Quand on veut voir un candidat data <em>en action</em>, deux formats s'affrontent : le pair-programming en direct et l'exercice à emporter. Les deux évaluent la pratique, mais pas de la même façon — et l'un a beaucoup mieux vieilli que l'autre depuis l'arrivée des assistants IA. Faisons le match.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & hiring managers data</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#take">L'exercice à emporter</a></li><li><a href="#pair">Le pair-programming en direct</a></li><li><a href="#verdict">Le verdict</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le débat n'est pas « pratique ou pas », mais « pratique observée en direct » contre « pratique livrée hors ligne ». Cette différence change tout : ce qu'on mesure, ce qu'on peut tricher, et l'expérience candidat.</p>
+<h2 id="take"><span class="sn">1</span>L'exercice à emporter</h2>
+<div class="sq"><div class="sl">En bref</div><p>Un problème à résoudre chez soi, rendu sous quelques jours.</p></div>
+<p>Le take-home laisse le candidat travailler au calme, ce qui est appréciable. Mais on ne voit que le résultat final, poli — pas le chemin. Et non supervisé, il est aujourd'hui largement réalisable avec une IA.</p>
+<ul><li><strong>Force</strong> : conditions confortables, résultat abouti et comparable.</li><li><strong>Limite</strong> : on ne voit pas le raisonnement ni les hésitations.</li><li>Non supervisé, sa fiabilité s'est effondrée avec l'IA.</li><li>Il demande plusieurs heures : les bons profils, courtisés, déclinent souvent.</li></ul>
+<h2 id="pair"><span class="sn">2</span>Le pair-programming en direct</h2>
+<div class="sq"><div class="sl">En bref</div><p>Résoudre un problème ensemble, en direct, en échangeant.</p></div>
+<p>Le pair-programming met le candidat en situation réelle de collaboration. On voit son raisonnement, sa façon de communiquer, sa réaction aux indices. Le stress du direct est le seul vrai bémol, qu'un bon cadrage atténue.</p>
+<ul><li><strong>Force</strong> : on observe le raisonnement, la communication et la collaboration.</li><li>Robuste face à l'IA : tout se passe en direct, rien ne se délègue.</li><li>Permet de donner un indice et de voir la capacité à rebondir.</li><li><strong>Limite</strong> : le stress du direct, à atténuer par un cadre bienveillant.</li></ul>
+<h2 id="verdict"><span class="sn">3</span>Le verdict</h2>
+<div class="sq"><div class="sl">En bref</div><p>Lequel donne le signal le plus fiable pour un poste data ?</p></div>
+<p>À l'ère de l'IA, un format non supervisé mesure surtout la capacité à utiliser un assistant. Le live, lui, observe ce qui compte vraiment en poste : raisonner, communiquer, collaborer. C'est le meilleur des deux mondes — pratique <em>et</em> fiable.</p>
+<ul><li>Le live capture le raisonnement <em>et</em> la pratique, sans faille de triche.</li><li>Il respecte le temps du candidat : une heure cadrée plutôt que plusieurs soirées.</li><li>Il produit un rapport riche : pas seulement « ça marche », mais « comment il pense ».</li><li>Le seul frein — animer ce live — se lève en le confiant à un expert.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un take-home non supervisé teste surtout l'usage d'une IA ; le pair-programming en direct reste le format le plus prédictif de la performance réelle en poste.</p></div>
+<h2 id="niv"><span class="sn">4</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Débutant</span></td><td>Aucun format pratique</td><td>Ajoute une vraie mise en pratique</td><td>Se contente d'un QCM ou d'un CV</td></tr><tr><td><span class="bd bm">Intermédiaire</span></td><td>Take-home court et cadré</td><td>Donne un aperçu du travail rendu</td><td>Take-home long, non supervisé</td></tr><tr><td><span class="bd bs">Avancé</span></td><td>Pair-programming en interne</td><td>Observe raisonnement et collaboration</td><td>Interrompt et stresse le candidat</td></tr><tr><td><span class="bd bl">Optimal</span></td><td>Live pratique mené par un expert</td><td>Signal fiable, expérience candidat soignée</td><td>Juge sur un livrable potentiellement assisté</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Pair-programming vs take-home</span></div>
+<div class="at">Hiring process</div>
+<h1 class="ah">Pair-programming vs take-home: the match-up for data</h1>
+<p class="ai">When you want to see a data candidate <em>in action</em>, two formats compete: live pair-programming and the take-home exercise. Both assess practice, but not in the same way — and one has aged much better since AI assistants arrived. Let's run the match-up.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & data hiring managers</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#take">The take-home exercise</a></li><li><a href="#pair">Live pair-programming</a></li><li><a href="#verdict">The verdict</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The debate isn't ‘hands-on or not’, but ‘hands-on observed live’ versus ‘hands-on delivered offline’. That difference changes everything: what you measure, what can be cheated, and the candidate experience.</p>
+<h2 id="take"><span class="sn">1</span>The take-home exercise</h2>
+<div class="sq"><div class="sl">In short</div><p>A problem to solve at home, returned within a few days.</p></div>
+<p>The take-home lets the candidate work calmly, which is nice. But you only see the final, polished result — not the path. And unsupervised, it's now largely doable with AI.</p>
+<ul><li><strong>Strength</strong>: comfortable conditions, a finished, comparable result.</li><li><strong>Limit</strong>: you don't see the reasoning or the hesitations.</li><li>Unsupervised, its reliability collapsed with AI.</li><li>It takes several hours: good profiles, in demand, often decline.</li></ul>
+<h2 id="pair"><span class="sn">2</span>Live pair-programming</h2>
+<div class="sq"><div class="sl">In short</div><p>Solving a problem together, live, while talking through it.</p></div>
+<p>Pair-programming puts the candidate in a real collaboration situation. You see their reasoning, how they communicate, their reaction to hints. The stress of the live setting is the only real downside, which good framing eases.</p>
+<ul><li><strong>Strength</strong>: you observe reasoning, communication and collaboration.</li><li>Robust to AI: everything happens live, nothing can be delegated.</li><li>Lets you give a hint and see the ability to bounce back.</li><li><strong>Limit</strong>: live stress, to ease with a supportive frame.</li></ul>
+<h2 id="verdict"><span class="sn">3</span>The verdict</h2>
+<div class="sq"><div class="sl">In short</div><p>Which gives the most reliable signal for a data role?</p></div>
+<p>In the AI era, an unsupervised format mostly measures the ability to use an assistant. Live, by contrast, observes what really matters on the job: reasoning, communicating, collaborating. It's the best of both worlds — hands-on <em>and</em> reliable.</p>
+<ul><li>Live captures reasoning <em>and</em> practice, with no cheating loophole.</li><li>It respects the candidate's time: one framed hour rather than several evenings.</li><li>It yields a rich report: not just ‘it works’, but ‘how they think’.</li><li>The only friction — running that live — is removed by entrusting it to an expert.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> an unsupervised take-home mostly tests AI usage; live pair-programming remains the most predictive format of real on-the-job performance.</p></div>
+<h2 id="niv"><span class="sn">4</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Basic</span></td><td>No hands-on format</td><td>Adds a real hands-on step</td><td>Settles for an MCQ or a résumé</td></tr><tr><td><span class="bd bm">Intermediate</span></td><td>Short, framed take-home</td><td>Gives a glimpse of delivered work</td><td>Long, unsupervised take-home</td></tr><tr><td><span class="bd bs">Advanced</span></td><td>In-house pair-programming</td><td>Observes reasoning and collaboration</td><td>Interrupts and stresses the candidate</td></tr><tr><td><span class="bd bl">Optimal</span></td><td>Hands-on live run by an expert</td><td>Reliable signal, polished candidate experience</td><td>Judges on a possibly assisted deliverable</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Pair-programming vs exercice à emporter : le match pour la data',desc:"Deux formats d'évaluation pratique s'opposent : le pair-programming en direct et l'exercice à emporter. Forces, limites, et pourquoi le live tire son épingle du jeu à l'ère de l'IA."},en:{title:'Pair-programming vs take-home: the match-up for data',desc:'Two hands-on assessment formats face off: live pair-programming and the take-home exercise. Strengths, limits, and why live wins out in the AI era.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Exercice DAX d'entretien Power BI (avec les réponses qui trahissent le niveau) — Data Builder</title>
+<meta name="description" content="Un exercice DAX d'entretien clé en main : 3 mesures à écrire, le corrigé, et surtout les réponses erronées qui trahissent immédiatement un niveau faible."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/exercice-dax-entretien-power-bi-reponses"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Exercice DAX d'entretien Power BI (avec les réponses qui trahissent le niveau)</span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Exercice DAX d'entretien Power BI (avec les réponses qui trahissent le niveau)</h1>
+<p class="ai">DAX est le vrai révélateur du niveau Power BI. Ces trois questions, du simple au subtil, séparent nettement ceux qui « font des graphiques » de ceux qui maîtrisent le calcul. Pour chacune : la mesure attendue et la réponse erronée typique.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Test Power BI · DAX · entretien</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#ctx">Le modèle de départ</a></li><li><a href="#q1">Question 1 — Une mesure de chiffre d'affaires</a></li><li><a href="#q2">Question 2 — Le CA de l'année précédente</a></li><li><a href="#q3">Question 3 — La part de chaque catégorie</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le concept clé que ces questions testent est le <strong>contexte de filtre</strong> : comprendre comment une mesure réagit au contexte est ce qui distingue un vrai profil Power BI d'un débutant.</p>
+<h2 id="ctx"><span class="sn">1</span>Le modèle de départ</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Un modèle simple, fourni au candidat.</p></div>
+<p>Deux tables reliées et une table de dates : de quoi écrire des mesures réalistes.</p>
+<div class="cb"><code>ventes(date_vente, produit_id, montant)
+produits(id, categorie)
+Dates(Date)  <span class="cm">-- table de dates reliee a ventes[date_vente]</span></code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — Une mesure de chiffre d'affaires</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Écris une mesure qui calcule le chiffre d'affaires total.</p></div>
+<p>L'échauffement. La bonne réponse est une <em>mesure</em>, pas une colonne calculée. Ce simple choix révèle déjà la compréhension du modèle.</p>
+<div class="cb"><code>CA = <span class="kw">SUM</span>(ventes[montant])</code></div>
+<ul><li>Attendu : une mesure avec SUM.</li><li>Réponse qui trahit : créer une colonne calculée au lieu d'une mesure.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Le CA de l'année précédente</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Écris une mesure qui affiche le CA de la même période l'an dernier.</p></div>
+<p>La question qui sépare : elle demande de manipuler le contexte de temps avec CALCULATE. Beaucoup de faux experts butent ici.</p>
+<div class="cb"><code>CA an dernier =
+    <span class="kw">CALCULATE</span>([CA], <span class="kw">SAMEPERIODLASTYEAR</span>('Dates'[Date]))</code></div>
+<ul><li>Attendu : CALCULATE + une fonction de time intelligence (SAMEPERIODLASTYEAR).</li><li>Réponse qui trahit : tenter un filtre manuel sur l'année, ou ne pas connaître CALCULATE.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ne pas connaître CALCULATE — la fonction centrale de DAX — est éliminatoire pour un poste Power BI qui se dit « avancé ». C'est le signal le plus clair.</p></div>
+<h2 id="q3"><span class="sn">4</span>Question 3 — La part de chaque catégorie</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Écris une mesure qui donne le pourcentage du CA total réalisé par la catégorie affichée.</p></div>
+<p>La question subtile : il faut « ignorer » le filtre de catégorie pour le dénominateur, avec ALL. Elle teste la vraie maîtrise du contexte de filtre.</p>
+<div class="cb"><code>% du total =
+    <span class="kw">DIVIDE</span>([CA], <span class="kw">CALCULATE</span>([CA], <span class="kw">ALL</span>(produits[categorie])))</code></div>
+<ul><li>Attendu : DIVIDE du CA par le CA total (CALCULATE([CA], ALL(...))).</li><li>Réponse qui trahit : un ratio qui donne toujours 100 % (le filtre n'est pas retiré).</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> cette question est le meilleur test du niveau réel : comprendre qu'il faut retirer le filtre de catégorie avec ALL démontre une vraie maîtrise du contexte de filtre — le cœur de DAX.</p></div>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Écrit une mesure de somme</td><td>Utilise une mesure, pas une colonne</td><td>Crée une colonne calculée pour le CA</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Gère la time intelligence</td><td>Maîtrise CALCULATE et SAMEPERIODLASTYEAR</td><td>Ne connaît pas CALCULATE</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Maîtrise le contexte de filtre</td><td>Utilise ALL pour un ratio correct</td><td>Ratio qui donne toujours 100 %</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Explique le contexte de filtre</td><td>Vulgarise CALCULATE à un non-technique</td><td>Répond juste sans comprendre pourquoi</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Power BI DAX interview exercise (with the answers that reveal the level)</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Power BI DAX interview exercise (with the answers that reveal the level)</h1>
+<p class="ai">DAX is the real revealer of Power BI level. These three questions, from simple to subtle, clearly separate those who ‘make charts’ from those who master calculation. For each: the expected measure and the typical wrong answer.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Power BI test · DAX · interview</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#ctx">The starting model</a></li><li><a href="#q1">Question 1 — A revenue measure</a></li><li><a href="#q2">Question 2 — Prior-year revenue</a></li><li><a href="#q3">Question 3 — Each category's share</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The key concept these questions test is the <strong>filter context</strong>: understanding how a measure reacts to context is what separates a real Power BI profile from a beginner.</p>
+<h2 id="ctx"><span class="sn">1</span>The starting model</h2>
+<div class="sq"><div class="sl">The task</div><p>A simple model, provided to the candidate.</p></div>
+<p>Two related tables and a date table: enough to write realistic measures.</p>
+<div class="cb"><code>ventes(date_vente, produit_id, montant)
+produits(id, categorie)
+Dates(Date)  <span class="cm">-- table de dates reliee a ventes[date_vente]</span></code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — A revenue measure</h2>
+<div class="sq"><div class="sl">The task</div><p>Write a measure that computes total revenue.</p></div>
+<p>The warm-up. The right answer is a <em>measure</em>, not a calculated column. This simple choice already reveals model understanding.</p>
+<div class="cb"><code>CA = <span class="kw">SUM</span>(ventes[montant])</code></div>
+<ul><li>Expected: a measure with SUM.</li><li>Telltale answer: creating a calculated column instead of a measure.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Prior-year revenue</h2>
+<div class="sq"><div class="sl">The task</div><p>Write a measure that shows revenue for the same period last year.</p></div>
+<p>The separating question: it requires manipulating the time context with CALCULATE. Many fake experts stumble here.</p>
+<div class="cb"><code>CA an dernier =
+    <span class="kw">CALCULATE</span>([CA], <span class="kw">SAMEPERIODLASTYEAR</span>('Dates'[Date]))</code></div>
+<ul><li>Expected: CALCULATE + a time-intelligence function (SAMEPERIODLASTYEAR).</li><li>Telltale answer: attempting a manual year filter, or not knowing CALCULATE.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> not knowing CALCULATE — the central DAX function — is disqualifying for a Power BI role claiming to be ‘advanced’. It's the clearest signal.</p></div>
+<h2 id="q3"><span class="sn">4</span>Question 3 — Each category's share</h2>
+<div class="sq"><div class="sl">The task</div><p>Write a measure giving the percentage of total revenue made by the displayed category.</p></div>
+<p>The subtle question: you must ‘ignore’ the category filter for the denominator, with ALL. It tests real mastery of filter context.</p>
+<div class="cb"><code>% du total =
+    <span class="kw">DIVIDE</span>([CA], <span class="kw">CALCULATE</span>([CA], <span class="kw">ALL</span>(produits[categorie])))</code></div>
+<ul><li>Expected: DIVIDE of revenue by total revenue (CALCULATE([CA], ALL(...))).</li><li>Telltale answer: a ratio always giving 100% (the filter isn't removed).</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> this question is the best test of real level: understanding you must remove the category filter with ALL demonstrates real mastery of filter context — the heart of DAX.</p></div>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Writes a sum measure</td><td>Uses a measure, not a column</td><td>Creates a calculated column for revenue</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Handles time intelligence</td><td>Masters CALCULATE and SAMEPERIODLASTYEAR</td><td>Doesn't know CALCULATE</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Masters filter context</td><td>Uses ALL for a correct ratio</td><td>Ratio always giving 100%</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Explains filter context</td><td>Popularizes CALCULATE for a non-technical person</td><td>Answers correctly without understanding why</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Exercice DAX d'entretien Power BI (avec les réponses qui trahissent le niveau)",desc:"Un exercice DAX d'entretien clé en main : 3 mesures à écrire, le corrigé, et surtout les réponses erronées qui trahissent immédiatement un niveau faible."},en:{title:'Power BI DAX interview exercise (with the answers that reveal the level)',desc:'A turnkey DAX interview exercise: 3 measures to write, the answer, and above all the wrong answers that immediately reveal a weak level.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

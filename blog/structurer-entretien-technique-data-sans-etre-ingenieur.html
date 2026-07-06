@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Comment structurer un entretien technique data sans être ingénieur — Data Builder</title>
+<meta name="description" content="Un cadre en 5 temps pour mener (ou faire mener) un entretien technique data fiable, même sans background technique — et savoir quand déléguer."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/structurer-entretien-technique-data-sans-etre-ingenieur"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Comment structurer un entretien technique data sans être ingénieur</span></div>
+<div class="at">Process de recrutement</div>
+<h1 class="ah">Comment structurer un entretien technique data sans être ingénieur</h1>
+<p class="ai">Mener un entretien technique data quand on n'est pas soi-même technique semble impossible : comment juger ce qu'on ne comprend pas ? En réalité, un entretien fiable tient surtout à sa <strong>structure</strong>. Voici un cadre que n'importe quel recruteur peut utiliser — et le moment où déléguer devient la meilleure option.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Cible : RH & recruteurs non techniques</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#cadre">Poser le cadre avant de commencer</a></li><li><a href="#ouvert">Commencer par une question ouverte</a></li><li><a href="#pratique">Passer à un cas concret</a></li><li><a href="#grille">Noter avec une grille, pas au feeling</a></li><li><a href="#deleguer">Savoir déléguer la partie technique</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>La qualité d'un entretien technique dépend moins du niveau de l'évaluateur que de la structure suivie. Un cadre clair, les mêmes étapes pour tous, et vous obtenez déjà un signal exploitable — avant même de faire appel à un expert pour la partie la plus pointue.</p>
+<h2 id="cadre"><span class="sn">1</span>Poser le cadre avant de commencer</h2>
+<div class="sq"><div class="sl">En bref</div><p>Annoncez le format, la durée et les compétences évaluées.</p></div>
+<p>Un candidat qui sait à quoi s'attendre montre son vrai niveau plutôt que de gérer son stress. Le cadrage n'est pas de la politesse : c'est ce qui rend l'évaluation comparable d'un candidat à l'autre.</p>
+<ul><li>Précisez la durée (45 min à 1 h) et les technos couvertes.</li><li>Rassurez : les hésitations et le « je ne sais pas » sont normaux.</li><li>Utilisez la même trame pour tous les candidats d'un même poste.</li><li>Prévoyez un temps pour les questions du candidat à la fin.</li></ul>
+<h2 id="ouvert"><span class="sn">2</span>Commencer par une question ouverte</h2>
+<div class="sq"><div class="sl">En bref</div><p>« Racontez-moi un projet data dont vous êtes fier. »</p></div>
+<p>Une question ouverte met le candidat à l'aise et révèle énormément : la clarté, la capacité à vulgariser, le rôle réel joué. Vous n'avez pas besoin d'être technique pour juger si l'explication est claire et cohérente.</p>
+<ul><li>Écoutez la clarté : un bon profil explique simplement, sans jargon inutile.</li><li>Repérez le « je » vs le « nous » : quel a été son rôle réel ?</li><li>Notez s'il parle des difficultés rencontrées et de ses erreurs.</li><li>La cohérence du récit est déjà un signal, technique ou non.</li></ul>
+<h2 id="pratique"><span class="sn">3</span>Passer à un cas concret</h2>
+<div class="sq"><div class="sl">En bref</div><p>Un mini-cas proche du poste, où le candidat raisonne à voix haute.</p></div>
+<p>Même sans comprendre chaque détail technique, vous pouvez observer la <strong>démarche</strong> : le candidat pose-t-il des questions, cadre-t-il le problème, avance-t-il par étapes ? C'est là qu'un support préparé par un expert (ou l'expert lui-même) devient précieux.</p>
+<ul><li>Demandez au candidat de penser à voix haute pendant qu'il résout.</li><li>Observez la méthode : cadrage, priorisation, auto-correction.</li><li>Donnez un indice si besoin et regardez la capacité à rebondir.</li><li>Sur la partie pointue, appuyez-vous sur une grille ou un expert.</li></ul>
+<h2 id="grille"><span class="sn">4</span>Noter avec une grille, pas au feeling</h2>
+<div class="sq"><div class="sl">En bref</div><p>Une grille par compétence rend l'évaluation objective et comparable.</p></div>
+<p>Sans grille, on note à l'intuition — et les biais s'installent. Une grille simple (par compétence, avec des niveaux) permet de comparer les candidats sur les mêmes critères, même quand plusieurs personnes font passer les entretiens.</p>
+<ul><li>Définissez 4 à 6 compétences clés à noter pour le poste.</li><li>Notez chaque compétence sur une échelle simple, avec un exemple à l'appui.</li><li>Séparez le ressenti humain (fit) de l'évaluation technique.</li><li>Formalisez une recommandation claire : go, à revoir, non.</li></ul>
+<h2 id="deleguer"><span class="sn">5</span>Savoir déléguer la partie technique</h2>
+<div class="sq"><div class="sl">En bref</div><p>Il y a une limite à ce qu'un recruteur non technique peut trancher seul.</p></div>
+<p>Ce cadre vous permet d'obtenir un bon signal général. Mais pour confirmer finement un niveau technique — surtout sur un poste senior — rien ne remplace un évaluateur qui maîtrise le sujet. Déléguer cette heure d'entretien à un expert vous donne un rapport objectif sans mobiliser vos équipes.</p>
+<ul><li>Poste senior ou compétence rare : faites valider par un expert.</li><li>Personne en interne ne peut juger la profondeur technique.</li><li>Vous voulez un rapport comparable et sans biais d'un candidat à l'autre.</li><li>Externaliser l'entretien technique libère vos ingénieurs et fiabilise la décision.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Débutant</span></td><td>Entretien sans structure, au feeling</td><td>Pose au moins une question ouverte</td><td>Note à l'intuition, sans critères</td></tr><tr><td><span class="bd bm">Intermédiaire</span></td><td>Trame identique + question ouverte + cas</td><td>Compare les candidats sur les mêmes bases</td><td>Change de trame selon les candidats</td></tr><tr><td><span class="bd bs">Avancé</span></td><td>Grille par compétence, raisonnement observé</td><td>Sépare le fit de la technique, documente</td><td>Confond sympathie et compétence</td></tr><tr><td><span class="bd bl">Optimal</span></td><td>Cadre RH + expert externe sur le technique</td><td>Décision fiable, rapport objectif</td><td>Tranche seul un niveau qu'on ne comprend pas</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>How to structure a data technical interview without being an engineer</span></div>
+<div class="at">Hiring process</div>
+<h1 class="ah">How to structure a data technical interview without being an engineer</h1>
+<p class="ai">Running a data technical interview when you're not technical yourself seems impossible: how do you judge what you don't understand? In reality, a reliable interview mostly comes down to its <strong>structure</strong>. Here's a framework any recruiter can use — and when delegating becomes the best option.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>For: HR & non-technical recruiters</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#cadre">Set the frame before starting</a></li><li><a href="#ouvert">Start with an open question</a></li><li><a href="#pratique">Move to a concrete case</a></li><li><a href="#grille">Score with a grid, not on feeling</a></li><li><a href="#deleguer">Knowing when to delegate the technical part</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The quality of a technical interview depends less on the assessor's level than on the structure followed. A clear framework, the same steps for everyone, and you already get a usable signal — even before calling an expert for the trickiest part.</p>
+<h2 id="cadre"><span class="sn">1</span>Set the frame before starting</h2>
+<div class="sq"><div class="sl">In short</div><p>Announce the format, the duration and the skills assessed.</p></div>
+<p>A candidate who knows what to expect shows their real level rather than managing stress. Framing isn't politeness: it's what makes the assessment comparable across candidates.</p>
+<ul><li>State the duration (45 min to 1 h) and the technologies covered.</li><li>Reassure: hesitations and ‘I don't know’ are normal.</li><li>Use the same script for all candidates on a given role.</li><li>Leave time for the candidate's questions at the end.</li></ul>
+<h2 id="ouvert"><span class="sn">2</span>Start with an open question</h2>
+<div class="sq"><div class="sl">In short</div><p>‘Tell me about a data project you're proud of.’</p></div>
+<p>An open question puts the candidate at ease and reveals a lot: clarity, the ability to popularize, the real role played. You don't need to be technical to judge whether the explanation is clear and consistent.</p>
+<ul><li>Listen for clarity: a good profile explains simply, without needless jargon.</li><li>Spot ‘I’ vs ‘we’: what was their real role?</li><li>Note whether they mention difficulties faced and their mistakes.</li><li>The consistency of the story is already a signal, technical or not.</li></ul>
+<h2 id="pratique"><span class="sn">3</span>Move to a concrete case</h2>
+<div class="sq"><div class="sl">In short</div><p>A mini-case close to the role, where the candidate reasons out loud.</p></div>
+<p>Even without understanding every technical detail, you can observe the <strong>approach</strong>: does the candidate ask questions, frame the problem, proceed step by step? This is where a support prepared by an expert (or the expert themselves) becomes valuable.</p>
+<ul><li>Ask the candidate to think out loud while solving.</li><li>Observe the method: framing, prioritization, self-correction.</li><li>Give a hint if needed and watch the ability to bounce back.</li><li>On the tricky part, lean on a grid or an expert.</li></ul>
+<h2 id="grille"><span class="sn">4</span>Score with a grid, not on feeling</h2>
+<div class="sq"><div class="sl">In short</div><p>A per-skill grid makes the assessment objective and comparable.</p></div>
+<p>Without a grid, you score on intuition — and biases creep in. A simple grid (per skill, with levels) lets you compare candidates on the same criteria, even when several people run the interviews.</p>
+<ul><li>Define 4 to 6 key skills to score for the role.</li><li>Score each skill on a simple scale, with a supporting example.</li><li>Separate the human feel (fit) from the technical assessment.</li><li>Formalize a clear recommendation: go, revisit, no.</li></ul>
+<h2 id="deleguer"><span class="sn">5</span>Knowing when to delegate the technical part</h2>
+<div class="sq"><div class="sl">In short</div><p>There's a limit to what a non-technical recruiter can decide alone.</p></div>
+<p>This framework gives you a good general signal. But to finely confirm a technical level — especially on a senior role — nothing replaces an assessor who masters the subject. Delegating that hour of interview to an expert gives you an objective report without tying up your teams.</p>
+<ul><li>Senior role or rare skill: have it validated by an expert.</li><li>No one in-house can judge the technical depth.</li><li>You want a comparable, bias-free report from candidate to candidate.</li><li>Outsourcing the technical interview frees your engineers and secures the decision.</li></ul>
+<h2 id="niv"><span class="sn">6</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Basic</span></td><td>Unstructured interview, on feeling</td><td>Asks at least one open question</td><td>Scores on intuition, no criteria</td></tr><tr><td><span class="bd bm">Intermediate</span></td><td>Same script + open question + case</td><td>Compares candidates on the same basis</td><td>Changes the script per candidate</td></tr><tr><td><span class="bd bs">Advanced</span></td><td>Per-skill grid, observed reasoning</td><td>Separates fit from technique, documents</td><td>Confuses likeability with competence</td></tr><tr><td><span class="bd bl">Optimal</span></td><td>HR framework + external expert on the tech</td><td>Reliable decision, objective report</td><td>Decides alone on a level one doesn't grasp</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Comment structurer un entretien technique data sans être ingénieur',desc:'Un cadre en 5 temps pour mener (ou faire mener) un entretien technique data fiable, même sans background technique — et savoir quand déléguer.'},en:{title:'How to structure a data technical interview without being an engineer',desc:'A 5-step framework to run (or have run) a reliable data technical interview, even without a technical background — and knowing when to delegate.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

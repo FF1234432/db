@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test SQL senior : un cas de modélisation + optimisation à donner en entretien — Data Builder</title>
+<meta name="description" content="Un cas SQL senior clé en main : modéliser une base à partir d'une table dénormalisée, puis optimiser une requête lente. Avec le corrigé et ce que chaque partie révèle."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-sql-senior-modelisation-optimisation"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test SQL senior </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test SQL senior : un cas de modélisation + optimisation à donner en entretien</h1>
+<p class="ai">Pour un profil senior, écrire une requête ne suffit pas : il faut savoir modéliser et optimiser. Ce cas en deux parties, à donner en entretien (30-40 min), révèle la capacité d'arbitrage d'un candidat expérimenté. Corrigé et grille inclus.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>11 min de lecture</span><span>·</span><span>Test SQL · niveau senior · entretien</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#contexte">Le point de départ : une table dénormalisée</a></li><li><a href="#modele">Partie 1 — Modéliser proprement</a></li><li><a href="#optim">Partie 2 — Optimiser une requête lente</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>On n'attend pas une réponse unique mais un raisonnement : quels compromis, pourquoi, à quel coût. Un senior justifie ses choix ; un junior déguisé applique des recettes sans les relier au contexte.</p>
+<h2 id="contexte"><span class="sn">1</span>Le point de départ : une table dénormalisée</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Donnez cette table au candidat.</p></div>
+<p>On part d'une seule grande table où tout est répété (le nom du client, son pays, le nom du produit reviennent à chaque ligne de commande). C'est le point de départ classique d'un cas de modélisation.</p>
+<div class="cb"><code><span class="cm">-- Table de depart (tout dans une seule table)</span>
+ventes_brutes(
+  commande_id, date_commande, statut,
+  client_nom, client_pays, client_email,
+  produit_nom, produit_categorie, produit_prix,
+  quantite, montant
+)</code></div>
+<ul></ul>
+<h2 id="modele"><span class="sn">2</span>Partie 1 — Modéliser proprement</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Proposez un schéma normalisé (ou en étoile) et justifiez vos choix.</p></div>
+<p>On demande au candidat de découper cette table en un modèle propre et d'expliquer les compromis. Un bon senior propose un schéma en étoile (une table de faits, des dimensions) et sait dire pourquoi.</p>
+<div class="cb"><code><span class="cm">-- Corrige : schema en etoile (orientation analytique)</span>
+dim_clients(id, nom, email, pays)
+dim_produits(id, nom, categorie, prix)
+fait_commandes(
+  id, date_commande, statut,
+  client_id  -> dim_clients(id),
+  produit_id -> dim_produits(id),
+  quantite, montant
+)
+<span class="cm">-- La table de faits ne garde que des cles + mesures ;</span>
+<span class="cm">-- les libelles vivent dans les dimensions (une seule source de verite).</span></code></div>
+<ul><li>Attendu : séparer les dimensions (clients, produits) de la table de faits (commandes).</li><li>Attendu : justifier normalisation vs schéma en étoile selon l'usage (analytique).</li><li>Bon signe : le candidat parle de cohérence, de doublons évités et de performance de lecture.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ce qu'on évalue : pas le schéma « parfait », mais la capacité à arbitrer (normaliser pour la cohérence vs dénormaliser pour la vitesse de lecture) et à relier ce choix à l'usage réel.</p></div>
+<h2 id="optim"><span class="sn">3</span>Partie 2 — Optimiser une requête lente</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Cette requête d'agrégation est lente sur des millions de lignes. Comment l'améliorer ?</p></div>
+<p>On soumet une requête réaliste mais mal écrite. Un senior identifie les anti-patterns et propose des pistes concrètes (index, éviter les fonctions sur colonnes filtrées, pré-agrégation).</p>
+<div class="cb"><code><span class="cm">-- Requete lente (anti-pattern)</span>
+<span class="kw">SELECT</span> client_id, <span class="kw">SUM</span>(montant)
+<span class="kw">FROM</span> fait_commandes
+<span class="kw">WHERE</span> <span class="kw">YEAR</span>(date_commande) = 2024   <span class="cm">-- fonction sur colonne = pas d'index</span>
+<span class="kw">GROUP BY</span> client_id;
+
+<span class="cm">-- Corrige : filtre par plage (l'index sur date_commande est utilisable)</span>
+<span class="kw">SELECT</span> client_id, <span class="kw">SUM</span>(montant)
+<span class="kw">FROM</span> fait_commandes
+<span class="kw">WHERE</span> date_commande >= '2024-01-01'
+  <span class="kw">AND</span> date_commande <  '2025-01-01'
+<span class="kw">GROUP BY</span> client_id;
+<span class="cm">-- + index sur (date_commande, client_id) ; envisager une table pre-agregee</span>
+<span class="cm">--   si cette requete tourne souvent.</span></code></div>
+<ul><li>Attendu : repérer le filtre par fonction sur la date qui empêche l'usage d'un index.</li><li>Attendu : proposer un filtre par plage de dates, un index adapté, voire une pré-agrégation.</li><li>Bon signe : le candidat veut d'abord lire le plan d'exécution avant d'optimiser à l'aveugle.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> le vrai marqueur senior : commencer par « je regarde le plan d'exécution », pas appliquer des optimisations au hasard. La démarche compte autant que la solution.</p></div>
+<h2 id="niv"><span class="sn">4</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Sait écrire des requêtes</td><td>Découpe la table en dimensions/faits</td><td>Ne voit pas le problème de la table unique</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Modélise correctement</td><td>Justifie normalisation vs étoile</td><td>Modélise sans expliquer les compromis</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimise avec méthode</td><td>Lit le plan, repère les anti-patterns</td><td>Optimise au hasard sans diagnostic</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Arbitre selon le contexte</td><td>Relie chaque choix au coût et à l'usage</td><td>Applique des recettes hors contexte</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Senior SQL test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Senior SQL test: a modelling + optimization case to give in an interview</h1>
+<p class="ai">For a senior profile, writing a query isn't enough: you must model and optimize. This two-part case, to give in an interview (30-40 min), reveals an experienced candidate's ability to make trade-offs. Answer and grid included.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>11 min read</span><span>·</span><span>SQL test · senior level · interview</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#contexte">The starting point: a denormalized table</a></li><li><a href="#modele">Part 1 — Model it cleanly</a></li><li><a href="#optim">Part 2 — Optimize a slow query</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>A single answer isn't expected but a reasoning: which trade-offs, why, at what cost. A senior justifies their choices; a disguised junior applies recipes without tying them to the context.</p>
+<h2 id="contexte"><span class="sn">1</span>The starting point: a denormalized table</h2>
+<div class="sq"><div class="sl">The task</div><p>Give this table to the candidate.</p></div>
+<p>We start from one big table where everything is repeated (the customer's name, country, product name recur on every order line). It's the classic starting point of a modelling case.</p>
+<div class="cb"><code><span class="cm">-- Table de depart (tout dans une seule table)</span>
+ventes_brutes(
+  commande_id, date_commande, statut,
+  client_nom, client_pays, client_email,
+  produit_nom, produit_categorie, produit_prix,
+  quantite, montant
+)</code></div>
+<ul></ul>
+<h2 id="modele"><span class="sn">2</span>Part 1 — Model it cleanly</h2>
+<div class="sq"><div class="sl">The task</div><p>Propose a normalized (or star) schema and justify your choices.</p></div>
+<p>The candidate is asked to split this table into a clean model and explain the trade-offs. A good senior proposes a star schema (one fact table, dimensions) and can say why.</p>
+<div class="cb"><code><span class="cm">-- Corrige : schema en etoile (orientation analytique)</span>
+dim_clients(id, nom, email, pays)
+dim_produits(id, nom, categorie, prix)
+fait_commandes(
+  id, date_commande, statut,
+  client_id  -> dim_clients(id),
+  produit_id -> dim_produits(id),
+  quantite, montant
+)
+<span class="cm">-- La table de faits ne garde que des cles + mesures ;</span>
+<span class="cm">-- les libelles vivent dans les dimensions (une seule source de verite).</span></code></div>
+<ul><li>Expected: separate the dimensions (customers, products) from the fact table (orders).</li><li>Expected: justify normalization vs star schema depending on use (analytical).</li><li>Good sign: the candidate mentions consistency, avoided duplicates and read performance.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> what we assess: not the ‘perfect’ schema, but the ability to trade off (normalize for consistency vs denormalize for read speed) and tie the choice to the real use.</p></div>
+<h2 id="optim"><span class="sn">3</span>Part 2 — Optimize a slow query</h2>
+<div class="sq"><div class="sl">The task</div><p>This aggregation query is slow on millions of rows. How would you improve it?</p></div>
+<p>We submit a realistic but poorly written query. A senior identifies the anti-patterns and proposes concrete leads (indexes, avoiding functions on filtered columns, pre-aggregation).</p>
+<div class="cb"><code><span class="cm">-- Requete lente (anti-pattern)</span>
+<span class="kw">SELECT</span> client_id, <span class="kw">SUM</span>(montant)
+<span class="kw">FROM</span> fait_commandes
+<span class="kw">WHERE</span> <span class="kw">YEAR</span>(date_commande) = 2024   <span class="cm">-- fonction sur colonne = pas d'index</span>
+<span class="kw">GROUP BY</span> client_id;
+
+<span class="cm">-- Corrige : filtre par plage (l'index sur date_commande est utilisable)</span>
+<span class="kw">SELECT</span> client_id, <span class="kw">SUM</span>(montant)
+<span class="kw">FROM</span> fait_commandes
+<span class="kw">WHERE</span> date_commande >= '2024-01-01'
+  <span class="kw">AND</span> date_commande <  '2025-01-01'
+<span class="kw">GROUP BY</span> client_id;
+<span class="cm">-- + index sur (date_commande, client_id) ; envisager une table pre-agregee</span>
+<span class="cm">--   si cette requete tourne souvent.</span></code></div>
+<ul><li>Expected: spot the function-on-date filter that prevents index usage.</li><li>Expected: propose a date-range filter, a suitable index, even a pre-aggregation.</li><li>Good sign: the candidate wants to read the execution plan first before optimizing blindly.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> the real senior marker: starting with ‘I look at the execution plan’, not applying random optimizations. The approach matters as much as the solution.</p></div>
+<h2 id="niv"><span class="sn">4</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Can write queries</td><td>Splits the table into dimensions/facts</td><td>Doesn't see the single-table problem</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Models correctly</td><td>Justifies normalization vs star</td><td>Models without explaining trade-offs</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Optimizes methodically</td><td>Reads the plan, spots anti-patterns</td><td>Optimizes randomly with no diagnosis</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Trades off by context</td><td>Ties each choice to cost and use</td><td>Applies recipes out of context</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Test SQL senior : un cas de modélisation + optimisation à donner en entretien',desc:"Un cas SQL senior clé en main : modéliser une base à partir d'une table dénormalisée, puis optimiser une requête lente. Avec le corrigé et ce que chaque partie révèle."},en:{title:'Senior SQL test: a modelling + optimization case to give in an interview',desc:'A turnkey senior SQL case: model a database from a denormalized table, then optimize a slow query. With the answer and what each part reveals.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

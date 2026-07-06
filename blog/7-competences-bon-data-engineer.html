@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Les 7 compétences d'un bon Data Engineer — Data Builder</title>
+<meta name="description" content="Une check-list des 7 compétences qui définissent un bon Data Engineer — au-delà des outils du CV — utilisable comme base d'une grille d'évaluation."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/7-competences-bon-data-engineer"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Les 7 compétences d'un bon Data Engineer</span></div>
+<div class="at">Compétences & séniorité</div>
+<h1 class="ah">Les 7 compétences d'un bon Data Engineer</h1>
+<p class="ai">Le Data Engineer construit les fondations sur lesquelles reposent analyses et modèles. Mais son travail est souvent invisible et difficile à évaluer pour un non-technique. Voici les 7 compétences qui distinguent un bon Data Engineer — une check-list que vous pouvez transformer en grille d'évaluation.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Cible : RH & hiring managers · Data Engineer</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#fond">Les fondations : SQL et modélisation</a></li><li><a href="#pipe">Les pipelines et l'orchestration</a></li><li><a href="#prod">Le réflexe production</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Un bon Data Engineer ne se juge pas à la longueur de sa stack, mais à sa capacité à construire des systèmes fiables, maintenables et pensés pour la production. Ces 7 compétences couvrent l'essentiel.</p>
+<h2 id="fond"><span class="sn">1</span>Les fondations : SQL et modélisation</h2>
+<div class="sq"><div class="sl">À retenir</div><p>Sans SQL solide et bonne modélisation, tout le reste s'effondre.</p></div>
+<p>On oublie parfois que le socle d'un Data Engineer reste le SQL et la conception de schémas propres. Un DE brillant sur les outils mais faible sur les fondations construira des systèmes fragiles.</p>
+<ul><li><strong>1. SQL avancé</strong> : fonctions fenêtre, requêtes robustes, performance.</li><li><strong>2. Modélisation</strong> : concevoir des schémas clairs et évolutifs.</li><li>Ces deux compétences prédisent la solidité de tout le reste.</li><li>Un DE qui ne modélise pas produit des pipelines vite ingérables.</li></ul>
+<h2 id="pipe"><span class="sn">2</span>Les pipelines et l'orchestration</h2>
+<div class="sq"><div class="sl">À retenir</div><p>Construire des flux de données fiables, qui ne cassent pas en silence.</p></div>
+<p>Le cœur du métier : déplacer et transformer la donnée de façon fiable et reproductible. C'est là que se joue la différence entre un DE junior et senior.</p>
+<ul><li><strong>3. Pipelines robustes</strong> : idempotence, reprise sur erreur, backfill.</li><li><strong>4. Orchestration</strong> : Airflow, dbt — enchaîner les tâches proprement.</li><li>Un pipeline qui échoue en silence est le pire cauchemar d'une équipe data.</li><li>La reprise sur incident distingue un vrai DE de production.</li></ul>
+<h2 id="prod"><span class="sn">3</span>Le réflexe production</h2>
+<div class="sq"><div class="sl">À retenir</div><p>Penser coûts, qualité, monitoring — pas seulement « ça marche ».</p></div>
+<p>Un Data Engineer senior se distingue par ce qu'il anticipe : ce qui se passe à 3h du matin quand un job échoue, combien coûte un traitement, comment garantir la qualité des données.</p>
+<ul><li><strong>5. Qualité des données</strong> : tests, contrats, détection d'anomalies.</li><li><strong>6. Réflexe coûts & monitoring</strong> : surveiller, alerter, maîtriser la facture.</li><li><strong>7. Bonnes pratiques de code</strong> : Git, tests, revue, documentation.</li><li>Ces réflexes séparent celui qui « fait tourner » de celui qui « fiabilise ».</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> la longueur de la stack sur un CV ne dit rien du niveau : c'est la présence de ces réflexes — fiabilité, qualité, coûts — qui distingue un bon Data Engineer.</p></div>
+<h2 id="niv"><span class="sn">4</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>SQL et modélisation de base, scripts simples</td><td>Construit un flux simple qui fonctionne</td><td>Ne teste ni ne surveille ses pipelines</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Pipelines fiables, orchestration, tests</td><td>Gère la reprise sur erreur</td><td>Pipelines qui cassent en silence</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Qualité, coûts, monitoring, production</td><td>Anticipe les incidents et la facture</td><td>Ne pense qu'au « ça marche »</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture, standards, mentorat</td><td>Fixe les bonnes pratiques d'équipe</td><td>Empile les outils sans vision système</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>The 7 skills of a good Data Engineer</span></div>
+<div class="at">Skills & seniority</div>
+<h1 class="ah">The 7 skills of a good Data Engineer</h1>
+<p class="ai">The Data Engineer builds the foundations that analyses and models rest on. But their work is often invisible and hard to assess for a non-technical person. Here are the 7 skills that set a good Data Engineer apart — a checklist you can turn into an assessment grid.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>For: HR & hiring managers · Data Engineer</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#fond">The foundations: SQL and modelling</a></li><li><a href="#pipe">Pipelines and orchestration</a></li><li><a href="#prod">The production reflex</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>A good Data Engineer isn't judged by the length of their stack, but by their ability to build reliable, maintainable, production-minded systems. These 7 skills cover the essentials.</p>
+<h2 id="fond"><span class="sn">1</span>The foundations: SQL and modelling</h2>
+<div class="sq"><div class="sl">Key point</div><p>Without solid SQL and good modelling, everything else collapses.</p></div>
+<p>People sometimes forget that a Data Engineer's bedrock is still SQL and clean schema design. A DE brilliant on tools but weak on foundations will build fragile systems.</p>
+<ul><li><strong>1. Advanced SQL</strong>: window functions, robust queries, performance.</li><li><strong>2. Modelling</strong>: designing clear, evolvable schemas.</li><li>These two skills predict the solidity of everything else.</li><li>A DE who doesn't model produces quickly unmanageable pipelines.</li></ul>
+<h2 id="pipe"><span class="sn">2</span>Pipelines and orchestration</h2>
+<div class="sq"><div class="sl">Key point</div><p>Building reliable data flows that don't break silently.</p></div>
+<p>The core of the job: moving and transforming data reliably and reproducibly. That's where the difference between a junior and senior DE plays out.</p>
+<ul><li><strong>3. Robust pipelines</strong>: idempotence, error recovery, backfill.</li><li><strong>4. Orchestration</strong>: Airflow, dbt — chaining tasks cleanly.</li><li>A pipeline that fails silently is a data team's worst nightmare.</li><li>Incident recovery marks a real production DE.</li></ul>
+<h2 id="prod"><span class="sn">3</span>The production reflex</h2>
+<div class="sq"><div class="sl">Key point</div><p>Thinking cost, quality, monitoring — not just ‘it works’.</p></div>
+<p>A senior Data Engineer stands out by what they anticipate: what happens at 3am when a job fails, how much a process costs, how to guarantee data quality.</p>
+<ul><li><strong>5. Data quality</strong>: tests, contracts, anomaly detection.</li><li><strong>6. Cost & monitoring reflex</strong>: watch, alert, control the bill.</li><li><strong>7. Code best practices</strong>: Git, tests, review, documentation.</li><li>These reflexes separate the one who ‘runs it’ from the one who ‘makes it reliable’.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> the length of the stack on a résumé says nothing about the level: it's the presence of these reflexes — reliability, quality, cost — that marks a good Data Engineer.</p></div>
+<h2 id="niv"><span class="sn">4</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Basic SQL and modelling, simple scripts</td><td>Builds a simple working flow</td><td>Neither tests nor monitors pipelines</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Reliable pipelines, orchestration, tests</td><td>Handles error recovery</td><td>Pipelines that break silently</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Quality, cost, monitoring, production</td><td>Anticipates incidents and the bill</td><td>Only thinks ‘it works’</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture, standards, mentoring</td><td>Sets team best practices</td><td>Piles up tools with no system view</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Les 7 compétences d'un bon Data Engineer",desc:"Une check-list des 7 compétences qui définissent un bon Data Engineer — au-delà des outils du CV — utilisable comme base d'une grille d'évaluation."},en:{title:'The 7 skills of a good Data Engineer',desc:'A checklist of the 7 skills that define a good Data Engineer — beyond the résumé tools — usable as the basis of an assessment grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

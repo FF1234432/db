@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Exercice pandas d'entretien : un cas réaliste et ses réponses attendues — Data Builder</title>
+<meta name="description" content="Un exercice pandas d'entretien clé en main : un cas d'analyse réaliste en 3 questions, avec le corrigé commenté et ce que chaque réponse révèle du niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/exercice-pandas-entretien-cas-realiste-reponses"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Exercice pandas d'entretien </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Exercice pandas d'entretien : un cas réaliste et ses réponses attendues</h1>
+<p class="ai">Cet exercice teste la manipulation de données avec pandas dans un cas d'analyse réaliste. En trois questions progressives, il révèle si le candidat pense « vectorisé », vérifie ses données et sait passer d'un besoin métier à un résultat. Corrigé et signaux inclus.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Test Python · pandas · entretien</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#data">Le jeu de données</a></li><li><a href="#q1">Question 1 — Le CA mensuel des commandes payées</a></li><li><a href="#q2">Question 2 — Joindre et analyser par pays</a></li><li><a href="#q3">Question 3 — Détecter un comportement anormal</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le fil rouge : chercher les réflexes data, pas la mémoire de la syntaxe. Un bon candidat vérifie ses données, évite les boucles inutiles et sait expliquer ce que fait chaque ligne.</p>
+<h2 id="data"><span class="sn">1</span>Le jeu de données</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Deux DataFrames fournis au candidat.</p></div>
+<p>Un cas e-commerce simple : un DataFrame de commandes et un de clients. Le candidat travaille sur ces deux tables, sans données réelles à charger.</p>
+<div class="cb"><code>commandes : colonnes = [id, client_id, montant, date_commande, statut]
+clients   : colonnes = [id, pays, date_inscription]</code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — Le CA mensuel des commandes payées</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Calcule le chiffre d'affaires par mois, en ne gardant que les commandes payées.</p></div>
+<p>L'entrée en matière : filtrer, extraire le mois d'une date et agréger. On regarde surtout si le candidat vérifie le type de la colonne date avant de l'utiliser.</p>
+<div class="cb"><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+commandes["date_commande"] = pd.to_datetime(commandes["date_commande"])
+
+ca_mensuel = (
+    commandes[commandes["statut"] == "payee"]
+    .groupby(commandes["date_commande"].dt.to_period("M"))["montant"]
+    .sum()
+)</code></div>
+<ul><li>Bon réflexe : convertir la colonne date si besoin avant de grouper.</li><li>Bon signe : filtre sur le statut, groupe par mois, somme le montant.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Joindre et analyser par pays</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Quel est le CA payé et le nombre de clients distincts par pays ?</p></div>
+<p>La jointure entre les deux DataFrames, puis une double agrégation. Le piège classique : compter les commandes au lieu des clients distincts.</p>
+<div class="cb"><code>df = commandes[commandes["statut"] == "payee"].merge(
+    clients, left_on="client_id", right_on="id", suffixes=("", "_client"))
+
+resultat = df.groupby("pays").agg(
+    ca=("montant", "sum"),
+    clients=("client_id", "nunique"),
+)</code></div>
+<ul><li>Bon réflexe : merge sur client_id, puis agrégation avec nunique() pour les clients.</li><li>Erreur fréquente : un count() qui compte les commandes, pas les clients uniques.</li></ul>
+<h2 id="q3"><span class="sn">4</span>Question 3 — Détecter un comportement anormal</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Repère les clients dont le montant moyen de commande dépasse largement la moyenne globale.</p></div>
+<p>La question ouverte qui révèle l'esprit critique : il faut définir « largement », gérer les cas limites et ne pas conclure sur un client à une seule commande.</p>
+<div class="cb"><code>moyenne_par_client = (
+    commandes[commandes["statut"] == "payee"]
+    .groupby("client_id")
+    .agg(moyenne=("montant", "mean"), n=("id", "count"))
+)
+
+seuil = 2 * commandes.loc[commandes["statut"] == "payee", "montant"].mean()
+
+anormaux = moyenne_par_client[
+    (moyenne_par_client["moyenne"] > seuil) & (moyenne_par_client["n"] >= 3)
+]</code></div>
+<ul><li>Bon signe : le candidat définit un seuil explicite (ex. 2× la moyenne).</li><li>Bon signe : il écarte les clients à une seule commande (peu significatif).</li><li>Excellent : il questionne le résultat au lieu de le livrer brut.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ce qui distingue un senior : il ne se contente pas de sortir une liste, il questionne — « est-ce un vrai signal ou un client à une seule grosse commande ? ». Cet esprit critique vaut plus que la syntaxe.</p></div>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Réussit Q1</td><td>Filtre, convertit la date, agrège</td><td>Boucle au lieu de vectoriser</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Réussit Q2</td><td>Joint et utilise nunique()</td><td>Compte les commandes au lieu des clients</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Réussit Q3 avec un seuil justifié</td><td>Gère les cas limites, questionne le résultat</td><td>Livre une liste sans esprit critique</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Explique clairement sa démarche</td><td>Vulgarise et challenge ses propres résultats</td><td>Répond juste sans savoir expliquer</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>pandas interview exercise</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">pandas interview exercise: a realistic case and its expected answers</h1>
+<p class="ai">This exercise tests data manipulation with pandas in a realistic analysis case. In three progressive questions, it reveals whether the candidate thinks ‘vectorized’, checks their data and can go from a business need to a result. Answer and signals included.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Python test · pandas · interview</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#data">The dataset</a></li><li><a href="#q1">Question 1 — Monthly revenue of paid orders</a></li><li><a href="#q2">Question 2 — Join and analyze by country</a></li><li><a href="#q3">Question 3 — Detect abnormal behaviour</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The through-line: look for data reflexes, not syntax memory. A good candidate checks their data, avoids needless loops and can explain what each line does.</p>
+<h2 id="data"><span class="sn">1</span>The dataset</h2>
+<div class="sq"><div class="sl">The task</div><p>Two DataFrames provided to the candidate.</p></div>
+<p>A simple e-commerce case: one orders DataFrame and one customers DataFrame. The candidate works on these two tables, with no real data to load.</p>
+<div class="cb"><code>commandes : colonnes = [id, client_id, montant, date_commande, statut]
+clients   : colonnes = [id, pays, date_inscription]</code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — Monthly revenue of paid orders</h2>
+<div class="sq"><div class="sl">The task</div><p>Compute revenue by month, keeping only paid orders.</p></div>
+<p>The warm-up: filter, extract the month from a date and aggregate. Mainly, we watch whether the candidate checks the date column type before using it.</p>
+<div class="cb"><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+commandes["date_commande"] = pd.to_datetime(commandes["date_commande"])
+
+ca_mensuel = (
+    commandes[commandes["statut"] == "payee"]
+    .groupby(commandes["date_commande"].dt.to_period("M"))["montant"]
+    .sum()
+)</code></div>
+<ul><li>Good reflex: convert the date column if needed before grouping.</li><li>Good sign: filters on status, groups by month, sums the amount.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Join and analyze by country</h2>
+<div class="sq"><div class="sl">The task</div><p>What is the paid revenue and the number of distinct customers per country?</p></div>
+<p>The join between the two DataFrames, then a double aggregation. The classic trap: counting orders instead of distinct customers.</p>
+<div class="cb"><code>df = commandes[commandes["statut"] == "payee"].merge(
+    clients, left_on="client_id", right_on="id", suffixes=("", "_client"))
+
+resultat = df.groupby("pays").agg(
+    ca=("montant", "sum"),
+    clients=("client_id", "nunique"),
+)</code></div>
+<ul><li>Good reflex: merge on client_id, then aggregation with nunique() for customers.</li><li>Common mistake: a count() that counts orders, not unique customers.</li></ul>
+<h2 id="q3"><span class="sn">4</span>Question 3 — Detect abnormal behaviour</h2>
+<div class="sq"><div class="sl">The task</div><p>Spot customers whose average order amount far exceeds the global average.</p></div>
+<p>The open question that reveals critical thinking: you must define ‘far’, handle edge cases and not conclude on a customer with a single order.</p>
+<div class="cb"><code>moyenne_par_client = (
+    commandes[commandes["statut"] == "payee"]
+    .groupby("client_id")
+    .agg(moyenne=("montant", "mean"), n=("id", "count"))
+)
+
+seuil = 2 * commandes.loc[commandes["statut"] == "payee", "montant"].mean()
+
+anormaux = moyenne_par_client[
+    (moyenne_par_client["moyenne"] > seuil) & (moyenne_par_client["n"] >= 3)
+]</code></div>
+<ul><li>Good sign: the candidate sets an explicit threshold (e.g. 2× the average).</li><li>Good sign: they exclude single-order customers (not significant).</li><li>Excellent: they question the result instead of delivering it raw.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> what marks a senior: they don't just output a list, they question — ‘is this a real signal or a customer with one big order?’. This critical thinking is worth more than syntax.</p></div>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Passes Q1</td><td>Filters, converts the date, aggregates</td><td>Loops instead of vectorizing</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Passes Q2</td><td>Joins and uses nunique()</td><td>Counts orders instead of customers</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Passes Q3 with a justified threshold</td><td>Handles edge cases, questions the result</td><td>Delivers a list with no critical thinking</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Clearly explains their approach</td><td>Popularizes and challenges their own results</td><td>Answers correctly but can't explain</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Exercice pandas d'entretien : un cas réaliste et ses réponses attendues",desc:"Un exercice pandas d'entretien clé en main : un cas d'analyse réaliste en 3 questions, avec le corrigé commenté et ce que chaque réponse révèle du niveau."},en:{title:'pandas interview exercise: a realistic case and its expected answers',desc:'A turnkey pandas interview exercise: a realistic 3-question analysis case, with the commented answer and what each answer reveals about the level.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

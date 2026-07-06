@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Looker et LookML : pourquoi c'est différent des autres outils BI — Data Builder</title>
+<meta name="description" content="Looker n'est pas un simple outil de dashboards : c'est un outil de modélisation. Ce guide explique ce qui le rend unique (LookML), pourquoi c'est un p"/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/looker-lookml-pourquoi-different"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Looker et LookML </span></div>
+<div class="at">Démystifier la techno</div>
+<h1 class="ah">Looker et LookML : pourquoi c'est différent des autres outils BI</h1>
+<p class="ai">Looker n'est pas un simple outil de dashboards : c'est un outil de modélisation. Ce guide explique ce qui le rend unique (LookML), pourquoi c'est un profil rare, et l'erreur à ne pas commettre (Looker Studio).</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & recruteurs (niveau débutant)</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#quoi">Looker, c'est quoi</a></li><li><a href="#sert">À quoi ça sert</a></li><li><a href="#qui">Qui l'utilise</a></li><li><a href="#recruter">Ce que ça change pour recruter</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>L'essentiel : la valeur de Looker n'est pas de faire des rapports, mais de modéliser la donnée pour que toute l'entreprise parle des mêmes chiffres.</p>
+<h2 id="quoi"><span class="sn">1</span>Looker, c'est quoi</h2>
+<div class="sq"><div class="sl">En clair</div><p>Un outil BI qui repose sur la modélisation (LookML).</p></div>
+<p>Looker (de Google) est un outil de business intelligence dont la particularité est LookML : un langage pour modéliser la donnée en amont. On définit une fois les indicateurs, et toute l'entreprise s'appuie dessus.</p>
+<ul><li>Un outil BI centré sur la modélisation (LookML).</li><li>Les définitions sont centralisées et cohérentes.</li><li>À ne pas confondre avec Looker Studio (outil gratuit, différent).</li></ul>
+<h2 id="sert"><span class="sn">2</span>À quoi ça sert</h2>
+<div class="sq"><div class="sl">En clair</div><p>Garantir des chiffres cohérents à l'échelle.</p></div>
+<p>L'intérêt de Looker est la gouvernance : au lieu que chacun calcule « le chiffre d'affaires » à sa façon, tout le monde utilise la même définition modélisée. Fini les réunions où deux tableaux ne sont pas d'accord.</p>
+<ul><li>Centraliser les définitions des indicateurs.</li><li>Garantir la cohérence des chiffres dans l'entreprise.</li><li>Donner de l'analyse en libre-service, mais gouvernée.</li></ul>
+<h2 id="qui"><span class="sn">3</span>Qui l'utilise</h2>
+<div class="sq"><div class="sl">En clair</div><p>Un profil rare : l'analytics engineer qui modélise en LookML.</p></div>
+<p>Modéliser en LookML est une compétence rare, à mi-chemin entre l'analyse et l'ingénierie. Beaucoup savent utiliser des rapports Looker existants ; peu savent modéliser.</p>
+<ul><li>Analytics Engineer et profils BI avancés.</li><li>Compétence rare : prévoyez un sourcing plus long.</li><li>Beaucoup d'utilisateurs, peu de vrais modélisateurs.</li></ul>
+<h2 id="recruter"><span class="sn">4</span>Ce que ça change pour recruter</h2>
+<div class="sq"><div class="sl">En clair</div><p>Vérifiez LookML, et évitez le piège Looker Studio.</p></div>
+<p>Le piège numéro un : confondre Looker et Looker Studio, ou prendre un utilisateur de rapports pour un modélisateur. Demandez explicitement si le candidat a modélisé en LookML.</p>
+<ul><li>Demandez une expérience concrète de modélisation LookML.</li><li>Vérifiez qu'il ne confond pas Looker et Looker Studio.</li><li>Anticipez un vivier restreint sur ce profil.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> un candidat qui confond Looker et Looker Studio, ou qui n'a jamais modélisé en LookML, n'a pas la compétence rare que vous cherchez — même s'il l'affiche.</p></div>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Votre situation</th><th>Ce qu'il faut faire</th><th>L'erreur à éviter</th></tr></thead><tbody><tr><td><span class="bd bj">Besoin de cohérence des chiffres</span></td><td>Cherchez la modélisation LookML</td><td>Confondre Looker et Looker Studio</td></tr><tr><td><span class="bd bm">Vous êtes sur Google Cloud</span></td><td>Looker s'intègre bien</td><td>Prendre un utilisateur pour un modélisateur</td></tr><tr><td><span class="bd bs">Profil rare à sourcer</span></td><td>Prévoyez du temps + validation LookML</td><td>Sous-estimer la rareté</td></tr><tr><td><span class="bd bl">Vous n'êtes pas technique</span></td><td>Faites valider LookML par un expert</td><td>Se fier au mot 'Looker'</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Looker and LookML</span></div>
+<div class="at">Tech, demystified</div>
+<h1 class="ah">Looker and LookML: why it's different from other BI tools</h1>
+<p class="ai">Looker isn't just a dashboard tool: it's a modelling tool. This guide explains what makes it unique (LookML), why it's a rare profile, and the mistake not to make (Looker Studio).</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & recruiters (beginner level)</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#quoi">What Looker is</a></li><li><a href="#sert">What it's for</a></li><li><a href="#qui">Who uses it</a></li><li><a href="#recruter">What it changes for hiring</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The key: Looker's value isn't making reports, but modelling data so the whole company talks about the same numbers.</p>
+<h2 id="quoi"><span class="sn">1</span>What Looker is</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>A BI tool built on modelling (LookML).</p></div>
+<p>Looker (by Google) is a business-intelligence tool whose specificity is LookML: a language to model data upstream. You define metrics once, and the whole company relies on them.</p>
+<ul><li>A BI tool centered on modelling (LookML).</li><li>Definitions are centralized and consistent.</li><li>Not to be confused with Looker Studio (a free, different tool).</li></ul>
+<h2 id="sert"><span class="sn">2</span>What it's for</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>Ensuring consistent figures at scale.</p></div>
+<p>Looker's value is governance: instead of everyone computing ‘revenue’ their own way, everyone uses the same modelled definition. No more meetings where two dashboards disagree.</p>
+<ul><li>Centralizing metric definitions.</li><li>Ensuring figure consistency across the company.</li><li>Providing self-service analytics, but governed.</li></ul>
+<h2 id="qui"><span class="sn">3</span>Who uses it</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>A rare profile: the analytics engineer who models in LookML.</p></div>
+<p>Modelling in LookML is a rare skill, halfway between analysis and engineering. Many can use existing Looker reports; few can model.</p>
+<ul><li>Analytics Engineer and advanced BI profiles.</li><li>Rare skill: plan for longer sourcing.</li><li>Many users, few real modelers.</li></ul>
+<h2 id="recruter"><span class="sn">4</span>What it changes for hiring</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>Check LookML, and avoid the Looker Studio trap.</p></div>
+<p>The number-one trap: confusing Looker and Looker Studio, or taking a report user for a modeler. Ask explicitly whether the candidate has modelled in LookML.</p>
+<ul><li>Ask for concrete LookML modelling experience.</li><li>Check they don't confuse Looker and Looker Studio.</li><li>Anticipate a small pool for this profile.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> a candidate who confuses Looker and Looker Studio, or who never modelled in LookML, doesn't have the rare skill you want — even if they claim it.</p></div>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Your situation</th><th>What to do</th><th>The mistake to avoid</th></tr></thead><tbody><tr><td><span class="bd bj">Need for figure consistency</span></td><td>Look for LookML modelling</td><td>Confusing Looker and Looker Studio</td></tr><tr><td><span class="bd bm">You're on Google Cloud</span></td><td>Looker integrates well</td><td>Taking a user for a modeler</td></tr><tr><td><span class="bd bs">Rare profile to source</span></td><td>Plan time + LookML validation</td><td>Underestimating the rarity</td></tr><tr><td><span class="bd bl">You're not technical</span></td><td>Have LookML validated by an expert</td><td>Trusting the word ‘Looker’</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Looker et LookML : pourquoi c'est différent des autres outils BI",desc:"Looker n'est pas un simple outil de dashboards : c'est un outil de modélisation. Ce guide explique ce qui le rend unique (LookML), pourquoi c'est un p"},en:{title:"Looker and LookML: why it's different from other BI tools",desc:"Looker isn't just a dashboard tool: it's a modelling tool. This guide explains what makes it unique (LookML), why it's a rare profile, and the mistake"}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test technique Data Engineer clé en main : SQL + Python + pipeline (take-home 2h) — Data Builder</title>
+<meta name="description" content="Un test technique Data Engineer complet en 3 parties (SQL, Python, conception de pipeline), avec corrigés et grille — pensé pour un take-home de 2h ou un entretien live."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-technique-data-engineer-sql-python-pipeline-2h"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test technique Data Engineer clé en main </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test technique Data Engineer clé en main : SQL + Python + pipeline (take-home 2h)</h1>
+<p class="ai">Ce test couvre les trois piliers du métier de Data Engineer : requêter (SQL), traiter (Python), et concevoir un pipeline fiable. En version take-home (2h) ou live, il donne une image complète du niveau. Corrigés et grille inclus. <em>Rappel : un take-home non supervisé est moins fiable qu'un live — privilégiez le live si possible.</em></p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>12 min de lecture</span><span>·</span><span>Test métier complet · Data Engineer · take-home 2h</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#p1">Partie 1 — SQL (30 min)</a></li><li><a href="#p2">Partie 2 — Python (45 min)</a></li><li><a href="#p3">Partie 3 — Concevoir un pipeline</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le fil rouge du métier — et de ce test — est la <strong>fiabilité</strong>. On ne cherche pas seulement du code qui marche, mais du code robuste, testé, et un pipeline pensé pour l'échec. C'est ce qui distingue un vrai Data Engineer.</p>
+<h2 id="p1"><span class="sn">1</span>Partie 1 — SQL (30 min)</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Une requête d'agrégation non triviale + une optimisation.</p></div>
+<p>On demande une requête analytique (ex. le dernier achat de chaque client via une fonction fenêtre) puis comment l'optimiser sur gros volume. On évalue la maîtrise du SQL avancé et la conscience de la performance.</p>
+<div class="cb"><code><span class="cm">-- Dernier achat de chaque client</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> o.*,
+         <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> client_id <span class="kw">ORDER BY</span> date_commande DESC) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> commandes o
+) t
+<span class="kw">WHERE</span> rn = 1;</code></div>
+<ul><li>Attendu : une fonction fenêtre (ROW_NUMBER) maîtrisée.</li><li>Attendu : une piste d'optimisation (index, partition) justifiée.</li></ul>
+<h2 id="p2"><span class="sn">2</span>Partie 2 — Python (45 min)</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Écrire un traitement robuste et testé.</p></div>
+<p>On fournit une source imparfaite (un CSV ou une API simulée) et on demande un script qui l'ingère, la fiabilise et gère les erreurs. On regarde surtout la robustesse et la présence de tests.</p>
+<div class="cb"><code><span class="kw">def</span> nettoyer(df):
+    df = df.drop_duplicates()
+    df["montant"] = <span class="kw">pd</span>.to_numeric(df["montant"], errors="coerce")
+    <span class="kw">return</span> df.dropna(subset=["id", "montant"])
+
+<span class="kw">def</span> test_nettoyer():
+    brut = <span class="kw">pd</span>.DataFrame({"id":[1,1,None], "montant":["10","10","x"]})
+    <span class="kw">assert</span> len(nettoyer(brut)) == 1   # doublon retire, ligne invalide retiree</code></div>
+<ul><li>Gère les cas d'erreur (valeurs manquantes, échec de lecture).</li><li>Écrit au moins un test unitaire sur la logique clé.</li><li>Code lisible, fonctions réutilisables.</li></ul>
+<h2 id="p3"><span class="sn">3</span>Partie 3 — Concevoir un pipeline</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Décrire l'orchestration d'un pipeline quotidien fiable.</p></div>
+<p>Sans forcément coder, le candidat décrit comment il orchestrerait le tout en production : ordre des tâches, relances, alertes, idempotence. C'est la partie la plus discriminante.</p>
+<ul><li>Ordonne les étapes (extract → transform → load).</li><li>Prévoit relances, alertes et reprise sans doublons (idempotence).</li><li>Pense monitoring : comment saura-t-il qu'un run a échoué ?</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ce que révèle ce test complet : le SQL et le Python peuvent être bons, mais c'est la partie 3 (fiabilité du pipeline) qui distingue un vrai Data Engineer d'un bon développeur. Un candidat qui néglige la gestion d'échec n'a pas le réflexe du métier.</p></div>
+<h2 id="niv"><span class="sn">4</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Code qui fonctionne</td><td>Réussit SQL et Python de base</td><td>Aucune gestion d'erreur ni test</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Code robuste et testé</td><td>Gère les erreurs, écrit des tests</td><td>Pipeline sans gestion d'échec</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Pipeline fiable et idempotent</td><td>Pense reprise, alertes, monitoring</td><td>Bon code mais pipeline fragile</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture et standards</td><td>Conçoit pour l'échec et l'échelle</td><td>Néglige la fiabilité en production</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Turnkey Data Engineer technical test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Turnkey Data Engineer technical test: SQL + Python + pipeline (take-home 2h)</h1>
+<p class="ai">This test covers the three pillars of the Data Engineer role: querying (SQL), processing (Python), and designing a reliable pipeline. As a take-home (2h) or live, it gives a complete picture of the level. Answers and grid included. <em>Reminder: an unsupervised take-home is less reliable than a live one — prefer live if possible.</em></p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>12 min read</span><span>·</span><span>Complete role test · Data Engineer · take-home 2h</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#p1">Part 1 — SQL (30 min)</a></li><li><a href="#p2">Part 2 — Python (45 min)</a></li><li><a href="#p3">Part 3 — Design a pipeline</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The through-line of the role — and this test — is <strong>reliability</strong>. We don't just want code that works, but robust, tested code, and a pipeline built for failure. That's what marks a real Data Engineer.</p>
+<h2 id="p1"><span class="sn">1</span>Part 1 — SQL (30 min)</h2>
+<div class="sq"><div class="sl">The task</div><p>A non-trivial aggregation query + an optimization.</p></div>
+<p>You ask for an analytical query (e.g. each customer's latest purchase via a window function) then how to optimize it at scale. We assess advanced SQL mastery and performance awareness.</p>
+<div class="cb"><code><span class="cm">-- Dernier achat de chaque client</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> o.*,
+         <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> client_id <span class="kw">ORDER BY</span> date_commande DESC) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> commandes o
+) t
+<span class="kw">WHERE</span> rn = 1;</code></div>
+<ul><li>Expected: a mastered window function (ROW_NUMBER).</li><li>Expected: a justified optimization lead (index, partition).</li></ul>
+<h2 id="p2"><span class="sn">2</span>Part 2 — Python (45 min)</h2>
+<div class="sq"><div class="sl">The task</div><p>Write a robust, tested processing script.</p></div>
+<p>You provide an imperfect source (a CSV or a simulated API) and ask for a script that ingests it, hardens it and handles errors. We mainly watch robustness and the presence of tests.</p>
+<div class="cb"><code><span class="kw">def</span> nettoyer(df):
+    df = df.drop_duplicates()
+    df["montant"] = <span class="kw">pd</span>.to_numeric(df["montant"], errors="coerce")
+    <span class="kw">return</span> df.dropna(subset=["id", "montant"])
+
+<span class="kw">def</span> test_nettoyer():
+    brut = <span class="kw">pd</span>.DataFrame({"id":[1,1,None], "montant":["10","10","x"]})
+    <span class="kw">assert</span> len(nettoyer(brut)) == 1   # doublon retire, ligne invalide retiree</code></div>
+<ul><li>Handles error cases (missing values, read failure).</li><li>Writes at least one unit test on the key logic.</li><li>Readable code, reusable functions.</li></ul>
+<h2 id="p3"><span class="sn">3</span>Part 3 — Design a pipeline</h2>
+<div class="sq"><div class="sl">The task</div><p>Describe the orchestration of a reliable daily pipeline.</p></div>
+<p>Without necessarily coding, the candidate describes how they'd orchestrate it all in production: task order, retries, alerts, idempotence. It's the most discriminating part.</p>
+<ul><li>Orders the steps (extract → transform → load).</li><li>Plans retries, alerts and duplicate-free recovery (idempotence).</li><li>Thinks monitoring: how will they know a run failed?</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> what this complete test reveals: SQL and Python can be good, but it's part 3 (pipeline reliability) that separates a real Data Engineer from a good developer. A candidate who neglects failure handling lacks the role's reflex.</p></div>
+<h2 id="niv"><span class="sn">4</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Code that works</td><td>Passes basic SQL and Python</td><td>No error handling or tests</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Robust, tested code</td><td>Handles errors, writes tests</td><td>Pipeline with no failure handling</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Reliable, idempotent pipeline</td><td>Thinks recovery, alerts, monitoring</td><td>Good code but fragile pipeline</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture and standards</td><td>Designs for failure and scale</td><td>Neglects production reliability</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Test technique Data Engineer clé en main : SQL + Python + pipeline (take-home 2h)',desc:'Un test technique Data Engineer complet en 3 parties (SQL, Python, conception de pipeline), avec corrigés et grille — pensé pour un take-home de 2h ou un entretien live.'},en:{title:'Turnkey Data Engineer technical test: SQL + Python + pipeline (take-home 2h)',desc:'A complete 3-part Data Engineer technical test (SQL, Python, pipeline design), with answers and grid — designed for a 2h take-home or a live interview.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

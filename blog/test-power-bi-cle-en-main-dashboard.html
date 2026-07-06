@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test Power BI clé en main : construire un dashboard à partir d'un jeu de données — Data Builder</title>
+<meta name="description" content="Un test Power BI prêt à l'emploi : un jeu de données fourni, un dashboard à construire, et une grille qui évalue le modèle de données (pas juste le rendu visuel)."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-power-bi-cle-en-main-dashboard"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test Power BI clé en main </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test Power BI clé en main : construire un dashboard à partir d'un jeu de données</h1>
+<p class="ai">Le piège avec Power BI, c'est de juger sur le rendu. Ce test regarde ce qui compte vraiment : le modèle de données et les mesures sous le dashboard. On fournit un jeu de données, on demande un tableau de bord, et on évalue les fondations — pas les couleurs.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Test Power BI · dashboard · ~1h</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#brief">Le brief à donner</a></li><li><a href="#attendu">Ce qu'on attend (le modèle)</a></li><li><a href="#dax">Les mesures DAX attendues</a></li><li><a href="#grille">La grille d'évaluation</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Un beau dashboard sur un modèle bancal produit des chiffres faux. Ce test permet de distinguer un candidat qui « assemble des visuels » d'un vrai profil qui structure la donnée derrière.</p>
+<h2 id="brief"><span class="sn">1</span>Le brief à donner</h2>
+<div class="sq"><div class="sl">La consigne</div><p>« Voici 3 fichiers. Construis un dashboard de suivi des ventes et explique ton modèle. »</p></div>
+<p>Fournissez trois tables simples et un objectif métier clair. L'important n'est pas le nombre de visuels, mais la manière dont le candidat relie les données et garantit des chiffres justes.</p>
+<div class="cb"><code>Fichiers fournis :
+  ventes(date, produit_id, quantite, montant)
+  produits(id, nom, categorie)
+  calendrier(date, mois, trimestre, annee)</code></div>
+<ul><li>Données fournies : ventes, produits, calendrier (dates).</li><li>Objectif : suivre le CA, l'évolution mensuelle et le top produits.</li><li>Consigne explicite : « explique ton modèle de données ».</li></ul>
+<h2 id="attendu"><span class="sn">2</span>Ce qu'on attend (le modèle)</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Le vrai test se joue sous le dashboard.</p></div>
+<p>Un bon candidat crée un modèle propre avant de poser le moindre visuel : relations entre tables, une vraie table de dates, et des mesures DAX réutilisables.</p>
+<ul><li>Relations correctes entre ventes, produits et calendrier.</li><li>Une table de dates marquée comme telle (indispensable au time intelligence).</li><li>Des mesures DAX (CA, CA mois précédent, évolution %) — pas des colonnes en dur.</li><li>Des visuels au service du message, pas empilés au hasard.</li></ul>
+<h2 id="dax"><span class="sn">3</span>Les mesures DAX attendues</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Voici les mesures de référence (accepter les variantes correctes).</p></div>
+<p>On attend des mesures propres, réutilisables et correctes. La présence d'une comparaison temporelle (mois précédent, évolution) distingue un vrai niveau d'un simple assemblage.</p>
+<div class="cb"><code>CA = <span class="kw">SUM</span>(ventes[montant])
+
+CA Mois Precedent =
+    <span class="kw">CALCULATE</span>([CA], <span class="kw">DATEADD</span>(calendrier[date], -1, <span class="kw">MONTH</span>))
+
+Evolution % =
+    <span class="kw">DIVIDE</span>([CA] - [CA Mois Precedent], [CA Mois Precedent])</code></div>
+<ul><li>CA total : somme du montant.</li><li>CA mois précédent : via time intelligence sur la table de dates.</li><li>Évolution % : comparaison des deux, avec gestion de la division par zéro.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> ce qu'on évalue : le candidat sait-il pourquoi une table de dates dédiée est nécessaire, et pourquoi une mesure vaut mieux qu'une colonne calculée ? S'il ne parle que de graphiques, le niveau est faible.</p></div>
+<h2 id="grille"><span class="sn">4</span>La grille d'évaluation</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Pondérez le modèle plus que l'esthétique.</p></div>
+<p>Répartissez les points pour refléter ce qui fait un dashboard fiable : d'abord le modèle et les mesures, ensuite seulement la lisibilité visuelle.</p>
+<ul><li>Modèle de données correct (relations, table de dates) — prioritaire.</li><li>Mesures DAX justes et réutilisables, dont une comparaison temporelle.</li><li>Fiabilité : sait expliquer d'où viennent les chiffres.</li><li>Lisibilité : visuels au service de la décision (secondaire mais compte).</li></ul>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Assemble des visuels corrects</td><td>Produit un dashboard lisible</td><td>N'a pas de modèle de données propre</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Crée les relations et une table de dates</td><td>Écrit des mesures DAX simples</td><td>Utilise des colonnes en dur au lieu de mesures</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Maîtrise le time intelligence</td><td>Garantit la fiabilité des chiffres</td><td>Ne sait pas d'où viennent ses chiffres</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Pense performance et gouvernance</td><td>Explique et standardise son modèle</td><td>Ne parle que d'esthétique</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Turnkey Power BI test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Turnkey Power BI test: build a dashboard from a provided dataset</h1>
+<p class="ai">The trap with Power BI is judging on the rendering. This test looks at what really matters: the data model and measures under the dashboard. You provide a dataset, ask for a dashboard, and assess the foundations — not the colors.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>Power BI test · dashboard · ~1h</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#brief">The brief to give</a></li><li><a href="#attendu">What we expect (the model)</a></li><li><a href="#dax">The expected DAX measures</a></li><li><a href="#grille">The scoring grid</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>A beautiful dashboard on a shaky model produces wrong numbers. This test distinguishes a candidate who ‘assembles visuals’ from a real profile who structures the data behind.</p>
+<h2 id="brief"><span class="sn">1</span>The brief to give</h2>
+<div class="sq"><div class="sl">The task</div><p>‘Here are 3 files. Build a sales-tracking dashboard and explain your model.’</p></div>
+<p>Provide three simple tables and a clear business goal. What matters isn't the number of visuals, but how the candidate links the data and guarantees accurate numbers.</p>
+<div class="cb"><code>Fichiers fournis :
+  ventes(date, produit_id, quantite, montant)
+  produits(id, nom, categorie)
+  calendrier(date, mois, trimestre, annee)</code></div>
+<ul><li>Data provided: sales, products, calendar (dates).</li><li>Goal: track revenue, monthly trend and top products.</li><li>Explicit instruction: ‘explain your data model’.</li></ul>
+<h2 id="attendu"><span class="sn">2</span>What we expect (the model)</h2>
+<div class="sq"><div class="sl">The task</div><p>The real test plays out under the dashboard.</p></div>
+<p>A good candidate builds a clean model before placing a single visual: relationships between tables, a real date table, and reusable DAX measures.</p>
+<ul><li>Correct relationships between sales, products and calendar.</li><li>A date table marked as such (essential for time intelligence).</li><li>DAX measures (revenue, prior-month revenue, % change) — not hard-coded columns.</li><li>Visuals serving the message, not stacked at random.</li></ul>
+<h2 id="dax"><span class="sn">3</span>The expected DAX measures</h2>
+<div class="sq"><div class="sl">The task</div><p>Here are the reference measures (accept correct variants).</p></div>
+<p>We expect clean, reusable and correct measures. The presence of a time comparison (prior month, change) distinguishes a real level from mere assembly.</p>
+<div class="cb"><code>CA = <span class="kw">SUM</span>(ventes[montant])
+
+CA Mois Precedent =
+    <span class="kw">CALCULATE</span>([CA], <span class="kw">DATEADD</span>(calendrier[date], -1, <span class="kw">MONTH</span>))
+
+Evolution % =
+    <span class="kw">DIVIDE</span>([CA] - [CA Mois Precedent], [CA Mois Precedent])</code></div>
+<ul><li>Total revenue: sum of amount.</li><li>Prior-month revenue: via time intelligence on the date table.</li><li>% change: comparison of both, handling division by zero.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> what we assess: does the candidate know why a dedicated date table is needed, and why a measure beats a calculated column? If they only talk charts, the level is low.</p></div>
+<h2 id="grille"><span class="sn">4</span>The scoring grid</h2>
+<div class="sq"><div class="sl">The task</div><p>Weight the model more than the aesthetics.</p></div>
+<p>Spread points to reflect what makes a dashboard reliable: first the model and measures, only then the visual readability.</p>
+<ul><li>Correct data model (relationships, date table) — priority.</li><li>Accurate, reusable DAX measures, including a time comparison.</li><li>Reliability: can explain where the numbers come from.</li><li>Readability: visuals serving the decision (secondary but counts).</li></ul>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Assembles correct visuals</td><td>Produces a readable dashboard</td><td>Has no clean data model</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Creates relationships and a date table</td><td>Writes simple DAX measures</td><td>Uses hard columns instead of measures</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Masters time intelligence</td><td>Guarantees number reliability</td><td>Doesn't know where numbers come from</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Thinks performance and governance</td><td>Explains and standardizes their model</td><td>Only talks aesthetics</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test Power BI clé en main : construire un dashboard à partir d'un jeu de données",desc:"Un test Power BI prêt à l'emploi : un jeu de données fourni, un dashboard à construire, et une grille qui évalue le modèle de données (pas juste le rendu visuel)."},en:{title:'Turnkey Power BI test: build a dashboard from a provided dataset',desc:'A ready-to-use Power BI test: a provided dataset, a dashboard to build, and a grid that assesses the data model (not just the visuals).'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

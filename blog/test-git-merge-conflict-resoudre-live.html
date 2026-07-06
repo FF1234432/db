@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test Git en entretien : un scénario de merge conflict à résoudre en live — Data Builder</title>
+<meta name="description" content="Un test Git clé en main : un scénario de conflit de fusion à résoudre en direct. La réaction du candidat révèle son aisance réelle en collaboration — panique ou méthode."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-git-merge-conflict-resoudre-live"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test Git en entretien </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test Git en entretien : un scénario de merge conflict à résoudre en live</h1>
+<p class="ai">Git est attendu de presque tous les profils data, mais rarement testé. Ce scénario de conflit de fusion, à résoudre en direct, révèle en cinq minutes si un candidat sait vraiment collaborer ou s'il panique au premier obstacle. Corrigé inclus.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Test Git · collaboration · live</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#scenario">Le scénario</a></li><li><a href="#corrige">La résolution attendue</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Ce qu'on évalue n'est pas la connaissance de commandes exotiques, mais le calme et la méthode : comprendre ce qu'est un conflit, garder l'intention des deux versions, et résoudre proprement.</p>
+<h2 id="scenario"><span class="sn">1</span>Le scénario</h2>
+<div class="sq"><div class="sl">La consigne</div><p>« Deux collègues ont modifié la même requête SQL. Au merge, voici le conflit. Résous-le. »</p></div>
+<p>Présentez au candidat un fichier avec les marqueurs de conflit Git. Les deux versions ont chacune une intention légitime : il faut les combiner, pas en effacer une au hasard.</p>
+<div class="cb"><code><<<<<<< HEAD (ta branche)
+<span class="kw">SELECT</span> id, nom, pays <span class="kw">FROM</span> clients <span class="kw">WHERE</span> actif = <span class="kw">true</span>
+=======
+<span class="kw">SELECT</span> id, nom, email <span class="kw">FROM</span> clients <span class="kw">WHERE</span> pays = 'France'
+>>>>>>> branche-collegue</code></div>
+<ul></ul>
+<h2 id="corrige"><span class="sn">2</span>La résolution attendue</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Comprendre les deux intentions, puis combiner proprement.</p></div>
+<p>Un bon candidat lit les deux versions, comprend que l'une ajoute des colonnes et l'autre un filtre, puis produit une version qui respecte les deux intentions — après avoir vérifié avec les auteurs si besoin.</p>
+<div class="cb"><code><span class="cm">-- Version resolue (les deux intentions combinees)</span>
+<span class="kw">SELECT</span> id, nom, pays, email
+<span class="kw">FROM</span> clients
+<span class="kw">WHERE</span> actif = <span class="kw">true</span> <span class="kw">AND</span> pays = 'France'
+
+<span class="cm"># puis :</span>
+<span class="kw">git</span> <span class="kw">add</span> requete.sql
+<span class="kw">git</span> <span class="kw">commit</span>          <span class="cm"># finalise le merge</span></code></div>
+<ul><li>Lit et comprend l'intention de chaque version.</li><li>Combine plutôt que d'écraser une version au hasard.</li><li>Retire les marqueurs, teste, puis commit proprement.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> le vrai signal n'est pas technique : un bon candidat reste calme, comprend les deux intentions et, en cas de doute, dit « je vérifierais avec les deux auteurs ». Celui qui panique ou écrase une version au hasard révèle un manque d'expérience de collaboration.</p></div>
+<h2 id="niv"><span class="sn">3</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Comprend qu'il y a un conflit</td><td>Identifie les deux versions</td><td>Panique ou reste bloqué</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Résout le conflit</td><td>Combine les deux intentions</td><td>Écrase une version au hasard</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Vérifie et teste après résolution</td><td>Reste calme et méthodique</td><td>Retire les marqueurs sans tester</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Pense prévention des conflits</td><td>Propose des pratiques d'équipe (petites PR)</td><td>Ne communique pas avec les auteurs</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Git interview test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Git interview test: a merge-conflict scenario to resolve live</h1>
+<p class="ai">Git is expected of almost all data profiles, but rarely tested. This merge-conflict scenario, to resolve live, reveals in five minutes whether a candidate really knows how to collaborate or panics at the first obstacle. Answer included.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>Git test · collaboration · live</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#scenario">The scenario</a></li><li><a href="#corrige">The expected resolution</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>What we assess isn't knowledge of exotic commands, but calm and method: understanding what a conflict is, keeping both versions' intent, and resolving cleanly.</p>
+<h2 id="scenario"><span class="sn">1</span>The scenario</h2>
+<div class="sq"><div class="sl">The task</div><p>‘Two colleagues changed the same SQL query. On merge, here's the conflict. Resolve it.’</p></div>
+<p>Show the candidate a file with Git conflict markers. Both versions have a legitimate intent: you must combine them, not erase one at random.</p>
+<div class="cb"><code><<<<<<< HEAD (ta branche)
+<span class="kw">SELECT</span> id, nom, pays <span class="kw">FROM</span> clients <span class="kw">WHERE</span> actif = <span class="kw">true</span>
+=======
+<span class="kw">SELECT</span> id, nom, email <span class="kw">FROM</span> clients <span class="kw">WHERE</span> pays = 'France'
+>>>>>>> branche-collegue</code></div>
+<ul></ul>
+<h2 id="corrige"><span class="sn">2</span>The expected resolution</h2>
+<div class="sq"><div class="sl">The task</div><p>Understand both intents, then combine cleanly.</p></div>
+<p>A good candidate reads both versions, understands one adds columns and the other a filter, then produces a version honouring both intents — after checking with the authors if needed.</p>
+<div class="cb"><code><span class="cm">-- Version resolue (les deux intentions combinees)</span>
+<span class="kw">SELECT</span> id, nom, pays, email
+<span class="kw">FROM</span> clients
+<span class="kw">WHERE</span> actif = <span class="kw">true</span> <span class="kw">AND</span> pays = 'France'
+
+<span class="cm"># puis :</span>
+<span class="kw">git</span> <span class="kw">add</span> requete.sql
+<span class="kw">git</span> <span class="kw">commit</span>          <span class="cm"># finalise le merge</span></code></div>
+<ul><li>Reads and understands each version's intent.</li><li>Combines rather than overwriting one version at random.</li><li>Removes the markers, tests, then commits cleanly.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> the real signal isn't technical: a good candidate stays calm, understands both intents and, if unsure, says ‘I'd check with both authors’. One who panics or overwrites a version at random reveals a lack of collaboration experience.</p></div>
+<h2 id="niv"><span class="sn">3</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Understands there's a conflict</td><td>Identifies both versions</td><td>Panics or gets stuck</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Resolves the conflict</td><td>Combines both intents</td><td>Overwrites one version at random</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Checks and tests after resolution</td><td>Stays calm and methodical</td><td>Removes markers without testing</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Thinks conflict prevention</td><td>Suggests team practices (small PRs)</td><td>Doesn't talk to the authors</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Test Git en entretien : un scénario de merge conflict à résoudre en live',desc:'Un test Git clé en main : un scénario de conflit de fusion à résoudre en direct. La réaction du candidat révèle son aisance réelle en collaboration — panique ou méthode.'},en:{title:'Git interview test: a merge-conflict scenario to resolve live',desc:"A turnkey Git test: a merge-conflict scenario to resolve live. The candidate's reaction reveals their real collaboration ease — panic or method."}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

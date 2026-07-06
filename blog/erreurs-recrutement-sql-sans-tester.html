@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Les erreurs classiques quand on recrute un profil SQL sans le tester — Data Builder</title>
+<meta name="description" content="Se fier au CV, au diplôme ou à l'aisance orale pour juger un profil SQL mène à des erreurs coûteuses. Les pièges les plus fréquents et comment les éviter."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/erreurs-recrutement-sql-sans-tester"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Les erreurs classiques quand on recrute un profil SQL sans le tester</span></div>
+<div class="at">Red flags & erreurs</div>
+<h1 class="ah">Les erreurs classiques quand on recrute un profil SQL sans le tester</h1>
+<p class="ai">SQL est la compétence la plus universelle de la data — et donc la plus facile à surestimer. Recruter un profil SQL sans jamais le tester expose à des erreurs classiques, coûteuses et évitables. Voici les pièges les plus fréquents, et comment ne pas y tomber.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & hiring managers · SQL</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#cv">Se fier au CV et aux mots-clés</a></li><li><a href="#diplome">Confondre diplôme et compétence pratique</a></li><li><a href="#oral">Prendre l'aisance orale pour de la compétence</a></li><li><a href="#eviter">Comment éviter ces erreurs</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le point commun de ces erreurs : confondre un signal indirect (CV, diplôme, aisance) avec une preuve de compétence. Or seul un candidat qui raisonne sur un vrai problème révèle son niveau.</p>
+<h2 id="cv"><span class="sn">1</span>Se fier au CV et aux mots-clés</h2>
+<div class="sq"><div class="sl">Le piège</div><p>« SQL » sur un CV ne dit rien du niveau réel.</p></div>
+<p>Tout le monde écrit « SQL » sur son CV, du débutant à l'expert. Se fier à la présence du mot, ou à une liste de mots-clés (CTE, window functions), revient à ne rien vérifier du tout.</p>
+<ul><li>La présence du mot « SQL » ne présage aucun niveau.</li><li>Une liste de mots-clés se récite sans savoir les appliquer.</li><li>Le CV suggère ; il ne prouve jamais la compétence.</li></ul>
+<h2 id="diplome"><span class="sn">2</span>Confondre diplôme et compétence pratique</h2>
+<div class="sq"><div class="sl">Le piège</div><p>Un bon diplôme ne garantit pas un SQL opérationnel.</p></div>
+<p>Un diplôme prestigieux rassure, mais la pratique du SQL en entreprise s'apprend surtout sur le terrain. D'excellents profils autodidactes surpassent parfois des diplômés qui n'ont jamais manipulé de vraies données.</p>
+<ul><li>Le diplôme atteste d'un socle, pas d'une pratique opérationnelle.</li><li>De bons profils autodidactes sont écartés à tort sur ce critère.</li><li>Jugez la compétence réelle, pas le pedigree.</li></ul>
+<h2 id="oral"><span class="sn">3</span>Prendre l'aisance orale pour de la compétence</h2>
+<div class="sq"><div class="sl">Le piège</div><p>Bien parler de SQL n'est pas savoir écrire du SQL.</p></div>
+<p>C'est le piège le plus insidieux : un candidat à l'aise, qui emploie le bon vocabulaire, paraît compétent. Mais l'aisance de communication et la compétence technique sont deux choses distinctes — seul un cas concret les départage.</p>
+<ul><li>Un candidat éloquent peut masquer des lacunes techniques réelles.</li><li>Le vocabulaire s'apprend ; le raisonnement se démontre.</li><li>Confrontez le discours à un vrai problème à résoudre.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> l'erreur la plus coûteuse est de recruter sur l'aisance orale : un candidat qui « parle bien » SQL n'a pas forcément écrit une requête complexe de sa vie. Seul un test le révèle.</p></div>
+<h2 id="eviter"><span class="sn">4</span>Comment éviter ces erreurs</h2>
+<div class="sq"><div class="sl">Le piège</div><p>Un test court et concret vaut mieux que dix signaux indirects.</p></div>
+<p>La parade est simple : faire résoudre un mini-problème SQL proche du poste, en observant le raisonnement. Pas besoin d'un examen intimidant — un cas bien choisi révèle le niveau en quelques minutes.</p>
+<ul><li>Proposez un cas concret proche du travail réel du poste.</li><li>Observez le raisonnement, pas seulement la réponse finale.</li><li>Confiez l'évaluation à un expert si personne en interne ne peut juger.</li><li>Standardisez le test pour comparer équitablement les candidats.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Signal faible</span></td><td>Jugé sur le CV et les mots-clés</td><td>Passe un test concret proche du poste</td><td>Récite des mots-clés sans les appliquer</td></tr><tr><td><span class="bd bm">À creuser</span></td><td>Jugé sur le diplôme</td><td>Prouve sa pratique sur données réelles</td><td>Bon diplôme, SQL non opérationnel</td></tr><tr><td><span class="bd bs">Bon signe</span></td><td>Jugé sur l'aisance orale</td><td>Raisonne clairement sur un vrai cas</td><td>Parle bien mais bloque à l'écrit</td></tr><tr><td><span class="bd bl">Excellent</span></td><td>Évaluation structurée et standardisée</td><td>Niveau confirmé objectivement</td><td>Recruté sans aucun test</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Classic mistakes when hiring a SQL profile without testing</span></div>
+<div class="at">Red flags & mistakes</div>
+<h1 class="ah">Classic mistakes when hiring a SQL profile without testing</h1>
+<p class="ai">SQL is the most universal data skill — and therefore the easiest to overestimate. Hiring a SQL profile without ever testing exposes you to classic, costly, avoidable mistakes. Here are the most frequent traps, and how to avoid them.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & hiring managers · SQL</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#cv">Relying on the résumé and keywords</a></li><li><a href="#diplome">Confusing a degree with practical skill</a></li><li><a href="#oral">Mistaking verbal ease for competence</a></li><li><a href="#eviter">How to avoid these mistakes</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The common thread of these mistakes: confusing an indirect signal (résumé, degree, ease) with proof of skill. Only a candidate reasoning on a real problem reveals their level.</p>
+<h2 id="cv"><span class="sn">1</span>Relying on the résumé and keywords</h2>
+<div class="sq"><div class="sl">The trap</div><p>‘SQL’ on a résumé says nothing about the real level.</p></div>
+<p>Everyone writes ‘SQL’ on their résumé, from beginner to expert. Relying on the word's presence, or a keyword list (CTEs, window functions), amounts to checking nothing at all.</p>
+<ul><li>The word ‘SQL’ predicts no level.</li><li>A keyword list can be recited without knowing how to apply it.</li><li>The résumé suggests; it never proves the skill.</li></ul>
+<h2 id="diplome"><span class="sn">2</span>Confusing a degree with practical skill</h2>
+<div class="sq"><div class="sl">The trap</div><p>A good degree doesn't guarantee operational SQL.</p></div>
+<p>A prestigious degree reassures, but SQL practice in a company is mostly learned on the job. Excellent self-taught profiles sometimes outperform graduates who've never handled real data.</p>
+<ul><li>The degree attests to a baseline, not operational practice.</li><li>Good self-taught profiles are wrongly rejected on this criterion.</li><li>Judge real skill, not pedigree.</li></ul>
+<h2 id="oral"><span class="sn">3</span>Mistaking verbal ease for competence</h2>
+<div class="sq"><div class="sl">The trap</div><p>Talking well about SQL isn't writing SQL.</p></div>
+<p>This is the most insidious trap: a confident candidate using the right vocabulary seems competent. But communication ease and technical skill are two distinct things — only a concrete case tells them apart.</p>
+<ul><li>An eloquent candidate can mask real technical gaps.</li><li>Vocabulary is learned; reasoning is demonstrated.</li><li>Confront the talk with a real problem to solve.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> the costliest mistake is hiring on verbal ease: a candidate who ‘talks’ SQL well may never have written a complex query. Only a test reveals it.</p></div>
+<h2 id="eviter"><span class="sn">4</span>How to avoid these mistakes</h2>
+<div class="sq"><div class="sl">The trap</div><p>A short, concrete test beats ten indirect signals.</p></div>
+<p>The fix is simple: have them solve a mini SQL problem close to the role, observing the reasoning. No need for an intimidating exam — a well-chosen case reveals the level in minutes.</p>
+<ul><li>Offer a concrete case close to the role's real work.</li><li>Observe the reasoning, not just the final answer.</li><li>Delegate the assessment to an expert if no one in-house can judge.</li><li>Standardize the test to compare candidates fairly.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Weak signal</span></td><td>Judged on résumé and keywords</td><td>Takes a concrete role-close test</td><td>Recites keywords without applying them</td></tr><tr><td><span class="bd bm">Dig deeper</span></td><td>Judged on the degree</td><td>Proves practice on real data</td><td>Good degree, non-operational SQL</td></tr><tr><td><span class="bd bs">Good sign</span></td><td>Judged on verbal ease</td><td>Reasons clearly on a real case</td><td>Talks well but freezes in writing</td></tr><tr><td><span class="bd bl">Excellent</span></td><td>Structured, standardized assessment</td><td>Level confirmed objectively</td><td>Hired with no test at all</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'Les erreurs classiques quand on recrute un profil SQL sans le tester',desc:"Se fier au CV, au diplôme ou à l'aisance orale pour juger un profil SQL mène à des erreurs coûteuses. Les pièges les plus fréquents et comment les éviter."},en:{title:'Classic mistakes when hiring a SQL profile without testing',desc:'Relying on the résumé, degree or verbal ease to judge a SQL profile leads to costly mistakes. The most frequent traps and how to avoid them.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

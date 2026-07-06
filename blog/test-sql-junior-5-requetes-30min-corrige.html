@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test SQL junior prêt à l'emploi : 5 requêtes pour valider les bases — Data Builder</title>
+<meta name="description" content="Un test SQL junior clé en main : 5 requêtes à faire résoudre en 30 minutes, avec le corrigé, ce qu'une bonne réponse montre et l'erreur fréquente à chaque question."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-sql-junior-5-requetes-30min-corrige"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test SQL junior prêt à l'emploi </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test SQL junior prêt à l'emploi : 5 requêtes pour valider les bases</h1>
+<p class="ai">Vous voulez vérifier les bases SQL d'un candidat sans y passer une heure ? Voici un test prêt à l'emploi : un jeu de données simple, 5 requêtes progressives à résoudre en 30 minutes, et pour chacune le corrigé, ce qu'elle révèle et l'erreur fréquente. Copiez-le tel quel.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>10 min de lecture</span><span>·</span><span>Test SQL · niveau junior · 30 min · avec corrigé</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#data">Le jeu de données</a></li><li><a href="#q1">Question 1 — Compter les commandes par statut</a></li><li><a href="#q2">Question 2 — Chiffre d'affaires par pays</a></li><li><a href="#q3">Question 3 — Top 5 des produits les plus vendus</a></li><li><a href="#q4">Question 4 — Les clients qui n'ont jamais commandé</a></li><li><a href="#q5">Question 5 — Le panier moyen par mois</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Ce test valide le socle attendu d'un profil junior : filtrer, agréger, joindre et raisonner sur des données. Ce qui compte n'est pas la syntaxe exacte (elle varie selon le moteur) mais la démarche et la justesse du résultat.</p>
+<h2 id="data"><span class="sn">1</span>Le jeu de données</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Donnez ce schéma au candidat avant de commencer.</p></div>
+<p>Une petite base e-commerce, volontairement simple : trois tables reliées par des identifiants. Aucune donnée réelle n'est nécessaire — le candidat raisonne sur le schéma.</p>
+<div class="cb"><code><span class="cm">-- Jeu de donnees du test (base e-commerce)</span>
+clients(id, nom, pays, date_inscription)
+produits(id, nom, categorie, prix)
+commandes(id, client_id, produit_id, quantite, montant, date_commande, statut)
+<span class="cm">-- statut ∈ ('payee','en_attente','annulee')</span></code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — Compter les commandes par statut</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Combien de commandes y a-t-il dans chaque statut (payée, en attente, annulée) ?</p></div>
+<p>L'entrée en matière : un simple regroupement. Elle vérifie que le candidat maîtrise GROUP BY et COUNT.</p>
+<div class="cb"><code><span class="kw">SELECT</span> statut, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> nb_commandes
+<span class="kw">FROM</span> commandes
+<span class="kw">GROUP BY</span> statut;</code></div>
+<ul><li>Une bonne réponse regroupe par statut et compte les lignes.</li><li>Erreur fréquente : oublier le GROUP BY et compter tout en bloc.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Chiffre d'affaires par pays</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Quel est le chiffre d'affaires total (commandes payées) par pays du client ?</p></div>
+<p>Première jointure : il faut relier commandes et clients, filtrer sur le statut, puis sommer. Le cœur du métier d'analyste.</p>
+<div class="cb"><code><span class="kw">SELECT</span> c.pays, <span class="kw">SUM</span>(o.montant) <span class="kw">AS</span> ca
+<span class="kw">FROM</span> commandes o
+<span class="kw">JOIN</span> clients c <span class="kw">ON</span> c.id = o.client_id
+<span class="kw">WHERE</span> o.statut = 'payee'
+<span class="kw">GROUP BY</span> c.pays
+<span class="kw">ORDER BY</span> ca <span class="kw">DESC</span>;</code></div>
+<ul><li>Une bonne réponse joint les deux tables, filtre sur 'payee' et somme le montant.</li><li>Erreur fréquente : oublier de filtrer les commandes annulées/en attente.</li></ul>
+<h2 id="q3"><span class="sn">4</span>Question 3 — Top 5 des produits les plus vendus</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Quels sont les 5 produits les plus vendus en quantité ?</p></div>
+<p>Jointure + agrégation + tri + limite : la requête analytique typique. Elle teste l'enchaînement des opérations.</p>
+<div class="cb"><code><span class="kw">SELECT</span> p.nom, <span class="kw">SUM</span>(o.quantite) <span class="kw">AS</span> total_vendu
+<span class="kw">FROM</span> commandes o
+<span class="kw">JOIN</span> produits p <span class="kw">ON</span> p.id = o.produit_id
+<span class="kw">GROUP BY</span> p.nom
+<span class="kw">ORDER BY</span> total_vendu <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> 5;</code></div>
+<ul><li>Une bonne réponse somme les quantités par produit, trie et limite à 5.</li><li>Erreur fréquente : trier sans agréger, ou compter les lignes au lieu des quantités.</li></ul>
+<h2 id="q4"><span class="sn">5</span>Question 4 — Les clients qui n'ont jamais commandé</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Quels clients n'ont passé aucune commande ?</p></div>
+<p>La question qui sépare : elle demande une LEFT JOIN avec test sur NULL (ou NOT EXISTS). Beaucoup de juniors butent ici.</p>
+<div class="cb"><code><span class="kw">SELECT</span> c.id, c.nom
+<span class="kw">FROM</span> clients c
+<span class="kw">LEFT JOIN</span> commandes o <span class="kw">ON</span> o.client_id = c.id
+<span class="kw">WHERE</span> o.id <span class="kw">IS</span> <span class="kw">NULL</span>;</code></div>
+<ul><li>Une bonne réponse utilise une LEFT JOIN et garde les lignes sans commande (IS NULL), ou un NOT EXISTS.</li><li>Erreur fréquente : une INNER JOIN, qui exclut justement les clients recherchés.</li></ul>
+<h2 id="q5"><span class="sn">6</span>Question 5 — Le panier moyen par mois</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Quel est le montant moyen d'une commande payée, mois par mois ?</p></div>
+<p>La synthèse : filtrer, extraire le mois d'une date et calculer une moyenne. Elle vérifie l'aisance avec les dates et les agrégats.</p>
+<div class="cb"><code><span class="kw">SELECT</span> <span class="kw">DATE_TRUNC</span>('month', o.date_commande) <span class="kw">AS</span> mois,
+       <span class="kw">AVG</span>(o.montant) <span class="kw">AS</span> panier_moyen
+<span class="kw">FROM</span> commandes o
+<span class="kw">WHERE</span> o.statut = 'payee'
+<span class="kw">GROUP BY</span> mois
+<span class="kw">ORDER BY</span> mois;</code></div>
+<ul><li>Une bonne réponse groupe par mois (fonction de date) et utilise AVG sur le montant.</li><li>Erreur fréquente : confondre moyenne des montants et CA divisé « à la main » de façon erronée.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> astuce : acceptez toute syntaxe de date correcte selon le moteur (DATE_TRUNC, EXTRACT, strftime…). Ce qui compte est le raisonnement, pas la fonction exacte.</p></div>
+<h2 id="niv"><span class="sn">7</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Réussit Q1 à Q3</td><td>Filtre, agrège et joint correctement</td><td>Bute déjà sur une jointure simple</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Réussit Q4 (LEFT JOIN / NULL)</td><td>Gère l'absence de correspondance</td><td>Utilise une INNER JOIN pour Q4</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Réussit Q5 proprement</td><td>À l'aise avec dates et agrégats</td><td>Confond moyenne et somme</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Explique chaque choix simplement</td><td>Vulgarise sa démarche à un non-technique</td><td>Répond juste sans savoir expliquer</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Ready-to-use junior SQL test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Ready-to-use junior SQL test: 5 queries to validate the basics</h1>
+<p class="ai">Want to check a candidate's SQL basics without spending an hour? Here's a ready-to-use test: a simple dataset, 5 progressive queries to solve in 30 minutes, and for each the answer, what it reveals and the common mistake. Copy it as-is.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>10 min read</span><span>·</span><span>SQL test · junior level · 30 min · with answers</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#data">The dataset</a></li><li><a href="#q1">Question 1 — Count orders by status</a></li><li><a href="#q2">Question 2 — Revenue by country</a></li><li><a href="#q3">Question 3 — Top 5 best-selling products</a></li><li><a href="#q4">Question 4 — Customers who never ordered</a></li><li><a href="#q5">Question 5 — Average basket by month</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>This test validates the baseline expected of a junior profile: filtering, aggregating, joining and reasoning about data. What matters isn't exact syntax (it varies by engine) but the approach and the correctness of the result.</p>
+<h2 id="data"><span class="sn">1</span>The dataset</h2>
+<div class="sq"><div class="sl">The task</div><p>Give this schema to the candidate before starting.</p></div>
+<p>A small e-commerce database, deliberately simple: three tables linked by identifiers. No real data is needed — the candidate reasons on the schema.</p>
+<div class="cb"><code><span class="cm">-- Jeu de donnees du test (base e-commerce)</span>
+clients(id, nom, pays, date_inscription)
+produits(id, nom, categorie, prix)
+commandes(id, client_id, produit_id, quantite, montant, date_commande, statut)
+<span class="cm">-- statut ∈ ('payee','en_attente','annulee')</span></code></div>
+<ul></ul>
+<h2 id="q1"><span class="sn">2</span>Question 1 — Count orders by status</h2>
+<div class="sq"><div class="sl">The task</div><p>How many orders are there in each status (paid, pending, cancelled)?</p></div>
+<p>The warm-up: a simple grouping. It checks the candidate masters GROUP BY and COUNT.</p>
+<div class="cb"><code><span class="kw">SELECT</span> statut, <span class="kw">COUNT</span>(*) <span class="kw">AS</span> nb_commandes
+<span class="kw">FROM</span> commandes
+<span class="kw">GROUP BY</span> statut;</code></div>
+<ul><li>A good answer groups by status and counts the rows.</li><li>Common mistake: forgetting GROUP BY and counting everything at once.</li></ul>
+<h2 id="q2"><span class="sn">3</span>Question 2 — Revenue by country</h2>
+<div class="sq"><div class="sl">The task</div><p>What is the total revenue (paid orders) per customer country?</p></div>
+<p>First join: link orders and customers, filter on status, then sum. The analyst's core work.</p>
+<div class="cb"><code><span class="kw">SELECT</span> c.pays, <span class="kw">SUM</span>(o.montant) <span class="kw">AS</span> ca
+<span class="kw">FROM</span> commandes o
+<span class="kw">JOIN</span> clients c <span class="kw">ON</span> c.id = o.client_id
+<span class="kw">WHERE</span> o.statut = 'payee'
+<span class="kw">GROUP BY</span> c.pays
+<span class="kw">ORDER BY</span> ca <span class="kw">DESC</span>;</code></div>
+<ul><li>A good answer joins the two tables, filters on ‘paid’ and sums the amount.</li><li>Common mistake: forgetting to filter cancelled/pending orders.</li></ul>
+<h2 id="q3"><span class="sn">4</span>Question 3 — Top 5 best-selling products</h2>
+<div class="sq"><div class="sl">The task</div><p>What are the 5 best-selling products by quantity?</p></div>
+<p>Join + aggregation + sort + limit: the typical analytical query. It tests the chaining of operations.</p>
+<div class="cb"><code><span class="kw">SELECT</span> p.nom, <span class="kw">SUM</span>(o.quantite) <span class="kw">AS</span> total_vendu
+<span class="kw">FROM</span> commandes o
+<span class="kw">JOIN</span> produits p <span class="kw">ON</span> p.id = o.produit_id
+<span class="kw">GROUP BY</span> p.nom
+<span class="kw">ORDER BY</span> total_vendu <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> 5;</code></div>
+<ul><li>A good answer sums quantities per product, sorts and limits to 5.</li><li>Common mistake: sorting without aggregating, or counting rows instead of quantities.</li></ul>
+<h2 id="q4"><span class="sn">5</span>Question 4 — Customers who never ordered</h2>
+<div class="sq"><div class="sl">The task</div><p>Which customers have never placed an order?</p></div>
+<p>The separating question: it requires a LEFT JOIN with a NULL test (or NOT EXISTS). Many juniors stumble here.</p>
+<div class="cb"><code><span class="kw">SELECT</span> c.id, c.nom
+<span class="kw">FROM</span> clients c
+<span class="kw">LEFT JOIN</span> commandes o <span class="kw">ON</span> o.client_id = c.id
+<span class="kw">WHERE</span> o.id <span class="kw">IS</span> <span class="kw">NULL</span>;</code></div>
+<ul><li>A good answer uses a LEFT JOIN keeping rows with no order (IS NULL), or a NOT EXISTS.</li><li>Common mistake: an INNER JOIN, which excludes precisely the customers sought.</li></ul>
+<h2 id="q5"><span class="sn">6</span>Question 5 — Average basket by month</h2>
+<div class="sq"><div class="sl">The task</div><p>What is the average amount of a paid order, month by month?</p></div>
+<p>The synthesis: filter, extract the month from a date and compute an average. It checks ease with dates and aggregates.</p>
+<div class="cb"><code><span class="kw">SELECT</span> <span class="kw">DATE_TRUNC</span>('month', o.date_commande) <span class="kw">AS</span> mois,
+       <span class="kw">AVG</span>(o.montant) <span class="kw">AS</span> panier_moyen
+<span class="kw">FROM</span> commandes o
+<span class="kw">WHERE</span> o.statut = 'payee'
+<span class="kw">GROUP BY</span> mois
+<span class="kw">ORDER BY</span> mois;</code></div>
+<ul><li>A good answer groups by month (date function) and uses AVG on the amount.</li><li>Common mistake: confusing the average of amounts with a wrongly hand-divided revenue.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> tip: accept any correct date syntax depending on the engine (DATE_TRUNC, EXTRACT, strftime…). What matters is the reasoning, not the exact function.</p></div>
+<h2 id="niv"><span class="sn">7</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Passes Q1 to Q3</td><td>Filters, aggregates and joins correctly</td><td>Already stuck on a simple join</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Passes Q4 (LEFT JOIN / NULL)</td><td>Handles the absence of a match</td><td>Uses an INNER JOIN for Q4</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Passes Q5 cleanly</td><td>Comfortable with dates and aggregates</td><td>Confuses average and sum</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Explains each choice simply</td><td>Popularizes their approach to a non-technical person</td><td>Answers correctly but can't explain</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test SQL junior prêt à l'emploi : 5 requêtes pour valider les bases",desc:"Un test SQL junior clé en main : 5 requêtes à faire résoudre en 30 minutes, avec le corrigé, ce qu'une bonne réponse montre et l'erreur fréquente à chaque question."},en:{title:'Ready-to-use junior SQL test: 5 queries to validate the basics',desc:'A turnkey junior SQL test: 5 queries to solve in 30 minutes, with the answers, what a good answer shows and the common mistake at each question.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

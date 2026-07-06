@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Excel en data : quand c'est suffisant, quand ça ne l'est plus — Data Builder</title>
+<meta name="description" content="Excel reste un outil data puissant et sous-estimé. Ce guide explique jusqu'où Excel suffit, quand il faut passer à SQL, et comment lire un « Excel ava"/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/excel-data-quand-suffisant"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Excel en data </span></div>
+<div class="at">Démystifier la techno</div>
+<h1 class="ah">Excel en data : quand c'est suffisant, quand ça ne l'est plus</h1>
+<p class="ai">Excel reste un outil data puissant et sous-estimé. Ce guide explique jusqu'où Excel suffit, quand il faut passer à SQL, et comment lire un « Excel avancé » sur un CV sans se faire avoir.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>8 min de lecture</span><span>·</span><span>Cible : RH & recruteurs (niveau débutant)</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#quoi">Excel en data, c'est quoi</a></li><li><a href="#sert">À quoi ça sert (et ses limites)</a></li><li><a href="#qui">Qui l'utilise</a></li><li><a href="#recruter">Ce que ça change pour recruter</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>L'essentiel : Excel n'est pas « ringard », mais il a des limites. Le vrai niveau, c'est de savoir quand Excel ne suffit plus.</p>
+<h2 id="quoi"><span class="sn">1</span>Excel en data, c'est quoi</h2>
+<div class="sq"><div class="sl">En clair</div><p>Le tableur universel, encore central en entreprise.</p></div>
+<p>Excel permet de manipuler, croiser et présenter des données rapidement. Bien utilisé (tableaux croisés dynamiques, Power Query), il va beaucoup plus loin que ce qu'on croit — mais ce n'est pas une base de données.</p>
+<ul><li>Manipuler et présenter des données rapidement.</li><li>« Avancé » = tableaux croisés dynamiques, Power Query, formules dynamiques.</li><li>Ce n'est pas une base de données : il a des limites.</li></ul>
+<h2 id="sert"><span class="sn">2</span>À quoi ça sert (et ses limites)</h2>
+<div class="sq"><div class="sl">En clair</div><p>Analyses ponctuelles et volumes modestes.</p></div>
+<p>Excel est parfait pour des analyses ponctuelles, des prototypes et des volumes raisonnables. Il atteint ses limites sur les gros volumes, la collaboration et la fiabilité à grande échelle.</p>
+<ul><li>Idéal pour des analyses ponctuelles et des prototypes.</li><li>Limites : gros volumes, collaboration, fiabilité.</li><li>Au-delà, il faut passer à SQL ou à un outil BI.</li></ul>
+<h2 id="qui"><span class="sn">3</span>Qui l'utilise</h2>
+<div class="sq"><div class="sl">En clair</div><p>À peu près tout le monde, à des niveaux très variés.</p></div>
+<p>Excel est utilisé partout, du débutant au profil très avancé. C'est justement pour ça que la mention « Excel avancé » ne veut presque rien dire sans vérification.</p>
+<ul><li>Profils métier, analystes, contrôleurs de gestion.</li><li>Niveau extrêmement variable d'une personne à l'autre.</li><li>« Excel avancé » est la mention la plus sur-vendue.</li></ul>
+<h2 id="recruter"><span class="sn">4</span>Ce que ça change pour recruter</h2>
+<div class="sq"><div class="sl">En clair</div><p>Vérifiez le vrai niveau ET la lucidité sur les limites.</p></div>
+<p>Un bon profil Excel connaît les tableaux croisés dynamiques, Power Query… et sait dire quand Excel ne suffit plus. Cette lucidité sur les limites est un excellent marqueur de maturité.</p>
+<ul><li>Challengez la mention « avancé » avec un cas concret.</li><li>Valorisez ceux qui savent quand passer à SQL.</li><li>Ne sous-estimez pas un vrai expert Excel.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> « Excel avancé » est presque toujours surévalué sur les CV : un vrai expert connaît les tableaux croisés dynamiques, Power Query, et surtout les limites de l'outil.</p></div>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Votre situation</th><th>Ce qu'il faut faire</th><th>L'erreur à éviter</th></tr></thead><tbody><tr><td><span class="bd bj">Volumes modestes, analyses ponctuelles</span></td><td>Excel avancé peut suffire</td><td>Recruter un expert Python trop tôt</td></tr><tr><td><span class="bd bm">Besoins récurrents, plus de volume</span></td><td>Passez à SQL / BI</td><td>Rester sur Excel malgré la croissance</td></tr><tr><td><span class="bd bs">Vous lisez 'Excel avancé' sur un CV</span></td><td>Vérifiez par un cas concret</td><td>Prendre la mention pour argent comptant</td></tr><tr><td><span class="bd bl">Vous voulez fiabiliser vos données</span></td><td>Cherchez qui sait quitter Excel à temps</td><td>Ignorer les limites de l'outil</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Excel in data</span></div>
+<div class="at">Tech, demystified</div>
+<h1 class="ah">Excel in data: when it's enough, when it no longer is</h1>
+<p class="ai">Excel remains a powerful, underrated data tool. This guide explains how far Excel is enough, when to move to SQL, and how to read ‘advanced Excel’ on a résumé without being fooled.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>8 min read</span><span>·</span><span>For: HR & recruiters (beginner level)</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#quoi">Excel in data, what is it</a></li><li><a href="#sert">What it's for (and its limits)</a></li><li><a href="#qui">Who uses it</a></li><li><a href="#recruter">What it changes for hiring</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The key: Excel isn't ‘outdated’, but it has limits. The real level is knowing when Excel is no longer enough.</p>
+<h2 id="quoi"><span class="sn">1</span>Excel in data, what is it</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>The universal spreadsheet, still central in business.</p></div>
+<p>Excel lets you manipulate, cross and present data quickly. Used well (pivot tables, Power Query), it goes much further than people think — but it's not a database.</p>
+<ul><li>Manipulating and presenting data quickly.</li><li>‘Advanced’ = pivot tables, Power Query, dynamic formulas.</li><li>It's not a database: it has limits.</li></ul>
+<h2 id="sert"><span class="sn">2</span>What it's for (and its limits)</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>One-off analyses and modest volumes.</p></div>
+<p>Excel is perfect for one-off analyses, prototypes and reasonable volumes. It hits its limits on large volumes, collaboration and reliability at scale.</p>
+<ul><li>Ideal for one-off analyses and prototypes.</li><li>Limits: large volumes, collaboration, reliability.</li><li>Beyond that, move to SQL or a BI tool.</li></ul>
+<h2 id="qui"><span class="sn">3</span>Who uses it</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>Just about everyone, at very varied levels.</p></div>
+<p>Excel is used everywhere, from beginner to very advanced profile. That's exactly why ‘advanced Excel’ means almost nothing without verification.</p>
+<ul><li>Business profiles, analysts, financial controllers.</li><li>Extremely variable level from one person to the next.</li><li>‘Advanced Excel’ is the most oversold claim.</li></ul>
+<h2 id="recruter"><span class="sn">4</span>What it changes for hiring</h2>
+<div class="sq"><div class="sl">In plain terms</div><p>Check the real level AND the clarity on limits.</p></div>
+<p>A good Excel profile knows pivot tables, Power Query… and can say when Excel is no longer enough. This clarity on limits is an excellent maturity marker.</p>
+<ul><li>Challenge the ‘advanced’ claim with a concrete case.</li><li>Value those who know when to move to SQL.</li><li>Don't underestimate a real Excel expert.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> ‘Advanced Excel’ is almost always overrated on résumés: a real expert knows pivot tables, Power Query, and above all the tool's limits.</p></div>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Your situation</th><th>What to do</th><th>The mistake to avoid</th></tr></thead><tbody><tr><td><span class="bd bj">Modest volumes, one-off analyses</span></td><td>Advanced Excel may suffice</td><td>Hiring a Python expert too early</td></tr><tr><td><span class="bd bm">Recurring needs, more volume</span></td><td>Move to SQL / BI</td><td>Staying on Excel despite growth</td></tr><tr><td><span class="bd bs">You read ‘advanced Excel’ on a résumé</span></td><td>Verify with a concrete case</td><td>Taking the claim at face value</td></tr><tr><td><span class="bd bl">You want to make data reliable</span></td><td>Look for who knows when to leave Excel</td><td>Ignoring the tool's limits</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Excel en data : quand c'est suffisant, quand ça ne l'est plus",desc:"Excel reste un outil data puissant et sous-estimé. Ce guide explique jusqu'où Excel suffit, quand il faut passer à SQL, et comment lire un « Excel ava"},en:{title:"Excel in data: when it's enough, when it no longer is",desc:'Excel remains a powerful, underrated data tool. This guide explains how far Excel is enough, when to move to SQL, and how to read ‘advanced Excel’ on '}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

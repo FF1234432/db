@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>8 questions Python data pour un entretien de recrutement — Data Builder</title>
+<meta name="description" content="Des questions Python orientées data à poser en entretien, avec ce que révèle chaque réponse — pour distinguer un vrai profil data d'un simple codeur."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/questions-entretien-python-data"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>8 questions Python data pour un entretien de recrutement</span></div>
+<div class="at">Questions d'entretien</div>
+<h1 class="ah">8 questions Python data pour un entretien de recrutement</h1>
+<p class="ai">En data, on ne juge pas Python comme du développement classique : ce qui compte, c'est le rapport à la donnée et à la fiabilité. Ces questions, orientées data, font parler le candidat sur ce qui compte vraiment en poste.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>9 min de lecture</span><span>·</span><span>Cible : recruteurs & hiring managers · Python</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#q1">Comment agrégez-vous et joignez-vous deux jeux de données en pandas</a></li><li><a href="#q2">On vous donne un CSV sale. Comment le fiabilisez-vous</a></li><li><a href="#q3">Racontez un script que vous avez mis en production</a></li><li><a href="#q4">Le jeu de données ne tient plus en mémoire. Que faites-vous</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le fil rouge : chercher le rapport à la donnée réelle, pas la syntaxe. Un candidat qui ne parle jamais de données, de nettoyage ou de fiabilité n'a probablement pas d'expérience data en entreprise.</p>
+<h2 id="q1"><span class="sn">1</span>Comment agrégez-vous et joignez-vous deux jeux de données en pandas</h2>
+<div class="sq"><div class="sl">La question</div><p>Comment agrégez-vous et joignez-vous deux jeux de données en pandas ?</p></div>
+<p>Le geste le plus courant du data en Python : sa fluidité en dit long.</p>
+<ul><li>Bonne réponse : merge/join en maîtrisant le type de jointure et les clés.</li><li>Il utilise groupby().agg() naturellement pour agréger.</li><li>Il évite les boucles ligne à ligne au profit de la vectorisation.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> boucler avec iterrows pour une opération vectorisable révèle une méconnaissance des coûts.</p></div>
+<h2 id="q2"><span class="sn">2</span>On vous donne un CSV sale. Comment le fiabilisez-vous</h2>
+<div class="sq"><div class="sl">La question</div><p>On vous donne un CSV sale. Comment le fiabilisez-vous ?</p></div>
+<p>La question qui sépare le producteur de résultats fiables du bricoleur.</p>
+<ul><li>Bonne réponse : diagnostiquer valeurs manquantes, doublons, types, dates.</li><li>Il ne fait pas de dropna/fillna à l'aveugle : il comprend d'abord.</li><li>Il documente ce qu'il a nettoyé et pourquoi.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> conclure sans avoir vérifié NA et doublons trahit un profil fragile sur la donnée réelle.</p></div>
+<h2 id="q3"><span class="sn">3</span>Racontez un script que vous avez mis en production</h2>
+<div class="sq"><div class="sl">La question</div><p>Racontez un script que vous avez mis en production ?</p></div>
+<p>La question la plus discriminante : elle révèle l'expérience réelle vs la formation.</p>
+<ul><li>Bonne réponse : parle de tests, de gestion d'erreurs, de ce qui a cassé.</li><li>Il évoque des données réelles, pas un notebook d'exercice.</li><li>Il assume un incident passé et ce qu'il en a tiré.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> présenter un notebook de formation comme un projet de production révèle un manque d'expérience.</p></div>
+<h2 id="q4"><span class="sn">4</span>Le jeu de données ne tient plus en mémoire. Que faites-vous</h2>
+<div class="sq"><div class="sl">La question</div><p>Le jeu de données ne tient plus en mémoire. Que faites-vous ?</p></div>
+<p>Une question de séniorité : savoir quand quitter pandas est un vrai marqueur.</p>
+<ul><li>Bonne réponse : réduire l'empreinte (dtypes), traiter par lots (chunking).</li><li>Il envisage un autre moteur : DuckDB, Polars, ou Spark à l'échelle.</li><li>Il justifie son choix par le volume, pas par la mode.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>pandas de base, scripts simples</td><td>Agrège et joint proprement</td><td>Ne parle que de syntaxe, jamais de données</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Nettoyage, vectorisation, quelques tests</td><td>Fiabilise un CSV sale méthodiquement</td><td>Fait du dropna à l'aveugle</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Production, robustesse, volumétrie</td><td>Raconte un incident de prod et sa résolution</td><td>Ne distingue pas script et production</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture, standards, mentorat</td><td>Sait quand quitter pandas et pourquoi</td><td>Sur-complexifie sans raison</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>8 Python data questions for a hiring interview</span></div>
+<div class="at">Interview questions</div>
+<h1 class="ah">8 Python data questions for a hiring interview</h1>
+<p class="ai">In data, you don't judge Python like classic development: what matters is the relationship to data and reliability. These data-oriented questions get the candidate talking about what really matters on the job.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>9 min read</span><span>·</span><span>For: recruiters & hiring managers · Python</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#q1">How do you aggregate and join two datasets in pandas</a></li><li><a href="#q2">You're given a messy CSV. How do you make it reliable</a></li><li><a href="#q3">Tell me about a script you shipped to production</a></li><li><a href="#q4">The dataset no longer fits in memory. What do you do</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The through-line: look for the relationship to real data, not syntax. A candidate who never mentions data, cleaning or reliability likely lacks enterprise data experience.</p>
+<h2 id="q1"><span class="sn">1</span>How do you aggregate and join two datasets in pandas</h2>
+<div class="sq"><div class="sl">The question</div><p>How do you aggregate and join two datasets in pandas</p></div>
+<p>The most common Python-in-data move: their fluency says a lot.</p>
+<ul><li>Good answer: merge/join, mastering the join type and keys.</li><li>They use groupby().agg() naturally to aggregate.</li><li>They avoid row-wise loops in favour of vectorization.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> looping with iterrows for a vectorizable operation reveals a lack of cost awareness.</p></div>
+<h2 id="q2"><span class="sn">2</span>You're given a messy CSV. How do you make it reliable</h2>
+<div class="sq"><div class="sl">The question</div><p>You're given a messy CSV. How do you make it reliable</p></div>
+<p>The question that separates the reliable-results producer from the tinkerer.</p>
+<ul><li>Good answer: diagnose missing values, duplicates, types, dates.</li><li>They don't dropna/fillna blindly: they understand first.</li><li>They document what they cleaned and why.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> concluding without checking NAs and duplicates betrays a profile fragile on real data.</p></div>
+<h2 id="q3"><span class="sn">3</span>Tell me about a script you shipped to production</h2>
+<div class="sq"><div class="sl">The question</div><p>Tell me about a script you shipped to production</p></div>
+<p>The most discriminating question: it reveals real experience vs training.</p>
+<ul><li>Good answer: talks tests, error handling, what broke.</li><li>They mention real data, not an exercise notebook.</li><li>They own a past incident and what they learned.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> presenting a training notebook as a production project reveals a lack of experience.</p></div>
+<h2 id="q4"><span class="sn">4</span>The dataset no longer fits in memory. What do you do</h2>
+<div class="sq"><div class="sl">The question</div><p>The dataset no longer fits in memory. What do you do</p></div>
+<p>A seniority question: knowing when to leave pandas is a real marker.</p>
+<ul><li>Good answer: reduce footprint (dtypes), process in batches (chunking).</li><li>They consider another engine: DuckDB, Polars, or Spark at scale.</li><li>They justify their choice by volume, not by trend.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Basic pandas, simple scripts</td><td>Aggregates and joins cleanly</td><td>Only talks syntax, never data</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Cleaning, vectorization, some tests</td><td>Cleans a messy CSV methodically</td><td>dropna blindly</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Production, robustness, volume</td><td>Recounts a prod incident and its fix</td><td>Doesn't distinguish script from production</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Architecture, standards, mentoring</td><td>Knows when and why to leave pandas</td><td>Over-complicates for no reason</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:'8 questions Python data pour un entretien de recrutement',desc:"Des questions Python orientées data à poser en entretien, avec ce que révèle chaque réponse — pour distinguer un vrai profil data d'un simple codeur."},en:{title:'8 Python data questions for a hiring interview',desc:'Data-oriented Python questions to ask in an interview, with what each answer reveals — to tell a real data profile from a mere coder.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>

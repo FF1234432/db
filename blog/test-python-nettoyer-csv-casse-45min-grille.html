@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Test Python prêt à l'emploi : nettoyer un CSV cassé (45 min, + grille) — Data Builder</title>
+<meta name="description" content="Un test Python data clé en main : un CSV volontairement sale à nettoyer en 45 minutes, avec le corrigé pandas commenté et une grille de correction par niveau."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://www.databuilder.io/blog/test-python-nettoyer-csv-casse-45min-grille"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzdjM2FlZCIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSI+REI8L3RleHQ+Cjwvc3ZnPg=="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NBG5NJ38');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'analytics_storage':'denied'});function loadGA(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-9E3GNM28PR';document.head.appendChild(s);s.onload=function(){gtag('js',new Date());gtag('config','G-9E3GNM28PR');gtag('consent','update',{'analytics_storage':'granted'});};}if(localStorage.getItem('db_cookies')==='accepted')loadGA();</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#4c1d95;--pul:#6d28d9;--ps:#f5f0ff;--pb:#e8dff7;--bk:#0f0e0e;--wh:#ffffff;--of:#faf9ff;--g4:#9ca3af;--g5:#6b7280;--g6:#4b5563;--rp:99px;--rc:16px;--rs:10px;--mx:740px}
+html{scroll-behavior:smooth}body{font-family:'Inter',-apple-system,sans-serif;background:var(--wh);color:var(--bk);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--pb);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nl{font-size:16px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--bk)}.nl span{color:var(--pul)}
+.nm{display:flex;gap:26px;align-items:center}.nm a{font-size:14px;color:var(--g5);text-decoration:none;font-weight:450}.nm a:hover{color:var(--bk)}
+.nr{display:flex;align-items:center;gap:10px}
+.bn{background:var(--pu);color:#fff;border:none;padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.aw{max-width:var(--mx);margin:0 auto;padding:56px 32px 80px}
+.bc{font-size:13px;color:var(--g4);margin-bottom:28px}.bc a{color:var(--g4);text-decoration:none}.bc span{margin:0 6px}
+.at{display:inline-flex;align-items:center;gap:7px;background:var(--ps);color:var(--pu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:var(--rp);border:1px solid var(--pb);margin-bottom:20px}
+.ah{font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:16px}
+.ai{font-size:18px;color:var(--g5);line-height:1.7;margin-bottom:24px}
+.am{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--g4);padding:16px 0;border-top:1px solid var(--pb);border-bottom:1px solid var(--pb);margin-bottom:40px;flex-wrap:wrap}.am strong{color:var(--g6)}
+.tc{background:var(--ps);border:1px solid var(--pb);border-radius:var(--rc);padding:24px 28px;margin-bottom:40px}
+.tt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pu);margin-bottom:14px}
+.tc ol{padding-left:18px}.tc li{font-size:14px;color:var(--g6);margin-bottom:6px;line-height:1.5}.tc a{color:var(--pu);text-decoration:none;font-weight:500}
+.ab h2{font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--bk);margin:44px 0 14px;padding-top:8px;border-top:2px solid var(--ps)}
+.ab p{font-size:16px;line-height:1.8;margin-bottom:18px}
+.ab ul,.ab ol{padding-left:22px;margin-bottom:18px}.ab li{font-size:15px;line-height:1.75;margin-bottom:7px}
+.ab strong{font-weight:600}.ab code{background:var(--ps);color:var(--pu);padding:1px 6px;border-radius:5px;font-size:13.5px;font-family:'Fira Code',monospace}
+.cl{border-left:3px solid var(--pu);background:var(--ps);border-radius:0 var(--rs) var(--rs) 0;padding:14px 18px;margin:22px 0}
+.cl p{font-size:14px;color:var(--g6);margin:0;line-height:1.7}.cl strong{color:var(--pu)}
+.sq{background:var(--of);border:1px solid var(--pb);border-radius:var(--rc);padding:20px 22px;margin:20px 0}
+.sq .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pu);margin-bottom:8px}
+.sq p{font-size:14px;color:var(--g6);margin:0;line-height:1.65;font-style:italic}
+.cb{background:#f6f6fb;border:1px solid #e9e9f2;border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.cb code{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.7;color:#24292f;white-space:pre;background:transparent!important;padding:0!important;border-radius:0}.cb .kw{color:#8250df;font-weight:600}.cb .cm{color:#8a8f98;font-style:italic}
+.lt{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:14px}
+.lt th{background:var(--pu);color:#fff;font-weight:600;padding:10px 12px;text-align:left;font-size:13px}
+.lt td{padding:9px 12px;border-bottom:1px solid var(--pb);line-height:1.55;vertical-align:top}
+.lt tr:nth-child(even) td{background:var(--ps)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bj{background:#e0f2fe;color:#075985}.bm{background:#dbeafe;color:#1e40af}.bs{background:#e0e7ff;color:#3730a3}.bl{background:#f3e8ff;color:#6b21a8}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--pu);color:#fff;border-radius:50%;font-size:14px;font-weight:700;margin-right:10px;vertical-align:middle}
+.cb2{background:var(--pu);border-radius:var(--rc);padding:32px 36px;margin:48px 0 0;text-align:center}
+.cb2 h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.cb2 p{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:22px;line-height:1.6}
+.cb2a{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.bw{background:#fff;color:var(--pu);border:none;padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:600;text-decoration:none}
+.bo{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);padding:12px 24px;border-radius:var(--rp);font-size:14px;font-weight:500;text-decoration:none}
+footer{border-top:1px solid var(--pb);padding:28px 32px}
+.fi{max-width:var(--mx);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{display:flex;gap:20px;flex-wrap:wrap}.fl a{font-size:13px;color:var(--g4);text-decoration:none}
+.fc{font-size:12px;color:#d1d5db}
+.lang-sw{display:flex;gap:4px;margin-right:12px}
+.lb{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1.5px solid var(--pb);background:transparent;cursor:pointer;color:var(--g5);font-family:inherit;transition:all .15s}
+.lb.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.prodpill{display:inline-flex;align-items:center;line-height:1;background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff!important;padding:7px 14px;border-radius:99px;font-weight:700}
+@media(max-width:560px){.nm{display:none}.aw{padding:36px 20px 60px}.lt{font-size:12px}}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NBG5NJ38" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<nav>
+<a href="/" class="nl">Data <span>Builder</span></a>
+<div class="nm">
+  <a href="/produit" class="prodpill" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">À propos</a>
+  <a href="/blog" data-fr="Blog" data-en="Blog">Blog</a>
+</div>
+<div class="nr"><div class="lang-sw"><button id="btn-fr" class="lb active" onclick="setLang('fr')">FR</button><button id="btn-en" class="lb" onclick="setLang('en')">EN</button></div>
+  <a href="https://calendly.com/data-builder/30min" target="_blank" class="bn" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a>
+</div>
+</nav>
+<div id="body-fr"><div class="aw">
+<div class="bc"><a href="/">Accueil</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Test Python prêt à l'emploi </span></div>
+<div class="at">Tests prêts à l'emploi</div>
+<h1 class="ah">Test Python prêt à l'emploi : nettoyer un CSV cassé (45 min, + grille)</h1>
+<p class="ai">En data, savoir « coder en Python » ne veut rien dire : ce qui compte, c'est nettoyer et fiabiliser de la donnée réelle. Ce test le mesure directement. On fournit un CSV volontairement cassé, et on regarde comment le candidat le diagnostique et le corrige — pas seulement s'il « fait tourner » un script.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>Juillet 2025</span><span>·</span><span>11 min de lecture</span><span>·</span><span>Test Python · data · 45 min · grille de correction</span></div>
+<div class="tc"><div class="tt">Sommaire</div><ol><li><a href="#brief">Le brief à donner au candidat</a></li><li><a href="#demarche">La démarche attendue</a></li><li><a href="#corrige">Le corrigé (pandas)</a></li><li><a href="#grille">La grille de correction</a></li><li><a href="#niv">Grille par niveau</a></li></ol></div>
+<div class="ab">
+<p>Le meilleur signal n'est pas la vitesse, mais l'ordre des gestes : un bon profil <em>regarde</em> les données avant d'agir. Celui qui lance dropna() ou fillna() à l'aveugle se disqualifie tout seul.</p>
+<h2 id="brief"><span class="sn">1</span>Le brief à donner au candidat</h2>
+<div class="sq"><div class="sl">La consigne</div><p>« Voici un fichier clients.csv sale. Nettoie-le pour qu'il soit exploitable, et explique tes choix. »</p></div>
+<p>Décrivez au candidat les défauts volontairement introduits dans le fichier (sans lui donner la solution). Il doit les repérer et les traiter proprement.</p>
+<ul><li>Des valeurs manquantes dans plusieurs colonnes.</li><li>Des doublons (mêmes clients répétés).</li><li>Des dates dans des formats incohérents (JJ/MM/AAAA et AAAA-MM-JJ mélangés).</li><li>Une colonne « montant » stockée en texte avec des symboles (« 1 200 € »).</li><li>Des espaces superflus et une casse incohérente dans les noms.</li></ul>
+<h2 id="demarche"><span class="sn">2</span>La démarche attendue</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Avant de corriger, un bon candidat inspecte.</p></div>
+<p>L'ordre des opérations révèle le niveau. On attend d'abord un diagnostic (regarder les données, compter les problèmes), puis un nettoyage justifié, colonne par colonne.</p>
+<ul><li>Inspecter : head(), info(), isna().sum(), duplicated().sum().</li><li>Décider au cas par cas : supprimer, imputer ou signaler — pas à l'aveugle.</li><li>Convertir les types (dates, montant) une fois les valeurs nettoyées.</li><li>Documenter chaque choix (pourquoi cette décision sur les NA).</li></ul>
+<h2 id="corrige"><span class="sn">3</span>Le corrigé (pandas)</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Une solution propre et commentée — accepter les variantes équivalentes.</p></div>
+<p>Voici une correction de référence. L'objectif n'est pas une syntaxe identique, mais la présence des bons réflexes : diagnostic, décisions justifiées, conversions de types.</p>
+<div class="cb"><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.read_csv("clients.csv")
+
+<span class="cm"># 1) Diagnostic avant toute action</span>
+print(df.info())
+print(df.isna().sum())
+print(df.duplicated().sum())
+
+<span class="cm"># 2) Doublons : on garde la premiere occurrence</span>
+df = df.drop_duplicates()
+
+<span class="cm"># 3) Noms : espaces + casse coherente</span>
+df["nom"] = df["nom"].str.strip().str.title()
+
+<span class="cm"># 4) Montant : texte -> nombre (retirer symboles et espaces)</span>
+df["montant"] = (df["montant"].astype(str)
+                 .str.replace("€", "", regex=<span class="kw">False</span>)
+                 .str.replace(" ", "", regex=<span class="kw">False</span>)
+                 .str.replace(",", ".", regex=<span class="kw">False</span>)
+                 .astype(float))
+
+<span class="cm"># 5) Dates : parser en gerant les formats mixtes</span>
+df["date_inscription"] = pd.to_datetime(
+    df["date_inscription"], dayfirst=<span class="kw">True</span>, errors="coerce")
+
+<span class="cm"># 6) Valeurs manquantes : decision explicite, pas de fillna aveugle</span>
+<span class="cm">#    (ex : on supprime les lignes sans identifiant, on signale le reste)</span>
+df = df.dropna(subset=["id"])</code></div>
+<ul><li>Chaque étape est justifiée, pas mécanique.</li><li>Les types finaux sont corrects (datetime, float).</li><li>Le résultat est reproductible et documenté.</li></ul>
+<div class="cl"><p><strong>Signal d'alerte :</strong> le red flag numéro un : un candidat qui lance df.dropna() ou df.fillna(0) sur tout le DataFrame sans avoir regardé les données. Le bon réflexe est de décider colonne par colonne.</p></div>
+<h2 id="grille"><span class="sn">4</span>La grille de correction</h2>
+<div class="sq"><div class="sl">La consigne</div><p>Notez la démarche autant que le résultat final.</p></div>
+<p>Répartissez les points sur ce que le test veut vraiment mesurer : le diagnostic, la justesse des décisions et la fiabilité du résultat.</p>
+<ul><li>Diagnostic initial (a regardé les données avant d'agir) — essentiel.</li><li>Traitement justifié des NA, doublons, dates, montant.</li><li>Types finaux corrects et résultat reproductible.</li><li>Capacité à expliquer chaque choix à un non-technique.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Grille par niveau</h2>
+<table class="lt"><thead><tr><th>Niveau</th><th>Maîtrise attendue</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Nettoie les cas évidents</td><td>Repère NA et doublons</td><td>Lance dropna/fillna à l'aveugle</td></tr><tr><td><span class="bd bm">Confirmé</span></td><td>Traite dates et montant</td><td>Décide au cas par cas, convertit les types</td><td>Oublie de convertir les types</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Diagnostique avant d'agir</td><td>Justifie chaque décision, gère les cas limites</td><td>Nettoie sans expliquer pourquoi</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Rend le tout reproductible</td><td>Documente et pense à la réutilisation</td><td>Résultat juste mais non reproductible</td></tr></tbody></table>
+</div></div></div>
+<div id="body-en" style="display:none"><div class="aw">
+<div class="bc"><a href="/">Home</a><span>›</span><a href="/blog">Blog</a><span>›</span><span>Ready-to-use Python test</span></div>
+<div class="at">Ready-to-use tests</div>
+<h1 class="ah">Ready-to-use Python test: clean a broken CSV (45 min, + grid)</h1>
+<p class="ai">In data, ‘coding in Python’ means nothing: what matters is cleaning and hardening real data. This test measures that directly. You provide a deliberately broken CSV and watch how the candidate diagnoses and fixes it — not just whether their script ‘runs’.</p>
+<div class="am"><span><strong>Data Builder</strong></span><span>·</span><span>July 2025</span><span>·</span><span>11 min read</span><span>·</span><span>Python test · data · 45 min · scoring grid</span></div>
+<div class="tc"><div class="tt">Contents</div><ol><li><a href="#brief">The brief to give the candidate</a></li><li><a href="#demarche">The expected approach</a></li><li><a href="#corrige">The answer (pandas)</a></li><li><a href="#grille">The scoring grid</a></li><li><a href="#niv">Level grid</a></li></ol></div>
+<div class="ab">
+<p>The best signal isn't speed, but the order of moves: a good profile <em>looks</em> at the data before acting. One who runs dropna() or fillna() blindly disqualifies themselves.</p>
+<h2 id="brief"><span class="sn">1</span>The brief to give the candidate</h2>
+<div class="sq"><div class="sl">The task</div><p>‘Here's a messy clients.csv. Clean it so it's usable, and explain your choices.’</p></div>
+<p>Describe to the candidate the flaws deliberately introduced in the file (without giving the solution). They must spot and handle them cleanly.</p>
+<ul><li>Missing values in several columns.</li><li>Duplicates (same customers repeated).</li><li>Dates in inconsistent formats (DD/MM/YYYY and YYYY-MM-DD mixed).</li><li>An ‘amount’ column stored as text with symbols (‘1,200 €’).</li><li>Extra spaces and inconsistent case in names.</li></ul>
+<h2 id="demarche"><span class="sn">2</span>The expected approach</h2>
+<div class="sq"><div class="sl">The task</div><p>Before fixing, a good candidate inspects.</p></div>
+<p>The order of operations reveals the level. First a diagnosis (look at the data, count the problems), then a justified cleaning, column by column.</p>
+<ul><li>Inspect: head(), info(), isna().sum(), duplicated().sum().</li><li>Decide case by case: drop, impute or flag — not blindly.</li><li>Convert types (dates, amount) once values are cleaned.</li><li>Document each choice (why this decision on NAs).</li></ul>
+<h2 id="corrige"><span class="sn">3</span>The answer (pandas)</h2>
+<div class="sq"><div class="sl">The task</div><p>A clean, commented solution — accept equivalent variants.</p></div>
+<p>Here's a reference solution. The goal isn't identical syntax, but the presence of the right reflexes: diagnosis, justified decisions, type conversions.</p>
+<div class="cb"><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.read_csv("clients.csv")
+
+<span class="cm"># 1) Diagnostic avant toute action</span>
+print(df.info())
+print(df.isna().sum())
+print(df.duplicated().sum())
+
+<span class="cm"># 2) Doublons : on garde la premiere occurrence</span>
+df = df.drop_duplicates()
+
+<span class="cm"># 3) Noms : espaces + casse coherente</span>
+df["nom"] = df["nom"].str.strip().str.title()
+
+<span class="cm"># 4) Montant : texte -> nombre (retirer symboles et espaces)</span>
+df["montant"] = (df["montant"].astype(str)
+                 .str.replace("€", "", regex=<span class="kw">False</span>)
+                 .str.replace(" ", "", regex=<span class="kw">False</span>)
+                 .str.replace(",", ".", regex=<span class="kw">False</span>)
+                 .astype(float))
+
+<span class="cm"># 5) Dates : parser en gerant les formats mixtes</span>
+df["date_inscription"] = pd.to_datetime(
+    df["date_inscription"], dayfirst=<span class="kw">True</span>, errors="coerce")
+
+<span class="cm"># 6) Valeurs manquantes : decision explicite, pas de fillna aveugle</span>
+<span class="cm">#    (ex : on supprime les lignes sans identifiant, on signale le reste)</span>
+df = df.dropna(subset=["id"])</code></div>
+<ul><li>Each step is justified, not mechanical.</li><li>The final types are correct (datetime, float).</li><li>The result is reproducible and documented.</li></ul>
+<div class="cl"><p><strong>Warning signal :</strong> the number-one red flag: a candidate who runs df.dropna() or df.fillna(0) on the whole DataFrame without looking at the data. The right reflex is to decide column by column.</p></div>
+<h2 id="grille"><span class="sn">4</span>The scoring grid</h2>
+<div class="sq"><div class="sl">The task</div><p>Score the approach as much as the final result.</p></div>
+<p>Spread the points over what the test really measures: diagnosis, soundness of decisions and reliability of the result.</p>
+<ul><li>Initial diagnosis (looked at the data before acting) — essential.</li><li>Justified handling of NAs, duplicates, dates, amount.</li><li>Correct final types and reproducible result.</li><li>Ability to explain each choice to a non-technical person.</li></ul>
+<h2 id="niv"><span class="sn">5</span>Level grid</h2>
+<table class="lt"><thead><tr><th>Level</th><th>Expected proficiency</th><th>Signal GO</th><th>NO-GO</th></tr></thead><tbody><tr><td><span class="bd bj">Junior</span></td><td>Cleans the obvious cases</td><td>Spots NAs and duplicates</td><td>Runs dropna/fillna blindly</td></tr><tr><td><span class="bd bm">Mid-level</span></td><td>Handles dates and amount</td><td>Decides case by case, converts types</td><td>Forgets to convert types</td></tr><tr><td><span class="bd bs">Senior</span></td><td>Diagnoses before acting</td><td>Justifies each decision, handles edge cases</td><td>Cleans without explaining why</td></tr><tr><td><span class="bd bl">Lead</span></td><td>Makes it all reproducible</td><td>Documents and thinks reuse</td><td>Correct result but not reproducible</td></tr></tbody></table>
+</div></div></div>
+<div class="cb2"><h3 data-fr="Vous recrutez un profil data ?" data-en="Hiring a data profile?">Vous recrutez un profil data ?</h3><p data-fr="Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert." data-en="Data Builder runs the technical interview and delivers a clear, detailed report within 24h. First interview free.">Data Builder mène l'entretien technique et vous livre un rapport clair et détaillé sous 24h. Premier entretien offert.</p><div class="cb2a"><a href="https://calendly.com/data-builder/30min" target="_blank" class="bw" data-fr="Tester gratuitement" data-en="Try it free">Tester gratuitement</a><a href="https://calendly.com/data-builder/30min" target="_blank" class="bo" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a></div></div>
+<footer><div class="fi">
+<div class="fl">
+  <a href="/produit" data-fr="Produit" data-en="Product">Produit</a>
+  <a href="/how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+  <a href="/about" data-fr="À propos" data-en="About">About</a>
+  <a href="/cgu">CGU</a>
+  <a href="mailto:contact@databuilder.io">contact@databuilder.io</a>
+</div>
+<div class="fc">© 2025 Data Builder</div>
+</div></footer>
+<script>
+var T={fr:{title:"Test Python prêt à l'emploi : nettoyer un CSV cassé (45 min, + grille)",desc:'Un test Python data clé en main : un CSV volontairement sale à nettoyer en 45 minutes, avec le corrigé pandas commenté et une grille de correction par niveau.'},en:{title:'Ready-to-use Python test: clean a broken CSV (45 min, + grid)',desc:'A turnkey Python data test: a deliberately messy CSV to clean in 45 minutes, with the commented pandas answer and a level-based scoring grid.'}};
+function setLang(l){document.getElementById('btn-fr').classList.toggle('active',l==='fr');document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('body-fr').style.display=l==='fr'?'':'none';document.getElementById('body-en').style.display=l==='en'?'':'none';document.documentElement.lang=l;document.title=T[l].title+' — Data Builder';var dm=document.querySelector('meta[name=description]');if(dm)dm.content=T[l].desc;document.querySelectorAll('[data-fr][data-en]').forEach(function(el){el.textContent=el.getAttribute('data-'+l);});try{localStorage.setItem('db_lang',l)}catch(e){}}
+try{var s=localStorage.getItem('db_lang');if(s&&s!=='fr')setLang(s);}catch(e){}
+</script>
+</body>
+</html>
